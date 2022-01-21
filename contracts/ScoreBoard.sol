@@ -1,27 +1,26 @@
 pragma solidity ^0.8.4;
-import "hardhat/console.sol";
-
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ScoreBoard is Ownable {
-    address[] _participantAddresses;
-
     struct ParticipantStruct {
         address participantAddress;
-        uint256 index;
         uint256 score;
     }
-    mapping(address => ParticipantStruct) public participants;
+    ParticipantStruct[] _participants;
+    mapping(address => uint256) public index;
 
     constructor() {
-        _participantAddresses.push(address(0));
+        ParticipantStruct memory newParticipant;
+        newParticipant.participantAddress = address(0);
+        newParticipant.score = 0;
+        _participants.push();
     }
 
     function updateScore(address participant, uint256 newScore)
         public
         onlyOwner
     {
-        participants[participant].score = newScore;
+        _participants[index[participant]].score = newScore;
     }
 
     function increseScore(address participant, uint256 value)
@@ -29,14 +28,14 @@ contract ScoreBoard is Ownable {
         onlyOwner
     {
         require(
-            participants[participant].index != 0,
+            index[participant] != 0,
             "participant is not registered at the scoreboard"
         );
-        uint256 c = value + participants[participant].score;
+        uint256 c = value + _participants[index[participant]].score;
         if (c < value) {
             c = type(uint256).max;
         }
-        participants[participant].score = c;
+        _participants[index[participant]].score = c;
     }
 
     function decreseScore(address participant, uint256 value)
@@ -44,40 +43,41 @@ contract ScoreBoard is Ownable {
         onlyOwner
     {
         require(
-            participants[participant].index != 0,
+            index[participant] != 0,
             "participant is not registered at the scoreboard"
         );
         uint256 c;
-        if (value < participants[participant].score) {
-            c = participants[participant].score - value;
+        if (value < _participants[index[participant]].score) {
+            c = _participants[index[participant]].score - value;
         } else {
             c = 0;
         }
-        participants[participant].score = c;
+        _participants[index[participant]].score = c;
     }
 
     function resetScores() external onlyOwner {
-        for (uint256 i = 0; i < _participantAddresses.length; i++) {
-            updateScore(_participantAddresses[i], 0);
+        for (uint256 i = 0; i < _participants.length; i++) {
+            _participants[i].score = 0;
         }
     }
 
-    function registerParticipant(address newParticipant) external onlyOwner {
+    function registerParticipant(address newParticipantAddress)
+        external
+        onlyOwner
+    {
         require(
-            participants[newParticipant].index == 0,
+            index[newParticipantAddress] == 0,
             "this participant is already registered"
         );
-        _participantAddresses.push(newParticipant);
-        participants[newParticipant].index = _participantAddresses.length - 1;
+        index[newParticipantAddress] = _participants.length;
+        ParticipantStruct memory newParticipant;
+        newParticipant.participantAddress = newParticipantAddress;
+        newParticipant.score = 0;
+        _participants.push(newParticipant);
     }
 
     function readScoreBoard() public view returns (ParticipantStruct[] memory) {
-        ParticipantStruct[] memory _Score;
-        require(_participantAddresses.length > 0, "there are no participants");
-        for (uint256 i = 1; i < _participantAddresses.length; i++) {
-            _Score[i] = participants[_participantAddresses[i]];
-        }
-        return _Score;
+        return _participants;
     }
 
     function readTest() public pure returns (uint256) {

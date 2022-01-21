@@ -1,8 +1,7 @@
 require("@nomiclabs/hardhat-waffle");
 require("@openzeppelin/hardhat-upgrades");
+require("@nomiclabs/hardhat-web3");
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
 
@@ -10,6 +9,44 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
     console.log(account.address);
   }
 });
+
+task("register", "Registers participant")
+  .addParam("scoreBoard", "The board address")
+  .addParam("participant", "The participant address")
+  .setAction(async (taskArgs) => {
+    console.log("scoreBoard", taskArgs.scoreBoard);
+
+    const ScoreBoard = await ethers.getContractFactory("ScoreBoard");
+    const scoreBoard = await ScoreBoard.attach(`${taskArgs.scoreBoard}`);
+    await scoreBoard.registerParticipant(taskArgs.participant);
+  });
+
+task("getScoreboard", "Reads scoreboard")
+  .addParam("scoreBoard", "The board address")
+  .setAction(async (taskArgs) => {
+    console.log("scoreBoard", taskArgs.scoreBoard);
+
+    const ScoreBoard = await ethers.getContractFactory("ScoreBoard");
+    const scoreBoard = await ScoreBoard.attach(`${taskArgs.scoreBoard}`);
+    const scores = await scoreBoard.readScoreBoard();
+    console.log("Scores:", scores);
+  });
+
+task("setScore", "Reads scoreboard")
+  .addParam("scoreBoard", "The board address")
+  .addParam("participant", "The participant address")
+  .addParam("score", "score to set")
+  .setAction(async (taskArgs) => {
+    console.log("scoreBoard", taskArgs.scoreBoard);
+
+    const ScoreBoard = await ethers.getContractFactory("ScoreBoard");
+    const scoreBoard = await ScoreBoard.attach(`${taskArgs.scoreBoard}`);
+    const scores = await scoreBoard.updateScore(
+      taskArgs.participant,
+      taskArgs.score
+    );
+    console.log("Scores:", scores);
+  });
 
 const fs = require("fs");
 const privateKey = fs.readFileSync("key.secret").toString().trim();
