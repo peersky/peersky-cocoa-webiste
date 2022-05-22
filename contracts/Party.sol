@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ScoreBoard is Ownable {
+contract Party is Ownable {
     struct ParticipantStruct {
         address participantAddress;
         uint256 score;

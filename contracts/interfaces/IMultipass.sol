@@ -16,15 +16,46 @@ interface IMultipass is IERC165 {
      * @param username username
      * @param targetDomain if this is set to valid domain name, then after sucessfull resolving account at domainName,
      *                       this method will rerun with resolving user properties in targetDomain
-     * @return (status, address, id, username, nonce)
      */
-    function resolveRecord(
-        bytes32 domainName,
-        address userAddress,
-        bytes32 id,
-        bytes32 username,
-        bytes32 targetDomain
-    )
+    struct NameQuery {
+        string domainName;
+        address userAddress;
+        string name;
+        string id;
+        string targetDomain;
+    }
+
+        struct NameQueryBytes32 {
+        string domainName;
+        address userAddress;
+        bytes32 name;
+        bytes32 id;
+        string targetDomain;
+    }
+
+    /**
+     * @dev The domain name of the registrar.
+     * @param registrar is the address private key of which is owned by signing server (e.g. Discord bot server)
+     * @param name is unique string that is used to find this domain within domains.
+     * @param freeRegistrationsNumber is the number of free registrations for this domain
+
+     * @param fee amount of payment requried to register name in the domain
+     * @param ttl time to live for changes in the domain properties
+     * @param isActive when is false domain name will not respond to any changes and will not return any address
+    **/
+    struct Domain {
+        bytes32 name; //32bytes
+        uint256 fee; //32bytes
+        uint256 freeRegistrationsNumber; //32bytes
+        uint256 referrerReward; //32bytes
+        uint256 referralDiscount; //32bytes
+        bool isActive; //1byte
+        address registrar; //20 bytes
+        uint24 ttl; //3 bytes (not being used for now)
+        uint256 registerSize; //32bytes
+    }
+
+    function resolveRecord(NameQuery memory query)
         external
         view
         returns (
@@ -32,6 +63,18 @@ interface IMultipass is IERC165 {
             address,
             bytes32,
             bytes32,
+            uint96
+        );
+
+    /** @dev same as resolveRecord but returns username, id and domain as string */
+    function resolveRecordToString(NameQuery memory query)
+        external
+        view
+        returns (
+            bool,
+            address,
+            string memory,
+            string memory,
             uint96
         );
 
@@ -58,7 +101,7 @@ interface IMultipass is IERC165 {
         address registrar,
         uint256 freeRegistrationsNumber,
         uint256 fee,
-        bytes32 domainName,
+        string memory domainName,
         uint256 referrerReward,
         uint256 referralDiscount
     ) external;
@@ -72,7 +115,7 @@ interface IMultipass is IERC165 {
      *
      *  Emits an {DomainActivated} event.
      */
-    function activateDomain(bytes32 domainName) external;
+    function activateDomain(string memory domainName) external;
 
     /**
      * @dev Deactivates domain name
@@ -86,7 +129,7 @@ interface IMultipass is IERC165 {
      *  Emits an {DomainDeactivated} event.
      */
 
-    function deactivateDomain(bytes32 domainName) external;
+    function deactivateDomain(string memory domainName) external;
 
     /**
      * @dev Changes registrar address
@@ -96,7 +139,7 @@ interface IMultipass is IERC165 {
      *
      *  Emits an {DomainFeeChanged} event.
      */
-    function changeFee(bytes32 domainName, uint256 fee) external;
+    function changeFee(string memory domainName, uint256 fee) external;
 
     /**
      * @dev Changes registrar address
@@ -106,7 +149,7 @@ interface IMultipass is IERC165 {
      *
      *  Emits an {RegistrarChangeRequested} event.
      */
-    function changeRegistrar(bytes32 domainName, address newRegistrar) external;
+    function changeRegistrar(string memory domainName, address newRegistrar) external;
 
     /**
      * @dev deletes name
@@ -116,12 +159,7 @@ interface IMultipass is IERC165 {
      *
      *  Emits an {DomainTTLChangeRequested} event.
      */
-    function deleteName(
-        bytes32 domainName,
-        address userAddress,
-        bytes32 username,
-        bytes32 id
-    ) external;
+    function deleteName(NameQuery memory query) external;
 
     /**
      * @dev executes all pending changes to domain that fulfill TTL
@@ -136,7 +174,7 @@ interface IMultipass is IERC165 {
     function changeReferralProgram(
         uint256 referrerFeeShare,
         uint256 referralDiscount,
-        bytes32 domainName
+        string memory domainName
     ) external;
 
     /**
@@ -158,9 +196,9 @@ interface IMultipass is IERC165 {
      *  Emits an {registered} event.
      */
     function register(
-        bytes32 domainName,
-        bytes32 name,
-        bytes32 id,
+        string memory domainName,
+        string memory name,
+        string memory id,
         address applicantAddress,
         bytes memory registrarSignature,
         uint256 signatureDeadline,
@@ -185,9 +223,9 @@ interface IMultipass is IERC165 {
      *  Emits an {Modified} event.
      */
     function modifyUserName(
-        bytes32 domainName,
-        bytes32 id,
-        bytes32 newName,
+        string memory domainName,
+        string memory id,
+        string memory newName,
         uint96 nonce,
         bytes memory registrarSignature,
         uint256 signatureDeadline
@@ -200,7 +238,7 @@ interface IMultipass is IERC165 {
 
     /**
      * @dev returns domain state variables
-     * @param domain name of the domain
+     * @param domainName name of the domain
      * @return (name,
       fee,
       freeRegistrationsNumber,
@@ -211,19 +249,20 @@ interface IMultipass is IERC165 {
        ttl,
         registerSize)
      */
-    function getDomainState(bytes32 domain)
+    function getDomainState(string memory domainName)
         external
         view
         returns (
-            bytes32,
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            bool,
-            address,
-            uint24,
-            uint256
+            // bytes32,
+            // uint256,
+            // uint256,
+            // uint256,
+            // uint256,
+            // bool,
+            // address,
+            // uint24,
+            Domain memory
+            // uint256
         );
 
     /**
@@ -252,7 +291,7 @@ interface IMultipass is IERC165 {
 
     event fundsWithdawn(uint256 indexed amount, address indexed account);
 
-    event InitializedDomain(uint256 index, bytes32 domainName);
+    event InitializedDomain(uint256 indexed index, string indexed domainName);
     event DomainActivated(bytes32 indexed domainName);
     event DomainDeactivated(bytes32 indexed domainName);
 

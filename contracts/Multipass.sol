@@ -8,33 +8,10 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
 import "./interfaces/IMultipass.sol";
 
 contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
     using ECDSA for bytes32;
-
-    /**
-     * @dev The domain name of the registrar.
-     * @param registrar is the address private key of which is owned by signing server (e.g. Discord bot server)
-     * @param name is unique string that is used to find this domain within domains.
-     * @param freeRegistrationsNumber is the number of free registrations for this domain
-
-     * @param fee amount of payment requried to register name in the domain
-     * @param ttl time to live for changes in the domain properties
-     * @param isActive when is false domain name will not respond to any changes and will not return any address
-    **/
-    struct Domain {
-        bytes32 name; //32bytes
-        uint256 fee; //32bytes
-        uint256 freeRegistrationsNumber; //32bytes
-        uint256 referrerReward; //32bytes
-        uint256 referralDiscount; //32bytes
-        bool isActive; //1byte
-        address registrar; //20 bytes
-        uint24 ttl; //3 bytes (not being used for now)
-        //Total: 128bytes
-    }
 
     /**
      * @dev The domain name of the registrar.
@@ -49,13 +26,11 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
     **/
     struct DomainNameService {
         Domain properties; //128 bytes
-        uint256 registerSize; //32bytes
         mapping(bytes32 => address) idToAddress; //N*20bytes
         mapping(bytes32 => uint96) nonce; //N*12bytes
         mapping(address => bytes32) addressToId; //N*32 bytes
         mapping(bytes32 => bytes32) nameToId; //N*32 bytes
         mapping(bytes32 => bytes32) idToName; //N*32 bytes
-        // mapping(bytes32 => uint95) isSignatureUsed; //N*32 bytes
         //Total: 128+N*160 Bytes
     }
 
@@ -65,16 +40,82 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
     // mapping(address => mapping(uint256 => bytes32)) s_addressToDomainNames; //N*DN*32 bytes
     // mapping(address => uint256) s_numDomainsOfAddress; // N * 32 bytes
 
+    string private s_version;
     uint256 private s_numDomains;
 
-    constructor(address owner, string memory name_) EIP712(name_, version()) {
+    constructor(
+        address owner,
+        string memory name_,
+        string memory version_
+    ) EIP712(name_, version_) {
+        s_version = version_;
         transferOwnership(owner);
     }
 
-    function _getDomainStorage(bytes32 domainName) private view returns (DomainNameService storage) {
-        // uint256 _index = ;
-        // require(_index != 0, "Multipass->_getDomainStorage: domain name not found");
-        return s_domains[s_domainNameToIndex[domainName]];
+    function _hash(bytes32 value) private view returns (bytes32) {
+        return keccak256(abi.encodePacked(value));
+    }
+
+    function _hash(string memory value) private view returns (bytes32) {
+        return keccak256(abi.encodePacked(value));
+    }
+
+    function _getDomainStorage(string memory domainName) private view returns (DomainNameService storage) {
+        return s_domains[s_domainNameToIndex[_hash(domainName)]];
+    }
+
+    function _bytes32ToString(bytes32 value) private view returns (string memory) {
+        return string(abi.encodePacked(value));
+    }
+
+    function _resolveRecord(NameQueryBytes32 memory query)
+        private
+        view
+        returns (
+            bool,
+            address,
+            bytes32,
+            bytes32,
+            uint96
+        )
+    {
+        if ((query.userAddress == address(0)) && (bytes32(query.id).length == 0) && (bytes32(query.name).length == 0)) {
+            return (false, address(0), 0, 0, 0);
+        }
+
+        DomainNameService storage _domain = s_domains[s_domainNameToIndex[_hash(query.domainName)]];
+        DomainNameService storage _targetDomain = s_domains[
+            s_domainNameToIndex[_hash(bytes(query.targetDomain).length == 0 ? query.domainName : query.targetDomain)]
+        ];
+
+        address resolvedAddress;
+        bytes32 resolvedId;
+        bytes32 resolvedUsername;
+        uint96 resolvedNonce;
+
+        {
+            if (query.userAddress != address(0)) {
+                //Resolve by address is first priority
+                resolvedAddress = query.userAddress;
+                (resolvedId, resolvedUsername, resolvedNonce) = _resolveFromAddress(resolvedAddress, _targetDomain);
+            } else if (bytes32(query.id).length != 0) {
+                //Resolve by Id is second priority
+                resolvedAddress = _domain.idToAddress[_hash(query.id)];
+            } else if (bytes32(query.name).length != 0) {
+                bytes32 _id = _domain.nameToId[_hash(query.name)];
+                resolvedAddress = _domain.idToAddress[_hash(_id)];
+            }
+            (resolvedId, resolvedUsername, resolvedNonce) = _resolveFromAddress(resolvedAddress, _targetDomain);
+        }
+
+        {
+            bool status;
+            status = resolvedAddress != address(0) ? true : false;
+            status = resolvedId != bytes32(0) ? true : false;
+            status = resolvedUsername != bytes32(0) ? true : false;
+
+            return (status, resolvedAddress, resolvedId, resolvedUsername, resolvedNonce);
+        }
     }
 
     function _setRecord(
@@ -109,13 +150,20 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
         address registrar,
         uint256 freeRegistrationsNumber,
         uint256 fee,
-        bytes32 domainName,
+        string memory domainName,
         uint256 referrerReward,
         uint256 referralDiscount
     ) public override onlyOwner {
+        require(
+            bytes(domainName).length <= 32,
+            "Multipass->initializeDomain: Domain name must be 32 bytes or less long"
+        );
         require(registrar != address(0), "Multipass->initializeDomain: You must provide a registrar address");
-        require(domainName != bytes32(0), "Multipass->initializeDomain: Domain name cannot be empty");
-        require(s_domainNameToIndex[domainName] == 0, "Multipass->initializeDomain: Domain name already indexed");
+        require(bytes(domainName).length != 0, "Multipass->initializeDomain: Domain name cannot be empty");
+        require(
+            s_domainNameToIndex[_hash(domainName)] == 0,
+            "Multipass->initializeDomain: Domain name already indexed"
+        );
         (bool status, uint256 result) = SafeMath.tryAdd(referrerReward, referralDiscount);
         require(status == true, "Multipass->initializeDomain: referrerReward + referralDiscount cause overflow");
         require(result <= fee, "Multipass->initializeDomain: referral values are higher then fee itself");
@@ -125,22 +173,22 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
         _domain.properties.registrar = registrar;
         _domain.properties.freeRegistrationsNumber = freeRegistrationsNumber;
         _domain.properties.fee = fee;
-        _domain.properties.name = domainName;
+        _domain.properties.name = stringToBytes32(domainName);
         _domain.properties.referrerReward = referrerReward;
         _domain.properties.referralDiscount = referralDiscount;
         s_numDomains++;
-        s_domainNameToIndex[domainName] = s_numDomains;
+        s_domainNameToIndex[_hash(domainName)] = s_numDomains;
 
         emit InitializedDomain(domainIndex, domainName);
-
     }
 
     function resolveRecord(
-        bytes32 domainName,
-        address userAddress,
-        bytes32 id,
-        bytes32 username,
-        bytes32 targetDomain
+        // string memory domainName,
+        // address userAddress,
+        // string memory id,
+        // string memory username,
+        // string memory targetDomain
+        NameQuery memory query
     )
         public
         view
@@ -153,57 +201,67 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
             uint96
         )
     {
-        require(
-            (userAddress != address(0)) || (id != bytes32(0)) || (username != bytes32(0)),
-            "Multipass->resolveRecord: must provide address or id or username"
-        );
-
-        DomainNameService storage _domain = s_domains[s_domainNameToIndex[domainName]];
-        DomainNameService storage _targetDomain = s_domains[
-            s_domainNameToIndex[targetDomain == bytes32(0) ? domainName : targetDomain]
-        ];
-
-        address resolvedAddress;
-        bytes32 resolvedId;
-        bytes32 resolvedUsername;
-        uint96 resolvedNonce;
-
+        NameQueryBytes32 memory query32b;
+        query32b.name = stringToBytes32(query.name);
+        query32b.id = stringToBytes32(query.id);
+        query32b.domainName = query.domainName;
+        query32b.targetDomain = query.targetDomain;
+        query32b.userAddress = query.userAddress;
         {
-            if (userAddress != address(0)) {
-                //Resolve by address is first priority
-                resolvedAddress = userAddress;
-                (resolvedId, resolvedUsername, resolvedNonce) = _resolveFromAddress(resolvedAddress, _targetDomain);
-            } else if (id != bytes32(0)) {
-                //Resolve by Id is second priority
-                resolvedAddress = _domain.idToAddress[id];
-            } else if (username != bytes32(0)) {
-                bytes32 _id = _domain.nameToId[username];
-                resolvedAddress = _domain.idToAddress[_id];
-            }
-            (resolvedId, resolvedUsername, resolvedNonce) = _resolveFromAddress(resolvedAddress, _targetDomain);
-        }
-
-        {
-            bool status;
-            status = resolvedAddress != address(0) ? true : false;
-            status = resolvedId != bytes32(0) ? true : false;
-            status = resolvedUsername != bytes32(0) ? true : false;
+            // NameQuery32Bytes memory query32b;
+            // query32b.
+            (
+                bool status,
+                address resolvedAddress,
+                bytes32 resolvedId,
+                bytes32 resolvedUsername,
+                uint96 resolvedNonce
+            ) = _resolveRecord(query32b);
 
             return (status, resolvedAddress, resolvedId, resolvedUsername, resolvedNonce);
         }
     }
 
-    function activateDomain(bytes32 domainName) public override onlyOwner {
+    function resolveRecordToString(NameQuery memory query)
+        public
+        view
+        override
+        returns (
+            bool,
+            address,
+            string memory,
+            string memory,
+            uint96
+        )
+    {
+        (
+            bool status,
+            address resolvedAddress,
+            bytes32 resolvedId,
+            bytes32 resolvedUsername,
+            uint96 resolvedNonce
+        ) = resolveRecord(query);
+
+        return (
+            status,
+            resolvedAddress,
+            _bytes32ToString(resolvedId),
+            _bytes32ToString(resolvedUsername),
+            resolvedNonce
+        );
+    }
+
+    function activateDomain(string memory domainName) public override onlyOwner {
         DomainNameService storage _domain = _getDomainStorage(domainName);
         _domain.properties.isActive = true;
     }
 
-    function deactivateDomain(bytes32 domainName) public override onlyOwner {
+    function deactivateDomain(string memory domainName) public override onlyOwner {
         DomainNameService storage _domain = _getDomainStorage(domainName);
         _domain.properties.isActive = false;
     }
 
-    function changeFee(bytes32 domainName, uint256 fee) public override onlyOwner {
+    function changeFee(string memory domainName, uint256 fee) public override onlyOwner {
         DomainNameService storage _domain = _getDomainStorage(domainName);
         uint256 _referrerReward = _domain.properties.referrerReward;
         uint256 _referralDiscount = _domain.properties.referralDiscount;
@@ -214,43 +272,35 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
         _domain.properties.fee = fee;
     }
 
-    function changeRegistrar(bytes32 domainName, address newRegistrar) public override onlyOwner {
+    function changeRegistrar(string memory domainName, address newRegistrar) public override onlyOwner {
         DomainNameService storage _domain = _getDomainStorage(domainName);
         require(newRegistrar != address(0), "new registrar cannot be zero");
         _domain.properties.registrar = newRegistrar;
     }
 
     function deleteName(
-        bytes32 domainName,
-        address userAddress,
-        bytes32 username,
-        bytes32 id
+        NameQuery memory query // string memory domainName, // address userAddress, // string memory username, // string memory id
     ) public override {
-        DomainNameService storage _domain = _getDomainStorage(domainName);
+        DomainNameService storage _domain = _getDomainStorage(query.domainName);
         require(
             (msg.sender == Ownable.owner()) || (msg.sender == _domain.properties.registrar),
             "Multipass->deleteName: Only registrar or owner can call this"
         );
-        (bool status, address resolvedAddress, bytes32 resolvedId, bytes32 resolvedUsername, ) = resolveRecord(
-            domainName,
-            userAddress,
-            id,
-            username,
-            bytes32(0)
-        );
+        query.targetDomain = "";
+        (bool status, address resolvedAddress, bytes32 resolvedId, bytes32 resolvedUsername, ) = resolveRecord(query);
         require(status == true, "Multipass->deleteName: name not resolved");
         _domain.addressToId[resolvedAddress] = bytes32(0);
         _domain.idToAddress[resolvedId] = address(0);
         _domain.idToName[resolvedId] = bytes32(0);
         _domain.nameToId[resolvedUsername] = bytes32(0);
         _domain.nonce[resolvedId] += 1;
-        _domain.registerSize--;
+        _domain.properties.registerSize--;
     }
 
     function changeReferralProgram(
         uint256 referrerReward,
         uint256 referralDiscount,
-        bytes32 domainName
+        string memory domainName
     ) public override onlyOwner {
         DomainNameService storage _domain = _getDomainStorage(domainName);
         (bool status, uint256 result) = SafeMath.tryAdd(referrerReward, referralDiscount);
@@ -263,10 +313,43 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
         _domain.properties.referralDiscount = referralDiscount;
     }
 
+    bytes32 private constant _TYPEHASH =
+        keccak256("registerName(string name,string id,string domainName,uint256 deadline,uint96 nonce)");
+
+    // struct registrarMessageStruct {
+    //     string name,
+    //     string id,
+    //     string domainName,
+    //     string deadline,
+    // }
+
+    // function test(registrarMessageStruct calldata message, bytes calldata signature) public view {
+    //     // bytes memory registrarMessage = abi.encodePacked(_TYPEHASH, message.lol);
+    //     bytes32 typedHash = _hashTypedDataV4(keccak256(abi.encode(_TYPEHASH, message.lol)));
+    //     console.log("recovered %s and registrar is %s", typedHash.recover(signature), msg.sender);
+    //     // require(signer == msg.sender, "Multipass->register: Registrar signature is not valid");
+    //     require(
+    //         SignatureChecker.isValidSignatureNow(msg.sender, typedHash, signature),
+    //         "Multipass->register: Registrar signature is not valid"
+    //     );
+    // }
+
+    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
+        require(bytes(source).length <= 32, "stringToBytes32->String longer than 32 bytes");
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+
+        assembly {
+            result := mload(add(source, 32))
+        }
+    }
+
     function _validateRegistration(
-        bytes32 domainName,
-        bytes32 name,
-        bytes32 id,
+        string memory domainName,
+        string memory name,
+        string memory id,
         address applicantAddress,
         bytes memory registrarSignature,
         uint256 signatureDeadline,
@@ -274,57 +357,69 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
         bytes32 referrerDomainName,
         bytes memory applicantSignature,
         bytes memory referrerSignature
-    ) private {
+    ) private view {
+        // console.log(bytes(name).length);
+        require(bytes(name).length <= 32, "too long");
+        // bytes32 _domainName = stringToBytes32(domainName);
         DomainNameService storage _domain = _getDomainStorage(domainName);
         require(_domain.properties.isActive, "Multipass->register: domain is not active");
-        require(name != bytes32(0), "Multipass->register: Name cannot be empty");
-        require(id != bytes32(0), "Multipass->register: Id cannot be empty");
-        require(applicantAddress != address(0), "Multipass->register: User address cannot be empty");
+        // require(name != bytes32(0), "Multipass->register: Name cannot be empty");
+        // require(id != bytes32(0), "Multipass->register: Id cannot be empty");
+        // require(applicantAddress != address(0), "Multipass->register: User address cannot be empty");
         require(
             signatureDeadline > block.number,
             "Multipass->register: Signature deadline must be greater than current block number"
         );
-        require(referrer != applicantAddress, "Multipass->register: Cannot refer yourself");
+        // require(referrer != applicantAddress, "Multipass->register: Cannot refer yourself");
         {
-            bytes memory registrarMessage = abi.encodePacked(domainName, id, name, signatureDeadline);
+            // bytes memory registrarMessage = abi.encodePacked(domainName, id, name, signatureDeadline);
+            bytes memory registrarMessage = abi.encode(
+                _TYPEHASH,
+                keccak256(abi.encodePacked(name)),
+                keccak256(abi.encodePacked(id)),
+                keccak256(abi.encodePacked(domainName)),
+                signatureDeadline,
+                0
+            );
+
             require(
                 _isValidSignature(registrarMessage, registrarSignature, _domain.properties.registrar) &&
                     (signatureDeadline > block.number),
-                "Registrar signature is not valid"
+                "Multipass->register: Registrar signature is not valid"
             );
         }
-        {
-            bytes memory applicantMessage = abi.encodePacked(domainName, applicantAddress, id, name);
-            require((signatureDeadline > block.number), "Multipass->register: Deadline timeout");
-            require(
-                _isValidSignature(applicantMessage, applicantSignature, applicantAddress) == true,
-                "Multipass->register: Applicant signature is not valid"
-            );
-        }
-        {
-            (bool status, , , , ) = resolveRecord(domainName, applicantAddress, id, name, bytes32(0));
-            require(!status, "Multipass->register: applicant is already registered, use modify instread");
-        }
-        if (referrer != address(0)) {
-            {
-                bytes32 _refDomain = referrerDomainName != bytes32(0) ? referrerDomainName : domainName;
-                require(
-                    _isValidSignature(abi.encodePacked(_refDomain, referrer), referrerSignature, referrer) &&
-                        (signatureDeadline > block.number),
-                    "Multipass->register: Referrer signature is not valid"
-                );
-                (bool referrerResolved, , , , ) = resolveRecord(_refDomain, applicantAddress, id, name, bytes32(0));
-                require(referrerResolved == true, "Multipass->register: Referrer not found");
-            }
-        }
+        // {
+        //     bytes memory applicantMessage = abi.encodePacked(domainName, applicantAddress, id, name);
+        //     require((signatureDeadline > block.number), "Multipass->register: Deadline timeout");
+        //     require(
+        //         _isValidSignature(applicantMessage, applicantSignature, applicantAddress) == true,
+        //         "Multipass->register: Applicant signature is not valid"
+        //     );
+        // }
+        // {
+        //     (bool status, , , , ) = resolveRecord(domainName, applicantAddress, id, name, bytes32(0));
+        //     require(!status, "Multipass->register: applicant is already registered, use modify instread");
+        // }
+        // if (referrer != address(0)) {
+        //     {
+        //         bytes32 _refDomain = referrerDomainName != bytes32(0) ? referrerDomainName : domainName;
+        //         require(
+        //             _isValidSignature(abi.encodePacked(_refDomain, referrer), referrerSignature, referrer) &&
+        //                 (signatureDeadline > block.number),
+        //             "Multipass->register: Referrer signature is not valid"
+        //         );
+        //         (bool referrerResolved, , , , ) = resolveRecord(_refDomain, applicantAddress, id, name, bytes32(0));
+        //         require(referrerResolved == true, "Multipass->register: Referrer not found");
+        //     }
+        // }
 
-        require(msg.value >= _domain.properties.fee, "Multipass->register: Payment is not enough");
+        // require(msg.value >= _domain.properties.fee, "Multipass->register: Payment is not enough");
     }
 
     function register(
-        bytes32 domainName,
-        bytes32 name,
-        bytes32 id,
+        string memory domainName,
+        string memory name,
+        string memory id,
         address applicantAddress,
         bytes memory registrarSignature,
         uint256 signatureDeadline,
@@ -333,6 +428,7 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
         bytes memory applicantSignature,
         bytes memory referrerSignature
     ) external payable override nonReentrant {
+        // bytes32 _domainName = stringToBytes32(domainName);
         DomainNameService storage _domain = _getDomainStorage(domainName);
         _validateRegistration(
             domainName,
@@ -346,17 +442,17 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
             applicantSignature,
             referrerSignature
         );
-        address payable owner = payable(owner());
-        {
-            uint256 referrersShare = _domain.properties.referrerReward;
-            uint256 valueToPay = SafeMath.sub(_domain.properties.fee, _domain.properties.referralDiscount);
-            uint256 valueToOwner = SafeMath.sub(msg.value, referrersShare);
+        // address payable owner = payable(owner());
+        // {
+        //     uint256 referrersShare = _domain.properties.referrerReward;
+        //     uint256 valueToPay = SafeMath.sub(_domain.properties.fee, _domain.properties.referralDiscount);
+        //     uint256 valueToOwner = SafeMath.sub(msg.value, referrersShare);
 
-            require(msg.value >= valueToPay, "Multipass->register: Payment value is not enough");
-            require(owner.send(valueToOwner), "Multipass->register: Failed to pay fee");
-            require(payable(referrer).send(referrersShare), "Multipass->register: Failed to send referral reward");
-        }
-        _setRecord(_domain, applicantAddress, id, name);
+        //     require(msg.value >= valueToPay, "Multipass->register: Payment value is not enough");
+        //     require(owner.send(valueToOwner), "Multipass->register: Failed to pay fee");
+        //     require(payable(referrer).send(referrersShare), "Multipass->register: Failed to send referral reward");
+        // }
+        // _setRecord(_domain, applicantAddress, id, name);
     }
 
     function _isValidSignature(
@@ -364,23 +460,24 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
         bytes memory signature,
         address account
     ) internal view returns (bool) {
-        bytes32 structHash = keccak256(abi.encode(message));
-        bytes32 typedHash = _hashTypedDataV4(structHash);
+        bytes32 typedHash = _hashTypedDataV4(keccak256(message));
+        // console.log("account %s, and recovered is %s", account, typedHash);
+        // return account == typedHash ? true : false;
 
         return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
     }
 
     function modifyUserName(
-        bytes32 domainName,
-        bytes32 id,
-        bytes32 newName,
+        string memory domainName,
+        string memory id,
+        string memory newName,
         uint96 nonce,
         bytes memory registrarSignature,
         uint256 signatureDeadline
     ) public payable override {
         DomainNameService storage _domain = _getDomainStorage(domainName);
         require(_domain.properties.isActive, "Multipass->modifyUserName: domain is not active");
-        require(newName != bytes32(0), "Multipass->modifyUserName: Name cannot be empty");
+        require(bytes(newName).length != 0, "Multipass->modifyUserName: Name cannot be empty");
         require(
             signatureDeadline >= block.number,
             "Multipass->modifyUserName: Signature deadline must be greater than current block number"
@@ -394,47 +491,25 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
         uint256 nonceCoefficient = SafeMath.mul(nonce, nonce);
         uint256 _fee = SafeMath.add(SafeMath.mul(feeCoefficient, nonceCoefficient), _domain.properties.fee);
         require(msg.value >= _fee, "Multipass->modifyUserName: Not enough payment");
-        require(_domain.nonce[id] == nonce, "Multipass->modifyUserName: invalid nonce");
-        require(_domain.nameToId[newName] == bytes32(0), "OveMultipass->modifyUserName: new name already exists");
+        require(_domain.nonce[_hash(id)] == nonce, "Multipass->modifyUserName: invalid nonce");
+        require(
+            _domain.nameToId[_hash(newName)] == bytes32(0),
+            "OveMultipass->modifyUserName: new name already exists"
+        );
 
-        _domain.nonce[id] += 1;
-        _domain.nameToId[newName] = id;
-        _domain.idToName[id] = newName;
-        _domain.nameToId[_domain.idToName[id]] = bytes32(0);
+        _domain.nonce[_hash(id)] += 1;
+        _domain.nameToId[_hash(newName)] = stringToBytes32(id);
+        _domain.idToName[_hash(id)] = stringToBytes32(newName);
+        _domain.nameToId[_domain.idToName[_hash(id)]] = bytes32(0);
     }
 
     function getBalance() external view override returns (uint256) {
         return address(this).balance;
     }
 
-    function getDomainState(bytes32 domain)
-        external
-        view
-        override
-        returns (
-            bytes32,
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            bool,
-            address,
-            uint24,
-            uint256
-        )
-    {
-        DomainNameService storage _domain = _getDomainStorage(domain);
-        return (
-            _domain.properties.name,
-            _domain.properties.fee,
-            _domain.properties.freeRegistrationsNumber,
-            _domain.properties.referrerReward,
-            _domain.properties.referralDiscount,
-            _domain.properties.isActive,
-            _domain.properties.registrar,
-            _domain.properties.ttl,
-            _domain.registerSize
-        );
+    function getDomainState(string memory domainName) external view override returns (Domain memory) {
+        DomainNameService storage _domain = _getDomainStorage(domainName);
+        return _domain.properties;
     }
 
     function getContractState() external view override returns (uint256) {
@@ -449,7 +524,7 @@ contract Multipass is Ownable, EIP712, ReentrancyGuard, IMultipass, ERC165 {
      * @dev See {IGovernor-version}.
      */
     function version() public view virtual override returns (string memory) {
-        return "1";
+        return s_version;
     }
 
     function withrawFunds() external override onlyOwner {

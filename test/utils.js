@@ -2,6 +2,7 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-await-in-loop */
 const { time } = require("@openzeppelin/test-helpers");
+const { ethers } = require("hardhat");
 
 const setupAddresses = async () => {
   const [
@@ -59,6 +60,11 @@ const setupAddresses = async () => {
     value: ethers.utils.parseEther("1"),
   });
 
+  await contractDeployer.sendTransaction({
+    to: registrar1.address,
+    value: ethers.utils.parseEther("1"),
+  });
+
   const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
   // const DNS_REGISTRAR_ADDRESS = process.env.BOT_ADDRESS;
   // if (!DNS_REGISTRAR_ADDRESS) throw "BOT_ADDRESS not exported!";
@@ -94,12 +100,15 @@ const setupAddresses = async () => {
 };
 
 const baseFee = 1 * 10 ** 18;
+const CONTRACT_NAME = "Multipass";
+const CONTRACT_VERSION = "0.0.1";
 
 const setupEnvironment = async (contractDeployer, contractOwner) => {
   const Multipass = await ethers.getContractFactory("Multipass");
   const multipass = await Multipass.connect(contractDeployer).deploy(
     contractOwner.address,
-    "Multipass Conctract"
+    CONTRACT_NAME,
+    CONTRACT_VERSION
   );
 
   return {
@@ -126,8 +135,51 @@ const setupEnvironment = async (contractDeployer, contractOwner) => {
 //   return deployedToken;
 // };
 
+const signMessage = async (message, verifierAddress, signer) => {
+  // console.log("signMessage");
+  let { chainId } = await ethers.provider.getNetwork();
+
+  const domain = {
+    name: CONTRACT_NAME,
+    version: CONTRACT_VERSION,
+    chainId,
+    verifyingContract: verifierAddress,
+  };
+
+  const types = {
+    registerName: [
+      {
+        type: "string",
+        name: "name",
+      },
+      {
+        type: "string",
+        name: "id",
+      },
+      {
+        type: "string",
+        name: "domainName",
+      },
+      {
+        type: "uint256",
+        name: "deadline",
+      },
+      {
+        type: "uint96",
+        name: "nonce",
+      },
+    ],
+  };
+
+  const s = await signer._signTypedData(domain, types, message);
+  return s;
+};
+
 module.exports = {
   setupAddresses,
   setupEnvironment,
+  signMessage,
   baseFee,
+  CONTRACT_NAME,
+  CONTRACT_VERSION,
 };
