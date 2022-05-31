@@ -1,97 +1,41 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "../libraries/LibMultipass.sol";
 
-interface IMultipass is IERC165 {
-    /**
-     * @dev resolves user from any given argument
-     * Requirements:
-     *  domainName must be given and must be initialized
-     *  id OR username OR address must be given
-     * This method first tries to resolve by address, then by user id and finally by username
-     * @param domainName domain name
-     * @param userAddress adress of user
-     * @param id user id
-     * @param username username
-     * @param targetDomain if this is set to valid domain name, then after sucessfull resolving account at domainName,
-     *                       this method will rerun with resolving user properties in targetDomain
-     */
-    struct NameQuery {
-        string domainName;
-        address userAddress;
-        string name;
-        string id;
-        string targetDomain;
-    }
+interface IMultipass {
 
-        struct NameQueryBytes32 {
-        string domainName;
-        address userAddress;
-        bytes32 name;
-        bytes32 id;
-        string targetDomain;
-    }
 
-    /**
-     * @dev The domain name of the registrar.
-     * @param registrar is the address private key of which is owned by signing server (e.g. Discord bot server)
-     * @param name is unique string that is used to find this domain within domains.
-     * @param freeRegistrationsNumber is the number of free registrations for this domain
+    function resolveRecord(LibMultipass.NameQuery memory query)
+        external
+        view
+        returns (
+            bool, LibMultipass.RecordBytes32 memory
+        );
 
-     * @param fee amount of payment requried to register name in the domain
-     * @param ttl time to live for changes in the domain properties
-     * @param isActive when is false domain name will not respond to any changes and will not return any address
-    **/
-    struct Domain {
-        bytes32 name; //32bytes
-        uint256 fee; //32bytes
-        uint256 freeRegistrationsNumber; //32bytes
-        uint256 referrerReward; //32bytes
-        uint256 referralDiscount; //32bytes
-        bool isActive; //1byte
-        address registrar; //20 bytes
-        uint24 ttl; //3 bytes (not being used for now)
-        uint256 registerSize; //32bytes
-    }
-
-    function resolveRecord(NameQuery memory query)
+    /** @dev same as resolveRecord but returns username, id and LibMultipass.Domain as string */
+    function resolveRecordToString(LibMultipass.NameQuery memory query)
         external
         view
         returns (
             bool,
-            address,
-            bytes32,
-            bytes32,
-            uint96
-        );
-
-    /** @dev same as resolveRecord but returns username, id and domain as string */
-    function resolveRecordToString(NameQuery memory query)
-        external
-        view
-        returns (
-            bool,
-            address,
-            string memory,
-            string memory,
-            uint96
+            LibMultipass.Record memory
         );
 
     /**
-     * @dev Initializes new domain and configures it's parameters
+     * @dev Initializes new LibMultipass.Domain and configures it's parameters
      *
      * Requirements:
      *  registrar is not zero
      *  domainName is not empty
-     *  domainIndex is either zero(auto assign) or can be one of preoccupied domain names
+     *  domainIndex is either zero(auto assign) or can be one of preoccupied LibMultipass.Domain names
      *  domainName does not exist yet
      *  onlyOwner
      *  referrerReward+referralDiscount cannot be larger than fee
      *  @param registrar address of registrar
      *  @param freeRegistrationsNumber number of registrations free of fee
      *  @param fee fee in base currency of network
-     *  @param domainName name of domain
+     *  @param domainName name of LibMultipass.Domain
      *  @param referrerReward referral fee share in base currency of network
      *  @param referralDiscount referral discount in base currency of network
      *
@@ -107,7 +51,7 @@ interface IMultipass is IERC165 {
     ) external;
 
     /**
-     * @dev Activates domain name
+     * @dev Activates LibMultipass.Domain name
      *
      * Requirements:
      *  msg.sender is Owner
@@ -118,9 +62,9 @@ interface IMultipass is IERC165 {
     function activateDomain(string memory domainName) external;
 
     /**
-     * @dev Deactivates domain name
+     * @dev Deactivates LibMultipass.Domain name
      *
-     * Deactivated domain cannot mutate names and will return zeros
+     * Deactivated LibMultipass.Domain cannot mutate names and will return zeros
      *
      * Requirements:
      *  msg.sender is Owner OR registrar
@@ -159,10 +103,10 @@ interface IMultipass is IERC165 {
      *
      *  Emits an {DomainTTLChangeRequested} event.
      */
-    function deleteName(NameQuery memory query) external;
+    function deleteName(LibMultipass.NameQuery memory query) external;
 
     /**
-     * @dev executes all pending changes to domain that fulfill TTL
+     * @dev executes all pending changes to LibMultipass.Domain that fulfill TTL
      *
      * Requirements:
      *  domainName must be set
@@ -178,45 +122,33 @@ interface IMultipass is IERC165 {
     ) external;
 
     /**
-     * @dev registers new name under domain
+     * @dev registers new name under LibMultipass.Domain
      *
      * Requirements:
      *  all arguments must be set
      *  domainName must be active
-     * resolveRecord for given arguments should return no record
-     * @param domainName domain of the scope
-     * @param name name to register
-     * @param id id to associate to name
-     * @param applicantAddress address which will associate with id and name
-     * @param referrer address for refferal program
-     * @param registrarSignature signature of the registrar
-     * @param signatureDeadline signature valid until this block
+     * resolveRecord for given arguments should return no LibMultipass.Record
      *
      *
      *  Emits an {registered} event.
      */
     function register(
-        string memory domainName,
-        string memory name,
-        string memory id,
-        address applicantAddress,
+        LibMultipass.NameQuery memory query,
         bytes memory registrarSignature,
         uint256 signatureDeadline,
-        address referrer,
-        bytes32 referrerDomainName,
-        bytes memory applicantSignature,
+        LibMultipass.NameQuery memory referrer,
         bytes memory referrerSignature
     ) external payable;
 
     /**
-     * @dev modifies exsisting record
+     * @dev modifies exsisting LibMultipass.Record
      *
      * Requirements:
-     * resolveRecord for given arguments should return valid record
-     * domain must be active
-     * newAddress and newName should be set and be unique in current domain
+     * resolveRecord for given arguments should return valid LibMultipass.Record
+     * LibMultipass.Domain must be active
+     * newAddress and newName should be set and be unique in current LibMultipass.Domain
      *
-     * @param domainName domain
+     * @param domainName LibMultipass.Domain
      * @param id user id
      * @param newName new name
      *
@@ -237,8 +169,8 @@ interface IMultipass is IERC165 {
     function getBalance() external view returns (uint256);
 
     /**
-     * @dev returns domain state variables
-     * @param domainName name of the domain
+     * @dev returns LibMultipass.Domain state variables
+     * @param domainName name of the LibMultipass.Domain
      * @return (name,
       fee,
       freeRegistrationsNumber,
@@ -261,7 +193,7 @@ interface IMultipass is IERC165 {
             // bool,
             // address,
             // uint24,
-            Domain memory
+            LibMultipass.Domain memory
             // uint256
         );
 
@@ -287,7 +219,7 @@ interface IMultipass is IERC165 {
      *
      *  Emits an {fundsWithdawn} event.
      */
-    function withrawFunds() external;
+    function withrawFunds(address to) external;
 
     event fundsWithdawn(uint256 indexed amount, address indexed account);
 
