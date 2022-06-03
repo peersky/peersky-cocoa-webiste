@@ -4,15 +4,11 @@
 // import { time } from "@openzeppelin/test-helpers";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { Multipass, MultipassInterface } from "../types/contracts/Multipass";
 import { MultipassDiamond } from "../types/hardhat-diamond-abi/";
-import { Multipass__factory } from "../types/factories/contracts/Multipass__factory";
-import { Diamond__factory } from "../types/factories/contracts/diamond/Diamond__factory";
-import { DiamondCutFacet__factory } from "../types/factories/contracts/diamond/facets/DiamondCutFacet__factory";
 
-import { BigNumber, Wallet } from "ethers";
+import { BigNumber, BytesLike, Wallet } from "ethers";
 // @ts-ignore
-import { deployDiamond } from "../scripts/deploy.js";
+import { deploySequence } from "../scripts/deploy.js";
 export interface SignerIdentity {
   name: string;
   id: string;
@@ -282,70 +278,28 @@ export const setupEnvironment = async (
   contractDeployer: SignerIdentity,
   contractOwner: SignerIdentity
 ) => {
-  const Multipass = (await ethers.getContractFactory(
-    "Multipass"
-  )) as Multipass__factory;
-  const multipassFacet = await Multipass.connect(
-    contractDeployer.wallet
-  ).deploy(CONTRACT_NAME, CONTRACT_VERSION);
-  await multipassFacet.deployed();
+  const address = await deploySequence(
+    contractDeployer.wallet,
+    contractOwner.wallet.address,
+    CONTRACT_VERSION,
+    CONTRACT_NAME,
+    ["DiamondLoupeFacet", "OwnershipFacet"],
+    "MultipassInit"
+  );
 
-  const diamondAddress = await deployDiamond();
   const multipass = (await ethers.getContractAt(
     "MultipassDiamond",
-    diamondAddress
+    address
   )) as MultipassDiamond;
-
-  multipass.functions;
-
-  // const DiamondCutFacet = (await ethers.getContractFactory(
-  //   "DiamondCutFacet"
-  // )) as DiamondCutFacet__factory;
-  // const diamondCutFacet = await DiamondCutFacet.connect(
-  //   contractDeployer.wallet
-  // ).deploy();
-  // await diamondCutFacet.deployed();
-
-  // const Diamond = (await ethers.getContractFactory(
-  //   "Diamond"
-  // )) as Diamond__factory;
-
-  // const diamond = await Diamond.connect(contractDeployer.wallet).deploy(
-  //   contractOwner.wallet.address,
-  //   diamondCutFacet.address
-  // );
-  // await diamond.deployed();
-
   return {
-    // multipassFacet,
-    // ownershipFacet,
     multipass,
   };
 };
 
-// const setupToken = async (
-//   supply,
-//   name,
-//   symbol,
-//   initialHolder,
-//   admin,
-//   backupAdmin,
-//   lockPeriod,
-//   controller
-// ) => {
-//   const token = await ethers.getContractFactory("LERC20");
-
-//   const deployedToken = await token
-//     .connect(initialHolder)
-//     .deploy(supply, name, symbol, admin, backupAdmin, lockPeriod, controller);
-
-//   return deployedToken;
-// };
-
 interface signatureMessage {
-  name: string;
-  id: string;
-  domainName: string;
+  name: BytesLike;
+  id: BytesLike;
+  domainName: BytesLike;
   deadline: BigNumber;
   nonce: BigNumber;
 }
@@ -354,7 +308,6 @@ export const signMessage = async (
   verifierAddress: string,
   signer: SignerIdentity
 ) => {
-  // console.log("signMessage");
   let { chainId } = await ethers.provider.getNetwork();
 
   const domain = {
@@ -367,15 +320,15 @@ export const signMessage = async (
   const types = {
     registerName: [
       {
-        type: "string",
+        type: "bytes32",
         name: "name",
       },
       {
-        type: "string",
+        type: "bytes32",
         name: "id",
       },
       {
-        type: "string",
+        type: "bytes32",
         name: "domainName",
       },
       {

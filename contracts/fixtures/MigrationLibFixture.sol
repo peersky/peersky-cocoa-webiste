@@ -20,11 +20,11 @@ library LibMultipass {
      *                       this method will rerun with resolving user properties in targetDomain
      */
     struct NameQuery {
-        bytes32 domainName;
+        string domainName;
         address userAddress;
-        bytes32 name;
-        bytes32 id;
-        bytes32 targetDomain;
+        string name;
+        string id;
+        string targetDomain;
     }
 
     /**
@@ -49,26 +49,26 @@ library LibMultipass {
         uint256 registerSize; //32bytes
     }
 
-    //  struct NameQueryBytes32 {
-    //     string domainName;
-    //     address userAddress;
-    //     bytes32 name;
-    //     bytes32 id;
-    //     string targetDomain;
-    // }
+     struct NameQueryBytes32 {
+        string domainName;
+        address userAddress;
+        bytes32 name;
+        bytes32 id;
+        string targetDomain;
+    }
     struct Record {
+        address wallet;
+        string name;
+        string id;
+        uint96 nonce;
+    }
+
+    struct RecordBytes32 {
         address wallet;
         bytes32 name;
         bytes32 id;
         uint96 nonce;
     }
-
-    // struct RecordBytes32 {
-    //     address wallet;
-    //     bytes32 name;
-    //     bytes32 id;
-    //     uint96 nonce;
-    // }
 
     bytes32 constant MULTIPASS_STORAGE_POSITION = keccak256("multipass.diamond.storage.position");
 
@@ -90,6 +90,7 @@ library LibMultipass {
         mapping(bytes32 => address) idToAddress; //N*20bytes
         mapping(bytes32 => uint96) nonce; //N*12bytes
         mapping(address => bytes32) addressToId; //N*32 bytes
+        mapping(uint256 => bytes32) TestInTheMiddle;
         mapping(bytes32 => bytes32) nameToId; //N*32 bytes
         mapping(bytes32 => bytes32) idToName; //N*32 bytes
         //Total: 128+N*160 Bytes
@@ -111,21 +112,19 @@ library LibMultipass {
 
 
     bytes32 internal constant _TYPEHASH =
-        keccak256("registerName(bytes32 name,bytes32 id,bytes32 domainName,uint256 deadline,uint96 nonce)");
-    bytes32 internal constant _TYPEHASH_TEST =
-        keccak256("test(string test)");
+        keccak256("registerName(string name,string id,string domainName,uint256 deadline,uint96 nonce)");
 
-    // function _stringToBytes32(string memory source) internal pure returns (bytes32 result) {
-    //     uint256 length = bytes(source).length;
-    //     require(length <= 32, "_stringToBytes32->String longer than 32 bytes");
-    //     bytes memory tempEmptyStringTest = abi.encodePacked(source);
-    //     if (tempEmptyStringTest.length == 0) {
-    //         return 0x0;
-    //     }
-    //     assembly {
-    //         result := mload(add(source,32))
-    //     }
-    // }
+    function _stringToBytes32(string memory source) internal pure returns (bytes32 result) {
+        require(bytes(source).length <= 32, "_stringToBytes32->String longer than 32 bytes");
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+
+        assembly {
+            result := mload(add(source, 32))
+        }
+    }
 
     function _checkStringFits32b(string memory value) internal pure returns (bool) {
         if (bytes(value).length <= 32) {
@@ -135,49 +134,59 @@ library LibMultipass {
         }
     }
 
-    function _checkNotEmpty(bytes32 value) internal pure returns (bool) {
-        if (value == "") {
+    function _checkStringNotEmpty(string memory value) internal pure returns (bool) {
+        if (bytes(value).length == 0) {
             return false;
         } else {
             return true;
         }
     }
 
-
-
-
-    // function _hash(bytes32 value) internal pure returns (bytes32) {
-    //     return keccak256(abi.encodePacked(value));
-    // }
-
-    // /**
-    //  *   @dev This does not check for bytelength. Use only for read operations
-    //  */
-    // function _hash(string memory value) internal pure returns (bytes32) {
-    //     require(_checkStringFits32b(value), "_hash-> string too long");
-    //     return keccak256(abi.encodePacked(value));
-    // }
-
-    function _getDomainStorage(bytes32 domainName) internal view returns (DomainNameService storage) {
-        MultipassStorageStruct storage s = MultipassStorage();
-
-        return s.s_domains[s.s_domainNameToIndex[domainName]];
+        /**
+    @dev resolves Record of name query in to status and identity */
+    function resolveRecord(NameQuery memory query) internal view returns (bool, RecordBytes32 memory) {
+        NameQueryBytes32 memory query32b;
+        query32b.name = _stringToBytes32(query.name);
+        query32b.id = _stringToBytes32(query.id);
+        query32b.domainName = query.domainName;
+        query32b.targetDomain = query.targetDomain;
+        query32b.userAddress = query.userAddress;
+        return _resolveRecord(query32b);
     }
 
-    // function _bytes32ToString(bytes32 value) internal pure returns (string memory) {
-    //     return string(abi.encodePacked(value));
-    // }
 
-    function _resolveRecord(NameQuery memory query) private view returns (bool, Record memory) {
+    function _hash(bytes32 value) internal pure returns (bytes32) {
+        return keccak256(abi.encodePacked(value));
+    }
+
+    /**
+     *   @dev This does not check for bytelength. Use only for read operations
+     */
+    function _hash(string memory value) internal pure returns (bytes32) {
+        require(_checkStringFits32b(value), "_hash-> string too long");
+        return keccak256(abi.encodePacked(value));
+    }
+
+    function _getDomainStorage(string memory domainName) internal view returns (DomainNameService storage) {
+        MultipassStorageStruct storage s = MultipassStorage();
+
+        return s.s_domains[s.s_domainNameToIndex[_hash(domainName)]];
+    }
+
+    function _bytes32ToString(bytes32 value) private pure returns (string memory) {
+        return string(abi.encodePacked(value));
+    }
+
+    function _resolveRecord(NameQueryBytes32 memory query) private view returns (bool, RecordBytes32 memory) {
         if ((query.userAddress == address(0)) && (query.id.length == 0) && (query.name.length == 0)) {
-            Record memory rv;
+            RecordBytes32 memory rv;
             return (false, rv);
         }
 
         MultipassStorageStruct storage s = MultipassStorage();
-        DomainNameService storage _domain = s.s_domains[s.s_domainNameToIndex[query.domainName]];
+        DomainNameService storage _domain = s.s_domains[s.s_domainNameToIndex[_hash(query.domainName)]];
         DomainNameService storage _targetDomain = s.s_domains[
-            s.s_domainNameToIndex[query.targetDomain.length == 0 ? query.domainName : query.targetDomain]
+            s.s_domainNameToIndex[_hash(bytes(query.targetDomain).length == 0 ? query.domainName : query.targetDomain)]
         ];
 
         address _wallet;
@@ -186,25 +195,20 @@ library LibMultipass {
             if (query.userAddress != address(0)) {
                 _wallet = query.userAddress;
             } else if (query.id.length != 0) {
-                _wallet = _domain.idToAddress[query.id];
+                _wallet = _domain.idToAddress[_hash(query.id)];
             } else if (query.name.length != 0) {
-                bytes32 _id = _domain.nameToId[query.name];
-                _wallet = _domain.idToAddress[_id];
+                bytes32 _id = _domain.nameToId[_hash(query.name)];
+                _wallet = _domain.idToAddress[_hash(_id)];
             }
         }
         //from wallet find and return record
         return _resolveFromAddress(_wallet, _targetDomain);
     }
 
-        /**
-    @dev resolves Record of name query in to status and identity */
-    function resolveRecord(NameQuery memory query) internal view returns (bool, Record memory) {
-        return _resolveRecord(query);
-    }
     /** @dev this function bears no security checks, it will ignore nonce in arg and will increment
      *   nonce value stored in domain instread
      */
-    function _setRecord(DomainNameService storage domain, Record memory record) private {
+    function _setRecord(DomainNameService storage domain, RecordBytes32 memory record) private {
         domain.addressToId[record.wallet] = record.id;
         domain.idToAddress[record.id] = record.wallet;
         domain.idToName[record.id] = record.name;
@@ -215,29 +219,29 @@ library LibMultipass {
     function _resolveFromAddress(address _address, DomainNameService storage _domain)
         private
         view
-        returns (bool, Record memory)
+        returns (bool, RecordBytes32 memory)
     {
-        Record memory resolved;
+        RecordBytes32 memory resolved;
 
         resolved.id = _domain.addressToId[_address];
         resolved.name = _domain.idToName[resolved.id];
         resolved.nonce = _domain.nonce[resolved.id];
         resolved.wallet = _address;
-        if (resolved.id == bytes32(0)) {
+        if (resolved.id.length == 0) {
             return (false, resolved);
         }
         return (true, resolved);
     }
 
-    // function _RecordStringify(Record memory input) internal pure returns (Record memory) {
-    //     Record memory retval;
-    //     retval.wallet = input.wallet;
-    //     retval.name = _bytes32ToString(input.name);
-    //     retval.id = _bytes32ToString(input.id);
-    //     retval.nonce = input.nonce;
-    //     return retval;
-    // }
+    function _RecordStringify(RecordBytes32 memory input) internal pure returns (Record memory) {
+        Record memory retval;
+        retval.wallet = input.wallet;
+        retval.name = _bytes32ToString(input.name);
+        retval.id = _bytes32ToString(input.id);
+        retval.nonce = input.nonce;
+        return retval;
+    }
 
-    // using LibMultipass for RecordBytes32;
+    using LibMultipass for RecordBytes32;
     using LibMultipass for NameQuery;
 }

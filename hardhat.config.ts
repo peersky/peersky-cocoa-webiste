@@ -1,6 +1,7 @@
 import { task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 import "@openzeppelin/hardhat-upgrades";
+import "@nomiclabs/hardhat-truffle5";
 import "@nomiclabs/hardhat-web3";
 import "@nomiclabs/hardhat-ethers";
 import "hardhat-diamond-abi";
@@ -100,7 +101,12 @@ export default {
       "DiamondCutFacet",
       "DiamondLoupeFacet",
     ],
-    exclude: ["IMultipass", "IERC165", `hardhat-diamond-abi\/.*`],
+    exclude: [
+      "IMultipass",
+      "IERC165",
+      `hardhat-diamond-abi\/.*`,
+      `diamond/initializers\/.*`,
+    ],
   },
   typechain: {
     outDir: "types",

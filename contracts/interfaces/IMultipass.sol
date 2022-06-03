@@ -10,17 +10,17 @@ interface IMultipass {
         external
         view
         returns (
-            bool, LibMultipass.RecordBytes32 memory
+            bool, LibMultipass.Record memory
         );
 
     /** @dev same as resolveRecord but returns username, id and LibMultipass.Domain as string */
-    function resolveRecordToString(LibMultipass.NameQuery memory query)
-        external
-        view
-        returns (
-            bool,
-            LibMultipass.Record memory
-        );
+    // function resolveRecordToString(LibMultipass.NameQuery memory query)
+    //     external
+    //     view
+    //     returns (
+    //         bool,
+    //         LibMultipass.Record memory
+    //     );
 
     /**
      * @dev Initializes new LibMultipass.Domain and configures it's parameters
@@ -45,7 +45,7 @@ interface IMultipass {
         address registrar,
         uint256 freeRegistrationsNumber,
         uint256 fee,
-        string memory domainName,
+        bytes32 domainName,
         uint256 referrerReward,
         uint256 referralDiscount
     ) external;
@@ -59,7 +59,7 @@ interface IMultipass {
      *
      *  Emits an {DomainActivated} event.
      */
-    function activateDomain(string memory domainName) external;
+    function activateDomain(bytes32 domainName) external;
 
     /**
      * @dev Deactivates LibMultipass.Domain name
@@ -73,7 +73,7 @@ interface IMultipass {
      *  Emits an {DomainDeactivated} event.
      */
 
-    function deactivateDomain(string memory domainName) external;
+    function deactivateDomain(bytes32 domainName) external;
 
     /**
      * @dev Changes registrar address
@@ -83,7 +83,7 @@ interface IMultipass {
      *
      *  Emits an {DomainFeeChanged} event.
      */
-    function changeFee(string memory domainName, uint256 fee) external;
+    function changeFee(bytes32 domainName, uint256 fee) external;
 
     /**
      * @dev Changes registrar address
@@ -93,7 +93,7 @@ interface IMultipass {
      *
      *  Emits an {RegistrarChangeRequested} event.
      */
-    function changeRegistrar(string memory domainName, address newRegistrar) external;
+    function changeRegistrar(bytes32 domainName, address newRegistrar) external;
 
     /**
      * @dev deletes name
@@ -118,7 +118,7 @@ interface IMultipass {
     function changeReferralProgram(
         uint256 referrerFeeShare,
         uint256 referralDiscount,
-        string memory domainName
+        bytes32 domainName
     ) external;
 
     /**
@@ -155,9 +155,9 @@ interface IMultipass {
      *  Emits an {Modified} event.
      */
     function modifyUserName(
-        string memory domainName,
-        string memory id,
-        string memory newName,
+        bytes32 domainName,
+        bytes32 id,
+        bytes32 newName,
         uint96 nonce,
         bytes memory registrarSignature,
         uint256 signatureDeadline
@@ -181,7 +181,7 @@ interface IMultipass {
        ttl,
         registerSize)
      */
-    function getDomainState(string memory domainName)
+    function getDomainState(bytes32 domainName)
         external
         view
         returns (
@@ -223,7 +223,7 @@ interface IMultipass {
 
     event fundsWithdawn(uint256 indexed amount, address indexed account);
 
-    event InitializedDomain(uint256 indexed index, string indexed domainName);
+    event InitializedDomain(uint256 indexed index, bytes32 indexed domainName);
     event DomainActivated(bytes32 indexed domainName);
     event DomainDeactivated(bytes32 indexed domainName);
 
