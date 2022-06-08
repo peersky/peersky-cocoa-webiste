@@ -98,7 +98,7 @@ async function deployAndCutMultipass(
   signer,
   multipassInitializerFacetName
 ) {
-  const Facet = await ethers.getContractFactory("Multipass", signer);
+  const Facet = await ethers.getContractFactory("MultipassDNS", signer);
   const facet = await Facet.deploy();
   await facet.deployed();
 

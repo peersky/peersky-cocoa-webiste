@@ -8,7 +8,7 @@ import {
   // getPlayerNameId,
   signMessage,
 } from "./utils";
-import { LibMultipass } from "../types/hardhat-diamond-abi/MultipassDiamond";
+import { LibMultipass } from "../types/contracts/Multipass";
 import { getInterfaceID } from "../scripts/libraries/utils";
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -269,7 +269,7 @@ describe(scriptName, () => {
         ).to.not.be.reverted;
       });
 
-      it("Should fail if properties are invalid", async () => {
+      it("Should fail register if properties are invalid", async () => {
         const registrarMessage = {
           name: ethers.utils.formatBytes32String(adr.player1.name),
           id: ethers.utils.formatBytes32String(adr.player1.id),

@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
+
 // import "./LibDiamondOwner.sol";
 // import { IMultipass } from "../interfaces/sol";
 
 library LibMultipass {
-
-
-        /**
+    /**
      * @dev resolves user from any given argument
      * Requirements:
      *  domainName must be given and must be initialized
@@ -49,7 +48,7 @@ library LibMultipass {
         uint256 registerSize; //32bytes
     }
 
-     struct NameQueryBytes32 {
+    struct NameQueryBytes32 {
         string domainName;
         address userAddress;
         bytes32 name;
@@ -71,8 +70,6 @@ library LibMultipass {
     }
 
     bytes32 constant MULTIPASS_STORAGE_POSITION = keccak256("multipass.diamond.storage.position");
-
-
 
     /**
      * @dev The domain name of the registrar.
@@ -110,7 +107,6 @@ library LibMultipass {
         }
     }
 
-
     bytes32 internal constant _TYPEHASH =
         keccak256("registerName(string name,string id,string domainName,uint256 deadline,uint96 nonce)");
 
@@ -142,7 +138,7 @@ library LibMultipass {
         }
     }
 
-        /**
+    /**
     @dev resolves Record of name query in to status and identity */
     function resolveRecord(NameQuery memory query) internal view returns (bool, RecordBytes32 memory) {
         NameQueryBytes32 memory query32b;
@@ -153,7 +149,6 @@ library LibMultipass {
         query32b.userAddress = query.userAddress;
         return _resolveRecord(query32b);
     }
-
 
     function _hash(bytes32 value) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(value));

@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
+
 // import "./LibDiamondOwner.sol";
 // import { IMultipass } from "../interfaces/sol";
 
 library LibMultipass {
-
-
-        /**
+    /**
      * @dev resolves user from any given argument
      * Requirements:
      *  domainName must be given and must be initialized
@@ -72,8 +71,6 @@ library LibMultipass {
 
     bytes32 constant MULTIPASS_STORAGE_POSITION = keccak256("multipass.diamond.storage.position");
 
-
-
     /**
      * @dev The domain name of the registrar.
      * @param properties - domain configuration
@@ -109,11 +106,9 @@ library LibMultipass {
         }
     }
 
-
     bytes32 internal constant _TYPEHASH =
         keccak256("registerName(bytes32 name,bytes32 id,bytes32 domainName,uint256 deadline,uint96 nonce)");
-    bytes32 internal constant _TYPEHASH_TEST =
-        keccak256("test(string test)");
+    bytes32 internal constant _TYPEHASH_TEST = keccak256("test(string test)");
 
     // function _stringToBytes32(string memory source) internal pure returns (bytes32 result) {
     //     uint256 length = bytes(source).length;
@@ -142,9 +137,6 @@ library LibMultipass {
             return true;
         }
     }
-
-
-
 
     // function _hash(bytes32 value) internal pure returns (bytes32) {
     //     return keccak256(abi.encodePacked(value));
@@ -196,11 +188,12 @@ library LibMultipass {
         return _resolveFromAddress(_wallet, _targetDomain);
     }
 
-        /**
+    /**
     @dev resolves Record of name query in to status and identity */
     function resolveRecord(NameQuery memory query) internal view returns (bool, Record memory) {
         return _resolveRecord(query);
     }
+
     /** @dev this function bears no security checks, it will ignore nonce in arg and will increment
      *   nonce value stored in domain instread
      */

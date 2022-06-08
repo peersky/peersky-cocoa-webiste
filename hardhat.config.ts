@@ -6,6 +6,8 @@ import "@nomiclabs/hardhat-web3";
 import "@nomiclabs/hardhat-ethers";
 import "hardhat-diamond-abi";
 import "@typechain/hardhat";
+import "hardhat-abi-exporter";
+import * as diamondUtils from "./utils/diamond";
 
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
@@ -73,7 +75,7 @@ export default {
   solidity: {
     compilers: [
       {
-        version: "0.8.4",
+        version: "0.8.8",
         settings: {
           optimizer: {
             enabled: true,
@@ -95,23 +97,46 @@ export default {
   diamondAbi: {
     // (required) The name of your Diamond ABI
     name: "MultipassDiamond",
-    include: [
-      "Multipass",
-      "OwnershipFacet",
-      "DiamondCutFacet",
-      "DiamondLoupeFacet",
-    ],
-    exclude: [
-      "IMultipass",
-      "IERC165",
-      `hardhat-diamond-abi\/.*`,
-      `diamond/initializers\/.*`,
-    ],
+    include: ["Facet"],
+    // We explicitly set `strict` to `true` because we want to validate our facets don't accidentally provide overlapping functions
+    strict: true,
+    // We use our diamond utils to filter some functions we ignore from the combined ABI
+    filter(
+      abiElement: unknown,
+      index: number,
+      abi: unknown[],
+      fullyQualifiedName: string
+    ) {
+      const signature = diamondUtils.toSignature(abiElement);
+      return diamondUtils.isIncluded(fullyQualifiedName, signature);
+    },
+    // include: [
+    //   "Multipass",
+    //   "OwnershipFacet",
+    //   "DiamondCutFacet",
+    //   "DiamondLoupeFacet",
+    // ],
+    // exclude: [
+    //   "IMultipass",
+    //   "IERC165",
+    //   `hardhat-diamond-abi\/.*`,
+    //   `diamond/initializers\/.*`,
+    // ],
   },
   typechain: {
     outDir: "types",
     target: "ethers-v5",
     alwaysGenerateOverloads: true, // should overloads with full signatures like deposit(uint256) be generated always, even if there are no overloads?
     // externalArtifacts: ["externalArtifacts/*.json"], // optional array of glob patterns with external artifacts to process (for example external libs from node_modules)
+  },
+
+  abiExporter: {
+    path: "./abi",
+    runOnCompile: true,
+    clear: true,
+    // flat: true,
+    // only: [":ERC20$"],
+    spacing: 2,
+    pretty: true,
   },
 };
