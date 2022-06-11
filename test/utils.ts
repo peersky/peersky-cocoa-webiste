@@ -5,7 +5,10 @@
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { MultipassDiamond } from "../types/hardhat-diamond-abi/";
-
+const {
+  ZERO_ADDRESS,
+  ZERO_BYTES32,
+} = require("@openzeppelin/test-helpers/src/constants");
 import { BigNumber, BytesLike, Wallet } from "ethers";
 // @ts-ignore
 import { deploySequence } from "../scripts/deploy.js";
@@ -297,15 +300,48 @@ export const setupEnvironment = async (
   };
 };
 
-interface signatureMessage {
+interface ReferrerMesage {
+  referrerAddress: string;
+}
+interface RegisterMessage {
   name: BytesLike;
   id: BytesLike;
   domainName: BytesLike;
   deadline: BigNumber;
   nonce: BigNumber;
 }
+
+type signatureMessage = ReferrerMesage | RegisterMessage;
+
+export const signReferralCode = async (
+  message: ReferrerMesage,
+  verifierAddress: string,
+  signer: SignerIdentity
+) => {
+  let { chainId } = await ethers.provider.getNetwork();
+
+  const domain = {
+    name: CONTRACT_NAME,
+    version: CONTRACT_VERSION,
+    chainId,
+    verifyingContract: verifierAddress,
+  };
+
+  const types = {
+    proofOfReferrer: [
+      {
+        type: "address",
+        name: "referrerAddress",
+      },
+    ],
+  };
+
+  const s = await signer.wallet._signTypedData(domain, types, { ...message });
+  return s;
+};
+
 export const signMessage = async (
-  message: signatureMessage,
+  message: RegisterMessage,
   verifierAddress: string,
   signer: SignerIdentity
 ) => {
@@ -343,7 +379,7 @@ export const signMessage = async (
     ],
   };
 
-  const s = await signer.wallet._signTypedData(domain, types, message);
+  const s = await signer.wallet._signTypedData(domain, types, { ...message });
   return s;
 };
 
@@ -362,7 +398,8 @@ export const getUserRegisterProps = async (
   registrar: SignerIdentity,
   domainName: string,
   deadline: number,
-  multipassAddress: string
+  multipassAddress: string,
+  referrer?: SignerIdentity
 ) => {
   const registrarMessage = {
     name: ethers.utils.formatBytes32String(account.name),
@@ -377,17 +414,39 @@ export const getUserRegisterProps = async (
     multipassAddress,
     registrar
   );
+  // const validSignature = ZERO_BYTES32;
 
-  let applicantData: LibMultipass.RecordStruct = {
+  const applicantData: LibMultipass.RecordStruct = {
     name: ethers.utils.formatBytes32String(account.name),
     id: ethers.utils.formatBytes32String(account.id),
     wallet: account.wallet.address,
     nonce: 0,
   };
 
+  const referrerData: LibMultipass.NameQueryStruct = {
+    name: ethers.utils.formatBytes32String(referrer?.name ?? ""),
+    domainName: ethers.utils.formatBytes32String(domainName),
+    id: ethers.utils.formatBytes32String(""),
+    wallet: ZERO_ADDRESS,
+    targetDomain: ethers.utils.formatBytes32String(""),
+  };
+  let referrerSignature = ZERO_BYTES32;
+  const proofOfReferrer: ReferrerMesage = {
+    referrerAddress: referrer?.wallet.address ?? ZERO_ADDRESS,
+  };
+  if (referrer?.wallet.address) {
+    referrerSignature = await signReferralCode(
+      proofOfReferrer,
+      multipassAddress,
+      referrer
+    );
+  }
+
   return {
     registrarMessage,
     validSignature,
     applicantData,
+    referrerData,
+    referrerSignature,
   };
 };

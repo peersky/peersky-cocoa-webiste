@@ -108,7 +108,7 @@ library LibMultipass {
 
     bytes32 internal constant _TYPEHASH =
         keccak256("registerName(bytes32 name,bytes32 id,bytes32 domainName,uint256 deadline,uint96 nonce)");
-    bytes32 internal constant _TYPEHASH_TEST = keccak256("test(string test)");
+    bytes32 internal constant _TYPEHASH_REFERRAL = keccak256("proofOfReferrer(address referrerAddress)");
 
     // function _stringToBytes32(string memory source) internal pure returns (bytes32 result) {
     //     uint256 length = bytes(source).length;
@@ -204,9 +204,9 @@ library LibMultipass {
             // resolve wallet
             if (query.wallet != address(0)) {
                 _wallet = query.wallet;
-            } else if (query.id.length != 0) {
+            } else if (query.id != bytes32(0)) {
                 _wallet = _domain.idToAddress[query.id];
-            } else if (query.name.length != 0) {
+            } else if (query.name != bytes32(0)) {
                 bytes32 _id = _domain.nameToId[query.name];
                 _wallet = _domain.idToAddress[_id];
             }

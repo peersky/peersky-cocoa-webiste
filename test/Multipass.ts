@@ -402,102 +402,174 @@ describe(scriptName, () => {
           "Multipass->register: Payment value is not enough"
         );
       });
-      it("Can find newly registered user ", async () => {
-        const regProps = await getUserRegisterProps(
-          adr.player1,
-          adr.registrar1,
-          NEW_DOMAIN_NAME1,
-          99999,
-          env.multipass.address
-        );
 
-        await env.multipass
-          .connect(adr.player1.wallet)
-          .register(
-            regProps.applicantData,
-            regProps.registrarMessage.domainName,
-            regProps.validSignature,
-            regProps.registrarMessage.deadline,
-            emptyUserQuery,
-            ZERO_BYTES32
+      describe("When user was registered", () => {
+        let numDomains = 0;
+        beforeEach(async () => {
+          const regProps = await getUserRegisterProps(
+            adr.player1,
+            adr.registrar1,
+            NEW_DOMAIN_NAME1,
+            99999,
+            env.multipass.address
           );
 
-        const query: LibMultipass.NameQueryStruct = {
-          name: ethers.utils.formatBytes32String(adr.player1.name),
-          id: ethers.utils.formatBytes32String(adr.player1.id),
-          wallet: adr.player1.wallet.address,
-          domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
-          targetDomain: ethers.utils.formatBytes32String(""),
-        };
+          await env.multipass
+            .connect(adr.player1.wallet)
+            .register(
+              regProps.applicantData,
+              regProps.registrarMessage.domainName,
+              regProps.validSignature,
+              regProps.registrarMessage.deadline,
+              emptyUserQuery,
+              ZERO_BYTES32
+            );
+        });
+        it("Can find newly registered user ", async () => {
+          //By full query
+          let query: LibMultipass.NameQueryStruct = {
+            name: ethers.utils.formatBytes32String(adr.player1.name),
+            id: ethers.utils.formatBytes32String(adr.player1.id),
+            wallet: adr.player1.wallet.address,
+            domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
+            targetDomain: ethers.utils.formatBytes32String(""),
+          };
 
-        const resp = await env.multipass
-          .connect(adr.player1.wallet)
-          .resolveRecord(query);
-        expect(resp[0]).to.be.true;
-      });
+          let resp = await env.multipass
+            .connect(adr.player1.wallet)
+            .resolveRecord(query);
+          expect(resp[0]).to.be.true;
 
-      it("Reverts if user id already exist", async () => {
-        const regProps = await getUserRegisterProps(
-          adr.player1,
-          adr.registrar1,
-          NEW_DOMAIN_NAME1,
-          99999,
-          env.multipass.address
-        );
-        await expect(
-          env.multipass
+          //With id and address
+          query = {
+            name: ethers.utils.formatBytes32String(""),
+            id: ethers.utils.formatBytes32String(adr.player1.id),
+            wallet: adr.player1.wallet.address,
+            domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
+            targetDomain: ethers.utils.formatBytes32String(""),
+          };
+
+          resp = await env.multipass
             .connect(adr.player1.wallet)
-            .register(
-              regProps.applicantData,
-              regProps.registrarMessage.domainName,
-              regProps.validSignature,
-              regProps.registrarMessage.deadline,
-              emptyUserQuery,
-              ZERO_BYTES32
-            )
-        ).to.emit(env.multipass, "Registered");
-        await expect(
-          env.multipass
+            .resolveRecord(query);
+          expect(resp[0]).to.be.true;
+
+          //With only id
+          query = {
+            name: ethers.utils.formatBytes32String(""),
+            id: ethers.utils.formatBytes32String(adr.player1.id),
+            wallet: ZERO_ADDRESS,
+            domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
+            targetDomain: ethers.utils.formatBytes32String(""),
+          };
+
+          resp = await env.multipass
             .connect(adr.player1.wallet)
-            .register(
-              regProps.applicantData,
-              regProps.registrarMessage.domainName,
-              regProps.validSignature,
-              regProps.registrarMessage.deadline,
-              emptyUserQuery,
-              ZERO_BYTES32
-            )
-        ).to.be.revertedWith("User already registered, use modify instead");
-        regProps.applicantData.id = ethers.utils.formatBytes32String(
-          adr.player2.id
-        );
-        await expect(
-          env.multipass
+            .resolveRecord(query);
+          expect(resp[0]).to.be.true;
+
+          //With only address
+          query = {
+            name: ethers.utils.formatBytes32String(""),
+            id: ethers.utils.formatBytes32String(""),
+            wallet: adr.player1.wallet.address,
+            domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
+            targetDomain: ethers.utils.formatBytes32String(""),
+          };
+
+          resp = await env.multipass
             .connect(adr.player1.wallet)
-            .register(
-              regProps.applicantData,
-              regProps.registrarMessage.domainName,
-              regProps.validSignature,
-              regProps.registrarMessage.deadline,
-              emptyUserQuery,
-              ZERO_BYTES32
-            )
-        ).to.be.revertedWith("User already registered, use modify instead");
-        regProps.applicantData.name = ethers.utils.formatBytes32String(
-          adr.player2.name
-        );
-        await expect(
-          env.multipass
+            .resolveRecord(query);
+          expect(resp[0]).to.be.true;
+
+          //With only name
+          query = {
+            name: ethers.utils.formatBytes32String(adr.player1.name),
+            id: ethers.utils.formatBytes32String(""),
+            wallet: ZERO_ADDRESS,
+            domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
+            targetDomain: ethers.utils.formatBytes32String(""),
+          };
+
+          resp = await env.multipass
             .connect(adr.player1.wallet)
-            .register(
-              regProps.applicantData,
-              regProps.registrarMessage.domainName,
-              regProps.validSignature,
-              regProps.registrarMessage.deadline,
-              emptyUserQuery,
-              ZERO_BYTES32
-            )
-        ).to.be.revertedWith("User already registered, use modify instead");
+            .resolveRecord(query);
+          expect(resp[0]).to.be.true;
+        });
+
+        it("Reverts registration if user id already exist", async () => {
+          const regProps = await getUserRegisterProps(
+            adr.player1,
+            adr.registrar1,
+            NEW_DOMAIN_NAME1,
+            99999,
+            env.multipass.address
+          );
+          await expect(
+            env.multipass
+              .connect(adr.player1.wallet)
+              .register(
+                regProps.applicantData,
+                regProps.registrarMessage.domainName,
+                regProps.validSignature,
+                regProps.registrarMessage.deadline,
+                emptyUserQuery,
+                ZERO_BYTES32
+              )
+          ).to.be.revertedWith("User already registered, use modify instead");
+          regProps.applicantData.id = ethers.utils.formatBytes32String(
+            adr.player2.id
+          );
+          await expect(
+            env.multipass
+              .connect(adr.player1.wallet)
+              .register(
+                regProps.applicantData,
+                regProps.registrarMessage.domainName,
+                regProps.validSignature,
+                regProps.registrarMessage.deadline,
+                emptyUserQuery,
+                ZERO_BYTES32
+              )
+          ).to.be.revertedWith("User already registered, use modify instead");
+          regProps.applicantData.name = ethers.utils.formatBytes32String(
+            adr.player2.name
+          );
+          await expect(
+            env.multipass
+              .connect(adr.player1.wallet)
+              .register(
+                regProps.applicantData,
+                regProps.registrarMessage.domainName,
+                regProps.validSignature,
+                regProps.registrarMessage.deadline,
+                emptyUserQuery,
+                ZERO_BYTES32
+              )
+          ).to.be.revertedWith("User already registered, use modify instead");
+        });
+        it("Allows to register with referral code", async () => {
+          const registrantProps = await getUserRegisterProps(
+            adr.player2,
+            adr.registrar1,
+            NEW_DOMAIN_NAME1,
+            99999,
+            env.multipass.address,
+            adr.player1
+          );
+          await expect(
+            env.multipass
+              .connect(adr.player1.wallet)
+              .register(
+                registrantProps.applicantData,
+                registrantProps.registrarMessage.domainName,
+                registrantProps.validSignature,
+                registrantProps.registrarMessage.deadline,
+                registrantProps.referrerData,
+                registrantProps.referrerSignature
+              )
+          ).to.emit(env.multipass, "Referred");
+        });
       });
     });
   });

@@ -217,16 +217,18 @@ contract MultipassDNS is EIP712, IMultipass {
         }
         LibMultipass._registerNew(newRecord, _domain);
         emit Registered(_domain.properties.name, newRecord);
-
+        console.log("is valid ref", hasValidReferrer);
         if (hasValidReferrer) {
+            bytes memory refferalMessage = abi.encode(LibMultipass._TYPEHASH_REFERRAL, referrerRecord.wallet);
             require(
-                _isValidSignature(abi.encodePacked(referrerRecord.wallet), referralCode, referrerRecord.wallet),
+                _isValidSignature(refferalMessage, referralCode, referrerRecord.wallet),
                 "Multipass->register: Referral code is not valid"
             );
             require(
                 payable(referrerRecord.wallet).send(referrersShare),
                 "Multipass->register: Failed to send referral reward"
             );
+            console.log("emitting reffered!!!!!");
             emit Referred(referrerRecord, newRecord, domainName);
         }
     }
@@ -246,6 +248,8 @@ contract MultipassDNS is EIP712, IMultipass {
             signatureDeadline >= block.number,
             "Multipass->modifyUserName: Signature deadline must be greater than current block number"
         );
+
+        //TODO FIX THIS
         bytes memory registrarMessage = abi.encodePacked(domainName, id, newName, nonce, signatureDeadline);
         require(
             _isValidSignature(registrarMessage, registrarSignature, _domain.properties.registrar),
