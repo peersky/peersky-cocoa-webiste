@@ -24,7 +24,6 @@
   "function getBalance() view returns (uint256)",
   "function getContractState() view returns (uint256)",
   "function getDomainState(bytes32) view returns (tuple(bytes32,uint256,uint256,uint256,uint256,bool,address,uint24,uint256))",
-  "function getDomainStateTest(bytes32) view returns (bytes32)",
   "function initializeDomain(address,uint256,uint256,bytes32,uint256,uint256)",
   "function modifyUserName(bytes32,bytes32,bytes32,uint96,bytes,uint256) payable",
   "function register(tuple(address,bytes32,bytes32,uint96),bytes32,bytes,uint256,tuple(bytes32,address,bytes32,bytes32,bytes32),bytes) payable",

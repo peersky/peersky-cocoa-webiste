@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 // import "./LibDiamondOwner.sol";
 // import { IMultipass } from "../interfaces/sol";
+// import "hardhat/console.sol";
 
 library LibMultipass {
     /**
@@ -186,8 +187,8 @@ library LibMultipass {
         ms.domainNameToIndex[domainName] = domainIndex;
     }
 
-    function _resolveRecord(NameQuery memory query) internal view returns (bool, Record memory) {
-        if ((query.wallet == address(0)) && (query.id.length == 0) && (query.name.length == 0)) {
+    function _resolveRecord(NameQuery memory query) private view returns (bool, Record memory) {
+        if ((query.wallet == address(0)) && (query.id == bytes32(0)) && (query.name == bytes32(0))) {
             Record memory rv;
             return (false, rv);
         }
@@ -195,7 +196,7 @@ library LibMultipass {
         MultipassStorageStruct storage s = MultipassStorage();
         DomainNameService storage _domain = s.domains[s.domainNameToIndex[query.domainName]];
         DomainNameService storage _targetDomain = s.domains[
-            s.domainNameToIndex[query.targetDomain.length == 0 ? query.domainName : query.targetDomain]
+            s.domainNameToIndex[query.targetDomain == bytes32(0) ? query.domainName : query.targetDomain]
         ];
 
         address _wallet;
@@ -210,6 +211,7 @@ library LibMultipass {
                 _wallet = _domain.idToAddress[_id];
             }
         }
+
         //from wallet find and return record
         return _resolveFromAddress(_wallet, _targetDomain);
     }
@@ -242,6 +244,7 @@ library LibMultipass {
         resolved.name = _domain.idToName[resolved.id];
         resolved.nonce = _domain.nonce[resolved.id];
         resolved.wallet = _address;
+
         if (resolved.id == bytes32(0)) {
             return (false, resolved);
         }

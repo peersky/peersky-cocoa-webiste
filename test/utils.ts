@@ -9,6 +9,7 @@ import { MultipassDiamond } from "../types/hardhat-diamond-abi/";
 import { BigNumber, BytesLike, Wallet } from "ethers";
 // @ts-ignore
 import { deploySequence } from "../scripts/deploy.js";
+import { LibMultipass } from "../types/hardhat-diamond-abi/MultipassDiamond";
 export interface SignerIdentity {
   name: string;
   id: string;
@@ -354,4 +355,39 @@ export default {
   baseFee,
   CONTRACT_NAME,
   CONTRACT_VERSION,
+};
+
+export const getUserRegisterProps = async (
+  account: SignerIdentity,
+  registrar: SignerIdentity,
+  domainName: string,
+  deadline: number,
+  multipassAddress: string
+) => {
+  const registrarMessage = {
+    name: ethers.utils.formatBytes32String(account.name),
+    id: ethers.utils.formatBytes32String(account.id),
+    domainName: ethers.utils.formatBytes32String(domainName),
+    deadline: ethers.BigNumber.from(deadline),
+    nonce: ethers.BigNumber.from(0),
+  };
+
+  const validSignature = await signMessage(
+    registrarMessage,
+    multipassAddress,
+    registrar
+  );
+
+  let applicantData: LibMultipass.RecordStruct = {
+    name: ethers.utils.formatBytes32String(account.name),
+    id: ethers.utils.formatBytes32String(account.id),
+    wallet: account.wallet.address,
+    nonce: 0,
+  };
+
+  return {
+    registrarMessage,
+    validSignature,
+    applicantData,
+  };
 };

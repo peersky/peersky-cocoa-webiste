@@ -48,6 +48,9 @@ contract MultipassDNS is EIP712, IMultipass {
         );
         require(query.wallet != address(0), "_validateNameQuery-> new ecord address cannot be empty");
 
+        //Check query does not resolves (name already exists)
+        (bool nameExists, ) = LibMultipass.resolveRecord(query);
+        require(nameExists == false, "User already registered, use modify instead");
         //Check LibMultipass.Domain is legit
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(query.domainName);
         require(_domain.properties.isActive, "Multipass->register: domain is not active");
@@ -120,6 +123,7 @@ contract MultipassDNS is EIP712, IMultipass {
         _enforseDomainNameIsValid(domainName);
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
         _domain.properties.isActive = true;
+        emit DomainActivated(domainName);
     }
 
     function deactivateDomain(bytes32 domainName) public override onlyOwner {
@@ -201,7 +205,7 @@ contract MultipassDNS is EIP712, IMultipass {
     ) public payable override {
         _validateRegistration(newRecord, domainName, registrarSignature, signatureDeadline);
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
-        (bool hasValidReferrer, LibMultipass.Record memory referrerRecord) = LibMultipass._resolveRecord(referrer);
+        (bool hasValidReferrer, LibMultipass.Record memory referrerRecord) = LibMultipass.resolveRecord(referrer);
         uint256 referrersShare = 0;
         if (!LibMultipass.shouldRegisterForFree(_domain)) {
             referrersShare = hasValidReferrer ? _domain.properties.referrerReward : 0;
@@ -269,10 +273,10 @@ contract MultipassDNS is EIP712, IMultipass {
         return _domain.properties;
     }
 
-    function getDomainStateTest(bytes32 domainName) external view returns (bytes32) {
-        LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
-        return _domain.properties.name;
-    }
+    // function getDomainStateTest(bytes32 domainName) external view returns (bytes32) {
+    //     LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
+    //     return _domain.properties.name;
+    // }
 
     function getContractState() external view override returns (uint256) {
         return LibMultipass._getContractState();
