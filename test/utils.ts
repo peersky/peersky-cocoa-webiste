@@ -272,7 +272,7 @@ export const setupAddresses = async (): Promise<AdrSetupResult> => {
 
 const baseFee = 1 * 10 ** 18;
 const CONTRACT_NAME = "MultipassDNS";
-const CONTRACT_VERSION = "0.0.1";
+export const CONTRACT_VERSION = "0.0.1";
 
 export const setupEnvironment = async (
   contractDeployer: SignerIdentity,

@@ -4,14 +4,10 @@ pragma solidity ^0.8.4;
 import "../libraries/LibMultipass.sol";
 
 interface IMultipass {
-
-
     function resolveRecord(LibMultipass.NameQuery memory query)
         external
         view
-        returns (
-            bool, LibMultipass.Record memory
-        );
+        returns (bool, LibMultipass.Record memory);
 
     /** @dev same as resolveRecord but returns username, id and LibMultipass.Domain as string */
     // function resolveRecordToString(LibMultipass.NameQuery memory query)
@@ -133,11 +129,12 @@ interface IMultipass {
      *  Emits an {registered} event.
      */
     function register(
-        LibMultipass.NameQuery memory query,
+        LibMultipass.Record memory newRecord,
+        bytes32 domainName,
         bytes memory registrarSignature,
         uint256 signatureDeadline,
         LibMultipass.NameQuery memory referrer,
-        bytes memory referrerSignature
+        bytes memory referralCode
     ) external payable;
 
     /**
@@ -181,21 +178,7 @@ interface IMultipass {
        ttl,
         registerSize)
      */
-    function getDomainState(bytes32 domainName)
-        external
-        view
-        returns (
-            // bytes32,
-            // uint256,
-            // uint256,
-            // uint256,
-            // uint256,
-            // bool,
-            // address,
-            // uint24,
-            LibMultipass.Domain memory
-            // uint256
-        );
+    function getDomainState(bytes32 domainName) external view returns (LibMultipass.Domain memory);
 
     /**
      * @dev returns contract state variables
@@ -203,13 +186,6 @@ interface IMultipass {
      * @return (s_numDomains)
      */
     function getContractState() external view returns (uint256);
-
-    /**
-     * @dev returns version of the contract
-
-     * @return version string
-     */
-    function version() external view returns (string memory);
 
     /**
      * @dev Withraws funds stored in smart contract
@@ -223,7 +199,15 @@ interface IMultipass {
 
     event fundsWithdawn(uint256 indexed amount, address indexed account);
 
-    event InitializedDomain(uint256 indexed index, bytes32 indexed domainName);
+    // event InitializedDomain(uint256 indexed index, bytes32 indexed domainName);
+    event InitializedDomain(
+        address indexed registrar,
+        uint256 freeRegistrationsNumber,
+        uint256 indexed fee,
+        bytes32 indexed domainName,
+        uint256 referrerReward,
+        uint256 referralDiscount
+    );
     event DomainActivated(bytes32 indexed domainName);
     event DomainDeactivated(bytes32 indexed domainName);
 
@@ -238,9 +222,9 @@ interface IMultipass {
     event DomainChangesAreLive(bytes32 indexed domainName, bytes32[] indexed changes);
     event changesQeueCanceled(bytes32 indexed domainName, bytes32[] indexed changes);
 
-    event Registered(bytes32 indexed domainName, address indexed userAddress, bytes32 name, bytes32 id);
+    event Registered(bytes32 indexed domainName, LibMultipass.Record NewRecord);
 
-    event Referred(address indexed refferrer, address indexed by, bytes32 indexed domainName);
+    event Referred(LibMultipass.Record refferrer, LibMultipass.Record newRecord, bytes32 indexed domainName);
 
     event Modified(bytes32 indexed domainName, bytes32 newName, bytes32 indexed id, address indexed newAddress);
 }

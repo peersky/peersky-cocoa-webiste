@@ -9,6 +9,7 @@ import "../interfaces/IMultipass.sol";
 import "../libraries/LibMultipass.sol";
 import "../modifiers/OnlyOwnerDiamond.sol";
 import "hardhat/console.sol";
+import "../vendor/facets/OwnershipFacet.sol";
 
 // Consider upgrade for https://eips.ethereum.org/EIPS/eip-4834
 
@@ -33,28 +34,19 @@ contract MultipassDNS is EIP712, IMultipass {
     }
 
     function _validateRegistration(
-        LibMultipass.NameQuery memory query,
+        LibMultipass.Record memory newRecord,
+        bytes32 domainName,
         bytes memory registrarSignature,
-        uint256 signatureDeadline,
-        LibMultipass.NameQuery memory referrer,
-        bytes memory referrerSignature
+        uint256 signatureDeadline
     ) private view {
+        LibMultipass.NameQuery memory query = LibMultipass.queryFromRecord(newRecord, domainName);
         //Check name query is legit
-        // require(query.name._checkStringFits32b(), "_validateNameQuery-> Name must be no more than 32 bytes long");
-        // require(LibMultipass._checkStringFits32b(query.id), "_validateNameQuery-> id must be no more than 32 bytes long");
-        // require(
-        //     LibMultipass._checkStringFits32b(query.domainName),
-        //     "_validateNameQuery-> domainName must be no more than 32 bytes long"
-        // );
-        require(LibMultipass._checkNotEmpty(query.id), "_validateNameQuery-> id cannot be empty");
+        require(LibMultipass._checkNotEmpty(query.id), "_validateNameQuery-> new record id cannot be empty");
         require(
             LibMultipass._checkNotEmpty(query.domainName),
-            "_validateNameQuery-> LibMultipass.Domain cannot be empty"
+            "_validateNameQuery-> new record domain cannot be empty"
         );
-        require(
-            query.targetDomain == bytes32(0),
-            "_validateNameQuery-> When regestring new Domain targetDomain cannot be set"
-        );
+        require(query.wallet != address(0), "_validateNameQuery-> new ecord address cannot be empty");
 
         //Check LibMultipass.Domain is legit
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(query.domainName);
@@ -64,15 +56,6 @@ contract MultipassDNS is EIP712, IMultipass {
         require(signatureDeadline > block.number, "Multipass->register: Deadline is less than current block number");
 
         {
-            // bytes memory registrarMessage = abi.encode(
-            //     LibMultipass._TYPEHASH,
-            //     keccak256(abi.encode(query.name)),
-            //     keccak256(abi.encode(query.id)),
-            //     keccak256(abi.encode(query.domainName)),
-            //     signatureDeadline,
-            //     0
-            // );
-
             bytes memory registrarMessage = abi.encode(
                 LibMultipass._TYPEHASH,
                 query.name,
@@ -82,8 +65,6 @@ contract MultipassDNS is EIP712, IMultipass {
                 0
             );
 
-            // bytes memory testMessage = abi.encode()
-
             require(
                 _isValidSignature(registrarMessage, registrarSignature, _domain.properties.registrar) &&
                     (signatureDeadline > block.number),
@@ -91,29 +72,9 @@ contract MultipassDNS is EIP712, IMultipass {
             );
         }
         {
-            (bool status, ) = resolveRecord(query);
+            (bool status, ) = LibMultipass.resolveRecord(query);
             require(status == false, "Multipass->register: applicant is already registered, use modify instread");
         }
-        {
-            (bool status, ) = resolveRecord(referrer);
-            if (status) {
-                {
-                    bytes32 _refDomain = referrer.domainName.length != 0 ? referrer.domainName : query.domainName;
-                    require(
-                        _isValidSignature(
-                            abi.encodePacked(_refDomain, referrer.userAddress),
-                            referrerSignature,
-                            referrer.userAddress
-                        ) && (signatureDeadline > block.number),
-                        "Multipass->register: Referrer signature is not valid"
-                    );
-                    (bool referrerResolved, ) = resolveRecord(query);
-                    require(referrerResolved == true, "Multipass->register: Referrer not found");
-                }
-            }
-        }
-
-        // require(msg.value >= _domain.properties.fee, "Multipass->register: Payment is not enough");
     }
 
     function initializeDomain(
@@ -124,30 +85,25 @@ contract MultipassDNS is EIP712, IMultipass {
         uint256 referrerReward,
         uint256 referralDiscount
     ) public override onlyOwner {
-        LibMultipass.MultipassStorageStruct storage ms = LibMultipass.MultipassStorage();
-        // require(
-        //     LibMultipass._checkStringFits32b(domainName),
-        //     "Multipass->initializeDomain: Domain name must be 32 bytes or less long"
-        // );
         require(registrar != address(0), "Multipass->initializeDomain: You must provide a registrar address");
         require(LibMultipass._checkNotEmpty(domainName), "Multipass->initializeDomain: Domain name cannot be empty");
-        require(ms.s_domainNameToIndex[domainName] == 0, "Multipass->initializeDomain: Domain name already exists");
+        require(
+            LibMultipass.resolveDomainIndex(domainName) == 0,
+            "Multipass->initializeDomain: Domain name already exists"
+        );
         (bool status, uint256 result) = SafeMath.tryAdd(referrerReward, referralDiscount);
         require(status == true, "Multipass->initializeDomain: referrerReward + referralDiscount cause overflow");
         require(result <= fee, "Multipass->initializeDomain: referral values are higher then fee itself");
 
-        uint256 domainIndex = ms.s_numDomains + 1;
-        LibMultipass.DomainNameService storage _domain = ms.s_domains[domainIndex];
-        _domain.properties.registrar = registrar;
-        _domain.properties.freeRegistrationsNumber = freeRegistrationsNumber;
-        _domain.properties.fee = fee;
-        _domain.properties.name = domainName;
-        _domain.properties.referrerReward = referrerReward;
-        _domain.properties.referralDiscount = referralDiscount;
-        ms.s_numDomains++;
-        ms.s_domainNameToIndex[domainName] = ms.s_numDomains;
-
-        emit InitializedDomain(domainIndex, domainName);
+        LibMultipass._initializeDomain(
+            registrar,
+            freeRegistrationsNumber,
+            fee,
+            domainName,
+            referrerReward,
+            referralDiscount
+        );
+        emit InitializedDomain(registrar, freeRegistrationsNumber, fee, domainName, referrerReward, referralDiscount);
     }
 
     // function resolveRecordToString(LibMultipass.NameQuery memory query) public view override returns (bool, LibMultipass.Record memory) {
@@ -192,7 +148,7 @@ contract MultipassDNS is EIP712, IMultipass {
     }
 
     function deleteName(
-        LibMultipass.NameQuery memory query // bytes32 domainName, // address userAddress, // bytes32 username, // bytes32 id
+        LibMultipass.NameQuery memory query // bytes32 domainName, // address wallet, // bytes32 username, // bytes32 id
     ) public override onlyOwner {
         _enforseDomainNameIsValid(query.domainName);
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(query.domainName);
@@ -236,26 +192,39 @@ contract MultipassDNS is EIP712, IMultipass {
     }
 
     function register(
-        LibMultipass.NameQuery memory query,
+        LibMultipass.Record memory newRecord,
+        bytes32 domainName,
         bytes memory registrarSignature,
         uint256 signatureDeadline,
         LibMultipass.NameQuery memory referrer,
-        bytes memory referrerSignature
+        bytes memory referralCode
     ) public payable override {
-        // bytes32 _domainName = LibMultipass._stringToBytes32(domainName);
-        // LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(query.domainName);
-        _validateRegistration(query, registrarSignature, signatureDeadline, referrer, referrerSignature);
-        // address payable owner = payable(owner());
-        // {
-        //     uint256 referrersShare = _domain.properties.referrerReward;
-        //     uint256 valueToPay = SafeMath.sub(_domain.properties.fee, _domain.properties.referralDiscount);
-        //     uint256 valueToOwner = SafeMath.sub(msg.value, referrersShare);
+        _validateRegistration(newRecord, domainName, registrarSignature, signatureDeadline);
+        LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
+        (bool hasValidReferrer, LibMultipass.Record memory referrerRecord) = LibMultipass._resolveRecord(referrer);
+        uint256 referrersShare = 0;
+        if (!LibMultipass.shouldRegisterForFree(_domain)) {
+            referrersShare = hasValidReferrer ? _domain.properties.referrerReward : 0;
+            uint256 valueToPay = SafeMath.sub(
+                _domain.properties.fee,
+                hasValidReferrer ? _domain.properties.referralDiscount : 0
+            );
+            require(msg.value >= valueToPay, "Multipass->register: Payment value is not enough");
+        }
+        LibMultipass._registerNew(newRecord, _domain);
+        emit Registered(_domain.properties.name, newRecord);
 
-        //     require(msg.value >= valueToPay, "Multipass->register: Payment value is not enough");
-        //     require(owner.send(valueToOwner), "Multipass->register: Failed to pay fee");
-        //     require(payable(referrer).send(referrersShare), "Multipass->register: Failed to send referral reward");
-        // }
-        // _setRecord(_domain, applicantAddress, id, name);
+        if (hasValidReferrer) {
+            require(
+                _isValidSignature(abi.encodePacked(referrerRecord.wallet), referralCode, referrerRecord.wallet),
+                "Multipass->register: Referral code is not valid"
+            );
+            require(
+                payable(referrerRecord.wallet).send(referrersShare),
+                "Multipass->register: Failed to send referral reward"
+            );
+            emit Referred(referrerRecord, newRecord, domainName);
+        }
     }
 
     function modifyUserName(
@@ -306,16 +275,7 @@ contract MultipassDNS is EIP712, IMultipass {
     }
 
     function getContractState() external view override returns (uint256) {
-        LibMultipass.MultipassStorageStruct storage ms = LibMultipass.MultipassStorage();
-        return ms.s_numDomains;
-    }
-
-    /**
-     * @dev See {IGovernor-version}.
-     */
-    function version() public view virtual override returns (string memory) {
-        LibMultipass.MultipassStorageStruct storage ms = LibMultipass.MultipassStorage();
-        return ms.s_version;
+        return LibMultipass._getContractState();
     }
 
     function withrawFunds(address to) public override onlyOwner {

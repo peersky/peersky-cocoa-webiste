@@ -12,7 +12,7 @@ library LibMultipass {
      *  id OR username OR address must be given
      * This method first tries to resolve by address, then by user id and finally by username
      * @param domainName domain name
-     * @param userAddress adress of user
+     * @param wallet adress of user
      * @param id user id
      * @param username username
      * @param targetDomain if this is set to valid domain name, then after sucessfull resolving account at domainName,
@@ -20,7 +20,7 @@ library LibMultipass {
      */
     struct NameQuery {
         bytes32 domainName;
-        address userAddress;
+        address wallet;
         bytes32 name;
         bytes32 id;
         bytes32 targetDomain;
@@ -50,7 +50,7 @@ library LibMultipass {
 
     //  struct NameQueryBytes32 {
     //     string domainName;
-    //     address userAddress;
+    //     address wallet;
     //     bytes32 name;
     //     bytes32 id;
     //     string targetDomain;
@@ -93,10 +93,9 @@ library LibMultipass {
     }
 
     struct MultipassStorageStruct {
-        mapping(uint256 => DomainNameService) s_domains;
-        mapping(bytes32 => uint256) s_domainNameToIndex; //helper to get domain index by name
-        string s_version;
-        uint256 s_numDomains;
+        mapping(uint256 => DomainNameService) domains;
+        mapping(bytes32 => uint256) domainNameToIndex; //helper to get domain index by name
+        uint256 numDomains;
     }
 
     function MultipassStorage() internal pure returns (MultipassStorageStruct storage es) {
@@ -150,33 +149,60 @@ library LibMultipass {
     //     return keccak256(abi.encodePacked(value));
     // }
 
+    function resolveDomainIndex(bytes32 domainName) internal view returns (uint256) {
+        MultipassStorageStruct storage s = MultipassStorage();
+        return s.domainNameToIndex[domainName];
+    }
+
     function _getDomainStorage(bytes32 domainName) internal view returns (DomainNameService storage) {
         MultipassStorageStruct storage s = MultipassStorage();
 
-        return s.s_domains[s.s_domainNameToIndex[domainName]];
+        return s.domains[resolveDomainIndex(domainName)];
     }
 
     // function _bytes32ToString(bytes32 value) internal pure returns (string memory) {
     //     return string(abi.encodePacked(value));
     // }
 
-    function _resolveRecord(NameQuery memory query) private view returns (bool, Record memory) {
-        if ((query.userAddress == address(0)) && (query.id.length == 0) && (query.name.length == 0)) {
+    function _initializeDomain(
+        address registrar,
+        uint256 freeRegistrationsNumber,
+        uint256 fee,
+        bytes32 domainName,
+        uint256 referrerReward,
+        uint256 referralDiscount
+    ) internal {
+        LibMultipass.MultipassStorageStruct storage ms = LibMultipass.MultipassStorage();
+
+        uint256 domainIndex = ms.numDomains + 1;
+        LibMultipass.DomainNameService storage _domain = ms.domains[domainIndex];
+        _domain.properties.registrar = registrar;
+        _domain.properties.freeRegistrationsNumber = freeRegistrationsNumber;
+        _domain.properties.fee = fee;
+        _domain.properties.name = domainName;
+        _domain.properties.referrerReward = referrerReward;
+        _domain.properties.referralDiscount = referralDiscount;
+        ms.numDomains++;
+        ms.domainNameToIndex[domainName] = domainIndex;
+    }
+
+    function _resolveRecord(NameQuery memory query) internal view returns (bool, Record memory) {
+        if ((query.wallet == address(0)) && (query.id.length == 0) && (query.name.length == 0)) {
             Record memory rv;
             return (false, rv);
         }
 
         MultipassStorageStruct storage s = MultipassStorage();
-        DomainNameService storage _domain = s.s_domains[s.s_domainNameToIndex[query.domainName]];
-        DomainNameService storage _targetDomain = s.s_domains[
-            s.s_domainNameToIndex[query.targetDomain.length == 0 ? query.domainName : query.targetDomain]
+        DomainNameService storage _domain = s.domains[s.domainNameToIndex[query.domainName]];
+        DomainNameService storage _targetDomain = s.domains[
+            s.domainNameToIndex[query.targetDomain.length == 0 ? query.domainName : query.targetDomain]
         ];
 
         address _wallet;
         {
             // resolve wallet
-            if (query.userAddress != address(0)) {
-                _wallet = query.userAddress;
+            if (query.wallet != address(0)) {
+                _wallet = query.wallet;
             } else if (query.id.length != 0) {
                 _wallet = _domain.idToAddress[query.id];
             } else if (query.name.length != 0) {
@@ -220,6 +246,29 @@ library LibMultipass {
             return (false, resolved);
         }
         return (true, resolved);
+    }
+
+    function queryFromRecord(Record memory _record, bytes32 _domainName) internal pure returns (NameQuery memory) {
+        NameQuery memory _query;
+        _query.id = _record.id;
+        _query.domainName = _domainName;
+        _query.name = _record.name;
+        _query.wallet = _record.wallet;
+        return _query;
+    }
+
+    function shouldRegisterForFree(DomainNameService storage domain) internal view returns (bool) {
+        return domain.properties.freeRegistrationsNumber > domain.properties.registerSize ? true : false;
+    }
+
+    function _registerNew(Record memory newRecord, DomainNameService storage domain) internal {
+        _setRecord(domain, newRecord);
+        domain.properties.registerSize += 1;
+    }
+
+    function _getContractState() internal view returns (uint256) {
+        LibMultipass.MultipassStorageStruct storage ms = LibMultipass.MultipassStorage();
+        return ms.numDomains;
     }
 
     // function _RecordStringify(Record memory input) internal pure returns (Record memory) {

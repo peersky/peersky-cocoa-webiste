@@ -4,7 +4,7 @@ import {
   setupEnvironment,
   // baseFee,
   // CONTRACT_NAME,
-  // CONTRACT_VERSION,
+  CONTRACT_VERSION,
   // getPlayerNameId,
   signMessage,
 } from "./utils";
@@ -45,7 +45,7 @@ const emptyUserQuery: LibMultipass.NameQueryStruct = {
   name: ethers.utils.formatBytes32String(""),
   id: ethers.utils.formatBytes32String(""),
   domainName: ethers.utils.formatBytes32String(""),
-  userAddress: ZERO_ADDRESS,
+  wallet: ZERO_ADDRESS,
   targetDomain: ethers.utils.formatBytes32String(""),
 };
 
@@ -60,7 +60,7 @@ describe(scriptName, () => {
       adr.multipassOwner.wallet.address
     );
   });
-  it("Has zero domains ", async () => {
+  it("Has version and zero domains", async () => {
     expect(await env.multipass.getContractState()).to.be.equal(0);
   });
   it("Supports multipass interface", async () => {
@@ -200,18 +200,18 @@ describe(scriptName, () => {
     });
 
     it("Does not allow to register because is not active", async () => {
-      let applicantData: LibMultipass.NameQueryStruct = {
+      let applicantData: LibMultipass.RecordStruct = {
         name: ethers.utils.formatBytes32String(adr.player1.name),
         id: ethers.utils.formatBytes32String(adr.player1.id),
-        domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
-        userAddress: adr.player1.wallet.address,
-        targetDomain: ethers.utils.formatBytes32String(""),
+        wallet: adr.player1.wallet.address,
+        nonce: 0,
       };
       await expect(
         env.multipass
           .connect(adr.player1.wallet)
           .register(
             applicantData,
+            ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
             ZERO_BYTES32,
             ZERO_BYTES32,
             emptyUserQuery,
@@ -233,7 +233,7 @@ describe(scriptName, () => {
         expect(resp["isActive"]).to.be.true;
       });
 
-      it("Succeed if properties are valid (no referrer)", async () => {
+      it("Emit if properties are valid", async () => {
         const registrarMessage = {
           name: ethers.utils.formatBytes32String(adr.player1.name),
           id: ethers.utils.formatBytes32String(adr.player1.id),
@@ -248,12 +248,11 @@ describe(scriptName, () => {
           adr.registrar1
         );
 
-        let applicantData: LibMultipass.NameQueryStruct = {
+        let applicantData: LibMultipass.RecordStruct = {
           name: ethers.utils.formatBytes32String(adr.player1.name),
           id: ethers.utils.formatBytes32String(adr.player1.id),
-          domainName: registrarMessage.domainName,
-          userAddress: adr.player1.wallet.address,
-          targetDomain: ethers.utils.formatBytes32String(""),
+          wallet: adr.player1.wallet.address,
+          nonce: 0,
         };
 
         await expect(
@@ -261,12 +260,13 @@ describe(scriptName, () => {
             .connect(adr.player1.wallet)
             .register(
               applicantData,
+              registrarMessage.domainName,
               registarSignature,
               registrarMessage.deadline,
               emptyUserQuery,
               ZERO_BYTES32
             )
-        ).to.not.be.reverted;
+        ).to.emit(env.multipass, "Registered");
       });
 
       it("Should fail register if properties are invalid", async () => {
@@ -284,12 +284,11 @@ describe(scriptName, () => {
           adr.maliciousActor1
         );
 
-        let applicantData: LibMultipass.NameQueryStruct = {
+        let applicantData: LibMultipass.RecordStruct = {
           name: ethers.utils.formatBytes32String(adr.player1.name),
           id: ethers.utils.formatBytes32String(adr.player1.id),
-          domainName: registrarMessage.domainName,
-          userAddress: adr.player1.wallet.address,
-          targetDomain: ethers.utils.formatBytes32String(""),
+          wallet: adr.player1.wallet.address,
+          nonce: 0,
         };
 
         await expect(
@@ -297,6 +296,7 @@ describe(scriptName, () => {
             .connect(adr.player1.wallet)
             .register(
               applicantData,
+              registrarMessage.domainName,
               invalidRegistrarSignature,
               registrarMessage.deadline,
               emptyUserQuery,
@@ -315,6 +315,7 @@ describe(scriptName, () => {
             .connect(adr.player1.wallet)
             .register(
               applicantData,
+              registrarMessage.domainName,
               await signMessage(
                 registrarMessage,
                 env.multipass.address,
