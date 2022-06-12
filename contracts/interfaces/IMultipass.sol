@@ -114,6 +114,7 @@ interface IMultipass {
     function changeReferralProgram(
         uint256 referrerFeeShare,
         uint256 referralDiscount,
+        uint256 freeRegistrations,
         bytes32 domainName
     ) external;
 
@@ -218,7 +219,12 @@ interface IMultipass {
     event DomainNameChangeRequested(uint256 indexed domainIndex, bytes32 indexed NewDomainName);
     event DomainDeleteRequested(uint256 indexed domainIndex);
     event DomainTTLChangeRequested(bytes32 indexed domainName, uint256 amount);
-    event ReferralProgramChangeRequested(bytes32 indexed domainName, uint32 fee, uint32 discount);
+    event ReferralProgramChanged(
+        bytes32 indexed domainName,
+        uint256 reward,
+        uint256 discount,
+        uint256 indexed freeNumber
+    );
     event DomainChangesAreLive(bytes32 indexed domainName, bytes32[] indexed changes);
     event changesQeueCanceled(bytes32 indexed domainName, bytes32[] indexed changes);
 

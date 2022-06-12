@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 // import "./LibDiamondOwner.sol";
 // import { IMultipass } from "../interfaces/sol";
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 library LibMultipass {
     /**
@@ -198,7 +198,6 @@ library LibMultipass {
         DomainNameService storage _targetDomain = s.domains[
             s.domainNameToIndex[query.targetDomain == bytes32(0) ? query.domainName : query.targetDomain]
         ];
-
         address _wallet;
         {
             // resolve wallet

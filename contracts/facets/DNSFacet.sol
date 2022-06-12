@@ -169,6 +169,7 @@ contract MultipassDNS is EIP712, IMultipass {
 
     function changeReferralProgram(
         uint256 referrerReward,
+        uint256 freeRegistrations,
         uint256 referralDiscount,
         bytes32 domainName
     ) public override onlyOwner {
@@ -182,6 +183,8 @@ contract MultipassDNS is EIP712, IMultipass {
         );
         _domain.properties.referrerReward = referrerReward;
         _domain.properties.referralDiscount = referralDiscount;
+        _domain.properties.freeRegistrationsNumber = freeRegistrations;
+        emit ReferralProgramChanged(domainName, referrerReward, referralDiscount, freeRegistrations);
     }
 
     /**
@@ -217,7 +220,6 @@ contract MultipassDNS is EIP712, IMultipass {
         }
         LibMultipass._registerNew(newRecord, _domain);
         emit Registered(_domain.properties.name, newRecord);
-        console.log("is valid ref", hasValidReferrer);
         if (hasValidReferrer) {
             bytes memory refferalMessage = abi.encode(LibMultipass._TYPEHASH_REFERRAL, referrerRecord.wallet);
             require(
@@ -228,7 +230,7 @@ contract MultipassDNS is EIP712, IMultipass {
                 payable(referrerRecord.wallet).send(referrersShare),
                 "Multipass->register: Failed to send referral reward"
             );
-            console.log("emitting reffered!!!!!");
+            require(referrerRecord.wallet != newRecord.wallet, "Cannot refer yourself");
             emit Referred(referrerRecord, newRecord, domainName);
         }
     }

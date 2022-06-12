@@ -399,11 +399,12 @@ export const getUserRegisterProps = async (
   domainName: string,
   deadline: number,
   multipassAddress: string,
-  referrer?: SignerIdentity
+  referrer?: SignerIdentity,
+  referrerDomain?: string
 ) => {
   const registrarMessage = {
-    name: ethers.utils.formatBytes32String(account.name),
-    id: ethers.utils.formatBytes32String(account.id),
+    name: ethers.utils.formatBytes32String(account.name + `.` + domainName),
+    id: ethers.utils.formatBytes32String(account.id + `.` + domainName),
     domainName: ethers.utils.formatBytes32String(domainName),
     deadline: ethers.BigNumber.from(deadline),
     nonce: ethers.BigNumber.from(0),
@@ -417,18 +418,20 @@ export const getUserRegisterProps = async (
   // const validSignature = ZERO_BYTES32;
 
   const applicantData: LibMultipass.RecordStruct = {
-    name: ethers.utils.formatBytes32String(account.name),
-    id: ethers.utils.formatBytes32String(account.id),
+    name: ethers.utils.formatBytes32String(account.name + `.` + domainName),
+    id: ethers.utils.formatBytes32String(account.id + `.` + domainName),
     wallet: account.wallet.address,
     nonce: 0,
   };
 
   const referrerData: LibMultipass.NameQueryStruct = {
-    name: ethers.utils.formatBytes32String(referrer?.name ?? ""),
+    name: ethers.utils.formatBytes32String(
+      referrer?.name ? referrer?.name + `.` + domainName : ""
+    ),
     domainName: ethers.utils.formatBytes32String(domainName),
     id: ethers.utils.formatBytes32String(""),
     wallet: ZERO_ADDRESS,
-    targetDomain: ethers.utils.formatBytes32String(""),
+    targetDomain: ethers.utils.formatBytes32String(referrerDomain ?? ""),
   };
   let referrerSignature = ZERO_BYTES32;
   const proofOfReferrer: ReferrerMesage = {

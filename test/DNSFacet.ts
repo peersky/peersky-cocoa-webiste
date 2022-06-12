@@ -25,7 +25,7 @@ const {
 } = require("@openzeppelin/test-helpers/src/constants");
 // import { Multipass } from '../types/contracts/Multipass'
 
-const scriptName = path.basename(__filename, ".js");
+const scriptName = path.basename(__filename);
 const NEW_DOMAIN_NAME1 = "newDomainName1";
 const NEW_DOMAIN_NAME2 = "newDomainName2";
 const NEW_DOMAIN_NAME3 = "newDomainName3";
@@ -33,6 +33,7 @@ const STRING_32B = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 const STRING_33B = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 const STRING_0B = "";
 const DEFAULT_FREE_REGISTRATIONS = ethers.BigNumber.from(3);
+const NOT_ENOUGH_FEE = ethers.utils.parseEther("0.17");
 const DEFAULT_FEE = ethers.utils.parseEther("2");
 const DEFAULT_DISCOUNT = ethers.utils.parseEther("1");
 const DEFAULT_REWARD = ethers.utils.parseEther("0.5");
@@ -157,6 +158,63 @@ describe(scriptName, () => {
     ).to.be.revertedWith(
       "Multipass->initializeDomain: referrerReward + referralDiscount cause overflow"
     );
+  });
+  it("Reverts any ownerOnly call by not an owner", async () => {
+    await expect(
+      env.multipass
+        .connect(adr.maliciousActor1.wallet)
+        .withrawFunds(adr.maliciousActor1.wallet.address)
+    ).to.be.revertedWith("LibDiamond: Must be contract owner");
+    await expect(
+      env.multipass
+        .connect(adr.maliciousActor1.wallet)
+        .changeReferralProgram(
+          DEFAULT_REWARD,
+          DEFAULT_FREE_REGISTRATIONS,
+          DEFAULT_DISCOUNT,
+          ethers.utils.formatBytes32String("")
+        )
+    ).to.be.revertedWith("LibDiamond: Must be contract owner");
+    await expect(
+      env.multipass
+        .connect(adr.maliciousActor1.wallet)
+        .deleteName(emptyUserQuery)
+    ).to.be.revertedWith("LibDiamond: Must be contract owner");
+    await expect(
+      env.multipass
+        .connect(adr.maliciousActor1.wallet)
+        .changeRegistrar(
+          ethers.utils.formatBytes32String(""),
+          adr.maliciousActor1.wallet.address
+        )
+    ).to.be.revertedWith("LibDiamond: Must be contract owner");
+    await expect(
+      env.multipass
+        .connect(adr.maliciousActor1.wallet)
+        .changeFee(ethers.utils.formatBytes32String(""), DEFAULT_FEE)
+    ).to.be.revertedWith("LibDiamond: Must be contract owner");
+    await expect(
+      env.multipass
+        .connect(adr.maliciousActor1.wallet)
+        .activateDomain(ethers.utils.formatBytes32String(""))
+    ).to.be.revertedWith("LibDiamond: Must be contract owner");
+    await expect(
+      env.multipass
+        .connect(adr.maliciousActor1.wallet)
+        .deactivateDomain(ethers.utils.formatBytes32String(""))
+    ).to.be.revertedWith("LibDiamond: Must be contract owner");
+    await expect(
+      env.multipass
+        .connect(adr.maliciousActor1.wallet)
+        .initializeDomain(
+          adr.maliciousActor1.wallet.address,
+          DEFAULT_FREE_REGISTRATIONS,
+          DEFAULT_FEE,
+          ethers.utils.formatBytes32String(""),
+          DEFAULT_REWARD,
+          DEFAULT_DISCOUNT
+        )
+    ).to.be.revertedWith("LibDiamond: Must be contract owner");
   });
   describe("When a new domain was initialized", () => {
     let numDomains = 0;
@@ -428,8 +486,12 @@ describe(scriptName, () => {
         it("Can find newly registered user ", async () => {
           //By full query
           let query: LibMultipass.NameQueryStruct = {
-            name: ethers.utils.formatBytes32String(adr.player1.name),
-            id: ethers.utils.formatBytes32String(adr.player1.id),
+            name: ethers.utils.formatBytes32String(
+              adr.player1.name + `.` + NEW_DOMAIN_NAME1
+            ),
+            id: ethers.utils.formatBytes32String(
+              adr.player1.id + `.` + NEW_DOMAIN_NAME1
+            ),
             wallet: adr.player1.wallet.address,
             domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
             targetDomain: ethers.utils.formatBytes32String(""),
@@ -443,7 +505,9 @@ describe(scriptName, () => {
           //With id and address
           query = {
             name: ethers.utils.formatBytes32String(""),
-            id: ethers.utils.formatBytes32String(adr.player1.id),
+            id: ethers.utils.formatBytes32String(
+              adr.player1.id + `.` + NEW_DOMAIN_NAME1
+            ),
             wallet: adr.player1.wallet.address,
             domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
             targetDomain: ethers.utils.formatBytes32String(""),
@@ -457,7 +521,9 @@ describe(scriptName, () => {
           //With only id
           query = {
             name: ethers.utils.formatBytes32String(""),
-            id: ethers.utils.formatBytes32String(adr.player1.id),
+            id: ethers.utils.formatBytes32String(
+              adr.player1.id + `.` + NEW_DOMAIN_NAME1
+            ),
             wallet: ZERO_ADDRESS,
             domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
             targetDomain: ethers.utils.formatBytes32String(""),
@@ -484,7 +550,9 @@ describe(scriptName, () => {
 
           //With only name
           query = {
-            name: ethers.utils.formatBytes32String(adr.player1.name),
+            name: ethers.utils.formatBytes32String(
+              adr.player1.name + `.` + NEW_DOMAIN_NAME1
+            ),
             id: ethers.utils.formatBytes32String(""),
             wallet: ZERO_ADDRESS,
             domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
@@ -548,7 +616,7 @@ describe(scriptName, () => {
               )
           ).to.be.revertedWith("User already registered, use modify instead");
         });
-        it("Allows to register with referral code", async () => {
+        it("Emits when register with valid referral code", async () => {
           const registrantProps = await getUserRegisterProps(
             adr.player2,
             adr.registrar1,
@@ -569,6 +637,171 @@ describe(scriptName, () => {
                 registrantProps.referrerSignature
               )
           ).to.emit(env.multipass, "Referred");
+        });
+
+        describe("When second domain is initialized and active", () => {
+          beforeEach(async () => {
+            await env.multipass
+              .connect(adr.multipassOwner.wallet)
+              .initializeDomain(
+                adr.registrar1.wallet.address,
+                DEFAULT_FREE_REGISTRATIONS,
+                DEFAULT_FEE,
+                ethers.utils.formatBytes32String(NEW_DOMAIN_NAME2),
+                DEFAULT_REWARD,
+                DEFAULT_DISCOUNT
+              );
+            await env.multipass
+              .connect(adr.multipassOwner.wallet)
+              .activateDomain(
+                ethers.utils.formatBytes32String(NEW_DOMAIN_NAME2)
+              );
+          });
+          it("Reverts on referring yourself from a different domain", async () => {
+            const registrantProps1 = await getUserRegisterProps(
+              adr.player2,
+              adr.registrar1,
+              NEW_DOMAIN_NAME1,
+              99999,
+              env.multipass.address
+            );
+            await env.multipass
+              .connect(adr.player2.wallet)
+              .register(
+                registrantProps1.applicantData,
+                registrantProps1.registrarMessage.domainName,
+                registrantProps1.validSignature,
+                registrantProps1.registrarMessage.deadline,
+                registrantProps1.referrerData,
+                registrantProps1.referrerSignature
+              );
+            const registrantProps2 = await getUserRegisterProps(
+              adr.player2,
+              adr.registrar1,
+              NEW_DOMAIN_NAME2,
+              99999,
+              env.multipass.address,
+              adr.player2,
+              NEW_DOMAIN_NAME1
+            );
+            const registrantProps21 = await getUserRegisterProps(
+              adr.player2,
+              adr.registrar1,
+              NEW_DOMAIN_NAME1,
+              99999,
+              env.multipass.address,
+              adr.player2
+            );
+            await expect(
+              env.multipass
+                .connect(adr.player2.wallet)
+                .register(
+                  registrantProps2.applicantData,
+                  registrantProps2.registrarMessage.domainName,
+                  registrantProps2.validSignature,
+                  registrantProps2.registrarMessage.deadline,
+                  registrantProps21.referrerData,
+                  registrantProps2.referrerSignature
+                )
+            ).to.revertedWith("Cannot refer yourself");
+          });
+
+          it("Can register same user on both domains and do cross domain lookup", async () => {
+            const registrantProps1 = await getUserRegisterProps(
+              adr.player1,
+              adr.registrar1,
+              NEW_DOMAIN_NAME2,
+              99999,
+              env.multipass.address
+            );
+            await expect(
+              env.multipass
+                .connect(adr.player1.wallet)
+                .register(
+                  registrantProps1.applicantData,
+                  registrantProps1.registrarMessage.domainName,
+                  registrantProps1.validSignature,
+                  registrantProps1.registrarMessage.deadline,
+                  registrantProps1.referrerData,
+                  registrantProps1.referrerSignature
+                )
+            ).to.emit(env.multipass, "Registered");
+
+            const crossDomainQuery: LibMultipass.NameQueryStruct = {
+              name: ethers.utils.formatBytes32String(
+                adr.player1.name + `.` + NEW_DOMAIN_NAME2
+              ),
+              id: ethers.utils.formatBytes32String(""),
+              domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME2),
+              wallet: ZERO_ADDRESS,
+              targetDomain: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
+            };
+            const resp = await env.multipass
+              .connect(adr.player1.wallet)
+              .resolveRecord(crossDomainQuery);
+            expect(resp[0]).to.be.true;
+            expect(ethers.utils.parseBytes32String(resp[1][1])).to.be.equal(
+              adr.player1.name + `.` + NEW_DOMAIN_NAME1
+            );
+          });
+        });
+      });
+      describe("When free number of free registrations has been reached", () => {
+        beforeEach(async () => {
+          await env.multipass
+            .connect(adr.multipassOwner.wallet)
+            .changeReferralProgram(
+              DEFAULT_REWARD,
+              0,
+              DEFAULT_DISCOUNT,
+              ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1)
+            );
+        });
+        it("Should allow registering with paying ether", async () => {
+          const registrantProps1 = await getUserRegisterProps(
+            adr.player1,
+            adr.registrar1,
+            NEW_DOMAIN_NAME1,
+            99999,
+            env.multipass.address
+          );
+          await expect(
+            env.multipass
+              .connect(adr.player1.wallet)
+              .register(
+                registrantProps1.applicantData,
+                registrantProps1.registrarMessage.domainName,
+                registrantProps1.validSignature,
+                registrantProps1.registrarMessage.deadline,
+                registrantProps1.referrerData,
+                registrantProps1.referrerSignature,
+                { value: DEFAULT_FEE }
+              )
+          ).to.emit(env.multipass, "Registered");
+        });
+        it("Should allow registering fail if not enough ether", async () => {
+          const registrantProps1 = await getUserRegisterProps(
+            adr.player1,
+            adr.registrar1,
+            NEW_DOMAIN_NAME1,
+            99999,
+            env.multipass.address
+          );
+          await expect(
+            env.multipass
+              .connect(adr.player1.wallet)
+              .register(
+                registrantProps1.applicantData,
+                registrantProps1.registrarMessage.domainName,
+                registrantProps1.validSignature,
+                registrantProps1.registrarMessage.deadline,
+                registrantProps1.referrerData,
+                registrantProps1.referrerSignature,
+                { value: NOT_ENOUGH_FEE }
+              )
+          ).to.be.revertedWith(
+            "Multipass->register: Payment value is not enough"
+          );
         });
       });
     });
