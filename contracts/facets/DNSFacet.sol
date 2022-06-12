@@ -109,14 +109,8 @@ contract MultipassDNS is EIP712, IMultipass {
         emit InitializedDomain(registrar, freeRegistrationsNumber, fee, domainName, referrerReward, referralDiscount);
     }
 
-    // function resolveRecordToString(LibMultipass.NameQuery memory query) public view override returns (bool, LibMultipass.Record memory) {
-    //     (bool success, LibMultipass.Record memory r) = resolveRecord(query);
-    //     return ( success, r._RecordStringify());
-    // }
-
     function _enforseDomainNameIsValid(bytes32 domainName) private pure {
         require(domainName._checkNotEmpty(), "activateDomain->Please specify LibMultipass.Domain name");
-        // require(domainName._checkStringFits32b(), "activateDomain->Specified LibMultipass.Domain name is invalid");
     }
 
     function activateDomain(bytes32 domainName) public override onlyOwner {
@@ -142,6 +136,7 @@ contract MultipassDNS is EIP712, IMultipass {
             "Multipass->changeFee: referral rewards would become too high"
         );
         _domain.properties.fee = fee;
+        emit DomainFeeChanged(domainName, fee);
     }
 
     function changeRegistrar(bytes32 domainName, address newRegistrar) public override onlyOwner {
@@ -165,6 +160,8 @@ contract MultipassDNS is EIP712, IMultipass {
         _domain.nameToId[r.name] = bytes32(0);
         _domain.nonce[r.id] += 1;
         _domain.properties.registerSize--;
+
+        emit nameDeleted(_domain.properties.name, r.wallet, r.id, r.name);
     }
 
     function changeReferralProgram(

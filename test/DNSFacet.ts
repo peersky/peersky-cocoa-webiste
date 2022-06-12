@@ -35,6 +35,7 @@ const STRING_0B = "";
 const DEFAULT_FREE_REGISTRATIONS = ethers.BigNumber.from(3);
 const NOT_ENOUGH_FEE = ethers.utils.parseEther("0.17");
 const DEFAULT_FEE = ethers.utils.parseEther("2");
+const FEE_AFTER_CHANGE = ethers.utils.parseEther("3");
 const DEFAULT_DISCOUNT = ethers.utils.parseEther("1");
 const DEFAULT_REWARD = ethers.utils.parseEther("0.5");
 // let adr = await setupAddresses();
@@ -57,7 +58,7 @@ describe(scriptName, () => {
     // console.log("dbg:", adr.contractDeployer, adr.multipassOwner);
     env = await setupEnvironment(adr.contractDeployer, adr.multipassOwner);
   });
-  it("is Owned by contract owner", async () => {
+  it("Is Owned by contract owner", async () => {
     expect(await env.multipass.owner()).to.be.equal(
       adr.multipassOwner.wallet.address
     );
@@ -84,7 +85,6 @@ describe(scriptName, () => {
     expect(await env.multipass.supportsInterface(multipassInterfaceId._hex)).to
       .be.true;
   });
-
   it("Emits and increments when new domain initialized", async () => {
     await expect(
       await env.multipass
@@ -298,6 +298,21 @@ describe(scriptName, () => {
           )
       ).to.be.revertedWith("Multipass->register: domain is not active");
     });
+    it("Emits and changes fee", async () => {
+      await expect(
+        env.multipass
+          .connect(adr.multipassOwner.wallet)
+          .changeFee(
+            ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
+            FEE_AFTER_CHANGE
+          )
+      ).to.emit(env.multipass, "DomainFeeChanged");
+
+      const resp = await env.multipass
+        .connect(adr.player1.wallet)
+        .getDomainState(ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1));
+      expect(resp[1]).to.be.equal(FEE_AFTER_CHANGE);
+    });
     describe("when domain was set to active", () => {
       beforeEach(async () => {
         await env.multipass
@@ -407,7 +422,7 @@ describe(scriptName, () => {
           "Multipass->register: Deadline is less than current block number"
         );
       });
-      it("allows valid registrations for free until free tier has reached", async () => {
+      it("Allows valid registrations for free until free tier has reached", async () => {
         const size = DEFAULT_FREE_REGISTRATIONS.toNumber();
         const players = [
           adr.player1,
@@ -564,7 +579,6 @@ describe(scriptName, () => {
             .resolveRecord(query);
           expect(resp[0]).to.be.true;
         });
-
         it("Reverts registration if user id already exist", async () => {
           const regProps = await getUserRegisterProps(
             adr.player1,
@@ -638,7 +652,29 @@ describe(scriptName, () => {
               )
           ).to.emit(env.multipass, "Referred");
         });
+        it("Can modify record with a valid arguments", async () => {});
+        it("Emits and deletes user", async () => {
+          let query: LibMultipass.NameQueryStruct = {
+            name: ethers.utils.formatBytes32String(
+              adr.player1.name + `.` + NEW_DOMAIN_NAME1
+            ),
+            id: ethers.utils.formatBytes32String(
+              adr.player1.id + `.` + NEW_DOMAIN_NAME1
+            ),
+            wallet: adr.player1.wallet.address,
+            domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
+            targetDomain: ethers.utils.formatBytes32String(""),
+          };
 
+          await expect(
+            env.multipass.connect(adr.multipassOwner.wallet).deleteName(query)
+          ).to.emit(env.multipass, "nameDeleted");
+
+          let resp = await env.multipass
+            .connect(adr.player1.wallet)
+            .resolveRecord(query);
+          expect(resp[0]).to.be.false;
+        });
         describe("When second domain is initialized and active", () => {
           beforeEach(async () => {
             await env.multipass
@@ -806,7 +842,7 @@ describe(scriptName, () => {
               .withrawFunds(adr.multipassOwner.wallet.address)
           ).to.changeEtherBalance(adr.multipassOwner.wallet, DEFAULT_FEE);
         });
-        it("Should allow registering fail if not enough ether", async () => {
+        it("Should revert register if not enough ether", async () => {
           const registrantProps1 = await getUserRegisterProps(
             adr.player1,
             adr.registrar1,

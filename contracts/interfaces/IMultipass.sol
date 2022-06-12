@@ -212,12 +212,12 @@ interface IMultipass {
     event DomainActivated(bytes32 indexed domainName);
     event DomainDeactivated(bytes32 indexed domainName);
 
-    event DomainFeeChanged(bytes32 indexed domainName, uint224 indexed newFee);
+    event DomainFeeChanged(bytes32 indexed domainName, uint256 indexed newFee);
     event FreeRegistrationsChanged(uint256 indexed domainIndex, uint256 indexed newAmount);
 
     event RegistrarChangeRequested(bytes32 indexed domainName, address indexed registrar);
     event DomainNameChangeRequested(uint256 indexed domainIndex, bytes32 indexed NewDomainName);
-    event DomainDeleteRequested(uint256 indexed domainIndex);
+    event nameDeleted(bytes32 indexed domainName, address indexed wallet, bytes32 indexed id, bytes32 name);
     event DomainTTLChangeRequested(bytes32 indexed domainName, uint256 amount);
     event ReferralProgramChanged(
         bytes32 indexed domainName,
