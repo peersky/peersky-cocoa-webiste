@@ -418,7 +418,7 @@ describe(scriptName, () => {
           "Multipass->register: Deadline is less than current block number"
         );
       });
-      it.only("Reverts if signature is outdated", async () => {
+      it("Reverts if signature is outdated", async () => {
         const registrantProps1 = await getUserRegisterProps(
           adr.player2,
           adr.registrar1,

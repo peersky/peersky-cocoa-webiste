@@ -27,9 +27,6 @@ contract MultipassDNS is EIP712, IMultipass {
         address account
     ) internal view returns (bool) {
         bytes32 typedHash = _hashTypedDataV4(keccak256(message));
-        // console.log("account %s, and recovered is %s", account, typedHash);
-        // return account == typedHash ? true : false;
-
         return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
     }
 
@@ -69,8 +66,7 @@ contract MultipassDNS is EIP712, IMultipass {
             );
 
             require(
-                _isValidSignature(registrarMessage, registrarSignature, _domain.properties.registrar) &&
-                    (signatureDeadline > block.number),
+                _isValidSignature(registrarMessage, registrarSignature, _domain.properties.registrar)
                 "Multipass->register: Registrar signature is not valid"
             );
         }
@@ -267,8 +263,6 @@ contract MultipassDNS is EIP712, IMultipass {
             signatureDeadline,
             userRecord.nonce
         );
-        //TODO FIX THIS
-        // bytes memory registrarMessage = abi.encodePacked(domainName, id, newName, nonce, signatureDeadline);
         require(
             _isValidSignature(registrarMessage, registrarSignature, _domain.properties.registrar),
             "Multipass->modifyUserName: Not a valid signature"
@@ -294,11 +288,6 @@ contract MultipassDNS is EIP712, IMultipass {
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
         return _domain.properties;
     }
-
-    // function getDomainStateTest(bytes32 domainName) external view returns (bytes32) {
-    //     LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
-    //     return _domain.properties.name;
-    // }
 
     function getContractState() external view override returns (uint256) {
         return LibMultipass._getContractState();
