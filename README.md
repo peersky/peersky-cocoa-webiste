@@ -1,6 +1,7 @@
 ### Multipassport
 
-Is a simple idea of having your own multiverse passport in crypto world.
+Is a simple idea of having your own multiverse passport in crypto world. 
+This allows to simplify aridrops, loyalty programs and identification of malicious users associating your  names and Ids to blockchain address
 
 Initial implementation is working trough discord bot, however you can have other implementations upon request
 
