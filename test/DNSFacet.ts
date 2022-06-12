@@ -2,20 +2,16 @@ import { AdrSetupResult, EnvSetupResult, SignerIdentity } from "./utils";
 import {
   setupAddresses,
   setupEnvironment,
-  // baseFee,
-  // CONTRACT_NAME,
   CONTRACT_VERSION,
-  // getPlayerNameId,
   getUserRegisterProps,
   signMessage,
 } from "./utils";
-import { LibMultipass } from "../types/contracts/Multipass";
+import { LibMultipass } from "../types/hardhat-diamond-abi/MultipassDiamond";
 import { getInterfaceID } from "../scripts/libraries/utils";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { string } from "hardhat/internal/core/params/argumentTypes";
 import { IMultipass__factory } from "../types/factories/contracts/interfaces/IMultipass__factory";
-// import { Multipass__factory } from "../types/factories/contracts/diamond/";
 const path = require("path");
 const { time, constants } = require("@openzeppelin/test-helpers");
 const { BigNumber } = require("ethers");
@@ -23,23 +19,20 @@ const {
   ZERO_ADDRESS,
   ZERO_BYTES32,
 } = require("@openzeppelin/test-helpers/src/constants");
-// import { Multipass } from '../types/contracts/Multipass'
 
 const scriptName = path.basename(__filename);
 const NEW_DOMAIN_NAME1 = "newDomainName1";
 const NEW_DOMAIN_NAME2 = "newDomainName2";
-const NEW_DOMAIN_NAME3 = "newDomainName3";
-const STRING_32B = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
-const STRING_33B = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
-const STRING_0B = "";
+// const NEW_DOMAIN_NAME3 = "newDomainName3";
+// const STRING_32B = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+// const STRING_33B = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+// const STRING_0B = "";
 const DEFAULT_FREE_REGISTRATIONS = ethers.BigNumber.from(3);
 const NOT_ENOUGH_FEE = ethers.utils.parseEther("0.17");
 const DEFAULT_FEE = ethers.utils.parseEther("2");
 const FEE_AFTER_CHANGE = ethers.utils.parseEther("3");
 const DEFAULT_DISCOUNT = ethers.utils.parseEther("1");
 const DEFAULT_REWARD = ethers.utils.parseEther("0.5");
-// let adr = await setupAddresses();
-// let env = setupEnvironment(adr.contractDeployer, adr.multipassOwner);
 let adr: AdrSetupResult;
 
 let env: EnvSetupResult;
@@ -284,6 +277,7 @@ describe(scriptName, () => {
         id: ethers.utils.formatBytes32String(adr.player1.id),
         wallet: adr.player1.wallet.address,
         nonce: 0,
+        domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
       };
       await expect(
         env.multipass
@@ -346,6 +340,7 @@ describe(scriptName, () => {
           id: ethers.utils.formatBytes32String(adr.player1.id),
           wallet: adr.player1.wallet.address,
           nonce: 0,
+          domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
         };
 
         await expect(
@@ -382,6 +377,7 @@ describe(scriptName, () => {
           id: ethers.utils.formatBytes32String(adr.player1.id),
           wallet: adr.player1.wallet.address,
           nonce: 0,
+          domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
         };
 
         await expect(
@@ -415,6 +411,29 @@ describe(scriptName, () => {
                 adr.registrar1
               ),
               registrarMessage.deadline,
+              emptyUserQuery,
+              ZERO_BYTES32
+            )
+        ).to.be.revertedWith(
+          "Multipass->register: Deadline is less than current block number"
+        );
+      });
+      it.only("Reverts if signature is outdated", async () => {
+        const registrantProps1 = await getUserRegisterProps(
+          adr.player2,
+          adr.registrar1,
+          NEW_DOMAIN_NAME1,
+          1,
+          env.multipass.address
+        );
+        await expect(
+          env.multipass
+            .connect(adr.player1.wallet)
+            .register(
+              registrantProps1.applicantData,
+              registrantProps1.registrarMessage.domainName,
+              registrantProps1.validSignature,
+              registrantProps1.registrarMessage.deadline,
               emptyUserQuery,
               ZERO_BYTES32
             )
@@ -652,7 +671,61 @@ describe(scriptName, () => {
               )
           ).to.emit(env.multipass, "Referred");
         });
-        it("Can modify record with a valid arguments", async () => {});
+        it("Can modify username with a valid arguments", async () => {
+          const registrarMessage = {
+            name: ethers.utils.formatBytes32String(
+              adr.player1.name + `.` + NEW_DOMAIN_NAME1 + `new`
+            ),
+            id: ethers.utils.formatBytes32String(
+              adr.player1.id + `.` + NEW_DOMAIN_NAME1
+            ),
+            domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
+            deadline: ethers.BigNumber.from(99999),
+            nonce: ethers.BigNumber.from(1),
+          };
+
+          const modifyQuery: LibMultipass.NameQueryStruct = {
+            name: ethers.utils.formatBytes32String(
+              adr.player1.name + `.` + NEW_DOMAIN_NAME1
+            ),
+            id: registrarMessage.id,
+            domainName: registrarMessage.domainName,
+            wallet: adr.player1.wallet.address,
+            targetDomain: ethers.utils.formatBytes32String(""),
+          };
+
+          const validSignature = await signMessage(
+            registrarMessage,
+            env.multipass.address,
+            adr.registrar1
+          );
+
+          await expect(
+            env.multipass
+              .connect(adr.player1.wallet)
+              .modifyUserName(
+                registrarMessage.domainName,
+                modifyQuery,
+                registrarMessage.name,
+                validSignature,
+                registrarMessage.deadline
+              )
+          ).to.be.revertedWith("Multipass->modifyUserName: Not enough payment");
+
+          const valueToPay = env.multipass.getModifyPrice(modifyQuery);
+          await expect(
+            env.multipass
+              .connect(adr.player1.wallet)
+              .modifyUserName(
+                registrarMessage.domainName,
+                modifyQuery,
+                registrarMessage.name,
+                validSignature,
+                registrarMessage.deadline,
+                { value: valueToPay }
+              )
+          ).to.be.emit(env.multipass, "UserRecordModified");
+        });
         it("Emits and deletes user", async () => {
           let query: LibMultipass.NameQueryStruct = {
             name: ethers.utils.formatBytes32String(
@@ -869,47 +942,4 @@ describe(scriptName, () => {
       });
     });
   });
-
-  // describe("When new record is being made", () => {
-  //   beforeEach(() => {});
-  //   it("should make new record in DNS", async () => {});
-  //   it("should ");
-  // });
-  // it("Should record Shopyto token address as native payment token", () => {});
-  // it("Should record non-Shopyto token tx fee", () => {});
-  // it("Should allow to mint and set price", () => {});
-  // it("Should emit event on item is minted", () => {});
-  // it("Should allow to transfer ownership", () => {});
-  // it("Should allow to change base token with current token owners signature", () => {});
-  // it("Should allow to change non native payments fee with current native payment token owners signature", () => {});
-
-  // describe("When articules are being minted", () => {
-  //   describe("When items with id already minted", () => {
-  //     it("Should increase capacity of token id by mint amount", () => {});
-  //   });
-  //   it("Should mint token if Id does not exist", () => {});
-  //   it("Should emit event on item is minted", () => {});
-  //   it("Should throw if price is not set", () => {});
-  //   it("Should throw if uri is not set", () => {});
-  //   it("Should throw if ammount not specified", () => {});
-  //   it("Should allow to purchase item", () => {});
-  // });
-  // describe("When individual item is being purchased", () => {
-  //   it("Should thow if item does not exist", () => {});
-  //   it("Should throw if amount is over the supply", () => {});
-  //   it("Should throw if payment amount is incorrect", () => {});
-  //   it("Should deduct supply by amount on success", () => {});
-  //   it("Should emit on success", () => {});
-  // });
-  // describe("When multiple items (shopping cart) is being purchased", () => {
-  //   it("Should thow if one of items does not exist", () => {});
-  //   it("Should throw if one of items amount is over the supply", () => {});
-  //   it("Should throw if payment amount is incorrect", () => {});
-  //   it("Should not deduct any supply if transaction fails", () => {});
-  //   it("Should deduct supply of each item by amount on success", () => {});
-
-  //   it("Should emit on success", () => {});
-  // });
-
-  // it("should not allow to purchase for incorrect price", () => {});
 });

@@ -232,39 +232,58 @@ contract MultipassDNS is EIP712, IMultipass {
         }
     }
 
+    function getModifyPrice(LibMultipass.NameQuery memory query) public view override returns (uint256) {
+        (bool userExists, LibMultipass.Record memory record) = LibMultipass.resolveRecord(query);
+        require(userExists == true, "getModifyPrice->user not found ");
+        return LibMultipass._getModifyPrice(record);
+    }
+
     function modifyUserName(
         bytes32 domainName,
-        bytes32 id,
+        LibMultipass.NameQuery memory query,
         bytes32 newName,
-        uint96 nonce,
         bytes memory registrarSignature,
         uint256 signatureDeadline
     ) public payable override {
+        query.targetDomain = domainName;
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
         require(_domain.properties.isActive, "Multipass->modifyUserName: LibMultipass.Domain is not active");
-        require(newName.length != 0, "Multipass->modifyUserName: Name cannot be empty");
+        require(newName != bytes32(0), "Multipass->modifyUserName: Name cannot be empty");
         require(
             signatureDeadline >= block.number,
             "Multipass->modifyUserName: Signature deadline must be greater than current block number"
         );
 
+        (bool userExists, LibMultipass.Record memory userRecord) = LibMultipass.resolveRecord(query);
+        LibMultipass.Record memory newRecord = userRecord;
+        bytes32 oldName = newRecord.name;
+        newRecord.name = newName;
+        require(userExists == true, "user does not exist, use register() instead");
+        bytes memory registrarMessage = abi.encode(
+            LibMultipass._TYPEHASH,
+            newRecord.name,
+            newRecord.id,
+            newRecord.domainName,
+            signatureDeadline,
+            userRecord.nonce
+        );
         //TODO FIX THIS
-        bytes memory registrarMessage = abi.encodePacked(domainName, id, newName, nonce, signatureDeadline);
+        // bytes memory registrarMessage = abi.encodePacked(domainName, id, newName, nonce, signatureDeadline);
         require(
             _isValidSignature(registrarMessage, registrarSignature, _domain.properties.registrar),
             "Multipass->modifyUserName: Not a valid signature"
         );
-        uint256 feeCoefficient = SafeMath.div(_domain.properties.fee, 10);
-        uint256 nonceCoefficient = SafeMath.mul(nonce, nonce);
-        uint256 _fee = SafeMath.add(SafeMath.mul(feeCoefficient, nonceCoefficient), _domain.properties.fee);
+
+        uint256 _fee = LibMultipass._getModifyPrice(newRecord);
+
         require(msg.value >= _fee, "Multipass->modifyUserName: Not enough payment");
-        require(_domain.nonce[id] == nonce, "Multipass->modifyUserName: invalid nonce");
+        require(_domain.nonce[userRecord.id] == userRecord.nonce, "Multipass->modifyUserName: invalid nonce");
         require(_domain.nameToId[newName] == bytes32(0), "OveMultipass->modifyUserName: new name already exists");
 
-        _domain.nonce[id] += 1;
-        _domain.nameToId[newName] = id;
-        _domain.idToName[id] = newName;
-        _domain.nameToId[_domain.idToName[id]] = bytes32(0);
+        LibMultipass._setRecord(_domain, newRecord);
+        _domain.nameToId[_domain.idToName[newRecord.id]] = bytes32(0);
+
+        emit UserRecordModified(newRecord, oldName, domainName);
     }
 
     function getBalance() external view override returns (uint256) {

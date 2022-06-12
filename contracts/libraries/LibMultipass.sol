@@ -4,6 +4,7 @@ pragma solidity ^0.8.4;
 // import "./LibDiamondOwner.sol";
 // import { IMultipass } from "../interfaces/sol";
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 library LibMultipass {
     /**
@@ -61,6 +62,7 @@ library LibMultipass {
         bytes32 name;
         bytes32 id;
         uint96 nonce;
+        bytes32 domainName;
     }
 
     // struct RecordBytes32 {
@@ -187,6 +189,13 @@ library LibMultipass {
         ms.domainNameToIndex[domainName] = domainIndex;
     }
 
+    function _getModifyPrice(LibMultipass.Record memory userRecord) internal view returns (uint256) {
+        LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(userRecord.domainName);
+        uint256 feeCoefficient = SafeMath.div(_domain.properties.fee, 10);
+        uint256 nonceCoefficient = SafeMath.mul(userRecord.nonce, userRecord.nonce);
+        return SafeMath.add(SafeMath.mul(feeCoefficient, nonceCoefficient), _domain.properties.fee);
+    }
+
     function _resolveRecord(NameQuery memory query) private view returns (bool, Record memory) {
         if ((query.wallet == address(0)) && (query.id == bytes32(0)) && (query.name == bytes32(0))) {
             Record memory rv;
@@ -224,12 +233,12 @@ library LibMultipass {
     /** @dev this function bears no security checks, it will ignore nonce in arg and will increment
      *   nonce value stored in domain instread
      */
-    function _setRecord(DomainNameService storage domain, Record memory record) private {
+    function _setRecord(DomainNameService storage domain, Record memory record) internal {
         domain.addressToId[record.wallet] = record.id;
         domain.idToAddress[record.id] = record.wallet;
         domain.idToName[record.id] = record.name;
         domain.nameToId[record.name] = record.id;
-        domain.nonce[record.id] += record.nonce;
+        domain.nonce[record.id] += 1;
     }
 
     function _resolveFromAddress(address _address, DomainNameService storage _domain)
@@ -243,6 +252,7 @@ library LibMultipass {
         resolved.name = _domain.idToName[resolved.id];
         resolved.nonce = _domain.nonce[resolved.id];
         resolved.wallet = _address;
+        resolved.domainName = _domain.properties.name;
 
         if (resolved.id == bytes32(0)) {
             return (false, resolved);

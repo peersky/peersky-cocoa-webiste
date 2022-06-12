@@ -422,6 +422,7 @@ export const getUserRegisterProps = async (
     id: ethers.utils.formatBytes32String(account.id + `.` + domainName),
     wallet: account.wallet.address,
     nonce: 0,
+    domainName: ethers.utils.formatBytes32String(domainName),
   };
 
   const referrerData: LibMultipass.NameQueryStruct = {

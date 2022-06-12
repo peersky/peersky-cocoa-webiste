@@ -147,16 +147,14 @@ interface IMultipass {
      * newAddress and newName should be set and be unique in current LibMultipass.Domain
      *
      * @param domainName LibMultipass.Domain
-     * @param id user id
      * @param newName new name
      *
      *  Emits an {Modified} event.
      */
     function modifyUserName(
         bytes32 domainName,
-        bytes32 id,
+        LibMultipass.NameQuery memory query,
         bytes32 newName,
-        uint96 nonce,
         bytes memory registrarSignature,
         uint256 signatureDeadline
     ) external payable;
@@ -198,6 +196,8 @@ interface IMultipass {
      */
     function withrawFunds(address to) external;
 
+    function getModifyPrice(LibMultipass.NameQuery memory query) external view returns (uint256);
+
     event fundsWithdawn(uint256 indexed amount, address indexed account);
 
     // event InitializedDomain(uint256 indexed index, bytes32 indexed domainName);
@@ -232,5 +232,9 @@ interface IMultipass {
 
     event Referred(LibMultipass.Record refferrer, LibMultipass.Record newRecord, bytes32 indexed domainName);
 
-    event Modified(bytes32 indexed domainName, bytes32 newName, bytes32 indexed id, address indexed newAddress);
+    event UserRecordModified(
+        LibMultipass.Record indexed newRecord,
+        bytes32 indexed oldName,
+        bytes32 indexed domainName
+    );
 }
