@@ -779,6 +779,33 @@ describe(scriptName, () => {
               )
           ).to.emit(env.multipass, "Registered");
         });
+        it("Should be able withraw ammount payed", async () => {
+          const registrantProps1 = await getUserRegisterProps(
+            adr.player1,
+            adr.registrar1,
+            NEW_DOMAIN_NAME1,
+            99999,
+            env.multipass.address
+          );
+          await expect(
+            env.multipass
+              .connect(adr.player1.wallet)
+              .register(
+                registrantProps1.applicantData,
+                registrantProps1.registrarMessage.domainName,
+                registrantProps1.validSignature,
+                registrantProps1.registrarMessage.deadline,
+                registrantProps1.referrerData,
+                registrantProps1.referrerSignature,
+                { value: DEFAULT_FEE }
+              )
+          ).to.emit(env.multipass, "Registered");
+          await expect(
+            await env.multipass
+              .connect(adr.multipassOwner.wallet)
+              .withrawFunds(adr.multipassOwner.wallet.address)
+          ).to.changeEtherBalance(adr.multipassOwner.wallet, DEFAULT_FEE);
+        });
         it("Should allow registering fail if not enough ether", async () => {
           const registrantProps1 = await getUserRegisterProps(
             adr.player1,
