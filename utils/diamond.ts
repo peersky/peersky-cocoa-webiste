@@ -41,13 +41,15 @@ export function toSignature(abiElement: unknown): string {
 const signaturesToIgnore = [
   // The SolidState contracts adds a `supportsInterface` function,
   // but we already provide that function through DiamondLoupeFacet
-  ["DiamondLoupeFacet$", "supportsInterface(bytes4)"],
+  // ["DiamondLoupeFacet", "supportsInterface(bytes4)"],
+  ["", ""],
 ] as const;
 
 export function isIncluded(contractName: string, signature: string): boolean {
   const isIgnored = signaturesToIgnore.some(
     ([contractNameMatcher, ignoredSignature]) => {
       if (contractName.match(contractNameMatcher)) {
+        // console.log(contractName, ignoredSignature);
         return signature === ignoredSignature;
       } else {
         return false;
@@ -132,7 +134,7 @@ export class DiamondChanges {
    * @returns The `cuts` for your Diamond
    */
   public getFacetCuts(contractName: string, contract: Contract): FacetCut[] {
-    const facetCuts = [];
+    const facetCuts: FacetCut[] = [];
 
     if (this.previous) {
       const diff = this.diffSelectors(contractName, contract, this.previous);
@@ -196,7 +198,7 @@ export class DiamondChanges {
       }
     }
 
-    const removeCuts = [];
+    const removeCuts: FacetCut[] = [];
 
     if (toRemove.length) {
       removeCuts.push({

@@ -94,35 +94,25 @@ export default {
       },
     ],
   },
-  diamondAbi: {
-    // (required) The name of your Diamond ABI
-    name: "MultipassDiamond",
-    include: ["Facet"],
-    // We explicitly set `strict` to `true` because we want to validate our facets don't accidentally provide overlapping functions
-    strict: true,
-    // We use our diamond utils to filter some functions we ignore from the combined ABI
-    filter(
-      abiElement: unknown,
-      index: number,
-      abi: unknown[],
-      fullyQualifiedName: string
-    ) {
-      const signature = diamondUtils.toSignature(abiElement);
-      return diamondUtils.isIncluded(fullyQualifiedName, signature);
+  diamondAbi: [
+    {
+      // (required) The name of your Diamond ABI
+      name: "MultipassDiamond",
+      include: ["DNSFacet", "OwnershipFacet", "DiamondLoupeFacet"],
+      // We explicitly set `strict` to `true` because we want to validate our facets don't accidentally provide overlapping functions
+      strict: true,
+      // We use our diamond utils to filter some functions we ignore from the combined ABI
+      filter(
+        abiElement: unknown,
+        index: number,
+        abi: unknown[],
+        fullyQualifiedName: string
+      ) {
+        const signature = diamondUtils.toSignature(abiElement);
+        return diamondUtils.isIncluded(fullyQualifiedName, signature);
+      },
     },
-    // include: [
-    //   "Multipass",
-    //   "OwnershipFacet",
-    //   "DiamondCutFacet",
-    //   "DiamondLoupeFacet",
-    // ],
-    // exclude: [
-    //   "IMultipass",
-    //   "IERC165",
-    //   `hardhat-diamond-abi\/.*`,
-    //   `diamond/initializers\/.*`,
-    // ],
-  },
+  ],
   typechain: {
     outDir: "types",
     target: "ethers-v5",

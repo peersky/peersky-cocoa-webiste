@@ -6,11 +6,10 @@ import {
   getUserRegisterProps,
   signMessage,
 } from "./utils";
-import { LibMultipass } from "../types/hardhat-diamond-abi/MultipassDiamond";
+import { LibMultipass } from "../types/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 import { getInterfaceID } from "../scripts/libraries/utils";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { string } from "hardhat/internal/core/params/argumentTypes";
 import { IMultipass__factory } from "../types/factories/contracts/interfaces/IMultipass__factory";
 const path = require("path");
 const { time, constants } = require("@openzeppelin/test-helpers");

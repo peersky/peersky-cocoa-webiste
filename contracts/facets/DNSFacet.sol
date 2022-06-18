@@ -66,7 +66,7 @@ contract MultipassDNS is EIP712, IMultipass {
             );
 
             require(
-                _isValidSignature(registrarMessage, registrarSignature, _domain.properties.registrar)
+                _isValidSignature(registrarMessage, registrarSignature, _domain.properties.registrar),
                 "Multipass->register: Registrar signature is not valid"
             );
         }

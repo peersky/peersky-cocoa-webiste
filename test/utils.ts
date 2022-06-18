@@ -4,7 +4,7 @@
 // import { time } from "@openzeppelin/test-helpers";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { MultipassDiamond } from "../types/hardhat-diamond-abi/";
+import { MultipassDiamond } from "../types/hardhat-diamond-abi/HardhatDiamondABI.sol";
 const {
   ZERO_ADDRESS,
   ZERO_BYTES32,
@@ -12,7 +12,7 @@ const {
 import { BigNumber, BytesLike, Wallet } from "ethers";
 // @ts-ignore
 import { deploySequence } from "../scripts/deploy.js";
-import { LibMultipass } from "../types/hardhat-diamond-abi/MultipassDiamond";
+import { LibMultipass } from "../types/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 export interface SignerIdentity {
   name: string;
   id: string;
