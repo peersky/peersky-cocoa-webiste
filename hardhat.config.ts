@@ -69,9 +69,9 @@ export default {
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
     },
   },
-  // paths: {
-  //   sources: "/contracts/*/**",
-  // },
+  paths: {
+    sources: "./contracts",
+  },
   solidity: {
     compilers: [
       {

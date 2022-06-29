@@ -91,7 +91,7 @@ contract MultipassDNS is EIP712, IMultipass {
             "Multipass->initializeDomain: Domain name already exists"
         );
         (bool status, uint256 result) = SafeMath.tryAdd(referrerReward, referralDiscount);
-        require(status == true, "Multipass->initializeDomain: referrerReward + referralDiscount cause overflow");
+        require(status == true, "Multipass->initializeDomain: referrerReward + referralDiscount overflow");
         require(result <= fee, "Multipass->initializeDomain: referral values are higher then fee itself");
 
         LibMultipass._initializeDomain(
@@ -169,7 +169,7 @@ contract MultipassDNS is EIP712, IMultipass {
         _enforseDomainNameIsValid(domainName);
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
         (bool status, uint256 result) = SafeMath.tryAdd(referrerReward, referralDiscount);
-        require(status == true, "Multipass->changeReferralProgram: referrerReward + referralDiscount cause overflow");
+        require(status == true, "Multipass->changeReferralProgram: referrerReward + referralDiscount overflow");
         require(
             result <= _domain.properties.fee,
             "Multipass->changeReferralProgram: referral values are higher then the fee itself"

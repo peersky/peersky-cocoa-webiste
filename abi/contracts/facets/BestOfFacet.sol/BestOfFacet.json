@@ -1,0 +1,21 @@
+[
+  "event ProposersRevealed(uint256 indexed,address[],uint256,tuple(address,uint256)[])",
+  "event RoundFinished(uint256 indexed,uint256 indexed,tuple(address,uint256)[])",
+  "function _addJoinRequirements(uint256,tuple(tuple(uint8,address,uint256),uint256,bool,uint8))",
+  "function _popJoinRequirements(uint256)",
+  "function _removeJoinRequirement(uint256,uint256)",
+  "function createGame(address,uint256,uint256) payable",
+  "function fulfillTokenRequirement(address,uint256,tuple(tuple(uint8,address,uint256),uint256,bool,uint8)) payable",
+  "function fulfillTokenRequirements(address,uint256,tuple(tuple(uint8,address,uint256),uint256,bool,uint8)[]) payable",
+  "function getCreateGameRequirements() view returns (tuple(tuple(uint8,address,uint256),uint256,bool,uint8))",
+  "function getJoinRequirements(uint256) view returns (tuple(tuple(uint8,address,uint256),uint256,bool,uint8)[])",
+  "function init(tuple(string,uint256,uint256,uint256,uint256,tuple(uint8,address,uint256),bool,uint256,uint256,uint256,uint256,uint8))",
+  "function joinGame(uint256) payable",
+  "function onERC1155BatchReceived(address,address,uint256[],uint256[],bytes) pure returns (bytes4)",
+  "function onERC1155Received(address,address,uint256,uint256,bytes) view returns (bytes4)",
+  "function openRegistration(uint256)",
+  "function startGame(uint256)",
+  "function submitProposal(uint256,bytes32,bytes,string)",
+  "function submitVote(uint256,bytes32,uint256[3],bytes)",
+  "function supportsInterface(bytes4) pure returns (bool)"
+]
