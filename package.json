@@ -51,6 +51,7 @@
     "@types/node": "^17.0.36",
     "cli-table": "^0.3.11",
     "hardhat-gas-reporter": "^1.0.7",
+    "ipfs-http-client": "50.1.2",
     "solidity-coverage": "^0.7.16",
     "solidity-parser-antlr": "^0.4.11",
     "ts-node": "^10.8.0",

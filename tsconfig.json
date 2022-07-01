@@ -7,6 +7,6 @@
     "resolveJsonModule": true,
     "outDir": "dist"
   },
-  "include": ["./scripts", "./test"],
+  "include": ["./scripts", "./test", "utils/ipfs.ts", "utils/diamond.ts", "utils/ipfs.js"],
   "files": ["hardhat.config.ts"]
 }

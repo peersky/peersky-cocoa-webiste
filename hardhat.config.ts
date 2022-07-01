@@ -8,6 +8,8 @@ import "hardhat-diamond-abi";
 import "@typechain/hardhat";
 import "hardhat-abi-exporter";
 import * as diamondUtils from "./utils/diamond";
+import * as ipfsUtils from "./utils/ipfs";
+import fs from "fs";
 
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
@@ -16,6 +18,13 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
     console.log(account.address);
   }
 });
+
+task("upload2IPFS", "Uploads files to ipfs")
+  .addParam("path", "file path")
+  .setAction(async (taskArgs) => {
+    const data = fs.readFileSync(taskArgs.path);
+    await ipfsUtils.upload2IPFS(data);
+  });
 
 // task("register", "Registers participant")
 //   .addParam("scoreBoard", "The board address")
@@ -102,6 +111,21 @@ export default {
       // We explicitly set `strict` to `true` because we want to validate our facets don't accidentally provide overlapping functions
       strict: true,
       // We use our diamond utils to filter some functions we ignore from the combined ABI
+      filter(
+        abiElement: unknown,
+        index: number,
+        abi: unknown[],
+        fullyQualifiedName: string
+      ) {
+        // const changes = new diamondUtils.DiamondChanges();
+        const signature = diamondUtils.toSignature(abiElement);
+        return diamondUtils.isIncluded(fullyQualifiedName, signature);
+      },
+    },
+    {
+      name: "BestOfDiamond",
+      include: ["BestOfFacet", "OwnershipFacet", "DiamondLoupeFacet"],
+      strict: true,
       filter(
         abiElement: unknown,
         index: number,
