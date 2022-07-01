@@ -1,5 +1,5 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.4;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.4;
 // // import "@solidstate/contracts/token/ERC721/SolidStateERC721.sol";
 // // import "@openzeppelin/contracts/token/ERC721/";
 // // import {IERC4671} from "../interfaces/IERC4671-draft.sol";

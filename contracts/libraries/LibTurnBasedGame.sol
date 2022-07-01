@@ -105,7 +105,7 @@ library LibTBG {
         }
     }
 
-    function _getGame(uint256 gameId) private view returns (GameInstance storage) {
+    function _getGame(uint256 gameId) internal view returns (GameInstance storage) {
         TBGStorageStruct storage tbg = TBGStorage();
         return tbg.games[gameId];
     }

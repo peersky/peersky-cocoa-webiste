@@ -5,7 +5,6 @@ pragma solidity ^0.8.0;
 // https://github.com/mudgen/diamond-3-hardhat
 
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
-
 library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
 

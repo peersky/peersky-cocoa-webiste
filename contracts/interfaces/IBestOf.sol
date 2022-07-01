@@ -32,26 +32,20 @@ interface IBestOf {
         TokenMust must;
     }
 
-    struct newGameInitializer {
-        string gameName;
-        uint256 blocksPerTurn;
-        uint256 turnsPerRound;
-        uint256 maxPlayersSize;
-        uint256 minPlayersSize;
-        Token rankToken;
-        bool canJoinGameWhenStarted;
-        uint256 maxRounds;
-        uint256 blocksToJoin;
-        uint256 gamePrice;
-        uint256 joinGamePrice;
-        LibTBG.CanJoin joinPolicy;
-        // bool canJoinGameWhenStarted
-        // bool canPayToJoin;
-    }
+
     struct Score {
         address participant;
         uint256 score;
     }
+
+        struct BOGSettings {
+        uint256 gamePrice;
+        uint256 joinGamePrice;
+        TokenRequirement newGameReq;
+        Token rankToken;
+        bool contractInitialized;
+    }
+
     event ProposersRevealed(uint256 indexed gameId, address[] proposers, uint256 salt, Score[] scores);
     event RoundFinished(uint256 indexed gameId, uint256 indexed round, Score[] scores);
 }

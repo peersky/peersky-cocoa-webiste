@@ -9,7 +9,7 @@ import {IBestOf} from "../interfaces/IBestOf.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import {IERC1155Receiver} from "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
+import {IERC1155Receiver} from "../interfaces/IERC1155Receiver.sol";
 import "hardhat/console.sol";
 
 contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
@@ -29,12 +29,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         uint256 gameId;
     }
 
-    struct BOGSettings {
-        uint256 gamePrice;
-        uint256 joinGamePrice;
-        TokenRequirement newGameReq;
-        Token rankToken;
-    }
+
 
     struct Vote {
         uint256[3] votedFor;
@@ -68,6 +63,12 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         _;
     }
 
+    modifier onlyInitialized {
+         BOGSettings storage settings = BOGStorage();
+        require(settings.contractInitialized, "BestOfGame: onlyInitialized: contract is not initialized yet");
+        _;
+    }
+
     function BOGStorage() internal pure returns (BOGSettings storage bog) {
         bytes32 position = LibTBG.getImplemenationDataStorage();
         assembly {
@@ -93,7 +94,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         bytes memory message,
         bytes memory signature,
         address account
-    ) internal view returns (bool) {
+    ) private view returns (bool) {
         bytes32 typedHash = _hashTypedDataV4(keccak256(message));
         return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
     }
@@ -130,14 +131,25 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
                 //Vote is not correct / voter did not vote => gives 3 points to everyone
                 score += 3;
             } else {
+                bytes memory encodedMessageSource;
+                 {
+                    encodedMessageSource = abi.encode(gameId,salt);
+                }
 
-                 bytes memory message = abi.encode(_VOTE_PROOF_TYPEHASH,keccak256(abi.encode(gameId,salt, gameId.getRound(), gameId.getTurn(), game.votes[voter].votedFor[0], game.votes[voter].votedFor[1], game.votes[voter].votedFor[2])));
+                {
+                    encodedMessageSource = abi.encode(encodedMessageSource, gameId._getGame().currentRound,  gameId._getGame().currentTurn);
+                }
+              {  encodedMessageSource = abi.encode(encodedMessageSource, game.votes[voter].votedFor[0],
+                 game.votes[voter].votedFor[1], game.votes[voter].votedFor[2]);}
+
+                { bytes memory message = abi.encode(_VOTE_PROOF_TYPEHASH,
+                keccak256(abi.encode(encodedMessageSource)));
 
                 if(!_isValidSignature(message, game.votes[voter].proof,participant))
                 {
                     console.log("ERROR: vote was not signed by the participant");
                     return score;
-                }
+                }}
 
                 if (game.votes[voter].votedFor[0] == participantIdx) score += 3;
                 if (game.votes[voter].votedFor[1] == participantIdx) score += 2;
@@ -153,7 +165,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         uint256 gameId,
         uint256 salt,
         address[] memory proposers
-    ) private {
+    ) public onlyInitialized {
         BOGInstance storage game = getGameStorage(gameId);
         require(gameId.isGameActive() == true, "_reveal->Game Not Active");
         require(gameId.canEndTurn() == true, "_reveal->cannot do this now");
@@ -185,34 +197,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         }
     }
 
-    function init(newGameInitializer memory initializer) public onlyOwner {
-        BOGSettings storage _BOG = BOGStorage();
-        _BOG.gamePrice = initializer.gamePrice;
-        _BOG.joinGamePrice = initializer.joinGamePrice;
-        require(
-            initializer.rankToken.tokenType == TokenTypes.ERC1155,
-            "BestOfGame->init: Rank token can be only typof ERC1155"
-        );
-        // Ideally we want to check interface of rank token, however there is no yet fixed non transferrable ERC1155 inerface standard
-        // IERC1155 ERC1155Contract = IERC1155(initializer.rankToken.tokenAddress);
-        // require(
-        //     ERC1155Contract.supportsInterface(type(IERC1155).interfaceId),
-        //     "BestOfGame->init: rank token address does not support IERC1155 interface"
-        // );
-        require(initializer.rankToken.tokenAddress != address(0), "BestOfGame->init: rank token required");
-        _BOG.rankToken = initializer.rankToken;
 
-        LibTBG.GameSettings memory settings;
-        settings.blocksPerTurn = initializer.blocksPerTurn;
-        settings.turnsPerRound = initializer.turnsPerRound;
-        settings.maxPlayersSize = initializer.maxPlayersSize;
-        settings.minPlayersSize = initializer.minPlayersSize;
-        settings.joinPolicy = initializer.joinPolicy;
-        // settings.canJoinGameWhenStarted = initializer.canJoinGameWhenStarted;
-        settings.maxRounds = initializer.maxRounds;
-        settings.blocksToJoin = initializer.blocksToJoin;
-        settings.init();
-    }
 
     // function hasRequiredToken(address subject, Token memory token) public view returns (bool) {
     //     if (token.tokenType == TokenTypes.ERC20) {
@@ -249,7 +234,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         address applicant,
         uint256 gameId,
         TokenRequirement memory req
-    ) public payable {
+    ) private  {
         BOGInstance storage game = getGameStorage(gameId);
 
         if (req.token.tokenType == TokenTypes.NATIVE) {
@@ -308,7 +293,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         address applicant,
         uint256 gameId,
         TokenRequirement[] memory reqs
-    ) public payable {
+    ) private  {
         for (uint256 i = 0; i < reqs.length; i++) {
             fulfillTokenRequirement(applicant, gameId, reqs[i]);
         }
@@ -318,7 +303,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         address gameMaster,
         uint256 gameId,
         uint256 gameRank
-    ) public payable {
+    ) public payable onlyInitialized {
         BOGSettings storage settings = BOGStorage();
         // if (!isWhitelisted(msg.sender, settings.newGameWhitelistTokens)) {
         //     require(msg.value > settings.gamePrice, "BestOfFacet->createGame: not enough payment");
@@ -338,7 +323,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         game.createdBy = msg.sender;
     }
 
-    function openRegistration(uint256 gameId) public onlyGameCreator(gameId) {
+    function openRegistration(uint256 gameId) public onlyGameCreator(gameId) onlyInitialized {
         // BOGInstance storage game = getGameStorage(gameId);
         gameId.openRegistration();
         // game.registrationOpen = true;
@@ -349,22 +334,22 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
     //     game.inviteTokens.push(token);
     // }
 
-    function _addJoinRequirements(uint256 gameId, TokenRequirement memory requirement) public {
+    function addJoinRequirements(uint256 gameId, TokenRequirement memory requirement) public onlyInitialized onlyGameCreator(gameId){
         BOGInstance storage game = getGameStorage(gameId);
         game.joinRequirements.push(requirement);
     }
 
-    function _popJoinRequirements(uint256 gameId) public onlyOwner {
+    function popJoinRequirements(uint256 gameId) public onlyInitialized onlyGameCreator(gameId) {
         BOGInstance storage game = getGameStorage(gameId);
         game.joinRequirements.pop();
     }
 
-    function _removeJoinRequirement(uint256 gameId, uint256 index) public onlyOwner {
+    function removeJoinRequirement(uint256 gameId, uint256 index) public onlyInitialized onlyGameCreator(gameId) {
         BOGInstance storage game = getGameStorage(gameId);
         delete game.joinRequirements[index];
     }
 
-    function getJoinRequirements(uint256 gameId) public view returns (TokenRequirement[] memory) {
+    function getJoinRequirements(uint256 gameId) public view returns (TokenRequirement[] memory)  {
         BOGInstance storage game = getGameStorage(gameId);
         return game.joinRequirements;
     }
@@ -374,14 +359,14 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         return settings.newGameReq;
     }
 
-    function joinGame(uint256 gameId) public payable {
+    function joinGame(uint256 gameId) public payable onlyInitialized {
         BOGInstance storage game = getGameStorage(gameId);
         // require(game.registrationOpen == true, "This game has no registration open");
         fulfillTokenRequirements(msg.sender, gameId, game.joinRequirements);
         gameId.addPlayer(msg.sender);
     }
 
-    function startGame(uint256 gameId) public {
+    function startGame(uint256 gameId) public  onlyInitialized {
         gameId.startGame();
     }
 
@@ -408,7 +393,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         bytes32 proposerHidden,
         bytes memory proof,
         string memory proposal
-    ) public onlyGameMaster(gameId) {
+    ) public onlyGameMaster(gameId) onlyInitialized {
         BOGInstance storage game = getGameStorage(gameId);
         require(gameId.gameExists(), "Game does not exist");
 
@@ -428,7 +413,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         bytes32 voterHidden,
         uint256[3] memory votes,
         bytes memory proof
-    ) public onlyGameMaster(gameId) {
+    ) public onlyGameMaster(gameId) onlyInitialized {
         BOGInstance storage game = getGameStorage(gameId);
 
         require(votes[0] != votes[1], "submitVote: cannot vote same items: 0-1");
@@ -449,7 +434,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         uint256,
         uint256,
         bytes calldata
-    ) public view override returns (bytes4) {
+    ) public view override onlyInitialized returns (bytes4)  {
         if (operator == address(this)) {
             // uint256 gameId = uint256(data);
             // BOGInstance storage game = getGameStorage(gameId);
@@ -471,13 +456,15 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         uint256[] calldata,
         uint256[] calldata,
         bytes calldata
-    ) external pure override returns (bytes4) {
+    ) external view override onlyInitialized returns (bytes4)  {
         return bytes4("");
     }
 
-    function supportsInterface(bytes4) public pure override returns (bool) {
-        assert(false);
-        return false;
+
+    function getContractState() public pure returns(BOGSettings memory)
+    {
+     BOGSettings storage settings = BOGStorage();
+     return settings;
     }
 
     // function getJoinPrice(uint256 rank) {
