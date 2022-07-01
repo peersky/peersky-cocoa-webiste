@@ -15,5 +15,13 @@
   "function removeJoinRequirement(uint256,uint256)",
   "function startGame(uint256)",
   "function submitProposal(uint256,bytes32,bytes,string)",
-  "function submitVote(uint256,bytes32,uint256[3],bytes)"
+  "function submitVote(uint256,bytes32,uint256[3],bytes)",
+  "function facetAddress(bytes4) view returns (address)",
+  "function facetAddresses() view returns (address[])",
+  "function facetFunctionSelectors(address) view returns (bytes4[])",
+  "function facets() view returns (tuple(address,bytes4[])[])",
+  "function supportsInterface(bytes4) view returns (bool)",
+  "event OwnershipTransferred(address indexed,address indexed)",
+  "function owner() view returns (address)",
+  "function transferOwnership(address)"
 ]

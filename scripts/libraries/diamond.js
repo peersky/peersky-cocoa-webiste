@@ -76,6 +76,114 @@ function findAddressPositionInFacets(facetAddress, facets) {
   }
 }
 
+async function cutFacets({
+  facets,
+  initializer,
+  diamondAddress,
+  signer,
+  initializerArgs,
+}) {
+  // const getSelectors = await import("./libraries/diamond.js").then(
+  //   (m) => m.getSelectors
+  // );
+
+  // const FacetCutAction = await import("./libraries/diamond.js").then(
+  //   (m) => m.FacetCutAction
+  // );
+
+  const cut = [];
+  for (const facet of facets) {
+    cut.push({
+      facetAddress: facet.address,
+      action: FacetCutAction.Add,
+      functionSelectors: getSelectors(facet),
+    });
+  }
+
+  const diamondCut = await ethers.getContractAt("IDiamondCut", diamondAddress);
+  let tx;
+  let receipt;
+  // call to init function
+  let functionCall = initializer.interface.encodeFunctionData(
+    "init",
+    initializerArgs
+  );
+  tx = await diamondCut
+    .connect(signer)
+    .diamondCut(cut, initializer.address, functionCall);
+  if (require.main === module) {
+    console.log("Diamond cut tx: ", tx.hash);
+  }
+  receipt = await tx.wait();
+  if (!receipt.status) {
+    throw Error(`Diamond upgrade failed: ${tx.hash}`);
+  }
+}
+
+async function deployDiamond(FacetNames, signer, initializer, initializerArgs) {
+  // console.log(
+  //   "deploying diamond",
+  //   FacetNames,
+  //   initializer,
+  //   initializerArgs,
+  //   signer.address
+  // );
+  const DiamondCutFacet = await ethers.getContractFactory(
+    "DiamondCutFacet",
+    signer
+  );
+  const diamondCutFacet = await DiamondCutFacet.deploy();
+  await diamondCutFacet.deployed();
+  if (require.main === module) {
+    console.log("DiamondCutFacet deployed:", diamondCutFacet.address);
+  }
+
+  const Diamond = await ethers.getContractFactory("Diamond", signer);
+  const diamond = await Diamond.deploy(signer.address, diamondCutFacet.address);
+  await diamond.deployed();
+  if (require.main === module) {
+    console.log("Diamond deployed:", diamond.address);
+  }
+
+  // deploy DiamondInit
+  // DiamondInit provides a function that is called when the diamond is upgraded to initialize state variables
+  // Read about how the diamondCut function works here: https://eips.ethereum.org/EIPS/eip-2535#addingreplacingremoving-functions
+  const DiamondInit = await ethers.getContractFactory(
+    initializer ?? "DiamondInit",
+    signer
+  );
+  const diamondInit = await DiamondInit.deploy();
+  await diamondInit.deployed();
+  if (require.main === module) {
+    console.log("DiamondInit deployed:", diamondInit.address);
+  }
+
+  // deploy facets
+  // console.log("Deploying facets");
+  const facets = [];
+  for (const FacetName of FacetNames) {
+    const Facet = await ethers.getContractFactory(FacetName, signer);
+
+    const facet = await Facet.deploy();
+    await facet.deployed();
+    if (require.main === module) {
+      console.log(`Facet ${FacetName} deployed at:`, facet.address);
+    }
+    facets.push(facet);
+  }
+
+  await cutFacets({
+    facets,
+    initializer: diamondInit,
+    diamondAddress: diamond.address,
+    signer: signer,
+    initializerArgs,
+  });
+  return diamond.address;
+}
+
+exports.deployDiamond = deployDiamond;
+exports.cutFacets = cutFacets;
 exports.getSelectors = getSelectors;
 exports.getSelector = getSelector;
 exports.FacetCutAction = FacetCutAction;

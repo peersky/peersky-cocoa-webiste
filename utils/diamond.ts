@@ -19,7 +19,7 @@
 import type { JsonFragment } from "@ethersproject/abi";
 import chalk from "chalk";
 import Table from "cli-table";
-import { constants, Contract, utils } from "ethers";
+import { BaseContract, constants, Contract, utils } from "ethers";
 import fetch from "node-fetch";
 import readline from "readline";
 import DiamondCutFacetABI from "../abi/contracts/vendor/facets/DiamondCutFacet.sol/DiamondCutFacet.json";
@@ -42,14 +42,14 @@ const signaturesToIgnore = [
   // The SolidState contracts adds a `supportsInterface` function,
   // but we already provide that function through DiamondLoupeFacet
   // ["DiamondLoupeFacet", "supportsInterface(bytes4)"],
-  ["", ""],
+  ["BestOfFacet", "supportsInterface(bytes4)"],
+  ["MultipassDNS", "supportsInterface(bytes4)"],
 ] as const;
 
 export function isIncluded(contractName: string, signature: string): boolean {
   const isIgnored = signaturesToIgnore.some(
     ([contractNameMatcher, ignoredSignature]) => {
       if (contractName.match(contractNameMatcher)) {
-        // console.log(contractName, ignoredSignature);
         return signature === ignoredSignature;
       } else {
         return false;
@@ -393,3 +393,5 @@ export class DiamondChanges {
     }
   }
 }
+
+export default { toSignature, isIncluded };

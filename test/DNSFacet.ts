@@ -2,7 +2,6 @@ import { AdrSetupResult, EnvSetupResult, SignerIdentity } from "./utils";
 import {
   setupAddresses,
   setupEnvironment,
-  CONTRACT_VERSION,
   getUserRegisterProps,
   signMessage,
 } from "./utils";
@@ -12,8 +11,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { IMultipass__factory } from "../types/factories/contracts/interfaces/IMultipass__factory";
 const path = require("path");
-const { time, constants } = require("@openzeppelin/test-helpers");
-const { BigNumber } = require("ethers");
+const { constants } = require("@openzeppelin/test-helpers");
 const {
   ZERO_ADDRESS,
   ZERO_BYTES32,
@@ -22,10 +20,6 @@ const {
 const scriptName = path.basename(__filename);
 const NEW_DOMAIN_NAME1 = "newDomainName1";
 const NEW_DOMAIN_NAME2 = "newDomainName2";
-// const NEW_DOMAIN_NAME3 = "newDomainName3";
-// const STRING_32B = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
-// const STRING_33B = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
-// const STRING_0B = "";
 const DEFAULT_FREE_REGISTRATIONS = ethers.BigNumber.from(3);
 const NOT_ENOUGH_FEE = ethers.utils.parseEther("0.17");
 const DEFAULT_FEE = ethers.utils.parseEther("2");
@@ -47,8 +41,11 @@ const emptyUserQuery: LibMultipass.NameQueryStruct = {
 describe(scriptName, () => {
   beforeEach(async () => {
     adr = await setupAddresses();
-    // console.log("dbg:", adr.contractDeployer, adr.multipassOwner);
-    env = await setupEnvironment(adr.contractDeployer, adr.multipassOwner);
+    env = await setupEnvironment({
+      contractDeployer: adr.contractDeployer,
+      multipassOwner: adr.multipassOwner,
+      bestOfOwner: adr.gameOwner,
+    });
   });
   it("Is Owned by contract owner", async () => {
     expect(await env.multipass.owner()).to.be.equal(
@@ -148,7 +145,7 @@ describe(scriptName, () => {
           ethers.utils.parseEther("1")
         )
     ).to.be.revertedWith(
-      "Multipass->initializeDomain: referrerReward + referralDiscount cause overflow"
+      "Multipass->initializeDomain: referrerReward + referralDiscount overflow"
     );
   });
   it("Reverts any ownerOnly call by not an owner", async () => {

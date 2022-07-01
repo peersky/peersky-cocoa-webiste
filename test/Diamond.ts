@@ -7,20 +7,20 @@ const {
   findAddressPositionInFacets,
 } = require("../scripts/libraries/diamond.js");
 
-const { deployDiamond } = require("../scripts/deploy.js");
+import { deployDiamond } from "../scripts/libraries/diamond";
 
 const { assert } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("DiamondTest", async function () {
-  let diamondAddress;
-  let diamondCutFacet;
-  let diamondLoupeFacet;
-  let ownershipFacet;
-  let tx;
-  let receipt;
-  let result;
-  const addresses = [];
+  let diamondAddress: any;
+  let diamondCutFacet: any;
+  let diamondLoupeFacet: any;
+  let ownershipFacet: any;
+  let tx: any;
+  let receipt: any;
+  let result: any;
+  const addresses: any = [];
 
   before(async function () {
     const accounts = await ethers.getSigners();

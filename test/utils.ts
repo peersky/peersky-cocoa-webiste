@@ -4,15 +4,22 @@
 // import { time } from "@openzeppelin/test-helpers";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { MultipassDiamond } from "../types/hardhat-diamond-abi/HardhatDiamondABI.sol";
+import {
+  MultipassDiamond,
+  BestOfDiamond,
+} from "../types/hardhat-diamond-abi/HardhatDiamondABI.sol";
 const {
   ZERO_ADDRESS,
   ZERO_BYTES32,
 } = require("@openzeppelin/test-helpers/src/constants");
 import { BigNumber, BytesLike, Wallet } from "ethers";
 // @ts-ignore
-import { deploySequence } from "../scripts/deploy.js";
+import { deploy as deployMultipass } from "../scripts/deployMultipass";
+import { deploy as deployRankToken } from "../scripts/deployRankToken";
+import { deploy as deployBestOfGame } from "../scripts/deployBestOfGame";
 import { LibMultipass } from "../types/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
+import { RankToken } from "../types/contracts/tokens/RankToken";
+import { BestOfInit } from "../types/contracts/initializers/BestOfInit";
 export interface SignerIdentity {
   name: string;
   id: string;
@@ -39,15 +46,23 @@ export interface AdrSetupResult {
   player17: SignerIdentity;
   player18: SignerIdentity;
   maliciousActor1: SignerIdentity;
+  maliciousActor2: SignerIdentity;
+  maliciousActor3: SignerIdentity;
   gameCreator1: SignerIdentity;
   gameCreator2: SignerIdentity;
   gameCreator3: SignerIdentity;
+  gameMaster1: SignerIdentity;
+  gameMaster2: SignerIdentity;
+  gameMaster3: SignerIdentity;
   multipassOwner: SignerIdentity;
+  gameOwner: SignerIdentity;
   registrar1: SignerIdentity;
 }
 
 export interface EnvSetupResult {
   multipass: MultipassDiamond;
+  bestOfGame: BestOfDiamond;
+  rankToken: RankToken;
 }
 export const addPlayerNameId = (idx: any) => {
   return { name: `player-${idx}`, id: `player-${idx}-id` };
@@ -76,48 +91,37 @@ export const setupAddresses = async (): Promise<AdrSetupResult> => {
     _player18,
     _maliciousActor1,
   ] = await ethers.getSigners();
+  const createRandomIdentityAndSeedEth = async (name: string) => {
+    let newWallet = await ethers.Wallet.createRandom();
+    newWallet = newWallet.connect(ethers.provider);
+    await _player1.sendTransaction({
+      to: newWallet.address,
+      value: ethers.utils.parseEther("1"),
+    });
 
-  let _gameCreator1 = await ethers.Wallet.createRandom();
-  _gameCreator1 = _gameCreator1.connect(ethers.provider);
-  await _player1.sendTransaction({
-    to: _gameCreator1.address,
-    value: ethers.utils.parseEther("1"),
-  });
-  let _gameCreator2 = ethers.Wallet.createRandom();
-  _gameCreator2 = _gameCreator2.connect(ethers.provider);
-  await _contractDeployer.sendTransaction({
-    to: _gameCreator2.address,
-    value: ethers.utils.parseEther("1"),
-  });
-  let _gameCreator3 = ethers.Wallet.createRandom();
-  _gameCreator3 = _gameCreator3.connect(ethers.provider);
-  await _contractDeployer.sendTransaction({
-    to: _gameCreator3.address,
-    value: ethers.utils.parseEther("1"),
-  });
+    const newIdentity: SignerIdentity = {
+      wallet: newWallet,
+      name: name,
+      id: name + "-id",
+    };
+    return newIdentity;
+  };
 
-  let _multipassOwner = ethers.Wallet.createRandom();
-  _multipassOwner = _multipassOwner.connect(ethers.provider);
-  await _contractDeployer.sendTransaction({
-    to: _multipassOwner.address,
-    value: ethers.utils.parseEther("1"),
-  });
-
-  let _registrar1 = ethers.Wallet.createRandom();
-  _registrar1 = _registrar1.connect(ethers.provider);
-  await _contractDeployer.sendTransaction({
-    to: _multipassOwner.address,
-    value: ethers.utils.parseEther("1"),
-  });
-
-  await _contractDeployer.sendTransaction({
-    to: _registrar1.address,
-    value: ethers.utils.parseEther("1"),
-  });
-
-  const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-  // const DNS_REGISTRAR_ADDRESS = process.env.BOT_ADDRESS;
-  // if (!DNS_REGISTRAR_ADDRESS) throw "BOT_ADDRESS not exported!";
+  const gameCreator1 = await createRandomIdentityAndSeedEth("gameCreator1");
+  const gameCreator2 = await createRandomIdentityAndSeedEth("gameCreator2");
+  const gameCreator3 = await createRandomIdentityAndSeedEth("gameCreator3");
+  const multipassOwner = await createRandomIdentityAndSeedEth("multipassOwner");
+  const registrar1 = await createRandomIdentityAndSeedEth("registrar1");
+  const gameMaster1 = await createRandomIdentityAndSeedEth("GM1");
+  const gameMaster2 = await createRandomIdentityAndSeedEth("GM2");
+  const gameMaster3 = await createRandomIdentityAndSeedEth("GM3");
+  const maliciousActor2 = await createRandomIdentityAndSeedEth(
+    "MaliciousActor2"
+  );
+  const maliciousActor3 = await createRandomIdentityAndSeedEth(
+    "MaliciousActor3"
+  );
+  const gameOwner = await createRandomIdentityAndSeedEth("gameOwner");
 
   const contractDeployer: SignerIdentity = {
     wallet: _contractDeployer,
@@ -219,31 +223,6 @@ export const setupAddresses = async (): Promise<AdrSetupResult> => {
     name: "maliciousActor1",
     id: "maliciousActor1-id",
   };
-  const gameCreator1: SignerIdentity = {
-    wallet: _gameCreator1,
-    name: "gameCreator1",
-    id: "gameCreator1-id",
-  };
-  const gameCreator2: SignerIdentity = {
-    wallet: _gameCreator2,
-    name: "gameCreator2",
-    id: "gameCreator2-id",
-  };
-  const gameCreator3: SignerIdentity = {
-    wallet: _gameCreator3,
-    name: "gameCreator3",
-    id: "gameCreator3-id",
-  };
-  const multipassOwner: SignerIdentity = {
-    wallet: _multipassOwner,
-    name: "multipassOwner",
-    id: "multipassOwner-id",
-  };
-  const registrar1: SignerIdentity = {
-    wallet: _registrar1,
-    name: "registrar",
-    id: "registrar-id",
-  };
 
   return {
     contractDeployer,
@@ -271,33 +250,94 @@ export const setupAddresses = async (): Promise<AdrSetupResult> => {
     gameCreator3,
     multipassOwner,
     registrar1,
+    gameMaster1,
+    gameMaster2,
+    gameMaster3,
+    maliciousActor2,
+    maliciousActor3,
+    gameOwner,
   };
 };
 
 const baseFee = 1 * 10 ** 18;
-const CONTRACT_NAME = "MultipassDNS";
-export const CONTRACT_VERSION = "0.0.1";
+const MULTIPASS_CONTRACT_NAME = "MultipassDNS";
+export const MULTIPASS_CONTRACT_VERSION = "0.0.1";
+const BESTOF_CONTRACT_NAME = "MultipassDNS";
+export const BESTOF_CONTRACT_VERSION = "0.0.1";
 
-export const setupEnvironment = async (
-  contractDeployer: SignerIdentity,
-  contractOwner: SignerIdentity
-) => {
-  const address = await deploySequence(
-    contractDeployer.wallet,
-    contractOwner.wallet.address,
-    CONTRACT_VERSION,
-    CONTRACT_NAME,
-    ["DiamondLoupeFacet", "OwnershipFacet"],
-    "MultipassInit"
-  );
-
+export const setupEnvironment = async ({
+  contractDeployer,
+  multipassOwner,
+  bestOfOwner,
+}: {
+  contractDeployer: SignerIdentity;
+  multipassOwner: SignerIdentity;
+  bestOfOwner: SignerIdentity;
+}) => {
+  const multipassAddress = await deployMultipass({
+    ownerAddress: multipassOwner.wallet.address,
+    signer: contractDeployer.wallet,
+    name: MULTIPASS_CONTRACT_NAME,
+    version: MULTIPASS_CONTRACT_VERSION,
+  });
   const multipass = (await ethers.getContractAt(
     "MultipassDiamond",
-    address
+    multipassAddress
   )) as MultipassDiamond;
-  return {
-    multipass,
+
+  if (!process.env.INFURA_URL || !process.env.RANK_TOKEN_PATH)
+    throw new Error("Rank token IPFS route not exported");
+  const rankTokenAddress = await deployRankToken({
+    owner: multipassOwner.wallet.address,
+    signer: contractDeployer.wallet,
+    URI: process.env.INFURA_URL + process.env.RANK_TOKEN_PATH,
+  });
+  const rankToken = (await ethers.getContractAt(
+    "RankToken",
+    rankTokenAddress
+  )) as RankToken;
+
+  const bestOfInitialSettings: BestOfInit.ContractInitializerStruct = {
+    blocksPerTurn: "4",
+    turnsPerRound: "6",
+    maxPlayersSize: "6",
+    minPlayersSize: "3",
+    rankTokenAddress: rankTokenAddress,
+    canJoinGameWhenStarted: true,
+    maxRounds: "3",
+    blocksToJoin: "2",
+    gamePrice: ethers.utils.parseEther("0.001"),
+    joinGamePrice: ethers.utils.parseEther("0.001"),
+    joinPolicy: 0,
   };
+
+  const bestOfGameAddress = await deployBestOfGame({
+    ownerAddress: bestOfOwner.wallet.address,
+    signer: contractDeployer.wallet,
+    version: BESTOF_CONTRACT_VERSION,
+    name: BESTOF_CONTRACT_NAME,
+    gameInitializer: bestOfInitialSettings,
+  });
+
+  const bestOfGame = (await ethers.getContractAt(
+    "BestOfDiamond",
+    bestOfGameAddress
+  )) as BestOfDiamond;
+
+  // const {
+  //   multipass,
+  //   bestOfGame,
+  //   rankToken,
+  // }: {
+  //   multipass: MultipassDiamond;
+  //   bestOfGame: BestOfDiamond;
+  //   rankToken: RankToken;
+  // } = await deployAll.main({
+  //   signer: contractDeployer.wallet,
+  //   multipassOwner: multipassOwner.wallet.address,
+  //   bestOfOwner: bestOfOwner.wallet.address,
+  // });
+  return { multipass, bestOfGame, rankToken };
 };
 
 interface ReferrerMesage {
@@ -321,8 +361,8 @@ export const signReferralCode = async (
   let { chainId } = await ethers.provider.getNetwork();
 
   const domain = {
-    name: CONTRACT_NAME,
-    version: CONTRACT_VERSION,
+    name: process.env.MULTIPASS_CONTRACT_NAME,
+    version: process.env.MULTIPASS_CONTRACT_VERSION,
     chainId,
     verifyingContract: verifierAddress,
   };
@@ -348,8 +388,8 @@ export const signMessage = async (
   let { chainId } = await ethers.provider.getNetwork();
 
   const domain = {
-    name: CONTRACT_NAME,
-    version: CONTRACT_VERSION,
+    name: process.env.MULTIPASS_CONTRACT_NAME,
+    version: process.env.MULTIPASS_CONTRACT_VERSION,
     chainId,
     verifyingContract: verifierAddress,
   };
@@ -389,8 +429,8 @@ export default {
   signMessage,
   addPlayerNameId,
   baseFee,
-  CONTRACT_NAME,
-  CONTRACT_VERSION,
+  CONTRACT_NAME: process.env.MULTIPASS_CONTRACT_NAME,
+  CONTRACT_VERSION: process.env.MULTIPASS_CONTRACT_VERSION,
 };
 
 export const getUserRegisterProps = async (
