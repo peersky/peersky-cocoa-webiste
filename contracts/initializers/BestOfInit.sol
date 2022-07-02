@@ -92,6 +92,7 @@ struct contractInitializer {
         _BOG.rankToken.tokenAddress = initializer.rankTokenAddress;
         _BOG.rankToken.tokenType = IBestOf.TokenTypes.ERC1155;
         _BOG.rankToken.tokenId = 0;
+        _BOG.contractInitialized = true;
 
         LibTBG.GameSettings memory settings;
         settings.blocksPerTurn = initializer.blocksPerTurn;
@@ -102,6 +103,7 @@ struct contractInitializer {
         // settings.canJoinGameWhenStarted = initializer.canJoinGameWhenStarted;
         settings.maxRounds = initializer.maxRounds;
         settings.blocksToJoin = initializer.blocksToJoin;
+
         LibTBG.init(settings);
 
 

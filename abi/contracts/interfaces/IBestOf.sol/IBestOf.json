@@ -1,4 +1,6 @@
 [
   "event ProposersRevealed(uint256 indexed,address[],uint256,tuple(address,uint256)[])",
-  "event RoundFinished(uint256 indexed,uint256 indexed,tuple(address,uint256)[])"
+  "event RequirementAdded(uint256 indexed,tuple(tuple(uint8,address,uint256),uint256,bool,uint8) indexed)",
+  "event RoundFinished(uint256 indexed,uint256 indexed,tuple(address,uint256)[])",
+  "event gameCreated(address indexed,uint256 indexed,uint256 indexed)"
 ]

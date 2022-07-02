@@ -42,10 +42,12 @@ interface IBestOf {
         uint256 gamePrice;
         uint256 joinGamePrice;
         TokenRequirement newGameReq;
+        uint256 numGames;
         Token rankToken;
         bool contractInitialized;
     }
-
+    event gameCreated(address indexed gameMaster, uint256 indexed gameId, uint256 indexed gameRank);
     event ProposersRevealed(uint256 indexed gameId, address[] proposers, uint256 salt, Score[] scores);
     event RoundFinished(uint256 indexed gameId, uint256 indexed round, Score[] scores);
+    event RequirementAdded(uint256 indexed gameId, TokenRequirement indexed requirement);
 }

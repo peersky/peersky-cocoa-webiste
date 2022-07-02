@@ -1,0 +1,4 @@
+[
+  "function batchMint(address,uint256[],uint256[],bytes)",
+  "function mint(address,uint256,uint256,bytes)"
+]
