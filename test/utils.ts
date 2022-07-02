@@ -2,12 +2,17 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-await-in-loop */
 // import { time } from "@openzeppelin/test-helpers";
-import { ethers } from "hardhat";
+import { contract, ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   MultipassDiamond,
   BestOfDiamond,
-} from "../types/hardhat-diamond-abi/HardhatDiamondABI.sol";
+} from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol";
+import {
+  MockERC1155,
+  MockERC20,
+  MockERC721,
+} from "../types/typechain/contracts/mocks";
 const {
   ZERO_ADDRESS,
   ZERO_BYTES32,
@@ -17,9 +22,10 @@ import { BigNumber, BytesLike, Wallet } from "ethers";
 import { deploy as deployMultipass } from "../scripts/deployMultipass";
 import { deploy as deployRankToken } from "../scripts/deployRankToken";
 import { deploy as deployBestOfGame } from "../scripts/deployBestOfGame";
-import { LibMultipass } from "../types/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
-import { RankToken } from "../types/contracts/tokens/RankToken";
-import { BestOfInit } from "../types/contracts/initializers/BestOfInit";
+import { LibMultipass } from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
+import { RankToken } from "../types/typechain/contracts/tokens/RankToken";
+import { BestOfInit } from "../types/typechain/contracts/initializers/BestOfInit";
+
 export interface SignerIdentity {
   name: string;
   id: string;
@@ -63,6 +69,9 @@ export interface EnvSetupResult {
   multipass: MultipassDiamond;
   bestOfGame: BestOfDiamond;
   rankToken: RankToken;
+  mockERC20: MockERC20;
+  mockERC1155: MockERC1155;
+  mockERC721: MockERC721;
 }
 export const addPlayerNameId = (idx: any) => {
   return { name: `player-${idx}`, id: `player-${idx}-id` };
@@ -264,7 +273,26 @@ const MULTIPASS_CONTRACT_NAME = "MultipassDNS";
 export const MULTIPASS_CONTRACT_VERSION = "0.0.1";
 const BESTOF_CONTRACT_NAME = "MultipassDNS";
 export const BESTOF_CONTRACT_VERSION = "0.0.1";
-
+export const BOG_TURNS_PER_ROUND = "4";
+export const BOG_BLOCKS_PER_TURN = "4";
+export const BOG_MAX_PLAYERS = "6";
+export const BOG_MIN_PLAYERS = "3";
+export const BOG_MAX_ROUNDS = "3";
+export const BOG_BLOCKS_TO_JOIN = "2";
+export const BOG_GAME_PRICE = ethers.utils.parseEther("0.001");
+export const BOG_JOIN_GAME_PRICE = ethers.utils.parseEther("0.001");
+export const BOG_JOIN_POLICY = 0;
+export const BOGSettings = {
+  BOG_BLOCKS_PER_TURN,
+  BOG_TURNS_PER_ROUND,
+  BOG_MAX_PLAYERS,
+  BOG_MIN_PLAYERS,
+  BOG_MAX_ROUNDS,
+  BOG_BLOCKS_TO_JOIN,
+  BOG_GAME_PRICE,
+  BOG_JOIN_GAME_PRICE,
+  BOG_JOIN_POLICY,
+};
 export const setupEnvironment = async ({
   contractDeployer,
   multipassOwner,
@@ -273,7 +301,7 @@ export const setupEnvironment = async ({
   contractDeployer: SignerIdentity;
   multipassOwner: SignerIdentity;
   bestOfOwner: SignerIdentity;
-}) => {
+}): Promise<EnvSetupResult> => {
   const multipassAddress = await deployMultipass({
     ownerAddress: multipassOwner.wallet.address,
     signer: contractDeployer.wallet,
@@ -288,7 +316,7 @@ export const setupEnvironment = async ({
   if (!process.env.INFURA_URL || !process.env.RANK_TOKEN_PATH)
     throw new Error("Rank token IPFS route not exported");
   const rankTokenAddress = await deployRankToken({
-    owner: multipassOwner.wallet.address,
+    owner: bestOfOwner.wallet.address,
     signer: contractDeployer.wallet,
     URI: process.env.INFURA_URL + process.env.RANK_TOKEN_PATH,
   });
@@ -298,17 +326,17 @@ export const setupEnvironment = async ({
   )) as RankToken;
 
   const bestOfInitialSettings: BestOfInit.ContractInitializerStruct = {
-    blocksPerTurn: "4",
-    turnsPerRound: "6",
-    maxPlayersSize: "6",
-    minPlayersSize: "3",
+    blocksPerTurn: BOG_BLOCKS_PER_TURN,
+    turnsPerRound: BOG_TURNS_PER_ROUND,
+    maxPlayersSize: BOG_MAX_PLAYERS,
+    minPlayersSize: BOG_MIN_PLAYERS,
     rankTokenAddress: rankTokenAddress,
     canJoinGameWhenStarted: true,
-    maxRounds: "3",
-    blocksToJoin: "2",
-    gamePrice: ethers.utils.parseEther("0.001"),
-    joinGamePrice: ethers.utils.parseEther("0.001"),
-    joinPolicy: 0,
+    maxRounds: BOG_MAX_ROUNDS,
+    blocksToJoin: BOG_BLOCKS_TO_JOIN,
+    gamePrice: BOG_GAME_PRICE,
+    joinGamePrice: BOG_JOIN_GAME_PRICE,
+    joinPolicy: BOG_JOIN_POLICY,
   };
 
   const bestOfGameAddress = await deployBestOfGame({
@@ -324,6 +352,38 @@ export const setupEnvironment = async ({
     bestOfGameAddress
   )) as BestOfDiamond;
 
+  const MockERC20F = await ethers.getContractFactory(
+    "MockERC20",
+    contractDeployer.wallet
+  );
+  const mockERC20 = (await MockERC20F.deploy(
+    "Mock ERC20",
+    "MCK20",
+    contractDeployer.wallet.address
+  )) as MockERC20;
+  await mockERC20.deployed();
+
+  const MockERC1155F = await ethers.getContractFactory(
+    "MockERC1155",
+    contractDeployer.wallet
+  );
+  const mockERC1155 = (await MockERC1155F.deploy(
+    "MOCKURI",
+    contractDeployer.wallet.address
+  )) as MockERC1155;
+  await mockERC1155.deployed();
+
+  const MockERC721F = await ethers.getContractFactory(
+    "MockERC721",
+    contractDeployer.wallet
+  );
+  const mockERC721 = (await MockERC721F.deploy(
+    "Mock ERC721",
+    "MCK721",
+    contractDeployer.wallet.address
+  )) as MockERC721;
+  await mockERC721.deployed();
+
   // const {
   //   multipass,
   //   bestOfGame,
@@ -337,7 +397,14 @@ export const setupEnvironment = async ({
   //   multipassOwner: multipassOwner.wallet.address,
   //   bestOfOwner: bestOfOwner.wallet.address,
   // });
-  return { multipass, bestOfGame, rankToken };
+  return {
+    multipass,
+    bestOfGame,
+    rankToken,
+    mockERC1155,
+    mockERC20,
+    mockERC721,
+  };
 };
 
 interface ReferrerMesage {
