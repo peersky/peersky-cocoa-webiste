@@ -1,7 +1,7 @@
 import { Wallet } from "ethers";
 import { ethers } from "hardhat";
 import { deployDiamond } from "./libraries/diamond";
-import { BestOfInit } from "../types/contracts/initializers/BestOfInit";
+import { BestOfInit } from "../types/typechain/contracts/initializers/BestOfInit";
 import { transferOwnership } from "./libraries/utils";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 

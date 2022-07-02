@@ -1,7 +1,6 @@
-import { Contract, Wallet } from "ethers";
+import { Wallet } from "ethers";
 import { ethers } from "hardhat";
 import { deployDiamond } from "./libraries/diamond";
-import { IBestOf } from "../types/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
 import { transferOwnership } from "./libraries/utils";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
