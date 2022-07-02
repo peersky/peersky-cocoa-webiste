@@ -51,4 +51,6 @@ interface IBestOf {
     event RoundFinished(uint256 indexed gameId, uint256 indexed round, Score[] scores);
     event RequirementAdded(uint256 indexed gameId, TokenRequirement indexed requirement);
     event RegistrationOpen(uint256 indexed gameid);
+    event PlayerJoined(uint256 indexed gameId, address participant);
+    event GameStarted(uint256 indexed gameId);
 }

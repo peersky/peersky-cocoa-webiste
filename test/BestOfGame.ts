@@ -5,6 +5,7 @@ import {
   getUserRegisterProps,
   signMessage,
   BOGSettings,
+  mineBlocks,
 } from "./utils";
 import { getInterfaceID } from "../scripts/libraries/utils";
 import { expect } from "chai";
@@ -183,7 +184,7 @@ describe(scriptName, () => {
         })
     ).to.be.emit(env.bestOfGame, "gameCreated");
   });
-  describe("When a game was created", () => {
+  describe("When a game of zero rank was created", () => {
     beforeEach(async () => {
       await env.bestOfGame
         .connect(adr.gameCreator1.wallet)
@@ -200,9 +201,7 @@ describe(scriptName, () => {
     it("Players cannot join until registration is open", async () => {
       await expect(
         env.bestOfGame.connect(adr.gameMaster1.wallet).joinGame(1)
-      ).to.be.revertedWith(
-        "LibTurnBasedGame->addPlayer: Game cannot be joined at the moment"
-      );
+      ).to.be.revertedWith("Registration was not yet open");
     });
     it("Game creator can add join requirements", async () => {
       const requirement: IBestOf.TokenRequirementStruct = {
@@ -229,7 +228,7 @@ describe(scriptName, () => {
         env.bestOfGame.connect(adr.maliciousActor1.wallet).openRegistration(1)
       ).to.be.revertedWith("Only game creator");
     });
-    describe("When registration was open", () => {
+    describe("When registration was open without any additional requirements", () => {
       beforeEach(async () => {
         await env.bestOfGame
           .connect(adr.gameCreator1.wallet)
@@ -260,12 +259,147 @@ describe(scriptName, () => {
             .removeJoinRequirement(1, 1)
         ).to.be.revertedWith("Cannot do when registration is open");
       });
-      it("Qualified players can join", async () => {});
-      it("Game cannot be started until join blocktime has passed", async () => {});
-      it("Qualified players can join", async () => {});
-      it("No more than max players can join", async () => {});
-      it("Game can be started upon block deadline has reached", async () => {});
-      it("Game methods beside join and start are inactive", async () => {});
+      it("Qualified players can join", async () => {
+        await expect(
+          env.bestOfGame
+            .connect(adr.player1.wallet)
+            .joinGame(1, { value: BOGSettings.BOG_JOIN_GAME_PRICE })
+        ).to.be.emit(env.bestOfGame, "PlayerJoined");
+      });
+      it("Game cannot be started until join blocktime has passed", async () => {
+        env.bestOfGame
+          .connect(adr.player1.wallet)
+          .joinGame(1, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
+        env.bestOfGame
+          .connect(adr.player2.wallet)
+          .joinGame(1, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
+        env.bestOfGame
+          .connect(adr.player3.wallet)
+          .joinGame(1, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
+
+        await expect(
+          env.bestOfGame.connect(adr.player1.wallet).startGame(1)
+        ).to.be.revertedWith(
+          "LibTurnBasedGame->startGame Joining period has not yet finished"
+        );
+      });
+      it("No more than max players can join", async () => {
+        for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
+          let name = `player${i}` as any as keyof AdrSetupResult;
+          env.bestOfGame
+            .connect(adr[`${name}`].wallet)
+            .joinGame(1, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
+        }
+        await expect(
+          env.bestOfGame.connect(adr.player7.wallet).joinGame(1)
+        ).to.be.revertedWith("Game is full");
+      });
+      it("Game cannot start too early", async () => {
+        await expect(
+          env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1)
+        ).to.be.revertedWith(
+          "LibTurnBasedGame->startGame Joining period has not yet finished"
+        );
+      });
+      it("Game methods beside join and start are inactive", async () => {
+        await expect(
+          env.bestOfGame
+            .connect(adr.gameMaster1.wallet)
+            .submitProposal(
+              1,
+              ethers.utils.formatBytes32String(""),
+              ethers.utils.formatBytes32String(""),
+              ""
+            )
+        ).to.be.revertedWith("Game has not yet started");
+        await expect(
+          env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(1, 1, [])
+        ).to.be.revertedWith("Game has not yet started");
+        await expect(
+          env.bestOfGame
+            .connect(adr.gameMaster1.wallet)
+            .submitVote(
+              1,
+              ethers.utils.formatBytes32String(""),
+              [
+                ethers.utils.formatBytes32String(""),
+                ethers.utils.formatBytes32String(""),
+                ethers.utils.formatBytes32String(""),
+              ],
+              ethers.utils.formatBytes32String("")
+            )
+        ).to.be.revertedWith("Game has not yet started");
+      });
+      it("Cannot be started if not enough players", async () => {
+        await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
+        await expect(
+          env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1)
+        ).to.be.revertedWith("Not enough players to start the game");
+      });
+      describe("When there is enough players in game", () => {
+        beforeEach(() => {
+          for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
+            let name = `player${i}` as any as keyof AdrSetupResult;
+            env.bestOfGame
+              .connect(adr[`${name}`].wallet)
+              .joinGame(1, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
+          }
+        });
+        it("Can start game only after joining period is over", async () => {
+          await expect(
+            env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1)
+          ).to.be.revertedWith(
+            "LibTurnBasedGame->startGame Joining period has not yet finished"
+          );
+          await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
+          await expect(
+            env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1)
+          ).to.be.emit(env.bestOfGame, "GameStarted");
+        });
+        it("Game methods beside start are inactive", async () => {
+          await expect(
+            env.bestOfGame
+              .connect(adr.gameMaster1.wallet)
+              .submitProposal(
+                1,
+                ethers.utils.formatBytes32String(""),
+                ethers.utils.formatBytes32String(""),
+                ""
+              )
+          ).to.be.revertedWith("Game has not yet started");
+          await expect(
+            env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(1, 1, [])
+          ).to.be.revertedWith("Game has not yet started");
+          await expect(
+            env.bestOfGame
+              .connect(adr.gameMaster1.wallet)
+              .submitVote(
+                1,
+                ethers.utils.formatBytes32String(""),
+                [
+                  ethers.utils.formatBytes32String(""),
+                  ethers.utils.formatBytes32String(""),
+                  ethers.utils.formatBytes32String(""),
+                ],
+                ethers.utils.formatBytes32String("")
+              )
+          ).to.be.revertedWith("Game has not yet started");
+        });
+        describe("When game was started", () => {
+          beforeEach(async () => {
+            await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
+            await env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1);
+          });
+          it.only("First round has started", async () => {
+            expect(
+              await env.bestOfGame.connect(adr.player1.wallet).getRound(1)
+            ).to.be.equal(1);
+            expect(
+              await env.bestOfGame.connect(adr.player1.wallet).getTurn(1)
+            ).to.be.equal(1);
+          });
+        });
+      });
     });
   });
 });

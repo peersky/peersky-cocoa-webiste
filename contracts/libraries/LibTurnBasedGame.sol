@@ -147,8 +147,10 @@ library LibTBG {
         TBGStorageStruct storage tbg = TBGStorage();
         CanJoin joinPolicy = tbg.settings.joinPolicy;
         if (joinPolicy == CanJoin.anytime) return true;
+        // console.log("join policy OK");
         if (_game.hasStarted && _game.isRoundOver && joinPolicy == CanJoin.beforeRoundStart) return true;
-        if (!_game.hasStarted && (joinPolicy == CanJoin.beforeStart)) return true;
+        // console.log("game started OK", _game.hasStarted, joinPolicy, CanJoin.beforeStart);
+        if (!_game.hasStarted && (joinPolicy == CanJoin.beforeStart || joinPolicy == CanJoin.beforeRoundStart)) return true;
         return false;
     }
 
@@ -165,7 +167,7 @@ library LibTBG {
 
         require(canBeJoined(gameId), "LibTurnBasedGame->addPlayer: Game cannot be joined at the moment");
         require(_game.registrationOpenAt != 0, "Registration was not yet open");
-        console.logUint(_game.players.length());
+        // console.logUint(_game.players.length());
         _game.players.set(_game.players.length(), participant);
         _game.madeMove[participant] = false;
         tbg.playerInGame[participant] = gameId;
@@ -223,10 +225,10 @@ library LibTBG {
         return false;
     }
 
-    function isGameActive(uint256 gameId) internal view returns (bool) {
+    function enforceHasStarted(uint256 gameId) internal view  {
         GameInstance storage _game = _getGame(gameId);
         assert(gameId != 0);
-        return _game.hasStarted;
+        require(_game.hasStarted, "Game has not yet started");
     }
 
     function canEndTurn(uint256 gameId) internal view returns (bool) {
@@ -237,10 +239,6 @@ library LibTBG {
         return false;
     }
 
-    modifier onlyActiveGame(uint256 gameId) {
-        require(isGameActive(gameId), "game not active");
-        _;
-    }
 
     modifier onlyInTurnTime(uint256 gameId) {
         require(isTurnTimedOut(gameId) == false, "onlyInTurnTime -> turn timedout");
@@ -260,14 +258,12 @@ library LibTBG {
         game.numPlayersMadeMove = 0;
     }
 
-    function _resetCurrentPlayers(GameInstance storage game) internal {
+    function _resetPlayerStates(GameInstance storage game) internal {
         for (uint256 i = 0; i < game.players.length(); i++) {
             (, address player) = game.players.at(i);
             game.madeMove[player] = false;
-            game.players.remove(i);
             game.score[player] = 0;
         }
-        assert(game.players.length() == 0);
     }
 
     function openRegistration(uint256 gameId) internal {
@@ -295,7 +291,7 @@ library LibTBG {
         require(_game.hasStarted == false, "LibTurnBasedGame->startGame Game already started");
         require(_game.registrationOpenAt != 0, "Game registration was not yet open");
         require(
-            _game.registrationOpenAt < block.number + tbg.settings.blocksToJoin,
+            block.number > _game.registrationOpenAt + tbg.settings.blocksToJoin,
             "LibTurnBasedGame->startGame Joining period has not yet finished"
         );
         require(gameId != 0, "Game does not exist");
@@ -305,7 +301,7 @@ library LibTBG {
         _game.currentRound = 1;
         _game.currentTurn = 1;
         _game.turnStartedAt = block.number;
-        _resetCurrentPlayers(_game);
+        _resetPlayerStates(_game);
     }
 
     function getRound(uint256 gameId) internal view returns (uint256) {
@@ -337,7 +333,7 @@ library LibTBG {
     function nextTurn(uint256 gameId) internal returns (bool) {
         TBGStorageStruct storage tbg = TBGStorage();
         GameInstance storage _game = _getGame(gameId);
-        require(isGameActive(gameId), "LibTurnBasedGame->nextTurn: game not active");
+        enforceHasStarted(gameId);
         require(canEndTurn(gameId), "LibTurnBasedGame->nextTurn: game not active");
 
         _clearCurrentMoves(_game);
@@ -351,7 +347,8 @@ library LibTBG {
         return (_game.isRoundOver);
     }
 
-    function nextRound(uint256 gameId) internal onlyActiveGame(gameId) {
+    function nextRound(uint256 gameId) internal  {
+        enforceHasStarted(gameId);
         TBGStorageStruct storage tbg = TBGStorage();
         GameInstance storage _game = _getGame(gameId);
         require(_game.isRoundOver == true, "LibTurnBasedGame->nextRound: Current round is not over yet");
@@ -363,11 +360,6 @@ library LibTBG {
         _game.currentRound += 1;
         _game.currentTurn = 1;
         _game.turnStartedAt = block.number;
-    }
-
-    function getRoundNumber(uint256 gameId) internal view returns (uint256) {
-        GameInstance storage _game = _getGame(gameId);
-        return _game.currentRound;
     }
 
     function listPlayers(uint256 gameId) internal view returns (address[] memory) {
@@ -401,4 +393,5 @@ library LibTBG {
         }
         return players;
     }
+
 }

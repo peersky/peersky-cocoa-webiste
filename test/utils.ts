@@ -275,10 +275,10 @@ const BESTOF_CONTRACT_NAME = "MultipassDNS";
 export const BESTOF_CONTRACT_VERSION = "0.0.1";
 export const BOG_TURNS_PER_ROUND = "4";
 export const BOG_BLOCKS_PER_TURN = "4";
-export const BOG_MAX_PLAYERS = "6";
+export const BOG_MAX_PLAYERS = 6;
 export const BOG_MIN_PLAYERS = "3";
 export const BOG_MAX_ROUNDS = "3";
-export const BOG_BLOCKS_TO_JOIN = "2";
+export const BOG_BLOCKS_TO_JOIN = "200";
 export const BOG_GAME_PRICE = ethers.utils.parseEther("0.001");
 export const BOG_JOIN_GAME_PRICE = ethers.utils.parseEther("0.001");
 export const BOG_JOIN_POLICY = 0;
@@ -499,6 +499,12 @@ export default {
   CONTRACT_NAME: process.env.MULTIPASS_CONTRACT_NAME,
   CONTRACT_VERSION: process.env.MULTIPASS_CONTRACT_VERSION,
 };
+
+export async function mineBlocks(count: any) {
+  for (let i = 0; i < count; i += 1) {
+    await ethers.provider.send("evm_mine", []);
+  }
+}
 
 export const getUserRegisterProps = async (
   account: SignerIdentity,

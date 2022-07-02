@@ -321,10 +321,12 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         BOGInstance storage game = getGameStorage(gameId);
         fulfillTokenRequirements(msg.sender, gameId, game.joinRequirements);
         gameId.addPlayer(msg.sender);
+        emit PlayerJoined(gameId, msg.sender);
     }
 
     function startGame(uint256 gameId) public onlyInitialized onlyExistingGame(gameId) {
         gameId.startGame();
+        emit GameStarted(gameId);
     }
 
     function submitProposal(
@@ -335,6 +337,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
     ) public onlyInitialized onlyExistingGame(gameId) onlyGameMaster(gameId) {
         BOGInstance storage game = getGameStorage(gameId);
         require(gameId.gameExists(), "Game does not exist");
+        gameId.enforceHasStarted();
 
         for (uint256 i = 0; i < game.proposals.length; i++) {
             require(game.proposals[i].proposerHidden != proposerHidden, "Proposer already submitted");
@@ -361,6 +364,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         uint256[3] memory votes,
         bytes memory proof
     ) public onlyInitialized onlyExistingGame(gameId) onlyGameMaster(gameId) {
+        gameId.enforceHasStarted();
         BOGInstance storage game = getGameStorage(gameId);
 
         require(votes[0] != votes[1], "Same items");
@@ -381,7 +385,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         address[] memory proposers
     ) public onlyInitialized onlyExistingGame(gameId) {
         BOGInstance storage game = getGameStorage(gameId);
-        require(gameId.isGameActive() == true, "Game Not Active");
+        gameId.enforceHasStarted();
         require(gameId.canEndTurn() == true, "Cannot do this now");
 
         Score[] memory scores;
@@ -415,7 +419,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
             Score[3] memory winners;
             for (uint256 i = 0; i < players.length; i++) {
                 _roundScores[i].participant = players[i];
-                _roundScores[i].score = game.roundScores[gameId.getRoundNumber()][players[i]];
+                _roundScores[i].score = game.roundScores[gameId.getRound()][players[i]];
                 for (uint256 k = 0; k < winners.length; k++) {
                     if (_roundScores[i].score > winners[i].score) {
                         winners[i].score = _roundScores[i].score;
@@ -425,7 +429,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
                 }
             }
             mintRankTokens([winners[0].participant, winners[1].participant, winners[2].participant], game.rank);
-            emit RoundFinished(gameId, gameId.getRoundNumber(), _roundScores);
+            emit RoundFinished(gameId, gameId.getRound(), _roundScores);
         }
     }
 
@@ -457,6 +461,15 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
     function getContractState() public pure returns (BOGSettings memory) {
         BOGSettings storage settings = BOGStorage();
         return settings;
+    }
+
+    function getRound(uint256 gameId) public view returns (uint256)
+    {
+       return gameId.getRound();
+    }
+     function getTurn(uint256 gameId) public view returns (uint256)
+    {
+       return gameId.getTurn();
     }
 
 }
