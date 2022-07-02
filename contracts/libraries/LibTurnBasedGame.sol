@@ -276,6 +276,19 @@ library LibTBG {
         _game.registrationOpenAt = block.number;
     }
 
+    function isRegistrationOpen(uint256 gameId) internal view returns (bool)
+    {
+         GameInstance storage _game = _getGame(gameId);
+         TBGStorageStruct storage tbg = TBGStorage();
+         if(_game.registrationOpenAt == 0)
+         {
+            return false;
+         } else
+         {
+            return _game.registrationOpenAt < block.number + tbg.settings.blocksToJoin ? true : false;
+         }
+    }
+
     function startGame(uint256 gameId) internal {
         GameInstance storage _game = _getGame(gameId);
         TBGStorageStruct storage tbg = TBGStorage();

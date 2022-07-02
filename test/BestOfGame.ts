@@ -71,7 +71,7 @@ describe(scriptName, () => {
       env.bestOfGame
         .connect(adr.gameCreator1.wallet)
         ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 0)
-    ).to.revertedWith("BOG->CreateGame: Not enough payment");
+    ).to.revertedWith("Not enough payment");
     await expect(
       env.bestOfGame
         .connect(adr.gameCreator1.wallet)
@@ -86,7 +86,7 @@ describe(scriptName, () => {
       env.bestOfGame.connect(adr.gameCreator1.wallet).joinGame(1, {
         value: BOGSettings.BOG_GAME_PRICE,
       })
-    ).to.be.revertedWith("BestOf->onlyExistingGame: Game does not exist");
+    ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame
         .connect(adr.gameMaster1.wallet)
@@ -96,7 +96,7 @@ describe(scriptName, () => {
           ethers.utils.formatBytes32String(""),
           ethers.utils.formatBytes32String("")
         )
-    ).to.be.revertedWith("BestOf->onlyExistingGame: Game does not exist");
+    ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame
         .connect(adr.gameMaster1.wallet)
@@ -106,10 +106,10 @@ describe(scriptName, () => {
           [1, 1, 1],
           ethers.utils.formatBytes32String("")
         )
-    ).to.be.revertedWith("BestOf->onlyExistingGame: Game does not exist");
+    ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame.connect(adr.gameMaster1.wallet).openRegistration(0)
-    ).to.be.revertedWith("BestOf->onlyExistingGame: Game does not exist");
+    ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame.connect(adr.gameMaster1.wallet).addJoinRequirements(0, {
         token: { tokenAddress: ZERO_ADDRESS, tokenType: 0, tokenId: 1 },
@@ -117,24 +117,24 @@ describe(scriptName, () => {
         must: 0,
         requireParticularERC721: false,
       })
-    ).to.be.revertedWith("BestOf->onlyExistingGame: Game does not exist");
+    ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame.connect(adr.gameMaster1.wallet).removeJoinRequirement(0, 0)
-    ).to.be.revertedWith("BestOf->onlyExistingGame: Game does not exist");
+    ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame.connect(adr.gameMaster1.wallet).popJoinRequirements(0)
-    ).to.be.revertedWith("BestOf->onlyExistingGame: Game does not exist");
+    ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame.connect(adr.gameMaster1.wallet).joinGame(0)
-    ).to.be.revertedWith("BestOf->onlyExistingGame: Game does not exist");
+    ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(0)
-    ).to.be.revertedWith("BestOf->onlyExistingGame: Game does not exist");
+    ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame
         .connect(adr.gameMaster1.wallet)
         .endTurn(0, 1, [ZERO_ADDRESS])
-    ).to.be.revertedWith("BestOf->onlyExistingGame: Game does not exist");
+    ).to.be.revertedWith("no game found");
   });
   it("Succedes to create ranked game only if sender has correspoding tier rank token", async () => {
     await expect(
@@ -143,7 +143,7 @@ describe(scriptName, () => {
         ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 1, {
           value: BOGSettings.BOG_GAME_PRICE,
         })
-    ).to.be.revertedWith("fulfillTokenRequirement: ERC1155 balance not valid");
+    ).to.be.revertedWith("ERC1155 balance not valid");
     await env.rankToken
       .connect(adr.gameOwner.wallet)
       .mint(
@@ -166,7 +166,7 @@ describe(scriptName, () => {
         ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 2, {
           value: BOGSettings.BOG_GAME_PRICE,
         })
-    ).to.be.revertedWith("fulfillTokenRequirement: ERC1155 balance not valid");
+    ).to.be.revertedWith("ERC1155 balance not valid");
     await env.rankToken
       .connect(adr.gameOwner.wallet)
       .mint(
@@ -204,7 +204,7 @@ describe(scriptName, () => {
         "LibTurnBasedGame->addPlayer: Game cannot be joined at the moment"
       );
     });
-    it.only("Game creator can add join requirements", async () => {
+    it("Game creator can add join requirements", async () => {
       const requirement: IBestOf.TokenRequirementStruct = {
         token: {
           tokenAddress: env.mockERC20.address,
@@ -220,6 +220,52 @@ describe(scriptName, () => {
           .connect(adr.gameCreator1.wallet)
           .addJoinRequirements(1, requirement)
       ).to.be.emit(env.bestOfGame, "RequirementAdded");
+    });
+    it("Only game creator can open registration", async () => {
+      await expect(
+        env.bestOfGame.connect(adr.gameCreator1.wallet).openRegistration(1)
+      ).to.be.emit(env.bestOfGame, "RegistrationOpen");
+      await expect(
+        env.bestOfGame.connect(adr.maliciousActor1.wallet).openRegistration(1)
+      ).to.be.revertedWith("Only game creator");
+    });
+    describe("When registration was open", () => {
+      beforeEach(async () => {
+        await env.bestOfGame
+          .connect(adr.gameCreator1.wallet)
+          .openRegistration(1);
+      });
+      it("Mutating join requirements is no longer possible", async () => {
+        const requirement: IBestOf.TokenRequirementStruct = {
+          token: {
+            tokenAddress: env.mockERC20.address,
+            tokenType: TokenTypes.ERC20,
+            tokenId: 0,
+          },
+          amount: "1",
+          requireParticularERC721: false,
+          must: TokenMust.HAVE,
+        };
+        await expect(
+          env.bestOfGame
+            .connect(adr.gameCreator1.wallet)
+            .addJoinRequirements(1, requirement)
+        ).to.be.revertedWith("Cannot do when registration is open");
+        await expect(
+          env.bestOfGame.connect(adr.gameCreator1.wallet).popJoinRequirements(1)
+        ).to.be.revertedWith("Cannot do when registration is open");
+        await expect(
+          env.bestOfGame
+            .connect(adr.gameCreator1.wallet)
+            .removeJoinRequirement(1, 1)
+        ).to.be.revertedWith("Cannot do when registration is open");
+      });
+      it("Qualified players can join", async () => {});
+      it("Game cannot be started until join blocktime has passed", async () => {});
+      it("Qualified players can join", async () => {});
+      it("No more than max players can join", async () => {});
+      it("Game can be started upon block deadline has reached", async () => {});
+      it("Game methods beside join and start are inactive", async () => {});
     });
   });
 });

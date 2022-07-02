@@ -10,6 +10,7 @@ import "hardhat-abi-exporter";
 import * as diamondUtils from "./utils/diamond";
 import * as ipfsUtils from "./utils/ipfs";
 import fs from "fs";
+import "hardhat-gas-reporter";
 
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
@@ -68,6 +69,12 @@ task("upload2IPFS", "Uploads files to ipfs")
 // const privateKey = fs.readFileSync(".secrets/key.secret").toString().trim();
 
 export default {
+  gasReporter: {
+    currency: "EUR",
+    gasPrice: 21,
+    enabled: false,
+    coinmarketcap: process.env.COINMARKETCAP_KEY,
+  },
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {

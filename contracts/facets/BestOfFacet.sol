@@ -39,7 +39,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         uint256 rank;
         address createdBy;
         TokenRequirement[] joinRequirements;
-        bool registrationOpen;
+        // bool registrationOpen;
         Proposal[] proposals;
         mapping(address => uint256) score;
         mapping(bytes32 => Vote) votes;
@@ -49,24 +49,24 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
     }
 
     modifier onlyExistingGame(uint256 gameId) {
-        require(gameId.gameExists(), "BestOf->onlyExistingGame: Game does not exist");
+        require(gameId.gameExists(), "no game found");
         _;
     }
     modifier onlyGameCreator(uint256 gameId) {
         BOGInstance storage game = getGameStorage(gameId);
-        require(game.createdBy == msg.sender, "Only game creator can do that action");
+        require(game.createdBy == msg.sender, "Only game creator");
         _;
     }
 
     modifier onlyInitialized() {
         BOGSettings storage settings = BOGStorage();
-        require(settings.contractInitialized, "BestOfGame: onlyInitialized: contract is not initialized yet");
+        require(settings.contractInitialized, "onlyInitialized");
         _;
     }
 
     modifier onlyGameMaster(uint256 gameId) {
         BOGInstance storage game = getGameStorage(gameId);
-        require(gameId.getGM() == msg.sender, "Only game master account can do that!");
+        require(gameId.getGM() == msg.sender, "Only game master");
         _;
     }
 
@@ -84,12 +84,6 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         }
     }
 
-    // function BOGStorage() internal pure returns (BOGStruct storage es) {
-    //     bytes32 position = BESTOFGAME_STORAGE_POSITION;
-    //     assembly {
-    //         es.slot := position
-    //     }
-    // }
 
     function _isValidSignature(
         bytes memory message,
@@ -99,15 +93,6 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         bytes32 typedHash = _hashTypedDataV4(keccak256(message));
         return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
     }
-
-    // function isValidSignature(
-    //     bytes32 signature,
-    //     bytes32 message,
-    //     address signer
-    // ) public view returns (bool) {
-
-    //     return false;
-    // }
 
     bytes32 _VOTE_PROOF_TYPEHASH = keccak256("signHashedVote(bytes32 voteHash)");
 
@@ -180,36 +165,6 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
 
     bytes32 _PROPOSAL_PROOF_TYPEHASH = keccak256("signHashedProposal(bytes32 hash)");
 
-    // function hasRequiredToken(address subject, Token memory token) public view returns (bool) {
-    //     if (token.tokenType == TokenTypes.ERC20) {
-    //         IERC20 ERC20Contract = IERC20(token.tokenAddress);
-    //         uint256 balance = ERC20Contract.balanceOf(subject);
-    //         if (balance >= token.tokenAmount) return true;
-    //     }
-    //     if (token.tokenType == TokenTypes.ERC1155) {
-    //         IERC1155 ERC1155Contract = IERC1155(token.tokenAddress);
-    //         uint256 balance = ERC1155Contract.balanceOf(subject, token.tokenId);
-    //         if (balance >= token.tokenAmount) return true;
-    //     }
-    //     if (token.tokenType == TokenTypes.ERC20) {
-    //         IERC721 ERC721Contract = IERC721(token.tokenAddress);
-    //         if (token.isParticularERC721Id) {
-    //             address owner = ERC721Contract.ownerOf(token.tokenId);
-    //             if (subject == owner) return true;
-    //         } else {
-    //             uint256 balance = ERC721Contract.balanceOf(subject);
-    //             if (balance >= token.tokenAmount) return true;
-    //         }
-    //     }
-    //     return false;
-    // }
-
-    // function isWhitelisted(address subject, Token[] memory whitelistTokens) public view returns (bool) {
-    //     for (uint256 i = 0; i < whitelistTokens.length; i++) {
-    //         if (hasRequiredToken(subject, whitelistTokens[i]) == true) return true;
-    //     }
-    //     return false;
-    // }
 
     function fulfillTokenRequirement(
         address applicant,
@@ -220,14 +175,14 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
 
         if (req.token.tokenType == TokenTypes.NATIVE) {
             if (req.must == TokenMust.GIVE) {
-                require(msg.value >= req.amount, "fulfillTokenRequirement: Not enough payment");
+                require(msg.value >= req.amount, "Not enough payment");
             }
         }
         if (req.token.tokenType == TokenTypes.ERC20) {
             IERC20 ERC20Contract = IERC20(req.token.tokenAddress);
             if (req.must == TokenMust.HAVE) {
                 uint256 balance = ERC20Contract.balanceOf(applicant);
-                require(balance >= req.amount, "fulfillTokenRequirement: ERC20 balance not valid");
+                require(balance >= req.amount, "ERC20 balance not valid");
             }
             if (req.must == TokenMust.BURN) {
                 ERC20Contract.transferFrom(applicant, address(0), req.amount);
@@ -240,7 +195,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
             IERC1155 ERC1155Contract = IERC1155(req.token.tokenAddress);
             if (req.must == TokenMust.HAVE) {
                 uint256 balance = ERC1155Contract.balanceOf(applicant, req.token.tokenId);
-                require(balance >= req.amount, "fulfillTokenRequirement: ERC1155 balance not valid");
+                require(balance >= req.amount, "ERC1155 balance not valid");
             }
             if (req.must == TokenMust.BURN) {
                 ERC1155Contract.safeTransferFrom(applicant, address(0), req.token.tokenId, req.amount, "");
@@ -258,10 +213,10 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
             if (req.must == TokenMust.HAVE) {
                 if (req.requireParticularERC721) {
                     address owner = ERC721Contract.ownerOf(req.token.tokenId);
-                    require(owner == applicant, "fulfillTokenRequirement: ERC721 not owner of particular token by id");
+                    require(owner == applicant, "ERC721 not owner of particular token by id");
                 } else {
                     uint256 balance = ERC721Contract.balanceOf(applicant);
-                    require(balance >= req.amount, "fulfillTokenRequirement: ERC721 balance is not valid");
+                    require(balance >= req.amount, "ERC721 balance is not valid");
                 }
             }
             if (req.must == TokenMust.BURN) {
@@ -286,9 +241,6 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         uint256 gameRank
     ) public payable onlyInitialized {
         BOGSettings storage settings = BOGStorage();
-        // if (!isWhitelisted(msg.sender, settings.newGameWhitelistTokens)) {
-        //     require(msg.value > settings.gamePrice, "BestOfFacet->createGame: not enough payment");
-        // }
         gameId.createGame(gameMaster);
         fulfillTokenRequirement(msg.sender, gameId, settings.newGameReq);
 
@@ -299,9 +251,9 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
             rankReq.amount = 1;
             fulfillTokenRequirement(msg.sender, gameId, rankReq);
         }
-        require(msg.value >= settings.gamePrice, "BOG->CreateGame: Not enough payment");
+        require(msg.value >= settings.gamePrice, "Not enough payment");
         BOGInstance storage game = getGameStorage(gameId);
-        game.registrationOpen = false;
+        // game.registrationOpen = false;
         game.createdBy = msg.sender;
         settings.numGames += 1;
         emit gameCreated(gameMaster, gameId, gameRank);
@@ -315,13 +267,10 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
     function openRegistration(uint256 gameId) public onlyInitialized onlyExistingGame(gameId) onlyGameCreator(gameId) {
         // BOGInstance storage game = getGameStorage(gameId);
         gameId.openRegistration();
+        emit RegistrationOpen(gameId);
         // game.registrationOpen = true;
     }
 
-    //     function _addJoinRequirements(uint256 gameId, Token memory token) private {
-    //     BOGInstance storage game = getGameStorage(gameId);
-    //     game.inviteTokens.push(token);
-    // }
 
     function addJoinRequirements(uint256 gameId, TokenRequirement memory requirement)
         public
@@ -330,6 +279,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         onlyGameCreator(gameId)
     {
         BOGInstance storage game = getGameStorage(gameId);
+        require (!gameId.isRegistrationOpen(), "Cannot do when registration is open");
         game.joinRequirements.push(requirement);
         emit RequirementAdded(gameId, requirement);
     }
@@ -341,6 +291,8 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         onlyGameCreator(gameId)
     {
         BOGInstance storage game = getGameStorage(gameId);
+        require (!gameId.isRegistrationOpen(), "Cannot do when registration is open");
+        require(game.joinRequirements.length > 0, "No requirements exist");
         game.joinRequirements.pop();
     }
 
@@ -351,6 +303,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         onlyGameCreator(gameId)
     {
         BOGInstance storage game = getGameStorage(gameId);
+        require (!gameId.isRegistrationOpen(), "Cannot do when registration is open");
         delete game.joinRequirements[index];
     }
 
@@ -366,7 +319,6 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
 
     function joinGame(uint256 gameId) public payable onlyInitialized onlyExistingGame(gameId) {
         BOGInstance storage game = getGameStorage(gameId);
-        // require(game.registrationOpen == true, "This game has no registration open");
         fulfillTokenRequirements(msg.sender, gameId, game.joinRequirements);
         gameId.addPlayer(msg.sender);
     }
@@ -374,18 +326,6 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
     function startGame(uint256 gameId) public onlyInitialized onlyExistingGame(gameId) {
         gameId.startGame();
     }
-
-    // function submitProposals(uint256 gameId, Proposal[] memory proposals) public onlyGameMaster(gameId) {
-    //     BOGInstance storage game = getGameStorage(gameId);
-    //     require(gameId.gameExists(), "Game does not exist");
-
-    //     for (uint256 i = 0; i < proposals.length; i++) {
-    //         game.proposals[i].proposerHidden = proposals[i].proposerHidden;
-    //         game.proposals[i].proposal = proposals[i].proposal;
-    //         game.proposals[i].score = 0;
-    //         game.proposals[i].proposerRevealed = address(0);
-    //     }
-    // }
 
     function submitProposal(
         uint256 gameId,
@@ -423,13 +363,13 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
     ) public onlyInitialized onlyExistingGame(gameId) onlyGameMaster(gameId) {
         BOGInstance storage game = getGameStorage(gameId);
 
-        require(votes[0] != votes[1], "submitVote: cannot vote same items: 0-1");
-        require(votes[0] != votes[2], "submitVote: cannot vote same items: 0-2");
-        require(votes[1] != votes[2], "submitVote: cannot vote same items: 1-2");
+        require(votes[0] != votes[1], "Same items");
+        require(votes[0] != votes[2], "Same items");
+        require(votes[1] != votes[2], "Same items");
 
         for (uint8 i = 0; i < 3; i++) {
             require(game.proposals[i].proposerHidden != voterHidden, "Cannot vote for yourself");
-            require(votes[i] >= game.proposals.length, "submitVote: vote index is of proposal bounds");
+            require(votes[i] >= game.proposals.length, "index is out of proposal bounds");
         }
         game.votes[voterHidden].votedFor = votes;
         game.votes[voterHidden].proof = proof;
@@ -441,14 +381,14 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         address[] memory proposers
     ) public onlyInitialized onlyExistingGame(gameId) {
         BOGInstance storage game = getGameStorage(gameId);
-        require(gameId.isGameActive() == true, "_reveal->Game Not Active");
-        require(gameId.canEndTurn() == true, "_reveal->cannot do this now");
+        require(gameId.isGameActive() == true, "Game Not Active");
+        require(gameId.canEndTurn() == true, "Cannot do this now");
 
         Score[] memory scores;
         for (uint256 i = 0; i < game.proposals.length; i++) {
             require(
                 keccak256(abi.encode(proposers[i], salt)) == game.proposals[i].proposerHidden,
-                "BestOfFacet->reveal: Hashes not match"
+                " Hashes not match"
             );
             bytes memory message = abi.encode(
                 _PROPOSAL_PROOF_TYPEHASH,
@@ -457,7 +397,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
             game.proposals[i].proposerRevealed = proposers[i];
             require(
                 _isValidSignature(game.proposals[i].proof, message, game.proposals[i].proposerRevealed),
-                "endTurn: Signature is wrong"
+                "Signature is wrong"
             );
             scores[i].participant = proposers[i];
             game.score[proposers[i]] = calculateAndVerifyScore(
@@ -497,14 +437,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         bytes calldata
     ) public view override onlyInitialized returns (bytes4) {
         if (operator == address(this)) {
-            // uint256 gameId = uint256(data);
-            // BOGInstance storage game = getGameStorage(gameId);
-            // Token _token;
-            // _token.tokenAddress = msg.sender;
-            // _token.tokenAmount = value;
-            // _token.tokenType = TokenTypes.ERC1155;
-            // require(gameId.gameExists(),"onERC1155Received->Game does not exist");
-            // game.lockedTokens[from].push(_token);
+
 
             return bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"));
         }
@@ -526,44 +459,4 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         return settings;
     }
 
-    // function getJoinPrice(uint256 rank) {
-    //     BOGSettings storage settings = BOGStorage();
-    //     return settings.joinGamePrice**rank;
-    // }
-
-    // function lockRankToken(uint256 gameId) private {
-    //     BOGSettings storage settings = BOGStorage();
-    //     IERC1155 ERC1155Contract = IERC1155(settings.rankToken.tokenAddress);
-    //     BOGInstance storage game = getGameStorage(gameId);
-    //     require(game.rank > 0, "BestOfGame->lockRankToken: games of rank 0 are token free");
-    //     ERC1155Contract.safeTransferFrom(subject, address(this),game.rank,settings.rankToken.tokenAmount,bytes(gameId));
-    //     assert(game.lockedTokens[msg.sender][game.lockedTokens[msg.sender].length - 1 ].tokenAddress == settings.rankToken.tokenAddress);
-    //     assert(game.lockedTokens[msg.sender][game.lockedTokens[msg.sender].length - 1 ].tokenAmount == settings.rankToken.tokenAmount);
-    // }
-
-    // function joinGame(uint256 gameId) private payable {
-    //     BOGInstance storage game = getGameStorage(gameId);
-    //     BOGSettings storage settings = BOGStorage();
-    //     require(gameId.gameExists(), "BestOfGame->joinGame:Game does not exist");
-    //     require(game.canBeJoined(), "BestOfGame->joinGame: Game cannot be joined right now");
-    //     require(game.isPlayerInGame(gameId), "BestOfGame->joinGame: already participating");
-    //     if (game.rank > 0) {
-    //         lockRankToken(gameId);
-    //     }
-    //     bool isWhitelisted = isWhitelisted(msg.sender, getInviteTokens(gameId));
-    //     bool hasInvite = getVectorValue(msg.sender, "inviteVector");
-    //     if(!isWhitelisted)
-    //     {
-
-    //     }
-    //     require(
-    //         msg.value >= getJoinPrice(game.rank),
-    //         "BestOfGame->joinGame: not enough msg.value to join the game"
-    //     );
-    //     require(
-    //         isWhitelisted,
-    //         "BestOfGame->joinGame: to join this game you MUST have qualify with access token"
-    //     );
-    //     transferTokens(msg.sender,)
-    // }
 }

@@ -50,4 +50,5 @@ interface IBestOf {
     event ProposersRevealed(uint256 indexed gameId, address[] proposers, uint256 salt, Score[] scores);
     event RoundFinished(uint256 indexed gameId, uint256 indexed round, Score[] scores);
     event RequirementAdded(uint256 indexed gameId, TokenRequirement indexed requirement);
+    event RegistrationOpen(uint256 indexed gameid);
 }
