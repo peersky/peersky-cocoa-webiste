@@ -53,4 +53,5 @@ interface IBestOf {
     event RegistrationOpen(uint256 indexed gameid);
     event PlayerJoined(uint256 indexed gameId, address participant);
     event GameStarted(uint256 indexed gameId);
+    event ProposalSubmitted(uint256 indexed gameId, uint256 proposalIdx, bytes indexed proof, string indexed proposal);
 }

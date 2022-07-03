@@ -394,4 +394,10 @@ library LibTBG {
         return players;
     }
 
+    function getMaxRounds() internal view returns (uint256)
+    {
+         TBGStorageStruct storage tbg = TBGStorage();
+         return tbg.settings.maxRounds;
+    }
+
 }

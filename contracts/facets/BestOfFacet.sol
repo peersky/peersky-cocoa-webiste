@@ -338,16 +338,23 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         BOGInstance storage game = getGameStorage(gameId);
         require(gameId.gameExists(), "Game does not exist");
         gameId.enforceHasStarted();
+        // console.logUint(gameId.getRound()+1);
+        // console.logUint(LibTBG.getMaxRounds());
+        require(gameId.getRound()+1 != LibTBG.getMaxRounds(), "Cannot propose in last round");
 
         for (uint256 i = 0; i < game.proposals.length; i++) {
             require(game.proposals[i].proposerHidden != proposerHidden, "Proposer already submitted");
         }
+        require(proposerHidden != bytes32(0), "proposerHidden cannot be empty");
+        require(proof.length != 0, "proof cannot be empty");
+
         Proposal memory newProposal;
         newProposal.proposerHidden = proposerHidden;
         newProposal.proposal = proposal;
         newProposal.proposerRevealed = address(0);
         newProposal.proof = proof;
         game.proposals.push(newProposal);
+        emit ProposalSubmitted(gameId, game.proposals.length, proof,  proposal);
     }
 
     function mintRankTokens(address[3] memory winners, uint256 gameRank) private {
@@ -366,6 +373,9 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
     ) public onlyInitialized onlyExistingGame(gameId) onlyGameMaster(gameId) {
         gameId.enforceHasStarted();
         BOGInstance storage game = getGameStorage(gameId);
+
+    console.logUint(gameId.getRound());
+        require(gameId.getRound() > 1, "No proposals exist at round 1");
 
         require(votes[0] != votes[1], "Same items");
         require(votes[0] != votes[2], "Same items");
@@ -392,7 +402,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         for (uint256 i = 0; i < game.proposals.length; i++) {
             require(
                 keccak256(abi.encode(proposers[i], salt)) == game.proposals[i].proposerHidden,
-                " Hashes not match"
+                "Hashes not match"
             );
             bytes memory message = abi.encode(
                 _PROPOSAL_PROOF_TYPEHASH,

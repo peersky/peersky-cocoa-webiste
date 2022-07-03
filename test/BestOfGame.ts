@@ -93,9 +93,9 @@ describe(scriptName, () => {
         .connect(adr.gameMaster1.wallet)
         .submitProposal(
           0,
-          ethers.utils.formatBytes32String(""),
-          ethers.utils.formatBytes32String(""),
-          ethers.utils.formatBytes32String("")
+          ethers.utils.formatBytes32String("mockString"),
+          ethers.utils.formatBytes32String("mockString"),
+          ethers.utils.formatBytes32String("mockString")
         )
     ).to.be.revertedWith("no game found");
     await expect(
@@ -103,9 +103,9 @@ describe(scriptName, () => {
         .connect(adr.gameMaster1.wallet)
         .submitVote(
           0,
-          ethers.utils.formatBytes32String(""),
+          ethers.utils.formatBytes32String("mockString"),
           [1, 1, 1],
-          ethers.utils.formatBytes32String("")
+          ethers.utils.formatBytes32String("mockString")
         )
     ).to.be.revertedWith("no game found");
     await expect(
@@ -151,7 +151,7 @@ describe(scriptName, () => {
         adr.gameCreator1.wallet.address,
         1,
         1,
-        ethers.utils.formatBytes32String("")
+        ethers.utils.formatBytes32String("mockString")
       );
     await expect(
       env.bestOfGame
@@ -174,7 +174,7 @@ describe(scriptName, () => {
         adr.gameCreator1.wallet.address,
         1,
         2,
-        ethers.utils.formatBytes32String("")
+        ethers.utils.formatBytes32String("mockString")
       );
     await expect(
       env.bestOfGame
@@ -307,8 +307,8 @@ describe(scriptName, () => {
             .connect(adr.gameMaster1.wallet)
             .submitProposal(
               1,
-              ethers.utils.formatBytes32String(""),
-              ethers.utils.formatBytes32String(""),
+              ethers.utils.formatBytes32String("mockString"),
+              ethers.utils.formatBytes32String("mockString"),
               ""
             )
         ).to.be.revertedWith("Game has not yet started");
@@ -320,13 +320,13 @@ describe(scriptName, () => {
             .connect(adr.gameMaster1.wallet)
             .submitVote(
               1,
-              ethers.utils.formatBytes32String(""),
+              ethers.utils.formatBytes32String("mockString"),
               [
-                ethers.utils.formatBytes32String(""),
-                ethers.utils.formatBytes32String(""),
-                ethers.utils.formatBytes32String(""),
+                ethers.utils.formatBytes32String("mockString"),
+                ethers.utils.formatBytes32String("mockString"),
+                ethers.utils.formatBytes32String("mockString"),
               ],
-              ethers.utils.formatBytes32String("")
+              ethers.utils.formatBytes32String("mockString")
             )
         ).to.be.revertedWith("Game has not yet started");
       });
@@ -362,8 +362,8 @@ describe(scriptName, () => {
               .connect(adr.gameMaster1.wallet)
               .submitProposal(
                 1,
-                ethers.utils.formatBytes32String(""),
-                ethers.utils.formatBytes32String(""),
+                ethers.utils.formatBytes32String("mockString"),
+                ethers.utils.formatBytes32String("mockString"),
                 ""
               )
           ).to.be.revertedWith("Game has not yet started");
@@ -375,13 +375,13 @@ describe(scriptName, () => {
               .connect(adr.gameMaster1.wallet)
               .submitVote(
                 1,
-                ethers.utils.formatBytes32String(""),
+                ethers.utils.formatBytes32String("mockString"),
                 [
-                  ethers.utils.formatBytes32String(""),
-                  ethers.utils.formatBytes32String(""),
-                  ethers.utils.formatBytes32String(""),
+                  ethers.utils.formatBytes32String("mockString"),
+                  ethers.utils.formatBytes32String("mockString"),
+                  ethers.utils.formatBytes32String("mockString"),
                 ],
-                ethers.utils.formatBytes32String("")
+                ethers.utils.formatBytes32String("mockString")
               )
           ).to.be.revertedWith("Game has not yet started");
         });
@@ -390,7 +390,7 @@ describe(scriptName, () => {
             await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
             await env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1);
           });
-          it.only("First round has started", async () => {
+          it("First round has started", async () => {
             expect(
               await env.bestOfGame.connect(adr.player1.wallet).getRound(1)
             ).to.be.equal(1);
@@ -398,6 +398,60 @@ describe(scriptName, () => {
               await env.bestOfGame.connect(adr.player1.wallet).getTurn(1)
             ).to.be.equal(1);
           });
+          it("First round only proposals can be submitted", async () => {
+            await expect(
+              env.bestOfGame
+                .connect(adr.gameMaster1.wallet)
+                .submitProposal(
+                  1,
+                  ethers.utils.formatBytes32String("mockString"),
+                  ethers.utils.formatBytes32String("mockString"),
+                  ""
+                )
+            ).to.be.emit(env.bestOfGame, "ProposalSubmitted");
+            // await expect(
+            //   env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(1, 1, [])
+            // ).to.be.revertedWith("Game has not yet started");
+            await expect(
+              env.bestOfGame
+                .connect(adr.gameMaster1.wallet)
+                .submitVote(
+                  1,
+                  ethers.utils.formatBytes32String("mockString"),
+                  [
+                    ethers.utils.formatBytes32String("mockString"),
+                    ethers.utils.formatBytes32String("mockString"),
+                    ethers.utils.formatBytes32String("mockString"),
+                  ],
+                  ethers.utils.formatBytes32String("mockString")
+                )
+            ).to.be.revertedWith("No proposals exist at round 1");
+          });
+          it("Processes only proposals only from game master", async () => {
+            await expect(
+              env.bestOfGame
+                .connect(adr.gameMaster1.wallet)
+                .submitProposal(
+                  1,
+                  ethers.utils.formatBytes32String("mockString"),
+                  ethers.utils.formatBytes32String("mockString"),
+                  ""
+                )
+            ).to.be.emit(env.bestOfGame, "ProposalSubmitted");
+          });
+          it("Can end round after proposals are received (or timeout reached)", () => {});
+          describe("When round is not first nor last", () => {});
+          it("Can end turn after votes submitted first round", async () => {});
+          it("Last movement can only accept votes", async () => {});
+          it("Between last and first moves votes can be submitted and proosals - voted", async () => {});
+          it("Emits when turn ended", async () => {});
+          it("Emits when round is over", async () => {});
+          it("Emits only when valid votes are submitted", async () => {});
+          it("Emits only when valid proposals are submitted", async () => {});
+          it("Score of players is equal to all votes submitted", async () => {});
+          it("Rewards winners with rank token at the end of the round", async () => {});
+          it("Winner can create next rank game", async () => {});
+          describe("When next round starts, previous scores are reset", async () => {});
         });
       });
     });
