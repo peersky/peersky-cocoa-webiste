@@ -44,7 +44,7 @@ async def on_member_join(member):
 async def on_message(message: discord.Message):
     if message.author.bot:
         return
-    channel: discord.TextChannel = message.channel
+    channel = message.channel
     # if message.channel
     if channel.type is discord.ChannelType.private:
         if message.content.startswith('authenticate'):
