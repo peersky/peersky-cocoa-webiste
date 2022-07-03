@@ -1,0 +1,10 @@
+[
+  "event DelegateChanged(address indexed,address indexed,address indexed)",
+  "event DelegateVotesChanged(address indexed,uint256,uint256)",
+  "function delegate(address)",
+  "function delegateBySig(address,uint256,uint256,uint8,bytes32,bytes32)",
+  "function delegates(address) view returns (address)",
+  "function getPastTotalSupply(uint256) view returns (uint256)",
+  "function getPastVotes(address,uint256) view returns (uint256)",
+  "function getVotes(address) view returns (uint256)"
+]
