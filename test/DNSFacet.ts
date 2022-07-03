@@ -3,7 +3,7 @@ import {
   setupAddresses,
   setupEnvironment,
   getUserRegisterProps,
-  signMessage,
+  signRegistrarMessage,
 } from "./utils";
 import { LibMultipass } from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 import { getInterfaceID } from "../scripts/libraries/utils";
@@ -325,7 +325,7 @@ describe(scriptName, () => {
           nonce: ethers.BigNumber.from(0),
         };
 
-        const registarSignature = await signMessage(
+        const registarSignature = await signRegistrarMessage(
           registrarMessage,
           env.multipass.address,
           adr.registrar1
@@ -362,7 +362,7 @@ describe(scriptName, () => {
           nonce: ethers.BigNumber.from(0),
         };
 
-        const invalidRegistrarSignature = await signMessage(
+        const invalidRegistrarSignature = await signRegistrarMessage(
           registrarMessage,
           env.multipass.address,
           adr.maliciousActor1
@@ -401,7 +401,7 @@ describe(scriptName, () => {
             .register(
               applicantData,
               registrarMessage.domainName,
-              await signMessage(
+              await signRegistrarMessage(
                 registrarMessage,
                 env.multipass.address,
                 adr.registrar1
@@ -690,7 +690,7 @@ describe(scriptName, () => {
             targetDomain: ethers.utils.formatBytes32String(""),
           };
 
-          const validSignature = await signMessage(
+          const validSignature = await signRegistrarMessage(
             registrarMessage,
             env.multipass.address,
             adr.registrar1

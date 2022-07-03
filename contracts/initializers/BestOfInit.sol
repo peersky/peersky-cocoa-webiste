@@ -18,6 +18,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { IBestOf} from "../interfaces/IBestOf.sol";
 import {LibTBG} from "../libraries/LibTurnBasedGame.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "hardhat/console.sol";
 
 // It is expected that this contract is customized if you want to deploy your diamond
 // with data from a deployment script. Use the init function to initialize state variables
@@ -65,7 +66,6 @@ struct contractInitializer {
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true;
-
         bytes32 hashedName = keccak256(bytes(name));
         bytes32 hashedVersion = keccak256(bytes(version));
         bytes32 typeHash = keccak256(

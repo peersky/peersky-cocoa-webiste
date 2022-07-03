@@ -387,7 +387,7 @@ library LibTBG {
 
     function getPlayers(uint256 gameId) internal view returns (address[] memory) {
         GameInstance storage _game = _getGame(gameId);
-        address[] memory players;
+        address[] memory players = new address[](_game.players.length());
         for (uint256 i = 0; i < _game.players.length(); i++) {
             (, players[i]) = _game.players.at(i);
         }

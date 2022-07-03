@@ -47,7 +47,7 @@ interface IBestOf {
         bool contractInitialized;
     }
     event gameCreated(address indexed gameMaster, uint256 indexed gameId, uint256 indexed gameRank);
-    event ProposersRevealed(uint256 indexed gameId, address[] proposers, uint256 salt, Score[] scores);
+    event TurnEnded(uint256 indexed gameId, address[] proposers, bytes32 salt, Score[] scores);
     event RoundFinished(uint256 indexed gameId, uint256 indexed round, Score[] scores);
     event RequirementAdded(uint256 indexed gameId, TokenRequirement indexed requirement);
     event RegistrationOpen(uint256 indexed gameid);

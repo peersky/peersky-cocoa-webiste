@@ -1,11 +1,17 @@
-import { AdrSetupResult, EnvSetupResult, SignerIdentity } from "./utils";
+import {
+  AdrSetupResult,
+  EnvSetupResult,
+  getTurnSalt,
+  SignerIdentity,
+} from "./utils";
 import {
   setupAddresses,
   setupEnvironment,
   getUserRegisterProps,
-  signMessage,
+  signRegistrarMessage,
   BOGSettings,
   mineBlocks,
+  mockProposalSecrets,
 } from "./utils";
 import { getInterfaceID } from "../scripts/libraries/utils";
 import { expect } from "chai";
@@ -134,7 +140,7 @@ describe(scriptName, () => {
     await expect(
       env.bestOfGame
         .connect(adr.gameMaster1.wallet)
-        .endTurn(0, 1, [ZERO_ADDRESS])
+        .endTurn(0, ZERO_BYTES32, [ZERO_ADDRESS])
     ).to.be.revertedWith("no game found");
   });
   it("Succedes to create ranked game only if sender has correspoding tier rank token", async () => {
@@ -313,7 +319,9 @@ describe(scriptName, () => {
             )
         ).to.be.revertedWith("Game has not yet started");
         await expect(
-          env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(1, 1, [])
+          env.bestOfGame
+            .connect(adr.gameMaster1.wallet)
+            .endTurn(1, ZERO_BYTES32, [])
         ).to.be.revertedWith("Game has not yet started");
         await expect(
           env.bestOfGame
@@ -368,7 +376,9 @@ describe(scriptName, () => {
               )
           ).to.be.revertedWith("Game has not yet started");
           await expect(
-            env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(1, 1, [])
+            env.bestOfGame
+              .connect(adr.gameMaster1.wallet)
+              .endTurn(1, ZERO_BYTES32, [])
           ).to.be.revertedWith("Game has not yet started");
           await expect(
             env.bestOfGame
@@ -439,8 +449,82 @@ describe(scriptName, () => {
                 )
             ).to.be.emit(env.bestOfGame, "ProposalSubmitted");
           });
-          it("Can end round after proposals are received (or timeout reached)", () => {});
-          describe("When round is not first nor last", () => {});
+          it.only("Can end turn after all proposals are received", async () => {
+            let proposers = [];
+            for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
+              let name = `player${i}` as any as keyof AdrSetupResult;
+              const { proposerHidden, proof } = await mockProposalSecrets({
+                proposer: adr[`${name}`],
+                // proposer: adr.player1,
+                gm: adr.gameMaster1,
+                proposal: `Proposal-${name}-r1-t1`,
+                gameId: 1,
+                round: 1,
+                turn: 1,
+                verifierAddress: env.bestOfGame.address,
+              });
+              await env.bestOfGame
+                .connect(adr.gameMaster1.wallet)
+                .submitProposal(
+                  1,
+                  proposerHidden,
+                  proof,
+                  `Proposal-${name}-r1-t1`
+                );
+              proposers.push(adr[`${name}`].wallet.address);
+            }
+            await expect(
+              env.bestOfGame
+                .connect(adr.gameMaster1.wallet)
+                .endTurn(
+                  1,
+                  getTurnSalt({ gameId: 1, round: 1, turn: 1 }),
+                  proposers
+                )
+            ).to.be.emit(env.bestOfGame, "TurnEnded");
+          });
+          describe("When all players voted", () => {
+            beforeEach(async () => {
+              // for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
+              //   let name = `player${i}` as any as keyof AdrSetupResult;
+              //   // adr[`${name}`].wallet
+              //   const { proposerHidden, proof } = await mockProposalSecrets({
+              //     proposer: adr[`${name}`],
+              //     gm: adr.gameMaster1,
+              //     proposal: "Proposal-p1-r1-t1",
+              //     gameId: "1",
+              //     round: 1,
+              //     turn: 1,
+              //     verifierAddress: env.bestOfGame.address,
+              //   });
+              //   env.bestOfGame
+              //     .connect(adr.gameMaster1.wallet)
+              //     .submitProposal(
+              //       1,
+              //       proposerHidden,
+              //       proof,
+              //       "Proposal-p1-r1-t1"
+              //     );
+              // }
+            });
+            it.only("Can end turn", async () => {
+              const proposers = [];
+              for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
+                let name = `player${i}` as any as keyof AdrSetupResult;
+                proposers.push(adr[`${name}`].wallet.address);
+              }
+
+              await expect(
+                env.bestOfGame
+                  .connect(adr.gameMaster1.wallet)
+                  .endTurn(
+                    1,
+                    getTurnSalt({ gameId: 1, round: 1, turn: 1 }),
+                    proposers
+                  )
+              ).to.emit(env.bestOfGame, "TurnEnded");
+            });
+          });
           it("Can end turn after votes submitted first round", async () => {});
           it("Last movement can only accept votes", async () => {});
           it("Between last and first moves votes can be submitted and proosals - voted", async () => {});

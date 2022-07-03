@@ -17,7 +17,7 @@ const {
   ZERO_ADDRESS,
   ZERO_BYTES32,
 } = require("@openzeppelin/test-helpers/src/constants");
-import { BigNumber, BytesLike, Wallet } from "ethers";
+import { BigNumber, BigNumberish, Bytes, BytesLike, Wallet } from "ethers";
 // @ts-ignore
 import { deploy as deployMultipass } from "../scripts/deployMultipass";
 import { deploy as deployRankToken } from "../scripts/deployRankToken";
@@ -271,7 +271,7 @@ export const setupAddresses = async (): Promise<AdrSetupResult> => {
 const baseFee = 1 * 10 ** 18;
 const MULTIPASS_CONTRACT_NAME = "MultipassDNS";
 export const MULTIPASS_CONTRACT_VERSION = "0.0.1";
-const BESTOF_CONTRACT_NAME = "MultipassDNS";
+const BESTOF_CONTRACT_NAME = "BESTOFNAME";
 export const BESTOF_CONTRACT_VERSION = "0.0.1";
 export const BOG_TURNS_PER_ROUND = "4";
 export const BOG_BLOCKS_PER_TURN = "4";
@@ -447,7 +447,7 @@ export const signReferralCode = async (
   return s;
 };
 
-export const signMessage = async (
+export const signRegistrarMessage = async (
   message: RegisterMessage,
   verifierAddress: string,
   signer: SignerIdentity
@@ -493,7 +493,7 @@ export const signMessage = async (
 export default {
   setupAddresses,
   setupEnvironment,
-  signMessage,
+  signMessage: signRegistrarMessage,
   addPlayerNameId,
   baseFee,
   CONTRACT_NAME: process.env.MULTIPASS_CONTRACT_NAME,
@@ -523,7 +523,7 @@ export const getUserRegisterProps = async (
     nonce: ethers.BigNumber.from(0),
   };
 
-  const validSignature = await signMessage(
+  const validSignature = await signRegistrarMessage(
     registrarMessage,
     multipassAddress,
     registrar
@@ -565,5 +565,160 @@ export const getUserRegisterProps = async (
     applicantData,
     referrerData,
     referrerSignature,
+  };
+};
+
+// interface VoteSubmittion {
+//   gameId: string;
+//   voterHidden: string;
+//   votes: string[3];
+//   proof: string;
+// }
+
+// const mockVote = ({
+//   voter,
+// }: {
+//   voter: SignerIdentity;
+//   gm: SignerIdentity;
+//   voteText: string;
+// }): VoteSubmittion => {
+//   return
+
+// };
+
+interface ProposalSubmittion {
+  proposerHidden: string;
+  proof: string;
+}
+
+interface ProposalMessage {
+  gameId: BigNumberish;
+  proposal: string;
+  round: BigNumberish;
+  turn: BigNumberish;
+  salt: BytesLike;
+}
+
+const ProposalTypes = {
+  signHashedProposal: [
+    {
+      type: "uint256",
+      name: "gameId",
+    },
+
+    {
+      type: "uint256",
+      name: "round",
+    },
+    {
+      type: "uint256",
+      name: "turn",
+    },
+    {
+      type: "bytes32",
+      name: "salt",
+    },
+    {
+      type: "string",
+      name: "proposal",
+    },
+  ],
+};
+
+export const signProposalMessage = async (
+  message: ProposalMessage,
+  verifierAddress: string,
+  signer: SignerIdentity
+) => {
+  let { chainId } = await ethers.provider.getNetwork();
+
+  const domain = {
+    name: BESTOF_CONTRACT_NAME,
+    version: BESTOF_CONTRACT_VERSION,
+    chainId,
+    verifyingContract: verifierAddress,
+  };
+  const s = await signer.wallet._signTypedData(domain, ProposalTypes, {
+    ...message,
+  });
+  return s;
+};
+
+const MOCK_SECRET = "123456";
+
+export const getTurnSalt = ({
+  gameId,
+  round,
+  turn,
+}: {
+  gameId: BigNumberish;
+  round: BigNumberish;
+  turn: BigNumberish;
+}) => {
+  return ethers.utils.solidityKeccak256(
+    ["string", "uint256", "uint256", "uint256"],
+    [MOCK_SECRET, gameId, round, turn]
+  );
+};
+
+export const getTurnPlayersSalt = ({
+  gameId,
+  round,
+  turn,
+  player,
+}: {
+  gameId: BigNumberish;
+  round: BigNumberish;
+  turn: BigNumberish;
+  player: string;
+}) => {
+  return ethers.utils.solidityKeccak256(
+    ["address", "bytes32"],
+    [player, getTurnSalt({ gameId, round, turn })]
+  );
+};
+
+export const mockProposalSecrets = async ({
+  proposer,
+  gm,
+  proposal,
+  gameId,
+  round,
+  turn,
+  verifierAddress,
+}: {
+  proposer: SignerIdentity;
+  gm: SignerIdentity;
+  proposal: string;
+  gameId: BigNumberish;
+  round: BigNumberish;
+  turn: BigNumberish;
+  verifierAddress: string;
+}): Promise<ProposalSubmittion> => {
+  const playerSalt = getTurnPlayersSalt({
+    gameId,
+    round,
+    turn,
+    player: proposer.wallet.address,
+  });
+
+  const proposerHidden = ethers.utils.solidityKeccak256(
+    ["address", "bytes32"],
+    [proposer.wallet.address, playerSalt]
+  );
+
+  const message = {
+    gameId,
+    proposal: proposal,
+    round,
+    turn,
+    salt: playerSalt,
+  };
+
+  const s = await signProposalMessage(message, verifierAddress, proposer);
+
+  return {
+    proof: s,
+    proposerHidden,
   };
 };
