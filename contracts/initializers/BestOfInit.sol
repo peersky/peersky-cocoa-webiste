@@ -15,7 +15,7 @@ import {IERC173} from "../vendor/interfaces/IERC173.sol";
 import {IERC165} from "../vendor/interfaces/IERC165.sol";
 import {LibEIP712WithStorage} from "../libraries/LibEIP712Storage.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import { IBestOf} from "../interfaces/IBestOf.sol";
+import {IBestOf} from "../interfaces/IBestOf.sol";
 import {LibTBG} from "../libraries/LibTurnBasedGame.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "hardhat/console.sol";
@@ -25,8 +25,7 @@ import "hardhat/console.sol";
 // of your diamond. Add parameters to the init funciton if you need to.
 
 contract BestOfInit {
-
-      function _buildDomainSeparator(
+    function _buildDomainSeparator(
         bytes32 typeHash,
         bytes32 nameHash,
         bytes32 versionHash
@@ -34,14 +33,14 @@ contract BestOfInit {
         return keccak256(abi.encode(typeHash, nameHash, versionHash, block.chainid, address(this)));
     }
 
-      function BOGStorage() internal pure returns (IBestOf.BOGSettings storage bog) {
+    function BOGStorage() internal pure returns (IBestOf.BOGSettings storage bog) {
         bytes32 position = LibTBG.getImplemenationDataStorage();
         assembly {
             bog.slot := position
         }
     }
 
-struct contractInitializer {
+    struct contractInitializer {
         uint256 blocksPerTurn;
         uint256 turnsPerRound;
         uint256 maxPlayersSize;
@@ -53,13 +52,15 @@ struct contractInitializer {
         uint256 gamePrice;
         uint256 joinGamePrice;
         LibTBG.CanJoin joinPolicy;
-        // bool canJoinGameWhenStarted
-        // bool canPayToJoin;
     }
 
     // You can add parameters to this function in order to pass in
     // data to set your own state variables
-    function init(string memory name, string memory version, contractInitializer memory initializer) external {
+    function init(
+        string memory name,
+        string memory version,
+        contractInitializer memory initializer
+    ) external {
         // adding ERC165 data
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;
@@ -78,8 +79,6 @@ struct contractInitializer {
         ss._CACHED_DOMAIN_SEPARATOR = _buildDomainSeparator(typeHash, hashedName, hashedVersion);
         ss._CACHED_THIS = address(this);
         ss._TYPE_HASH = typeHash;
-
-
 
         IBestOf.BOGSettings storage _BOG = BOGStorage();
         _BOG.gamePrice = initializer.gamePrice;
@@ -105,7 +104,6 @@ struct contractInitializer {
         settings.blocksToJoin = initializer.blocksToJoin;
 
         LibTBG.init(settings);
-
 
         // add your own state variables
         // EIP-2535 specifies that the `diamondCut` function takes two optional

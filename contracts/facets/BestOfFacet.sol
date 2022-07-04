@@ -354,8 +354,8 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         BOGSettings storage settings = BOGStorage();
         IRankToken rankTokenContract = IRankToken(settings.rankToken.tokenAddress);
         rankTokenContract.mint(winners[0], 3, gameRank + 1, "");
-        rankTokenContract.mint(winners[1], 2, gameRank + 1, "");
-        rankTokenContract.mint(winners[2], 1, gameRank + 1, "");
+        rankTokenContract.mint(winners[1], 2, gameRank, "");
+        rankTokenContract.mint(winners[2], 1, gameRank, "");
     }
 
     function submitVote(
