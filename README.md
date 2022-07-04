@@ -1,4 +1,33 @@
-## THIS IS NOT PRODUCTION READY REPO
+# DAO CACAO
+
+### DISCLAIMER 
+This is Work in progress, bugs may reside. 
+
+## Introduction 
+
+This repository holds various ideas and their implementation made with solo purpose of make world around us better, safer. Author trully belives that decentralization is a key aspect to solving many today social and socio-economical problems so even though some of the projects might seem as silly game, they hold larger vision and values. 
+
+### Why cacao?
+First things first: I love this drink and I find spirit of cacao to be bold, playful, truethworthy and interconnected: exactly same values which this repository represents. 
+
+Second, more objective: Instead of working on multiple different projects in different repositories or managing complicated monorepo with multiple build configuration - I decided to go with one repo which mixes it all together and allows developer to avoid hassle of importing from dependencies. 
+---> _building dao in cup of my cacao_
+
+
+## Facets
+### BestOf
+Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated democracy. Each game round players make their proposals and vote for best proposal of previous turn. Game might have multiple rounds, each round top scored players will receive ERC1155 token as a reward. This token, also named as `rankToken` allows to join games of same contract but with higher rank. 
+
+Multiple games can co-exist and play simulteniously, hence winners of those games can join higher rank.
+
+Therefore, higher rank games represent voting processo of delegates, who had most support from previous games. 
+
+Important game theory aspect is that votes and proposals are uploaded by a `gameMaster` - a wallet that is stored on secure signing server that ensures anonymusness of votes and proposals until turn is over, hence you know who you vote for only after turn is over. 
+
+When you create an instance you allow set of players to join, where join requirements can be added such as requirements to bet, pay or have some kind of tokens (ERC1155/ERC721/ERC20 are supported).
+
+Once game started - winning each game requires N turns. 
+
 
 ### Multipassport
 
