@@ -25,7 +25,7 @@ interface IBestOf {
         uint256 tokenId;
     }
 
-    struct TokenRequirement {
+    struct TokenAction {
         Token token;
         uint256 amount;
         bool requireParticularERC721;
@@ -41,7 +41,7 @@ interface IBestOf {
         struct BOGSettings {
         uint256 gamePrice;
         uint256 joinGamePrice;
-        TokenRequirement newGameReq;
+        TokenAction newGameReq;
         uint256 numGames;
         Token rankToken;
         bool contractInitialized;
@@ -49,7 +49,7 @@ interface IBestOf {
     event gameCreated(address indexed gameMaster, uint256 indexed gameId, uint256 indexed gameRank);
     event TurnEnded(uint256 indexed gameId, address[] proposers, bytes32 salt, Score[] scores);
     event RoundFinished(uint256 indexed gameId, uint256 indexed round, Score[] scores);
-    event RequirementAdded(uint256 indexed gameId, TokenRequirement indexed requirement);
+    event RequirementAdded(uint256 indexed gameId, TokenAction indexed requirement);
     event RegistrationOpen(uint256 indexed gameid);
     event PlayerJoined(uint256 indexed gameId, address participant);
     event GameStarted(uint256 indexed gameId);

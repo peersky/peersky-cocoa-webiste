@@ -210,7 +210,7 @@ describe(scriptName, () => {
       ).to.be.revertedWith("Registration was not yet open");
     });
     it("Game creator can add join requirements", async () => {
-      const requirement: IBestOf.TokenRequirementStruct = {
+      const requirement: IBestOf.TokenActionStruct = {
         token: {
           tokenAddress: env.mockERC20.address,
           tokenType: TokenTypes.ERC20,
@@ -241,7 +241,7 @@ describe(scriptName, () => {
           .openRegistration(1);
       });
       it("Mutating join requirements is no longer possible", async () => {
-        const requirement: IBestOf.TokenRequirementStruct = {
+        const requirement: IBestOf.TokenActionStruct = {
           token: {
             tokenAddress: env.mockERC20.address,
             tokenType: TokenTypes.ERC20,
