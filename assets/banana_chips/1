@@ -1,0 +1,19 @@
+{
+  "description": "Bowl of sweet banana chips",
+  "image": "ipfs://Qme1ZHpuJ5qfbWVnFfNGs9pM8phs78FUF2ct2TjKr3DDrd",
+  "name": "Banana chips",
+  "attributes": [
+    {
+      "trait_type": "Sweetness",
+      "value": "very sweet"
+    },
+    {
+      "trait_type": "Saltyness",
+      "vaue": "um poco sal de mar"
+    },
+    {
+      "trait_type": "Dryiness",
+      "vaue": "Medium to soft"
+    }
+  ]
+}

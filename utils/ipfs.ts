@@ -1,6 +1,5 @@
 // const ipfsClient = require("ipfs-http-client");
-import ipfsClient from "ipfs-http-client";
-
+import ipfsClient, { globSource } from "ipfs-http-client";
 const projectId = process.env.IPFS_ID;
 const projectSecret = process.env.IPFS_SECRET;
 const auth =
@@ -23,6 +22,15 @@ export const upload2IPFS = async (file: Buffer) => {
   const res = await client.add(file);
   console.log(res);
   return res;
+};
+
+export const uploadDir2IPFS = async (path: string) => {
+  console.log("path: ", path);
+  for await (const file of client.addAll(
+    globSource(`./${path}`, { recursive: true })
+  )) {
+    console.log(file);
+  }
 };
 
 export default upload2IPFS;

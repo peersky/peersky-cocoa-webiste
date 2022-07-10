@@ -27,6 +27,12 @@ task("upload2IPFS", "Uploads files to ipfs")
     await ipfsUtils.upload2IPFS(data);
   });
 
+task("uploadDir2IPFS", "Uploads directory to ipfs")
+  .addParam("path", "path")
+  .setAction(async (taskArgs) => {
+    await ipfsUtils.uploadDir2IPFS(taskArgs.path);
+  });
+
 // task("register", "Registers participant")
 //   .addParam("scoreBoard", "The board address")
 //   .addParam("participant", "The participant address")
@@ -68,6 +74,7 @@ task("upload2IPFS", "Uploads files to ipfs")
 // const fs = require("fs");
 // const privateKey = fs.readFileSync(".secrets/key.secret").toString().trim();
 
+console.log(process.env.MATIC_MAINNET_URL);
 export default {
   gasReporter: {
     currency: "EUR",
@@ -83,6 +90,10 @@ export default {
     mumbai: {
       url: "https://matic-mumbai.chainstacklabs.com",
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
+    },
+    matic: {
+      url: process.env.MATIC_MAINNET_URL,
+      accounts: [process.env.PRIVATE_KEY],
     },
   },
   paths: {
