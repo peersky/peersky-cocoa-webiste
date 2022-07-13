@@ -1,10 +1,10 @@
 [
+  "event GameOver(uint256 indexed,uint256[])",
   "event GameStarted(uint256 indexed)",
   "event PlayerJoined(uint256 indexed,address)",
-  "event ProposalSubmitted(uint256 indexed,uint256,bytes indexed,string indexed)",
+  "event ProposalSubmitted(uint256 indexed,bytes32,bytes indexed,string indexed)",
   "event RegistrationOpen(uint256 indexed)",
   "event RequirementAdded(uint256 indexed,tuple(tuple(uint8,address,uint256),uint256,bool,uint8) indexed)",
-  "event RoundFinished(uint256 indexed,uint256 indexed,tuple(address,uint256)[])",
-  "event TurnEnded(uint256 indexed,address[],bytes32,tuple(address,uint256)[])",
+  "event TurnEnded(uint256 indexed,uint256 indexed,address[],uint256[],bytes32 indexed)",
   "event gameCreated(address indexed,uint256 indexed,uint256 indexed)"
 ]
