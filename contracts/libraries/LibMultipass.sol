@@ -140,18 +140,6 @@ library LibMultipass {
         }
     }
 
-    // function _hash(bytes32 value) internal pure returns (bytes32) {
-    //     return keccak256(abi.encodePacked(value));
-    // }
-
-    // /**
-    //  *   @dev This does not check for bytelength. Use only for read operations
-    //  */
-    // function _hash(string memory value) internal pure returns (bytes32) {
-    //     require(_checkStringFits32b(value), "_hash-> string too long");
-    //     return keccak256(abi.encodePacked(value));
-    // }
-
     function resolveDomainIndex(bytes32 domainName) internal view returns (uint256) {
         MultipassStorageStruct storage s = MultipassStorage();
         return s.domainNameToIndex[domainName];
@@ -162,10 +150,6 @@ library LibMultipass {
 
         return s.domains[resolveDomainIndex(domainName)];
     }
-
-    // function _bytes32ToString(bytes32 value) internal pure returns (string memory) {
-    //     return string(abi.encodePacked(value));
-    // }
 
     function _initializeDomain(
         address registrar,
@@ -283,15 +267,5 @@ library LibMultipass {
         return ms.numDomains;
     }
 
-    // function _RecordStringify(Record memory input) internal pure returns (Record memory) {
-    //     Record memory retval;
-    //     retval.wallet = input.wallet;
-    //     retval.name = _bytes32ToString(input.name);
-    //     retval.id = _bytes32ToString(input.id);
-    //     retval.nonce = input.nonce;
-    //     return retval;
-    // }
-
-    // using LibMultipass for RecordBytes32;
     using LibMultipass for NameQuery;
 }
