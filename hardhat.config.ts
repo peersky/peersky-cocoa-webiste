@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
-import "@nomiclabs/hardhat-waffle";
-import "@openzeppelin/hardhat-upgrades";
+import "@nomicfoundation/hardhat-chai-matchers";
+// import "@openzeppelin/hardhat-upgrades";
 import "@nomiclabs/hardhat-truffle5";
 import "@nomiclabs/hardhat-web3";
 import "@nomiclabs/hardhat-ethers";
@@ -92,7 +92,7 @@ export default {
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
     },
     matic: {
-      url: process.env.MATIC_MAINNET_URL,
+      url: process.env.MATIC_MAINNET_URL ?? "",
       accounts: [process.env.PRIVATE_KEY],
     },
   },
