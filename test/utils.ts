@@ -273,25 +273,24 @@ const MULTIPASS_CONTRACT_NAME = "MultipassDNS";
 export const MULTIPASS_CONTRACT_VERSION = "0.0.1";
 const BESTOF_CONTRACT_NAME = "BESTOFNAME";
 export const BESTOF_CONTRACT_VERSION = "0.0.1";
-export const BOG_TURNS_PER_ROUND = "4";
-export const BOG_BLOCKS_PER_TURN = "4";
+export const BOG_BLOCKS_PER_TURN = "14";
 export const BOG_MAX_PLAYERS = 6;
 export const BOG_MIN_PLAYERS = "3";
-export const BOG_MAX_ROUNDS = "3";
+export const BOG_MAX_TURNS = "18";
 export const BOG_BLOCKS_TO_JOIN = "200";
 export const BOG_GAME_PRICE = ethers.utils.parseEther("0.001");
 export const BOG_JOIN_GAME_PRICE = ethers.utils.parseEther("0.001");
 export const BOG_JOIN_POLICY = 0;
 export const BOGSettings = {
   BOG_BLOCKS_PER_TURN,
-  BOG_TURNS_PER_ROUND,
   BOG_MAX_PLAYERS,
   BOG_MIN_PLAYERS,
-  BOG_MAX_ROUNDS,
+  BOG_MAX_TURNS,
   BOG_BLOCKS_TO_JOIN,
   BOG_GAME_PRICE,
   BOG_JOIN_GAME_PRICE,
   BOG_JOIN_POLICY,
+  // BOG_NUM_ACTIONS_TO_TAKE,
 };
 export const setupEnvironment = async ({
   contractDeployer,
@@ -316,7 +315,7 @@ export const setupEnvironment = async ({
   if (!process.env.INFURA_URL || !process.env.RANK_TOKEN_PATH)
     throw new Error("Rank token IPFS route not exported");
   const rankTokenAddress = await deployRankToken({
-    owner: bestOfOwner.wallet.address,
+    owner: contractDeployer.wallet.address,
     signer: contractDeployer.wallet,
     URI: process.env.INFURA_URL + process.env.RANK_TOKEN_PATH,
   });
@@ -327,16 +326,13 @@ export const setupEnvironment = async ({
 
   const bestOfInitialSettings: BestOfInit.ContractInitializerStruct = {
     blocksPerTurn: BOG_BLOCKS_PER_TURN,
-    turnsPerRound: BOG_TURNS_PER_ROUND,
     maxPlayersSize: BOG_MAX_PLAYERS,
     minPlayersSize: BOG_MIN_PLAYERS,
     rankTokenAddress: rankTokenAddress,
-    canJoinGameWhenStarted: true,
-    maxRounds: BOG_MAX_ROUNDS,
     blocksToJoin: BOG_BLOCKS_TO_JOIN,
     gamePrice: BOG_GAME_PRICE,
     joinGamePrice: BOG_JOIN_GAME_PRICE,
-    joinPolicy: BOG_JOIN_POLICY,
+    maxTurns: BOG_MAX_TURNS,
   };
 
   const bestOfGameAddress = await deployBestOfGame({
@@ -586,15 +582,15 @@ export const getUserRegisterProps = async (
 
 // };
 
-interface ProposalSubmittion {
+export interface ProposalSubmittion {
   proposerHidden: string;
   proof: string;
+  proposal: string;
 }
 
 interface ProposalMessage {
   gameId: BigNumberish;
   proposal: string;
-  round: BigNumberish;
   turn: BigNumberish;
   salt: BytesLike;
 }
@@ -604,11 +600,6 @@ const ProposalTypes = {
     {
       type: "uint256",
       name: "gameId",
-    },
-
-    {
-      type: "uint256",
-      name: "round",
     },
     {
       type: "uint256",
@@ -644,60 +635,218 @@ export const signProposalMessage = async (
   return s;
 };
 
+interface VoteMessage {
+  vote1: string;
+  vote2: string;
+  vote3: string;
+  gameId: BigNumberish;
+  turn: BigNumberish;
+  playerSalt: BytesLike;
+}
+const VoteTypes = {
+  signVote: [
+    {
+      type: "string",
+      name: "vote1",
+    },
+    {
+      type: "string",
+      name: "vote2",
+    },
+    {
+      type: "string",
+      name: "vote3",
+    },
+    {
+      type: "uint256",
+      name: "gameId",
+    },
+    {
+      type: "uint256",
+      name: "turn",
+    },
+    {
+      type: "bytes32",
+      name: "playerSalt",
+    },
+  ],
+};
+
+export const signVoteMessage = async (
+  message: VoteMessage,
+  verifierAddress: string,
+  signer: SignerIdentity
+) => {
+  let { chainId } = await ethers.provider.getNetwork();
+
+  const domain = {
+    name: BESTOF_CONTRACT_NAME,
+    version: BESTOF_CONTRACT_VERSION,
+    chainId,
+    verifyingContract: verifierAddress,
+  };
+  const s = await signer.wallet._signTypedData(domain, VoteTypes, {
+    ...message,
+  });
+  return s;
+};
+
 const MOCK_SECRET = "123456";
 
 export const getTurnSalt = ({
   gameId,
-  round,
   turn,
 }: {
   gameId: BigNumberish;
-  round: BigNumberish;
   turn: BigNumberish;
 }) => {
   return ethers.utils.solidityKeccak256(
-    ["string", "uint256", "uint256", "uint256"],
-    [MOCK_SECRET, gameId, round, turn]
+    ["string", "uint256", "uint256"],
+    [MOCK_SECRET, gameId, turn]
   );
 };
 
 export const getTurnPlayersSalt = ({
   gameId,
-  round,
   turn,
   player,
 }: {
   gameId: BigNumberish;
-  round: BigNumberish;
   turn: BigNumberish;
   player: string;
 }) => {
   return ethers.utils.solidityKeccak256(
     ["address", "bytes32"],
-    [player, getTurnSalt({ gameId, round, turn })]
+    [player, getTurnSalt({ gameId, turn })]
   );
+};
+interface VoteSubmition {}
+
+export const mockVote = async ({
+  voter,
+  gm,
+  gameId,
+  turn,
+  vote,
+  verifierAddress,
+}: {
+  voter: SignerIdentity;
+  gameId: BigNumberish;
+  turn: BigNumberish;
+  gm: SignerIdentity;
+  vote: [string, string, string];
+  verifierAddress: string;
+}): Promise<{
+  proof: string;
+  vote: [string, string, string];
+  voteHidden: [BytesLike, BytesLike, BytesLike];
+}> => {
+  const playerSalt = getTurnPlayersSalt({
+    gameId,
+    turn,
+    player: voter.wallet.address,
+  });
+
+  const message = {
+    vote1: vote[0],
+    vote2: vote[1],
+    vote3: vote[2],
+    gameId,
+    turn,
+    playerSalt,
+  };
+  const voteHidden: [BytesLike, BytesLike, BytesLike] = [
+    ethers.utils.solidityKeccak256(
+      ["string", "bytes32"],
+      [vote[0], playerSalt]
+    ),
+    ethers.utils.solidityKeccak256(
+      ["string", "bytes32"],
+      [vote[1], playerSalt]
+    ),
+    ethers.utils.solidityKeccak256(
+      ["string", "bytes32"],
+      [vote[2], playerSalt]
+    ),
+  ];
+  const proof = await signVoteMessage(message, verifierAddress, gm);
+  return { proof, vote, voteHidden };
+};
+export const getPlayers = (
+  adr: AdrSetupResult,
+  numPlayers: number
+): [SignerIdentity, SignerIdentity, ...SignerIdentity[]] => {
+  let players: SignerIdentity[] = [];
+  for (let i = 1; i < numPlayers + 1; i++) {
+    let name = `player${i}` as any as keyof AdrSetupResult;
+    players.push(adr[`${name}`]);
+  }
+  return players as any as [
+    SignerIdentity,
+    SignerIdentity,
+    ...SignerIdentity[]
+  ];
+};
+
+export type MockVotes = Array<{
+  proof: string;
+  vote: [string, string, string];
+  voteHidden: [BytesLike, BytesLike, BytesLike];
+}>;
+
+export const mockVotes = async ({
+  gm,
+  gameId,
+  turn,
+  proposals,
+  verifierAddress,
+  players,
+}: {
+  gameId: BigNumberish;
+  turn: BigNumberish;
+  gm: SignerIdentity;
+  proposals: [...string[]];
+  verifierAddress: string;
+  players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]];
+}): Promise<MockVotes> => {
+  const votes: Array<{
+    proof: string;
+    vote: [string, string, string];
+    voteHidden: [BytesLike, BytesLike, BytesLike];
+  }> = [];
+  for (let k = 0; k < players.length; k++) {
+    const selectedProposal =
+      (Number(gameId) + Number(turn) + k) % players.length;
+    const { vote, voteHidden, proof } = await mockVote({
+      voter: players[k],
+      gameId,
+      turn,
+      gm,
+      verifierAddress,
+      vote: [
+        proposals[selectedProposal],
+        proposals[(selectedProposal + 1) % players.length],
+        proposals[(selectedProposal + 2) % players.length],
+      ],
+    });
+    votes[k] = { vote, voteHidden, proof };
+  }
+  return votes;
 };
 
 export const mockProposalSecrets = async ({
   proposer,
-  gm,
-  proposal,
   gameId,
-  round,
   turn,
   verifierAddress,
 }: {
   proposer: SignerIdentity;
-  gm: SignerIdentity;
-  proposal: string;
   gameId: BigNumberish;
-  round: BigNumberish;
   turn: BigNumberish;
   verifierAddress: string;
 }): Promise<ProposalSubmittion> => {
   const playerSalt = getTurnPlayersSalt({
     gameId,
-    round,
     turn,
     player: proposer.wallet.address,
   });
@@ -706,11 +855,10 @@ export const mockProposalSecrets = async ({
     ["address", "bytes32"],
     [proposer.wallet.address, playerSalt]
   );
-
+  const proposal = String(gameId) + String(turn) + proposer.id;
   const message = {
     gameId,
-    proposal: proposal,
-    round,
+    proposal,
     turn,
     salt: playerSalt,
   };
@@ -720,5 +868,30 @@ export const mockProposalSecrets = async ({
   return {
     proof: s,
     proposerHidden,
+    proposal,
   };
+};
+
+export const mockProposals = async ({
+  players,
+  gameId,
+  turn,
+  verifierAddress,
+}: {
+  players: SignerIdentity[];
+  gameId: BigNumberish;
+  turn: BigNumberish;
+  verifierAddress: string;
+}) => {
+  let proposals = [];
+  for (let i = 0; i < players.length; i++) {
+    let proposal = await mockProposalSecrets({
+      proposer: players[i],
+      gameId,
+      turn,
+      verifierAddress,
+    });
+    proposals.push(proposal);
+  }
+  return proposals;
 };

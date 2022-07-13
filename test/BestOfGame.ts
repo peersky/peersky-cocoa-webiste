@@ -2,6 +2,8 @@ import {
   AdrSetupResult,
   EnvSetupResult,
   getTurnSalt,
+  MockVotes,
+  ProposalSubmittion,
   SignerIdentity,
 } from "./utils";
 import {
@@ -12,6 +14,9 @@ import {
   BOGSettings,
   mineBlocks,
   mockProposalSecrets,
+  mockProposals,
+  mockVotes,
+  getPlayers,
 } from "./utils";
 import { getInterfaceID } from "../scripts/libraries/utils";
 import { expect } from "chai";
@@ -27,6 +32,11 @@ const {
 import { TokenMust, TokenTypes } from "../types/enums";
 const scriptName = path.basename(__filename);
 
+interface Proposal {
+  proposerHidden: string;
+  proposal: string;
+}
+let proposals: Proposal[];
 let adr: AdrSetupResult;
 
 let env: EnvSetupResult;
@@ -39,6 +49,12 @@ describe(scriptName, () => {
       multipassOwner: adr.multipassOwner,
       bestOfOwner: adr.gameOwner,
     });
+    // for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
+    //   let proposal = `player${i}` as any as keyof AdrSetupResult;
+    //   env.bestOfGame
+    //     .connect(adr[`${name}`].wallet)
+    //     .joinGame(1, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
+    // }
   });
   it("Is Owned by contract owner", async () => {
     expect(await env.bestOfGame.owner()).to.be.equal(
@@ -49,10 +65,15 @@ describe(scriptName, () => {
     const state = await env.bestOfGame
       .connect(adr.gameCreator1.wallet)
       .getContractState();
-    expect(state.gamePrice).to.be.equal(BOGSettings.BOG_GAME_PRICE);
-    expect(state.joinGamePrice).to.be.equal(BOGSettings.BOG_JOIN_GAME_PRICE);
-    expect(state.numGames).to.be.equal(0);
-    expect(state.rankToken.tokenAddress).to.be.equal(env.rankToken.address);
+    expect(state.BestOfState.gamePrice).to.be.equal(BOGSettings.BOG_GAME_PRICE);
+    expect(state.BestOfState.joinGamePrice).to.be.equal(
+      BOGSettings.BOG_JOIN_GAME_PRICE
+    );
+    expect(state.BestOfState.numGames).to.be.equal(0);
+    expect(state.BestOfState.rankToken.tokenAddress).to.be.equal(
+      env.rankToken.address
+    );
+    expect(state.TBGSEttings.maxTurns).to.be.equal(BOGSettings.BOG_MAX_TURNS);
   });
   it("Transfer ownership can be done only by contract owner", async () => {
     await expect(
@@ -69,20 +90,21 @@ describe(scriptName, () => {
   });
   it("has rank token assigned", async () => {
     const state = await env.bestOfGame.getContractState();
-    await expect(state.rankToken.tokenAddress).to.be.equal(
+    await expect(state.BestOfState.rankToken.tokenAddress).to.be.equal(
       env.rankToken.address
     );
+    expect(await env.rankToken.owner()).to.be.equal(env.bestOfGame.address);
   });
   it("Can create game only with valid payments", async () => {
     await expect(
       env.bestOfGame
         .connect(adr.gameCreator1.wallet)
-        ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 0)
+        ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 1)
     ).to.revertedWith("Not enough payment");
     await expect(
       env.bestOfGame
         .connect(adr.gameCreator1.wallet)
-        ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 0, {
+        ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 1, {
           value: BOGSettings.BOG_GAME_PRICE,
         })
     ).to.emit(env.bestOfGame, "gameCreated");
@@ -94,28 +116,40 @@ describe(scriptName, () => {
         value: BOGSettings.BOG_GAME_PRICE,
       })
     ).to.be.revertedWith("no game found");
+    const ProposalsStruct = await mockProposals({
+      players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+      gameId: 1,
+      turn: 1,
+      verifierAddress: env.bestOfGame.address,
+    });
     await expect(
       env.bestOfGame
         .connect(adr.gameMaster1.wallet)
         .submitProposal(
-          0,
-          ethers.utils.formatBytes32String("mockString"),
-          ethers.utils.formatBytes32String("mockString"),
-          ethers.utils.formatBytes32String("mockString")
+          2,
+          ProposalsStruct[0].proposerHidden,
+          ProposalsStruct[0].proof,
+          ProposalsStruct[0].proposal
         )
     ).to.be.revertedWith("no game found");
+    const votersAddresses = getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
+      (player) => player.wallet.address
+    );
+    const votes = await mockVotes({
+      gameId: 1,
+      turn: 1,
+      verifierAddress: env.bestOfGame.address,
+      players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+      gm: adr.gameMaster1,
+      proposals: ProposalsStruct.map((item) => item.proposal),
+    });
     await expect(
       env.bestOfGame
         .connect(adr.gameMaster1.wallet)
-        .submitVote(
-          0,
-          ethers.utils.formatBytes32String("mockString"),
-          [1, 1, 1],
-          ethers.utils.formatBytes32String("mockString")
-        )
+        .submitVote(1, votes[0].voteHidden, votes[0].proof)
     ).to.be.revertedWith("no game found");
     await expect(
-      env.bestOfGame.connect(adr.gameMaster1.wallet).openRegistration(0)
+      env.bestOfGame.connect(adr.gameMaster1.wallet).openRegistration(1)
     ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame.connect(adr.gameMaster1.wallet).addJoinRequirements(0, {
@@ -138,63 +172,28 @@ describe(scriptName, () => {
       env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(0)
     ).to.be.revertedWith("no game found");
     await expect(
-      env.bestOfGame
-        .connect(adr.gameMaster1.wallet)
-        .endTurn(0, ZERO_BYTES32, [ZERO_ADDRESS])
+      env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+        1,
+        getTurnSalt({ gameId: 1, turn: 1 }),
+        votersAddresses,
+        votes.map((vote) => vote.vote)
+      )
     ).to.be.revertedWith("no game found");
   });
   it("Succedes to create ranked game only if sender has correspoding tier rank token", async () => {
     await expect(
       env.bestOfGame
         .connect(adr.gameCreator1.wallet)
-        ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 1, {
-          value: BOGSettings.BOG_GAME_PRICE,
-        })
-    ).to.be.revertedWith("ERC1155 balance not valid");
-    await env.rankToken
-      .connect(adr.gameOwner.wallet)
-      .mint(
-        adr.gameCreator1.wallet.address,
-        1,
-        1,
-        ethers.utils.formatBytes32String("mockString")
-      );
-    await expect(
-      env.bestOfGame
-        .connect(adr.gameCreator1.wallet)
-        ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 1, {
-          value: BOGSettings.BOG_GAME_PRICE,
-        })
-    ).to.be.emit(env.bestOfGame, "gameCreated");
-
-    await expect(
-      env.bestOfGame
-        .connect(adr.gameCreator1.wallet)
         ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 2, {
           value: BOGSettings.BOG_GAME_PRICE,
         })
     ).to.be.revertedWith("ERC1155 balance not valid");
-    await env.rankToken
-      .connect(adr.gameOwner.wallet)
-      .mint(
-        adr.gameCreator1.wallet.address,
-        1,
-        2,
-        ethers.utils.formatBytes32String("mockString")
-      );
-    await expect(
-      env.bestOfGame
-        .connect(adr.gameCreator1.wallet)
-        ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 2, {
-          value: BOGSettings.BOG_GAME_PRICE,
-        })
-    ).to.be.emit(env.bestOfGame, "gameCreated");
   });
-  describe("When a game of zero rank was created", () => {
+  describe("When a game of first rank was created", () => {
     beforeEach(async () => {
       await env.bestOfGame
         .connect(adr.gameCreator1.wallet)
-        ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 0, {
+        ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 1, {
           value: BOGSettings.BOG_GAME_PRICE,
         });
     });
@@ -202,12 +201,14 @@ describe(scriptName, () => {
       const state = await env.bestOfGame
         .connect(adr.gameCreator1.wallet)
         .getContractState();
-      expect(state.numGames).to.be.equal(1);
+      expect(state.BestOfState.numGames).to.be.equal(1);
     });
     it("Players cannot join until registration is open", async () => {
       await expect(
         env.bestOfGame.connect(adr.gameMaster1.wallet).joinGame(1)
-      ).to.be.revertedWith("Registration was not yet open");
+      ).to.be.revertedWith(
+        "LibTurnBasedGame->addPlayer: Game cannot be joined at the moment"
+      );
     });
     it("Game creator can add join requirements", async () => {
       const requirement: IBestOf.TokenActionStruct = {
@@ -318,24 +319,36 @@ describe(scriptName, () => {
               ""
             )
         ).to.be.revertedWith("Game has not yet started");
+        const ProposalsStruct = await mockProposals({
+          players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          gameId: 1,
+          turn: 1,
+          verifierAddress: env.bestOfGame.address,
+        });
+        const votes = await mockVotes({
+          gameId: 1,
+          turn: 1,
+          verifierAddress: env.bestOfGame.address,
+          players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          gm: adr.gameMaster1,
+          proposals: ProposalsStruct.map((item) => item.proposal),
+        });
+        const votersAddresses = getPlayers(
+          adr,
+          BOGSettings.BOG_MAX_PLAYERS
+        ).map((player) => player.wallet.address);
         await expect(
-          env.bestOfGame
-            .connect(adr.gameMaster1.wallet)
-            .endTurn(1, ZERO_BYTES32, [])
+          env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+            1,
+            getTurnSalt({ gameId: 1, turn: 1 }),
+            votersAddresses,
+            votes.map((vote) => vote.vote)
+          )
         ).to.be.revertedWith("Game has not yet started");
         await expect(
           env.bestOfGame
             .connect(adr.gameMaster1.wallet)
-            .submitVote(
-              1,
-              ethers.utils.formatBytes32String("mockString"),
-              [
-                ethers.utils.formatBytes32String("mockString"),
-                ethers.utils.formatBytes32String("mockString"),
-                ethers.utils.formatBytes32String("mockString"),
-              ],
-              ethers.utils.formatBytes32String("mockString")
-            )
+            .submitVote(1, votes[0].voteHidden, votes[0].proof)
         ).to.be.revertedWith("Game has not yet started");
       });
       it("Cannot be started if not enough players", async () => {
@@ -365,166 +378,218 @@ describe(scriptName, () => {
           ).to.be.emit(env.bestOfGame, "GameStarted");
         });
         it("Game methods beside start are inactive", async () => {
+          const ProposalsStruct = await mockProposals({
+            players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+            gameId: 1,
+            turn: 1,
+            verifierAddress: env.bestOfGame.address,
+          });
           await expect(
             env.bestOfGame
               .connect(adr.gameMaster1.wallet)
               .submitProposal(
                 1,
-                ethers.utils.formatBytes32String("mockString"),
-                ethers.utils.formatBytes32String("mockString"),
-                ""
+                ProposalsStruct[0].proposerHidden,
+                ProposalsStruct[0].proof,
+                ProposalsStruct[0].proposal
               )
+          ).to.be.revertedWith("Game has not yet started");
+          const votes = await mockVotes({
+            gameId: 1,
+            turn: 1,
+            verifierAddress: env.bestOfGame.address,
+            players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+            gm: adr.gameMaster1,
+            proposals: ProposalsStruct.map((item) => item.proposal),
+          });
+          const votersAddresses = getPlayers(
+            adr,
+            BOGSettings.BOG_MAX_PLAYERS
+          ).map((player) => player.wallet.address);
+
+          await expect(
+            env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+              1,
+              getTurnSalt({ gameId: 1, turn: 1 }),
+              votersAddresses,
+              votes.map((vote) => vote.vote)
+            )
           ).to.be.revertedWith("Game has not yet started");
           await expect(
             env.bestOfGame
               .connect(adr.gameMaster1.wallet)
-              .endTurn(1, ZERO_BYTES32, [])
-          ).to.be.revertedWith("Game has not yet started");
-          await expect(
-            env.bestOfGame
-              .connect(adr.gameMaster1.wallet)
-              .submitVote(
-                1,
-                ethers.utils.formatBytes32String("mockString"),
-                [
-                  ethers.utils.formatBytes32String("mockString"),
-                  ethers.utils.formatBytes32String("mockString"),
-                  ethers.utils.formatBytes32String("mockString"),
-                ],
-                ethers.utils.formatBytes32String("mockString")
-              )
+              .submitVote(1, votes[0].voteHidden, votes[0].proof)
           ).to.be.revertedWith("Game has not yet started");
         });
-        describe("When game was started", () => {
+        describe("When game has started", () => {
           beforeEach(async () => {
             await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
             await env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1);
           });
-          it("First round has started", async () => {
-            expect(
-              await env.bestOfGame.connect(adr.player1.wallet).getRound(1)
-            ).to.be.equal(1);
+          it("First turn has started", async () => {
             expect(
               await env.bestOfGame.connect(adr.player1.wallet).getTurn(1)
             ).to.be.equal(1);
           });
-          it("First round only proposals can be submitted", async () => {
+          it("Accepts only proposals and no votes", async () => {
+            const ProposalsStruct = await mockProposals({
+              players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+              gameId: 1,
+              turn: 1,
+              verifierAddress: env.bestOfGame.address,
+            });
             await expect(
               env.bestOfGame
                 .connect(adr.gameMaster1.wallet)
                 .submitProposal(
                   1,
-                  ethers.utils.formatBytes32String("mockString"),
-                  ethers.utils.formatBytes32String("mockString"),
-                  ""
+                  ProposalsStruct[0].proposerHidden,
+                  ProposalsStruct[0].proof,
+                  ProposalsStruct[0].proposal
                 )
             ).to.be.emit(env.bestOfGame, "ProposalSubmitted");
-            // await expect(
-            //   env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(1, 1, [])
-            // ).to.be.revertedWith("Game has not yet started");
+
+            const votes = await mockVotes({
+              gameId: 1,
+              turn: 1,
+              verifierAddress: env.bestOfGame.address,
+              players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+              gm: adr.gameMaster1,
+              proposals: ProposalsStruct.map((item) => item.proposal),
+            });
+            const votersAddresses = getPlayers(
+              adr,
+              BOGSettings.BOG_MAX_PLAYERS
+            ).map((player) => player.wallet.address);
             await expect(
               env.bestOfGame
-                .connect(adr.gameMaster1.wallet)
-                .submitVote(
-                  1,
-                  ethers.utils.formatBytes32String("mockString"),
-                  [
-                    ethers.utils.formatBytes32String("mockString"),
-                    ethers.utils.formatBytes32String("mockString"),
-                    ethers.utils.formatBytes32String("mockString"),
-                  ],
-                  ethers.utils.formatBytes32String("mockString")
-                )
-            ).to.be.revertedWith("No proposals exist at round 1");
+                .connect(adr.player1.wallet)
+                .submitVote(1, votes[0].voteHidden, votes[0].proof)
+            ).to.be.revertedWith("No proposals exist at turn 1: cannot vote");
           });
           it("Processes only proposals only from game master", async () => {
+            const ProposalsStruct = await mockProposals({
+              players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+              gameId: 1,
+              turn: 1,
+              verifierAddress: env.bestOfGame.address,
+            });
             await expect(
               env.bestOfGame
                 .connect(adr.gameMaster1.wallet)
                 .submitProposal(
                   1,
-                  ethers.utils.formatBytes32String("mockString"),
-                  ethers.utils.formatBytes32String("mockString"),
-                  ""
+                  ProposalsStruct[0].proposerHidden,
+                  ProposalsStruct[0].proof,
+                  ProposalsStruct[0].proposal
                 )
-            ).to.be.emit(env.bestOfGame, "ProposalSubmitted");
+            ).to.emit(env.bestOfGame, "ProposalSubmitted");
+            await expect(
+              env.bestOfGame
+                .connect(adr.maliciousActor1.wallet)
+                .submitProposal(
+                  1,
+                  ProposalsStruct[0].proposerHidden,
+                  ProposalsStruct[0].proof,
+                  ProposalsStruct[0].proposal
+                )
+            ).to.be.revertedWith("Only game master");
           });
-          it.only("Can end turn after all proposals are received", async () => {
-            let proposers = [];
-            for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
-              let name = `player${i}` as any as keyof AdrSetupResult;
-              const { proposerHidden, proof } = await mockProposalSecrets({
-                proposer: adr[`${name}`],
-                // proposer: adr.player1,
-                gm: adr.gameMaster1,
-                proposal: `Proposal-${name}-r1-t1`,
+          describe("When all proposals received", () => {
+            let ProposalsStruct: ProposalSubmittion[] = [];
+            beforeEach(async () => {
+              ProposalsStruct = await mockProposals({
+                players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
                 gameId: 1,
-                round: 1,
                 turn: 1,
                 verifierAddress: env.bestOfGame.address,
               });
-              await env.bestOfGame
-                .connect(adr.gameMaster1.wallet)
-                .submitProposal(
-                  1,
-                  proposerHidden,
-                  proof,
-                  `Proposal-${name}-r1-t1`
-                );
-              proposers.push(adr[`${name}`].wallet.address);
-            }
-            await expect(
-              env.bestOfGame
-                .connect(adr.gameMaster1.wallet)
-                .endTurn(
-                  1,
-                  getTurnSalt({ gameId: 1, round: 1, turn: 1 }),
-                  proposers
-                )
-            ).to.be.emit(env.bestOfGame, "TurnEnded");
-          });
-          describe("When all players voted", () => {
-            beforeEach(async () => {
-              // for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
-              //   let name = `player${i}` as any as keyof AdrSetupResult;
-              //   // adr[`${name}`].wallet
-              //   const { proposerHidden, proof } = await mockProposalSecrets({
-              //     proposer: adr[`${name}`],
-              //     gm: adr.gameMaster1,
-              //     proposal: "Proposal-p1-r1-t1",
-              //     gameId: "1",
-              //     round: 1,
-              //     turn: 1,
-              //     verifierAddress: env.bestOfGame.address,
-              //   });
-              //   env.bestOfGame
-              //     .connect(adr.gameMaster1.wallet)
-              //     .submitProposal(
-              //       1,
-              //       proposerHidden,
-              //       proof,
-              //       "Proposal-p1-r1-t1"
-              //     );
-              // }
-            });
-            it.only("Can end turn", async () => {
-              const proposers = [];
-              for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
-                let name = `player${i}` as any as keyof AdrSetupResult;
-                proposers.push(adr[`${name}`].wallet.address);
-              }
 
+              for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
+                await env.bestOfGame
+                  .connect(adr.gameMaster1.wallet)
+                  .submitProposal(
+                    1,
+                    ProposalsStruct[i].proposerHidden,
+                    ProposalsStruct[i].proof,
+                    ProposalsStruct[i].proposal
+                  );
+              }
+            });
+            it("Can end turn", async () => {
               await expect(
                 env.bestOfGame
                   .connect(adr.gameMaster1.wallet)
-                  .endTurn(
-                    1,
-                    getTurnSalt({ gameId: 1, round: 1, turn: 1 }),
-                    proposers
-                  )
-              ).to.emit(env.bestOfGame, "TurnEnded");
+                  .endTurn(1, getTurnSalt({ gameId: 1, turn: 1 }), [], [])
+              ).to.be.emit(env.bestOfGame, "TurnEnded");
+            });
+            describe("When first turn was made", () => {
+              beforeEach(async () => {
+                env.bestOfGame
+                  .connect(adr.gameMaster1.wallet)
+                  .endTurn(1, getTurnSalt({ gameId: 1, turn: 1 }), [], []);
+              });
+              describe("When all players voted", () => {
+                let votes: MockVotes;
+                let votersAddresses: string[];
+                before(async () => {});
+                beforeEach(async () => {
+                  ProposalsStruct = await mockProposals({
+                    players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+                    gameId: 1,
+                    turn: 1,
+                    verifierAddress: env.bestOfGame.address,
+                  });
+                  votes = await mockVotes({
+                    gameId: 1,
+                    turn: 1,
+                    verifierAddress: env.bestOfGame.address,
+                    players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+                    gm: adr.gameMaster1,
+                    proposals: ProposalsStruct.map((item) => item.proposal),
+                  });
+                  votersAddresses = getPlayers(
+                    adr,
+                    BOGSettings.BOG_MAX_PLAYERS
+                  ).map((player) => player.wallet.address);
+                  for (let i = 0; i < votersAddresses.length; i++) {
+                    let name = `player${i + 1}` as any as keyof AdrSetupResult;
+                    await env.bestOfGame
+                      .connect(adr[`${name}`].wallet)
+                      .submitVote(1, votes[i].voteHidden, votes[i].proof);
+                  }
+                });
+                it("Can end turn when proposals received", async () => {
+                  ProposalsStruct = await mockProposals({
+                    players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+                    gameId: 1,
+                    turn: 2,
+                    verifierAddress: env.bestOfGame.address,
+                  });
+
+                  for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
+                    await env.bestOfGame
+                      .connect(adr.gameMaster1.wallet)
+                      .submitProposal(
+                        1,
+                        ProposalsStruct[i].proposerHidden,
+                        ProposalsStruct[i].proof,
+                        ProposalsStruct[i].proposal
+                      );
+                  }
+                  await expect(
+                    env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+                      1,
+                      getTurnSalt({ gameId: 1, turn: 1 }),
+                      votersAddresses,
+                      votes.map((vote) => vote.vote)
+                    )
+                  ).to.emit(env.bestOfGame, "TurnEnded");
+                });
+              });
             });
           });
+
           it("Can end turn after votes submitted first round", async () => {});
           it("Last movement can only accept votes", async () => {});
           it("Between last and first moves votes can be submitted and proosals - voted", async () => {});
