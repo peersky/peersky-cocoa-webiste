@@ -34,7 +34,7 @@ contract BestOfInit {
     }
 
     function BOGStorage() internal pure returns (IBestOf.BOGSettings storage bog) {
-        bytes32 position = LibTBG.getImplemenationDataStorage();
+        bytes32 position = LibTBG.getDataStorage();
         assembly {
             bog.slot := position
         }
@@ -42,16 +42,13 @@ contract BestOfInit {
 
     struct contractInitializer {
         uint256 blocksPerTurn;
-        uint256 turnsPerRound;
         uint256 maxPlayersSize;
         uint256 minPlayersSize;
         address rankTokenAddress;
-        bool canJoinGameWhenStarted;
-        uint256 maxRounds;
         uint256 blocksToJoin;
         uint256 gamePrice;
         uint256 joinGamePrice;
-        LibTBG.CanJoin joinPolicy;
+        uint256 maxTurns;
     }
 
     // You can add parameters to this function in order to pass in
@@ -95,14 +92,10 @@ contract BestOfInit {
 
         LibTBG.GameSettings memory settings;
         settings.blocksPerTurn = initializer.blocksPerTurn;
-        settings.turnsPerRound = initializer.turnsPerRound;
         settings.maxPlayersSize = initializer.maxPlayersSize;
         settings.minPlayersSize = initializer.minPlayersSize;
-        settings.joinPolicy = initializer.joinPolicy;
-        // settings.canJoinGameWhenStarted = initializer.canJoinGameWhenStarted;
-        settings.maxRounds = initializer.maxRounds;
         settings.blocksToJoin = initializer.blocksToJoin;
-
+        settings.maxTurns =  initializer.maxTurns;
         LibTBG.init(settings);
 
         // add your own state variables

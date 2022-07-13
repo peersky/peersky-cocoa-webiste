@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {LibTBG} from "../libraries/LibTurnBasedGame.sol";
+
 interface IBestOf {
     enum TokenTypes {
         NATIVE,
@@ -32,13 +33,12 @@ interface IBestOf {
         TokenMust must;
     }
 
-
     struct Score {
         address participant;
         uint256 score;
     }
 
-        struct BOGSettings {
+    struct BOGSettings {
         uint256 gamePrice;
         uint256 joinGamePrice;
         TokenAction newGameReq;
@@ -46,12 +46,29 @@ interface IBestOf {
         Token rankToken;
         bool contractInitialized;
     }
+
+    struct ContractState {
+        BOGSettings BestOfState;
+        LibTBG.GameSettings TBGSEttings;
+    }
+
     event gameCreated(address indexed gameMaster, uint256 indexed gameId, uint256 indexed gameRank);
-    event TurnEnded(uint256 indexed gameId, address[] proposers, bytes32 salt, Score[] scores);
-    event RoundFinished(uint256 indexed gameId, uint256 indexed round, Score[] scores);
+    event TurnEnded(
+        uint256 indexed gameId,
+        uint256 indexed turnId,
+        address[] players,
+        uint256[] scores,
+        bytes32 indexed turnSalt
+    );
+    event GameOver(uint256 indexed gameId, uint256[] scores);
     event RequirementAdded(uint256 indexed gameId, TokenAction indexed requirement);
     event RegistrationOpen(uint256 indexed gameid);
     event PlayerJoined(uint256 indexed gameId, address participant);
     event GameStarted(uint256 indexed gameId);
-    event ProposalSubmitted(uint256 indexed gameId, uint256 proposalIdx, bytes indexed proof, string indexed proposal);
+    event ProposalSubmitted(
+        uint256 indexed gameId,
+        bytes32 hashedProposer,
+        bytes indexed proof,
+        string indexed proposal
+    );
 }

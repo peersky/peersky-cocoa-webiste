@@ -27,6 +27,13 @@ export const deploy = async ({
     "BestOfInit",
     [name, version, gameInitializer]
   );
+
+  const rankToken = await ethers.getContractAt(
+    "RankToken",
+    gameInitializer.rankTokenAddress
+  );
+  await rankToken.connect(signer).functions.transferOwnership(diamondAddress);
+
   await transferOwnership(signer, ownerAddress, diamondAddress);
 
   return diamondAddress;
@@ -44,16 +51,13 @@ if (require.main === module) {
 
   if (
     !process.env.BLOCKS_PER_TURN ||
-    !process.env.TURNS_PER_ROUND ||
     !process.env.MAX_PLAYERS ||
     !process.env.MIN_PLAYERS ||
     !process.env.RANK_TOKEN_ADDRESS ||
-    !process.env.CAN_JOIN_WHEN_STARTED ||
-    !process.env.MAX_ROUNDS ||
     !process.env.BLOCKS_TO_JOIN ||
     !process.env.GAME_PRICE_ETH ||
     !process.env.JOIN_GAME_PRICE_ETH ||
-    !process.env.JOIN_POLICY
+    !process.env.MAX_TURNS
   )
     throw new Error("Best of initializer variables not set");
   const joinPolicy = Number(process.env.JOIN_POLICY);
@@ -63,17 +67,13 @@ if (require.main === module) {
     );
   const settings: BestOfInit.ContractInitializerStruct = {
     blocksPerTurn: process.env.BLOCKS_PER_TURN,
-    turnsPerRound: process.env.TURNS_PER_ROUND,
+    maxTurns: process.env.MAX_TURNS,
     maxPlayersSize: process.env.MAX_PLAYERS,
     minPlayersSize: process.env.MIN_PLAYERS,
     rankTokenAddress: process.env.RANK_TOKEN_ADDRESS,
-    canJoinGameWhenStarted:
-      process.env.CAN_JOIN_WHEN_STARTED === "true" ? true : false,
-    maxRounds: process.env.MAX_ROUNDS,
     blocksToJoin: process.env.BLOCKS_TO_JOIN,
     gamePrice: ethers.utils.parseEther(process.env.GAME_PRICE_ETH),
     joinGamePrice: ethers.utils.parseEther(process.env.JOIN_GAME_PRICE_ETH),
-    joinPolicy: joinPolicy,
   };
 
   const signer = new ethers.Wallet(process.env.PRIVATE_KEY);

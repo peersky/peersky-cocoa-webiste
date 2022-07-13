@@ -16,80 +16,30 @@ library LibTBG {
     using EnumerableMap for EnumerableMap.UintToAddressMap;
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
-    // using EnumerableMap for EnumerableMap.
-
-    // struct arrayLikeMapAddresses {
-    //     mapping(uint256 => address) contents;
-    //     mapping(address => uint256) includes;
-    //     uint256 length;
-    // }
-
-    // // function ()
-    // enum TokenTypes {
-    //     ERC20,
-    //     ERC1155,
-    //     ERC721
-    // }
-    // struct GameBank {
-    //     EnumerableMap.UintToAddressMap addresses;
-    //     mapping(address => TokenTypes) types;
-    //     mapping(address => TokenTypes) amounts;
-    // }
-
-    // // Defines tokens and their required amounts for being able to authenticate for some game part
-    // struct assetRequirement {
-    //     TokenTypes standard;
-    //     address contractAddress;
-    //     uint256 id;
-    //     uint256 amountToBurn;
-    //     uint256 amountToHold;
-    //     uint256 amountToStake;
-    //     uint256 amountToPay;
-    // }
-
-    // struct Players {
-    //     mapping(address => EnumerableMap.UintToAddressMap) parties;
-    //     // mapping(address => assetRequirement) requirements;
-    //     mapping(address => address) memberOfParty;
-    // }
-
-    enum CanJoin {
-        beforeRoundStart,
-        beforeStart,
-        anytime
-    }
-
     struct GameSettings {
         uint256 blocksPerTurn;
-        uint256 turnsPerRound;
         uint256 maxPlayersSize;
         uint256 minPlayersSize;
-        CanJoin joinPolicy;
-        uint256 maxRounds;
         uint256 blocksToJoin;
-        // uint256 actionsPerTurn;
+        uint256 maxTurns;
     }
 
     struct GameInstance {
         address gameMaster;
-        uint256 currentRound;
         uint256 currentTurn;
         uint256 turnStartedAt;
-        uint256 roundEndedAt;
         uint256 registrationOpenAt;
         bool hasStarted;
         EnumerableMap.UintToAddressMap players;
         mapping(address => bool) madeMove;
         uint256 numPlayersMadeMove;
         mapping(address => uint256) score;
-        bool isRoundOver;
         bytes32 implemenationStoragePointer;
     }
 
     struct TBGStorageStruct {
         GameSettings settings;
         mapping(uint256 => GameInstance) games;
-        // mapping(string => uint256) gameIdToNum;
         uint256 gameNum;
         mapping(address => uint256) playerInGame;
         uint256 totalGamesCreated;
@@ -113,10 +63,9 @@ library LibTBG {
     function init(GameSettings memory settings) internal {
         TBGStorageStruct storage tbg = TBGStorage();
         require(settings.blocksPerTurn != 0, "LibTurnBasedGame->gameInit: gameInitblocksPerTurn cannot be zero");
-        require(settings.turnsPerRound != 0, "LibTurnBasedGame->gameInit: turnsPerRound not set");
         require(settings.maxPlayersSize != 0, "LibTurnBasedGame->gameInit: maxPartySize cannot be zero");
         require(settings.minPlayersSize != 0, "LibTurnBasedGame->gameInit: minPartySize cannot be zero");
-        require(settings.maxRounds != 0, "LibTurnBasedGame->gameInit: maxRounds cannot be zero");
+        require(settings.maxTurns != 0, "LibTurnBasedGame->gameInit: maxTurns cannot be zero");
         require(settings.blocksToJoin != 0, "LibTurnBasedGame->gameInit: blocksToJoin cannot be zero");
         require(
             settings.maxPlayersSize >= settings.minPlayersSize,
@@ -144,14 +93,8 @@ library LibTBG {
 
     function canBeJoined(uint256 gameId) internal view returns (bool) {
         GameInstance storage _game = _getGame(gameId);
-        TBGStorageStruct storage tbg = TBGStorage();
-        CanJoin joinPolicy = tbg.settings.joinPolicy;
-        if (joinPolicy == CanJoin.anytime) return true;
-        // console.log("join policy OK");
-        if (_game.hasStarted && _game.isRoundOver && joinPolicy == CanJoin.beforeRoundStart) return true;
-        // console.log("game started OK", _game.hasStarted, joinPolicy, CanJoin.beforeStart);
-        if (!_game.hasStarted && (joinPolicy == CanJoin.beforeStart || joinPolicy == CanJoin.beforeRoundStart)) return true;
-        return false;
+        if (_game.hasStarted || _game.registrationOpenAt == 0) return false;
+        return true;
     }
 
     function addPlayer(uint256 gameId, address participant) internal {
@@ -166,8 +109,6 @@ library LibTBG {
         require(_game.players.length() < tbg.settings.maxPlayersSize, "Game is full");
 
         require(canBeJoined(gameId), "LibTurnBasedGame->addPlayer: Game cannot be joined at the moment");
-        require(_game.registrationOpenAt != 0, "Registration was not yet open");
-        // console.logUint(_game.players.length());
         _game.players.set(_game.players.length(), participant);
         _game.madeMove[participant] = false;
         tbg.playerInGame[participant] = gameId;
@@ -178,26 +119,6 @@ library LibTBG {
         return tbg.playerInGame[player] == gameId ? true : false;
     }
 
-    // struct Bytes32ToBytes32Map {
-    //     // Storage of keys
-    //     EnumerableSet.Bytes32Set _keys;
-    //     mapping(bytes32 => bytes32) _values;
-    // }
-    // struct UintToAddressMap {
-    //     Bytes32ToBytes32Map _inner;
-    // }
-
-    // struct Bytes32Set {
-    //     Set _inner;
-    // }
-
-    struct Set {
-        // Storage of set values
-        bytes32[] _values;
-        // Position of the value in the `values` array, plus 1 because index 0
-        // means a value is not in the set.
-        mapping(bytes32 => uint256) _indexes;
-    }
 
     function getIdx(EnumerableMap.UintToAddressMap storage map, address key) internal view returns (uint256) {
         return map._inner._keys._inner._indexes[bytes32(uint256(uint160(key)))];
@@ -214,7 +135,6 @@ library LibTBG {
         GameInstance storage _game = _getGame(gameId);
         assert(gameId != 0);
         assert(_game.hasStarted == true);
-        if (_game.isRoundOver == true) return true;
         if (block.number <= tbg.settings.blocksPerTurn + _game.turnStartedAt) return false;
         return true;
     }
@@ -225,7 +145,7 @@ library LibTBG {
         return false;
     }
 
-    function enforceHasStarted(uint256 gameId) internal view  {
+    function enforceHasStarted(uint256 gameId) internal view {
         GameInstance storage _game = _getGame(gameId);
         assert(gameId != 0);
         require(_game.hasStarted, "Game has not yet started");
@@ -238,7 +158,6 @@ library LibTBG {
         if ((everyoneMadeMove && !turnTimedOut) || turnTimedOut) return true;
         return false;
     }
-
 
     modifier onlyInTurnTime(uint256 gameId) {
         require(isTurnTimedOut(gameId) == false, "onlyInTurnTime -> turn timedout");
@@ -258,34 +177,48 @@ library LibTBG {
         game.numPlayersMadeMove = 0;
     }
 
-    function _resetPlayerStates(GameInstance storage game) internal {
+    function _resetPlayerStates(GameInstance storage game, bool ) internal {
         for (uint256 i = 0; i < game.players.length(); i++) {
             (, address player) = game.players.at(i);
             game.madeMove[player] = false;
             game.score[player] = 0;
         }
+
+    }
+
+    function setScore(
+        uint256 gameId,
+        address player,
+        uint256 value
+    ) internal {
+        GameInstance storage _game = _getGame(gameId);
+        require(isPlayerInGame(gameId, player), "LibTurnBasedGame->setScore: player not in a game");
+        _game.score[player] = value;
+    }
+
+    function getScore(uint256 gameId, address player) internal view returns (uint256) {
+        GameInstance storage _game = _getGame(gameId);
+        require(isPlayerInGame(gameId, player), "LibTurnBasedGame->getScore: player not in a game");
+        return _game.score[player];
     }
 
     function openRegistration(uint256 gameId) internal {
-        require(gameExists(gameId), "LibTurnBasedGame->openRegistration: game not exists");
+        require(gameExists(gameId), "LibTurnBasedGame->openRegistration: game not found");
         GameInstance storage _game = _getGame(gameId);
         _game.registrationOpenAt = block.number;
     }
 
-    function isRegistrationOpen(uint256 gameId) internal view returns (bool)
-    {
-         GameInstance storage _game = _getGame(gameId);
-         TBGStorageStruct storage tbg = TBGStorage();
-         if(_game.registrationOpenAt == 0)
-         {
+    function isRegistrationOpen(uint256 gameId) internal view returns (bool) {
+        GameInstance storage _game = _getGame(gameId);
+        TBGStorageStruct storage tbg = TBGStorage();
+        if (_game.registrationOpenAt == 0) {
             return false;
-         } else
-         {
+        } else {
             return _game.registrationOpenAt < block.number + tbg.settings.blocksToJoin ? true : false;
-         }
+        }
     }
 
-    function startGame(uint256 gameId) internal {
+    function startGame(uint256 gameId, bool startWithMovesMade) internal {
         GameInstance storage _game = _getGame(gameId);
         TBGStorageStruct storage tbg = TBGStorage();
         require(_game.hasStarted == false, "LibTurnBasedGame->startGame Game already started");
@@ -297,16 +230,9 @@ library LibTBG {
         require(gameId != 0, "Game does not exist");
         require(_game.players.length() >= tbg.settings.minPlayersSize, "Not enough players to start the game");
         _game.hasStarted = true;
-        _game.isRoundOver = false;
-        _game.currentRound = 1;
         _game.currentTurn = 1;
         _game.turnStartedAt = block.number;
-        _resetPlayerStates(_game);
-    }
-
-    function getRound(uint256 gameId) internal view returns (uint256) {
-        GameInstance storage _game = _getGame(gameId);
-        return _game.currentRound;
+        _resetPlayerStates(_game,startWithMovesMade);
     }
 
     function getTurn(uint256 gameId) internal view returns (uint256) {
@@ -319,59 +245,41 @@ library LibTBG {
         return _game.gameMaster;
     }
 
+    function isLastTurn(uint256 gameId) internal view returns (bool) {
+        TBGStorageStruct storage tbg = TBGStorage();
+        GameInstance storage _game = _getGame(gameId);
+        if (_game.currentTurn == tbg.settings.maxTurns) return true;
+        else return false;
+    }
+
     function playerMove(uint256 gameId, address player) internal onlyInTurnTime(gameId) {
         GameInstance storage _game = _getGame(gameId);
+        enforceHasStarted(gameId);
         require(
             _game.madeMove[player] == false,
             "LibTurnBasedGame->playerMove: Player already made a move in this turn"
         );
+        TBGStorageStruct storage tbg = TBGStorage();
+        require(
+            gameId == tbg.playerInGame[player],
+            "LibTurnBasedGame->playerMove: Player is not participating in the game"
+        );
         _game.madeMove[player] = true;
         _game.numPlayersMadeMove += 1;
-        assert(_game.numPlayersMadeMove <= _game.players.length());
     }
+
+
 
     function nextTurn(uint256 gameId) internal returns (bool) {
-        TBGStorageStruct storage tbg = TBGStorage();
         GameInstance storage _game = _getGame(gameId);
         enforceHasStarted(gameId);
-        require(canEndTurn(gameId), "LibTurnBasedGame->nextTurn: game not active");
-
+        require(!isLastTurn(gameId), "LibTurnBasedGame->nextTurn: game is over");
         _clearCurrentMoves(_game);
-        if (_game.currentRound >= tbg.settings.turnsPerRound) {
-            _game.isRoundOver = true;
-            _game.roundEndedAt = block.number;
-        } else {
-            _game.currentTurn += 1;
-        }
-
-        return (_game.isRoundOver);
+        _game.currentTurn += 1;
+        return isLastTurn(gameId);
     }
 
-    function nextRound(uint256 gameId) internal  {
-        enforceHasStarted(gameId);
-        TBGStorageStruct storage tbg = TBGStorage();
-        GameInstance storage _game = _getGame(gameId);
-        require(_game.isRoundOver == true, "LibTurnBasedGame->nextRound: Current round is not over yet");
-        require(
-            block.number >= _game.roundEndedAt + tbg.settings.blocksToJoin,
-            "LibTurnBasedGame->nextRound: Pause between rounds is yet active"
-        );
-        _game.isRoundOver = false;
-        _game.currentRound += 1;
-        _game.currentTurn = 1;
-        _game.turnStartedAt = block.number;
-    }
-
-    function listPlayers(uint256 gameId) internal view returns (address[] memory) {
-        GameInstance storage _game = _getGame(gameId);
-        address[] memory _players;
-        for (uint256 i = 0; i < _game.players.length(); i++) {
-            (, _players[i]) = _game.players.at(i);
-        }
-        return _players;
-    }
-
-    function getImplemenationDataStorage() internal pure returns (bytes32 pointer) {
+    function getDataStorage() internal pure returns (bytes32 pointer) {
         return IMPLEMENTATION_STORAGE_POSITION;
     }
 
@@ -394,10 +302,8 @@ library LibTBG {
         return players;
     }
 
-    function getMaxRounds() internal view returns (uint256)
-    {
-         TBGStorageStruct storage tbg = TBGStorage();
-         return tbg.settings.maxRounds;
+    function getGameSettings() internal view returns (GameSettings memory) {
+        TBGStorageStruct storage tbg = TBGStorage();
+        return tbg.settings;
     }
-
 }
