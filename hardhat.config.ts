@@ -10,7 +10,7 @@ import * as diamondUtils from "./utils/diamond";
 import * as ipfsUtils from "./utils/ipfs";
 import fs from "fs";
 import "hardhat-gas-reporter";
-
+import "hardhat-contract-sizer";
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
 
