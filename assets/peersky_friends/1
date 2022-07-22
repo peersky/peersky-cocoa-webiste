@@ -1,0 +1,11 @@
+{
+  "description": "Holder of this token bears memory of crazy times when @peersky was working in Moonstream",
+  "image": "ipfs://QmQjXBvajbQLbGrKULN6KdDWp9rYU8WfMhEMgLEnEZffco",
+  "name": "Peersky's Moonstream colleague",
+  "attributes": [
+    {
+      "trait_type": "colleague",
+      "value": "Moonstream.to"
+    }
+  ]
+}
