@@ -24,12 +24,12 @@ Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated d
 Idea is simple - vote for best ideas with small group of your fellows for many rounds to decide who has most support. Winner can represent your group on higher rank votings.
 
 Terminology:
-`RankToken` - Token used to estimate how many games bearer has won;
-`Game` - the contract
-`Tournament` instance of game (can be many of those)
-`Proposal` string text (link, idea, etc) that player submits
-`vote` - array of three proposals that player selects as his favorites
-`Round, Turn` - One set of giving `proposals` and `votes`. First round only `proposals` exist, last round only `votes` exist.
+- `RankToken` - Token used to estimate how many games bearer has won;
+- `Game` - the contract
+- `Tournament` instance of game (can be many of those)
+- `Proposal` string text (link, idea, etc) that player submits
+- `vote` - array of three proposals that player selects as his favorites
+- `Round, Turn` - One set of giving `proposals` and `votes`. First round only `proposals` exist, last round only `votes` exist.
 `GameMaster` - Trusted wallet that executes some of transactions for sake of player privacy and fun. It can be a player, but for sake of automation - API server is being developed.
 
 Privacy: Votes are hidden until `Round` is present. GameMaster holds a secret that together with tournament id and turn - hashes all votes, and proposals that way that noone can know who votes for whom until round is over.
