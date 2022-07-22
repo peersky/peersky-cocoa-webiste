@@ -253,8 +253,8 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
         ranks[0] = gameRank;
         ranks[1] = gameRank + 1;
         uint256[] memory amounts = new uint256[](2);
-        amounts[1] = 3;
-        amounts[2] = 1;
+        amounts[0] = 3;
+        amounts[1] = 1;
         IRankToken rankTokenContract = IRankToken(settings.rankToken.tokenAddress);
 
         rankTokenContract.batchMint(address(this), ranks, amounts, "");
