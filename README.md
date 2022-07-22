@@ -18,6 +18,21 @@ Second, more objective: Instead of working on multiple different projects in dif
 ### BestOf
 Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated democracy.
 
+Idea is simple - vote for best ideas with small group of your fellows for many rounds to decide who has most support. Winner can represent your group on higher rank votings.
+
+Terminology:
+`RankToken` - Token used to estimate how many games bearer has won;
+`Game` - the contract
+`Tournament` instance of game (can be many of those)
+`Proposal` string text (link, idea, etc) that player submits
+`vote` - array of three proposals that player selects as his favorites
+`Round, Turn` - One set of giving `proposals` and `votes`. First round only `proposals` exist, last round only `votes` exist.
+`GameMaster` - Trusted wallet that executes some of transactions for sake of player privacy and fun. It can be a player, but for sake of automation - API server is being developed.
+
+
+Privacy: Votes are hidden until `Round` is present. GameMaster holds a secret that together with tournament id and turn - hashes all votes, and proposals that way that noone can know who votes for whom until round is over.
+
+
 0. Initialize game contract with number of rounds and basic entry requirements
 1. Create a tornament with fixed number of rounds
 2. Set up whatever additional entry requirement rules you want
@@ -26,8 +41,8 @@ Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated d
     3.2 Once there is enough links - start voting. Each player can give 6 points in a round divided as 3/2/1 and cannot vote for himself
     3.3 Once turn is over - scores is updated
 4. At the end of all rounds winner will receive rankToken of corresponding game depth
-5. Now winner of game can create his own new tornament of increased level (becasuse has token of needed gameRank)
-6. If allot of people play this game on different tournaments ladder will appear where winners of winners can play
+5. Now winner of game can create his own new tornament of increased level ( has token of needed gameRank)
+6. Become part of comunity who plays this game! It results a ladder: higher rank games are only avalible to very good players... or ones who can afford to buy rank token from such good player. (There is no other way to receive rank tokens)
 
 
 ### MultipassDNS
