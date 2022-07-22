@@ -1,7 +1,4 @@
 import { ethers } from "hardhat";
-import fs from "fs";
-import { Wallet } from "ethers";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 export const deploy = async ({ owner }: { owner: string }) => {
   if (!owner) throw new Error("Missing properties");
 
