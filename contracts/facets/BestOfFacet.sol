@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "../abstracts/draft-EIP712Diamond.sol";
+import {ISignatureCheckerFacet} from "../interfaces/ISignatureCheckerFacet.sol";
 import {LibTBG} from "../libraries/LibTurnBasedGame.sol";
 import {IBestOf} from "../interfaces/IBestOf.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -11,9 +9,11 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import {IERC1155Receiver} from "../interfaces/IERC1155Receiver.sol";
 import {IRankToken} from "../interfaces/IRankToken.sol";
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
+import "../abstracts/DiamondReentrancyGuard.sol";
+import {libBestOf} from "../libraries/LibBestOf.sol";
 
-contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
+contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
     using LibTBG for LibTBG.GameInstance;
     using LibTBG for uint256;
     using LibTBG for LibTBG.GameSettings;
@@ -45,12 +45,10 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         mapping(uint256 => mapping(bytes32 => Proposal)) proposals;
         mapping(uint256 => mapping(address => VoteHidden)) votesHidden;
         mapping(uint256 => TokenAction[]) rewards;
-        mapping(address => Token[]) lockedTokens;
+        mapping(uint256 => mapping(address => Token[])) lockedTokens;
+        bytes32 prevTurnSalt;
         uint256 numProposals;
     }
-
-    bytes32 _PROPOSAL_PROOF_TYPEHASH =
-        keccak256("signHashedProposal(uint256 gameId,uint256 turn,bytes32 salt,string proposal)");
 
     function enforceIsInitialized() internal view {
         BOGSettings storage settings = BOGStorage();
@@ -87,20 +85,26 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         }
     }
 
+    // function _isValidSignature(
+    //     bytes memory message,
+    //     bytes memory signature,
+    //     address account
+    // ) public view returns (bool) {
+    //     bytes32 typedHash = _hashTypedDataV4(keccak256(message));
+    //     return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
+    // }
+
     function _isValidSignature(
         bytes memory message,
         bytes memory signature,
         address account
     ) private view returns (bool) {
-        bytes32 typedHash = _hashTypedDataV4(keccak256(message));
-        return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
+        ISignatureCheckerFacet checker = ISignatureCheckerFacet(address(this));
+        return checker.isValidSignature(message, signature, account);
     }
 
-    bytes32 _VOTE_PROOF_TYPEHASH =
-        keccak256("signVote(string vote1,string vote2,string vote3,uint256 gameId,uint256 turn,bytes32 playerSalt)");
-
     function playerSalt(address player, bytes32 turnSalt) public pure returns (bytes32) {
-        return keccak256(abi.encode(player, turnSalt));
+        return keccak256(abi.encodePacked(player, turnSalt));
     }
 
     function validateVote(
@@ -113,12 +117,12 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         bytes32 salt = playerSalt(voter, turnSalt);
         require(gameId.isPlayerInGame(voter), "Player not in that game");
         bytes memory message = abi.encode(
-            _VOTE_PROOF_TYPEHASH,
-            vote[0],
-            vote[1],
-            vote[2],
+            libBestOf._VOTE_PROOF_TYPEHASH,
+            keccak256(abi.encodePacked(vote[0])),
+            keccak256(abi.encodePacked(vote[1])),
+            keccak256(abi.encodePacked(vote[2])),
             gameId,
-            gameId._getGame().currentTurn,
+            gameId.getTurn(),
             salt
         );
         bytes memory proof = game.votesHidden[gameId.getTurn()][voter].proof;
@@ -134,7 +138,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         bytes32 turnSalt
     ) private view {
         for (uint256 i = 0; i < gameId.getPlayersNumber(); i++) {
-            validateVote(gameId, voters[i], [votes[0][i], votes[1][1], votes[2][i]], turnSalt);
+            validateVote(gameId, voters[i], [votes[i][0], votes[i][1], votes[i][2]], turnSalt);
         }
     }
 
@@ -153,13 +157,13 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         assert(voters.length <= players.length);
         uint256 score = 0;
         for (uint256 i = 0; i < voters.length; i++) {
-            if (compareStrings(votesRevealed[0][i], proposal)) score += 3;
-            if (compareStrings(votesRevealed[1][i], proposal)) score += 2;
-            if (compareStrings(votesRevealed[2][i], proposal)) score += 1;
+            if (compareStrings(votesRevealed[i][0], proposal)) score += 3;
+            if (compareStrings(votesRevealed[i][1], proposal)) score += 2;
+            if (compareStrings(votesRevealed[i][2], proposal)) score += 1;
             if (
-                (bytes(votesRevealed[0][i]).length == 0 &&
-                    bytes(votesRevealed[1][i]).length == 0 &&
-                    bytes(votesRevealed[2][i]).length == 0) && (voters[i] != proposer)
+                (bytes(votesRevealed[i][0]).length == 0 &&
+                    bytes(votesRevealed[i][1]).length == 0 &&
+                    bytes(votesRevealed[i][2]).length == 0) && (voters[i] != proposer)
             ) score += 3;
         }
         return score;
@@ -204,7 +208,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
                 payload.req = req;
                 payload.gameId = gameId;
                 ERC1155Contract.safeTransferFrom(applicant, address(this), req.token.tokenId, req.amount, "");
-                game.lockedTokens[applicant].push(payload.req.token);
+                game.lockedTokens[gameId][applicant].push(payload.req.token);
             }
         }
         if (req.token.tokenType == TokenTypes.ERC721) {
@@ -238,7 +242,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         address gameMaster,
         uint256 gameId,
         uint256 gameRank
-    ) public payable {
+    ) public payable nonReentrant {
         enforceIsInitialized();
         BOGSettings storage settings = BOGStorage();
         gameId.createGame(gameMaster);
@@ -283,7 +287,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
 
     function openRegistration(uint256 gameId) public {
         enforceIsGameCreator(gameId);
-        // BOGInstance storage game = getGameStorage(gameId);
+        gameId.enforceIsPreRegistrationStage();
         gameId.openRegistration();
         emit RegistrationOpen(gameId);
         // game.registrationOpen = true;
@@ -291,8 +295,9 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
 
     function addJoinRequirements(uint256 gameId, TokenAction memory requirement) public {
         enforceIsGameCreator(gameId);
+        gameId.enforceIsPreRegistrationStage();
         BOGInstance storage game = getGameStorage(gameId);
-        require(!gameId.isRegistrationOpen(), "Cannot do when registration is open");
+        gameId.enforceIsPreRegistrationStage();
         game.joinRequirements.push(requirement);
         emit RequirementAdded(gameId, requirement);
     }
@@ -308,7 +313,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
     function removeJoinRequirement(uint256 gameId, uint256 index) public {
         enforceIsGameCreator(gameId);
         BOGInstance storage game = getGameStorage(gameId);
-        require(!gameId.isRegistrationOpen(), "Cannot do when registration is open");
+        gameId.enforceIsPreRegistrationStage();
         delete game.joinRequirements[index];
     }
 
@@ -362,10 +367,6 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         game.proposals[gameId.getTurn()][proposerHidden] = newProposal;
         game.numProposals += 1;
         emit ProposalSubmitted(gameId, proposerHidden, proof, proposal);
-        // if ((gameId.getTurn() == 1) || game.votesHidden[gameId.getTurn() - 1][msg.sender].proof.length != 0) {
-        //     console.log('made move');
-        //     gameId.playerMove(msg.sender);
-        // }
     }
 
     // function mintRankTokens(address[3] memory winners, uint256 gameRank) private {
@@ -419,7 +420,6 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         // for (uint8 i = 0; i < 3; i++) {
         //     require(votesHidden[i] >= game.proposals.length, "index is out of proposal bounds");
         // }
-
         game.votesHidden[gameId.getTurn()][msg.sender].votedFor = votesHidden;
         game.votesHidden[gameId.getTurn()][msg.sender].proof = proof;
         gameId.playerMove(msg.sender);
@@ -431,7 +431,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         bytes32 turnSalt,
         address[] memory voters,
         string[3][] memory votesRevealed
-    ) public {
+    ) public nonReentrant {
         enforceGameExists(gameId);
         address[] memory players = gameId.getPlayers();
         uint256 turn = gameId.getTurn();
@@ -450,19 +450,19 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         }
         for (uint256 i = 0; i < players.length; i++) {
             require(gameId.isPlayerInGame(players[i]), "Proposer is not in the game");
-            bytes32 playerTurnSalt = keccak256(abi.encodePacked(players[i], turnSalt));
-            bytes32 proposerHash = keccak256(abi.encodePacked(players[i], playerTurnSalt));
-            if ((turn != 1) && bytes(game.proposals[turn][proposerHash].proposal).length != 0) {
+            bytes32 playerPrevTurnSalt = keccak256(abi.encodePacked(players[i], game.prevTurnSalt));
+            bytes32 prevTurnProposerHash = keccak256(abi.encodePacked(players[i], playerPrevTurnSalt));
+            if ((turn != 1) && bytes(game.proposals[turn - 1][prevTurnProposerHash].proposal).length != 0) {
                 //if proposal exsists
                 bytes memory message = abi.encode(
-                    _PROPOSAL_PROOF_TYPEHASH,
+                    libBestOf._PROPOSAL_PROOF_TYPEHASH,
                     gameId,
-                    turn,
-                    playerTurnSalt,
-                    keccak256(abi.encodePacked(game.proposals[turn][proposerHash].proposal))
+                    turn - 1,
+                    playerPrevTurnSalt,
+                    keccak256(abi.encodePacked(game.proposals[turn - 1][prevTurnProposerHash].proposal))
                 );
                 require(
-                    _isValidSignature(message, game.proposals[turn][proposerHash].proof, players[i]),
+                    _isValidSignature(message, game.proposals[turn - 1][prevTurnProposerHash].proof, players[i]),
                     "Signature is wrong"
                 );
                 validateVotes(gameId, voters, votesRevealed, turnSalt);
@@ -470,7 +470,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
                     gameId.getScore(players[i]) +
                     getProposalScore(
                         gameId,
-                        game.proposals[turn][proposerHash].proposal,
+                        game.proposals[turn][prevTurnProposerHash].proposal,
                         voters,
                         votesRevealed,
                         players[i]
@@ -483,6 +483,7 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
         }
         bool isGameOver = gameId.nextTurn();
         game.numProposals = 0;
+        game.prevTurnSalt = turnSalt;
         emit TurnEnded(gameId, turn, players, scores, turnSalt);
         if (isGameOver) {
             // rewardWinners(gameId);
@@ -524,5 +525,9 @@ contract BestOfFacet is IBestOf, EIP712, IERC1155Receiver {
 
     function getTurn(uint256 gameId) public view returns (uint256) {
         return gameId.getTurn();
+    }
+
+    function getGM(uint256 gameId) public view returns (address) {
+        return gameId.getGM();
     }
 }

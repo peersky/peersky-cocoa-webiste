@@ -55,7 +55,7 @@ interface IBestOf {
     event gameCreated(address indexed gameMaster, uint256 indexed gameId, uint256 indexed gameRank);
     event TurnEnded(
         uint256 indexed gameId,
-        uint256 indexed turnId,
+        uint256 indexed turn,
         address[] players,
         uint256[] scores,
         bytes32 indexed turnSalt

@@ -22,7 +22,12 @@ export const deploy = async ({
     throw new Error("Missing properties");
 
   const diamondAddress = await deployDiamond(
-    ["DiamondLoupeFacet", "OwnershipFacet", "BestOfFacet"],
+    [
+      "DiamondLoupeFacet",
+      "OwnershipFacet",
+      "BestOfFacet",
+      "SignatureCheckerFacet",
+    ],
     signer,
     "BestOfInit",
     [name, version, gameInitializer]

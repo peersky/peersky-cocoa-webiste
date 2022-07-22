@@ -641,7 +641,7 @@ interface VoteMessage {
   vote3: string;
   gameId: BigNumberish;
   turn: BigNumberish;
-  playerSalt: BytesLike;
+  salt: BytesLike;
 }
 const VoteTypes = {
   signVote: [
@@ -667,7 +667,7 @@ const VoteTypes = {
     },
     {
       type: "bytes32",
-      name: "playerSalt",
+      name: "salt",
     },
   ],
 };
@@ -720,7 +720,6 @@ export const getTurnPlayersSalt = ({
     [player, getTurnSalt({ gameId, turn })]
   );
 };
-interface VoteSubmition {}
 
 export const mockVote = async ({
   voter,
@@ -753,7 +752,7 @@ export const mockVote = async ({
     vote3: vote[2],
     gameId,
     turn,
-    playerSalt,
+    salt: playerSalt,
   };
   const voteHidden: [BytesLike, BytesLike, BytesLike] = [
     ethers.utils.solidityKeccak256(
@@ -850,7 +849,6 @@ export const mockProposalSecrets = async ({
     turn,
     player: proposer.wallet.address,
   });
-
   const proposerHidden = ethers.utils.solidityKeccak256(
     ["address", "bytes32"],
     [proposer.wallet.address, playerSalt]

@@ -119,7 +119,6 @@ library LibTBG {
         return tbg.playerInGame[player] == gameId ? true : false;
     }
 
-
     function getIdx(EnumerableMap.UintToAddressMap storage map, address key) internal view returns (uint256) {
         return map._inner._keys._inner._indexes[bytes32(uint256(uint160(key)))];
     }
@@ -177,13 +176,12 @@ library LibTBG {
         game.numPlayersMadeMove = 0;
     }
 
-    function _resetPlayerStates(GameInstance storage game, bool ) internal {
+    function _resetPlayerStates(GameInstance storage game, bool) internal {
         for (uint256 i = 0; i < game.players.length(); i++) {
             (, address player) = game.players.at(i);
             game.madeMove[player] = false;
             game.score[player] = 0;
         }
-
     }
 
     function setScore(
@@ -232,7 +230,7 @@ library LibTBG {
         _game.hasStarted = true;
         _game.currentTurn = 1;
         _game.turnStartedAt = block.number;
-        _resetPlayerStates(_game,startWithMovesMade);
+        _resetPlayerStates(_game, startWithMovesMade);
     }
 
     function getTurn(uint256 gameId) internal view returns (uint256) {
@@ -268,13 +266,10 @@ library LibTBG {
         _game.numPlayersMadeMove += 1;
     }
 
-    function hasStarted(uint256 gameId) internal view returns (bool)
-    {
+    function hasStarted(uint256 gameId) internal view returns (bool) {
         GameInstance storage _game = _getGame(gameId);
         return _game.hasStarted;
     }
-
-
 
     function nextTurn(uint256 gameId) internal returns (bool) {
         GameInstance storage _game = _getGame(gameId);
@@ -311,5 +306,10 @@ library LibTBG {
     function getGameSettings() internal view returns (GameSettings memory) {
         TBGStorageStruct storage tbg = TBGStorage();
         return tbg.settings;
+    }
+
+    function enforceIsPreRegistrationStage(uint256 gameId) internal view {
+        require(!isRegistrationOpen(gameId), "Cannot do when registration is open");
+        require(!hasStarted(gameId), "Cannot do when game started");
     }
 }
