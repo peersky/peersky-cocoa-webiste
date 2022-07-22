@@ -246,16 +246,13 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
         }
         require(msg.value >= settings.gamePrice, "Not enough payment");
         BOGInstance storage game = getGameStorage(gameId);
-        // game.registrationOpen = false;
         game.createdBy = msg.sender;
         settings.numGames += 1;
 
-        // uint256[] memory ranks = [gameRank, gameRank + 1];
-        // uint256[] memory amounts = [3, 1];
-        uint[] memory ranks = new uint256[](2);
+        uint256[] memory ranks = new uint256[](2);
         ranks[0] = gameRank;
-        ranks[1] = gameRank +1;
-        uint[] memory amounts = new uint256[](2);
+        ranks[1] = gameRank + 1;
+        uint256[] memory amounts = new uint256[](2);
         amounts[1] = 3;
         amounts[2] = 1;
         IRankToken rankTokenContract = IRankToken(settings.rankToken.tokenAddress);
