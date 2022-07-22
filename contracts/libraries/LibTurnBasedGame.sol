@@ -268,6 +268,12 @@ library LibTBG {
         _game.numPlayersMadeMove += 1;
     }
 
+    function hasStarted(uint256 gameId) internal view returns (bool)
+    {
+        GameInstance storage _game = _getGame(gameId);
+        return _game.hasStarted;
+    }
+
 
 
     function nextTurn(uint256 gameId) internal returns (bool) {
