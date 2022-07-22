@@ -85,15 +85,6 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
         }
     }
 
-    // function _isValidSignature(
-    //     bytes memory message,
-    //     bytes memory signature,
-    //     address account
-    // ) public view returns (bool) {
-    //     bytes32 typedHash = _hashTypedDataV4(keccak256(message));
-    //     return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
-    // }
-
     function _isValidSignature(
         bytes memory message,
         bytes memory signature,
@@ -129,8 +120,6 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
         require(_isValidSignature(message, proof, gameId.getGM()), "invalid signature");
     }
 
-    //Each hidden vote consists of three votes expressed as Hash(proposal,voterTurnSalt)
-    //votesRevealed must contain unhashed proposal
     function validateVotes(
         uint256 gameId,
         address[] memory voters,
@@ -261,19 +250,28 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
         game.createdBy = msg.sender;
         settings.numGames += 1;
 
+        // uint256[] memory ranks = [gameRank, gameRank + 1];
+        // uint256[] memory amounts = [3, 1];
+        uint[] memory ranks = new uint256[](2);
+        ranks[0] = gameRank;
+        ranks[1] = gameRank +1;
+        uint[] memory amounts = new uint256[](2);
+        amounts[1] = 3;
+        amounts[2] = 1;
         IRankToken rankTokenContract = IRankToken(settings.rankToken.tokenAddress);
-        rankTokenContract.mint(address(this), 1, gameRank + 1, "");
-        rankTokenContract.mint(address(this), 2, gameRank, "");
-        rankTokenContract.mint(address(this), 1, gameRank, "");
+
+        rankTokenContract.batchMint(address(this), ranks, amounts, "");
         TokenAction memory reward;
         reward.token.tokenAddress = settings.rankToken.tokenAddress;
         reward.token.tokenType = TokenTypes.ERC1155;
         reward.amount = 3;
         reward.token.tokenId = gameRank + 1;
         game.rewards[0].push(reward);
+
         reward.amount = 2;
         reward.token.tokenId = gameRank;
         game.rewards[1].push(reward);
+
         reward.amount = 1;
         game.rewards[2].push(reward);
         emit gameCreated(gameMaster, gameId, gameRank);
@@ -290,14 +288,12 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
         gameId.enforceIsPreRegistrationStage();
         gameId.openRegistration();
         emit RegistrationOpen(gameId);
-        // game.registrationOpen = true;
     }
 
     function addJoinRequirements(uint256 gameId, TokenAction memory requirement) public {
         enforceIsGameCreator(gameId);
         gameId.enforceIsPreRegistrationStage();
         BOGInstance storage game = getGameStorage(gameId);
-        gameId.enforceIsPreRegistrationStage();
         game.joinRequirements.push(requirement);
         emit RequirementAdded(gameId, requirement);
     }
@@ -305,7 +301,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
     function popJoinRequirements(uint256 gameId) public {
         enforceIsGameCreator(gameId);
         BOGInstance storage game = getGameStorage(gameId);
-        require(!gameId.isRegistrationOpen(), "Cannot do when registration is open");
+        gameId.enforceIsPreRegistrationStage();
         require(game.joinRequirements.length > 0, "No requirements exist");
         game.joinRequirements.pop();
     }
@@ -354,9 +350,6 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
         require(!gameId.isLastTurn(), "Cannot propose in last turn");
         require(bytes(proposal).length != 0, "Cannot propose empty string");
 
-        // for (uint256 i = 0; i < game.proposals.length; i++) {
-        // require(game.proposals[hiddenProposalToProposalIdx[proposerHidden]].proposerHidden != proposerHidden, "Proposer already submitted");
-        // }
         require(proposerHidden != bytes32(0), "proposerHidden cannot be empty");
         require(proof.length != 0, "proof cannot be empty");
         require(bytes(game.proposals[gameId.getTurn()][proposerHidden].proposal).length == 0, "Already proposed!");
