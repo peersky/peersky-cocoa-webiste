@@ -40,7 +40,7 @@ Privacy: Votes are hidden until `Round` is present. GameMaster holds a secret th
 3. Start playing game with your friends - vote for best playlist, for best picture on instagram, whatever.
    - Send your links to game master and he will post them on to the contract on your behalf
    - Once there is enough links - start voting. Each player can give 6 points in a round divided as 3/2/1 and cannot vote for himself
-   - Once turn is over - scores is updated
+   - Once turn is over - scores are updated
 4. At the end of all rounds winner will receive rankToken of corresponding game depth
 5. Now winner of game can create his own new tornament of increased level ( has token of needed gameRank)
 6. Become part of comunity who plays this game! It results a ladder: higher rank games are only avalible to very good players... or ones who can afford to buy rank token from such good player. (There is no other way to receive rank tokens)
