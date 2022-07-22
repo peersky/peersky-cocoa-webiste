@@ -2,6 +2,7 @@ import {
   AdrSetupResult,
   EnvSetupResult,
   getTurnSalt,
+  mockVote,
   MockVotes,
   ProposalSubmittion,
   SignerIdentity,
@@ -19,7 +20,7 @@ import {
   getPlayers,
 } from "./utils";
 import { getInterfaceID } from "../scripts/libraries/utils";
-import { expect } from "chai";
+import { expect, util } from "chai";
 import { IBestOf } from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
 import { ethers } from "hardhat";
 const path = require("path");
@@ -576,6 +577,52 @@ describe(scriptName, () => {
                   .connect(adr.gameMaster1.wallet)
                   .endTurn(1, getTurnSalt({ gameId: 1, turn: 1 }), [], []);
               });
+              it("throws if player submitted GM signed vote for player voting himself", async () => {
+                const badVote = await mockVote({
+                  voter: adr.player1,
+                  gm: adr.gameMaster1,
+                  gameId: 1,
+                  verifierAddress: env.bestOfGame.address,
+                  turn: 2,
+                  vote: [
+                    proposalsStruct[0].proposal, // << - votes for himself
+                    proposalsStruct[1].proposal,
+                    proposalsStruct[2].proposal,
+                  ],
+                });
+                // await env.bestOfGame
+                //   .connect(adr.player1.wallet)
+                //   .submitVote(1, badVote.voteHidden, badVote.proof);
+
+                votes = await mockVotes({
+                  gameId: 1,
+                  turn: 2,
+                  verifierAddress: env.bestOfGame.address,
+                  players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+                  gm: adr.gameMaster1,
+                  proposals: proposalsStruct.map((item) => item.proposal),
+                });
+                votes[0] = badVote;
+                votersAddresses = getPlayers(
+                  adr,
+                  BOGSettings.BOG_MAX_PLAYERS
+                ).map((player) => player.wallet.address);
+                for (let i = 0; i < votersAddresses.length; i++) {
+                  let name = `player${i + 1}` as any as keyof AdrSetupResult;
+                  await env.bestOfGame
+                    .connect(adr[`${name}`].wallet)
+                    .submitVote(1, votes[i].voteHidden, votes[i].proof);
+                }
+                await mineBlocks(BOGSettings.BOG_BLOCKS_PER_TURN + 1);
+                await expect(
+                  env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+                    1,
+                    getTurnSalt({ gameId: 1, turn: 2 }),
+                    votersAddresses,
+                    votes.map((vote) => vote.vote)
+                  )
+                ).to.be.revertedWith("voted for himself");
+              });
               describe("When all players voted", () => {
                 beforeEach(async () => {
                   votes = await mockVotes({
@@ -601,7 +648,7 @@ describe(scriptName, () => {
                   await expect(
                     env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
                       1,
-                      getTurnSalt({ gameId: 1, turn: 1 }),
+                      getTurnSalt({ gameId: 1, turn: 2 }),
                       votersAddresses,
                       votes.map((vote) => vote.vote)
                     )
@@ -609,7 +656,7 @@ describe(scriptName, () => {
                     "Some players still have time to propose"
                   );
                 });
-                it.only("Can end turn if timeout reached", async () => {
+                it("Can end turn if timeout reached", async () => {
                   await mineBlocks(BOGSettings.BOG_BLOCKS_PER_TURN + 1);
                   expect(await env.bestOfGame.getTurn(1)).to.be.equal(2);
                   const expectedScores: number[] = [];
@@ -627,6 +674,7 @@ describe(scriptName, () => {
                       });
                     });
                   }
+                  console.log(expectedScores);
                   await expect(
                     env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
                       1,

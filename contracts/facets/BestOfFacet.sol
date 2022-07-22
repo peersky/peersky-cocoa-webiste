@@ -119,6 +119,18 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         );
         bytes memory proof = game.votesHidden[gameId.getTurn()][voter].proof;
         require(_isValidSignature(message, proof, gameId.getGM()), "invalid signature");
+        //make sure voter did not vote for himself
+        bytes32 prevTurnPlayerSalt = keccak256(abi.encodePacked(voter, game.prevTurnSalt));
+        for (uint256 i = 0; i < vote.length; i++) {
+            require(
+                !compareStrings(
+                    game
+                    .proposals[gameId.getTurn() - 1][keccak256(abi.encodePacked(voter, prevTurnPlayerSalt))].proposal,
+                    vote[i]
+                ),
+                "voted for himself"
+            );
+        }
     }
 
     function validateVotes(
