@@ -8,12 +8,13 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import {IERC1155Receiver} from "../interfaces/IERC1155Receiver.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {IRankToken} from "../interfaces/IRankToken.sol";
 // import "hardhat/console.sol";
 import "../abstracts/DiamondReentrancyGuard.sol";
 import {libBestOf} from "../libraries/LibBestOf.sol";
 
-contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
+contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC721Receiver {
     using LibTBG for LibTBG.GameInstance;
     using LibTBG for uint256;
     using LibTBG for LibTBG.GameSettings;
@@ -496,16 +497,33 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard {
     }
 
     function onERC1155BatchReceived(
-        address,
+        address operator,
         address,
         uint256[] calldata,
         uint256[] calldata,
         bytes calldata
     ) external view override returns (bytes4) {
         enforceIsInitialized();
-
+        if (operator == address(this)) {
+            return bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"));
+        }
         return bytes4("");
     }
+
+     function onERC721Received(
+        address operator,
+        address,
+        uint256,
+        bytes calldata
+    ) external view override returns (bytes4)
+    {
+        enforceIsInitialized();
+        if (operator == address(this)) {
+            return IERC721Receiver.onERC721Received.selector;
+        }
+        return bytes4("");
+    }
+
 
     function getContractState() public view returns (ContractState memory) {
         BOGSettings storage settings = BOGStorage();
