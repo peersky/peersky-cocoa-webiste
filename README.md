@@ -1,16 +1,16 @@
 # DAO CACAO
 
-### DISCLAIMER 
-This is Work in progress, bugs may reside. 
+### DISCLAIMER
+This is Work in progress, bugs may reside.
 
-## Introduction 
+## Introduction
 
-This repository holds various ideas and their implementation made with solo purpose of make world around us better, safer. Author trully belives that decentralization is a key aspect to solving many today social and socio-economical problems so even though some of the projects might seem as silly game, they hold larger vision and values. 
+This repository holds various ideas and their implementation made with solo purpose of make world around us better, safer. Author trully belives that decentralization is a key aspect to solving many today social and socio-economical problems so even though some of the projects might seem as silly game, they hold larger vision and values.
 
 ### Why cacao?
-First things first: I love this drink and I find spirit of cacao to be bold, playful, truethworthy and interconnected: exactly same values which this repository represents. 
+First things first: I love this drink and I find spirit of cacao to be bold, playful, truethworthy and interconnected: exactly same values which this repository represents.
 
-Second, more objective: Instead of working on multiple different projects in different repositories or managing complicated monorepo with multiple build configuration - I decided to go with one repo which mixes it all together and allows developer to avoid hassle of importing from dependencies. 
+Second, more objective: Instead of working on multiple different projects in different repositories or managing complicated monorepo with multiple build configuration - I decided to go with one repo which mixes it all together and allows developer to avoid hassle of importing from dependencies.
 ---> _building dao in cup of my cacao_
 
 
@@ -18,60 +18,23 @@ Second, more objective: Instead of working on multiple different projects in dif
 ### BestOf
 Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated democracy.
 
-![Best of game scroll](https://user-images.githubusercontent.com/61459744/177168641-4c61090d-2b82-4894-b4a8-7e3b0a1f3666.png)
-
-Each game contract when initiated is passed rank token that is being used as well as other settings such as desired players amount, number of turns per round. Particular list of settings is given as `contractInitializer` 
-```solidity
-    enum CanJoin {
-        beforeRoundStart,
-        beforeStart,
-        anytime
-    }
-    struct contractInitializer {
-        uint256 blocksPerTurn;
-        uint256 turnsPerRound;
-        uint256 maxPlayersSize;
-        uint256 minPlayersSize;
-        address rankTokenAddress;
-        bool canJoinGameWhenStarted;
-        uint256 maxRounds;
-        uint256 blocksToJoin;
-        uint256 gamePrice;
-        uint256 joinGamePrice;
-        LibTBG.CanJoin joinPolicy;
-    }
-```
-
-
-Round players make their proposals and vote for best proposal of previous turn. Game might have multiple rounds, each round top scored players will receive ERC1155 token as a reward. This token, also named as `rankToken` allows to join games of same contract but with higher rank.
-
-`RankToken` requirements - must be ERC1155 token derivative that implements `mint` and game contract should be able to mint tokens. 
-
-
-
-
-
-Multiple games can co-exist and play simulteniously, hence winners of those games can join higher rank.
-
-Therefore, higher rank games represent voting processo of delegates, who had most support from previous games. 
-![Rank token explained](https://user-images.githubusercontent.com/61459744/177168697-a2bcf37e-fc38-4635-9e07-f477dc9646e3.png)
-
-
-
-Important game theory aspect is that votes and proposals are uploaded by a `gameMaster` - a wallet that is stored on secure signing server that ensures anonymusness of votes and proposals until turn is over, hence you know who you vote for only after turn is over. 
-
-When you create an instance you allow set of players to join, where join requirements can be added such as requirements to bet, pay or have some kind of tokens (ERC1155/ERC721/ERC20 are supported).
-
-Once game started - winning each game requires N turns. 
-
-This mechanism allows to create a nested games, where only a winner of game can join another another game 
+0. Initialize game contract with number of rounds and basic entry requirements
+1. Create a tornament with fixed number of rounds
+2. Set up whatever additional entry requirement rules you want
+3. Start playing game with your friends - vote for best playlist, for best picture on instagram, whatever.
+    3.1 Send your links to game master and he will post them on to the contract on your behalf
+    3.2 Once there is enough links - start voting. Each player can give 6 points in a round divided as 3/2/1 and cannot vote for himself
+    3.3 Once turn is over - scores is updated
+4. At the end of all rounds winner will receive rankToken of corresponding game depth
+5. Now winner of game can create his own new tornament of increased level (becasuse has token of needed gameRank)
+6. If allot of people play this game on different tournaments ladder will appear where winners of winners can play
 
 
 ### MultipassDNS
 
 Is a simple idea of having your own multiverse passport in crypto world.
 
-On chain records holds openly and publically availible mapping that connects user address to his username and user id on some kind of domain (can be any string). 
+On chain records holds openly and publically availible mapping that connects user address to his username and user id on some kind of domain (can be any string).
 
 example recored on chain:
 ```
@@ -83,18 +46,18 @@ address: <verified_user_wallet_address>
 
 Initial implementation is working trough discord bot, however you can have other implementations upon request
 
-#### `username` vs `user_id` 
+#### `username` vs `user_id`
 Username is something commonly used across some service or domain, however services such as Instragram for example - allow to mutate that name. You can change it. However userID is immutable property and has higher priority in resolving address.
 
 #### Workflow
 1. Contact bot or service that supplies verification process with request to validate user. Bot or service must have secure way to verify that user actually is correct (In discord bot case - we rely on discord servers as domain owner)
-2. Follow response link from #1  it should bring you to transaction frontend, that will ask you to sign message that domain service provided to you with your signature. 
-3. Submit transaction that contains response data from #1 and it will associate user id and name with address that sent transaction. 
+2. Follow response link from #1  it should bring you to transaction frontend, that will ask you to sign message that domain service provided to you with your signature.
+3. Submit transaction that contains response data from #1 and it will associate user id and name with address that sent transaction.
 
 
 Now, when you have registered, you can use it within any smart contracts OR trough RPC to get discord name from address or vice versa:
 
-#### Querying chain data: 
+#### Querying chain data:
 
 ```ts
 let query: LibMultipass.NameQueryStruct = {
@@ -120,11 +83,11 @@ Once you registered - you can generate referral code and once someone pays for r
 ## Libraries
 
 ### LibTurnBasedGame
-Implements generic methods to manage a turn based game. 
+Implements generic methods to manage a turn based game.
 
-Supports TURNS, ROUNDS, GAMES, and unique storage space for individual games. 
+Supports TURNS, ROUNDS, GAMES, and unique storage space for individual games.
 
-Structure of data: 
+Structure of data:
 ```solidity
 struct GameInstance {
         address gameMaster;
@@ -152,7 +115,7 @@ struct GameInstance {
     }
 ```
 
-### LibMultipass 
+### LibMultipass
 Implements generic methods of managing records and querying them. Data model:
 
 ```solidity
