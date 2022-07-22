@@ -1,6 +1,5 @@
 import { task } from "hardhat/config";
 import "@nomicfoundation/hardhat-chai-matchers";
-// import "@openzeppelin/hardhat-upgrades";
 import "@nomiclabs/hardhat-truffle5";
 import "@nomiclabs/hardhat-web3";
 import "@nomiclabs/hardhat-ethers";
@@ -33,48 +32,6 @@ task("uploadDir2IPFS", "Uploads directory to ipfs")
     await ipfsUtils.uploadDir2IPFS(taskArgs.path);
   });
 
-// task("register", "Registers participant")
-//   .addParam("scoreBoard", "The board address")
-//   .addParam("participant", "The participant address")
-//   .setAction(async (taskArgs) => {
-//     console.log("scoreBoard", taskArgs.scoreBoard);
-
-//     const ScoreBoard = await ethers.getContractFactory("ScoreBoard");
-//     const scoreBoard = await ScoreBoard.attach(`${taskArgs.scoreBoard}`);
-//     await scoreBoard.registerParticipant(taskArgs.participant);
-//   });
-
-// task("getScoreboard", "Reads scoreboard")
-//   .addParam("scoreBoard", "The board address")
-//   .setAction(async (taskArgs) => {
-//     console.log("scoreBoard", taskArgs.scoreBoard);
-
-//     const ScoreBoard = await ethers.getContractFactory("ScoreBoard");
-//     const scoreBoard = await ScoreBoard.attach(`${taskArgs.scoreBoard}`);
-//     const scores = await scoreBoard.readScoreBoard();
-//     console.log("Scores:", scores);
-//   });
-
-// task("setScore", "Reads scoreboard")
-//   .addParam("scoreBoard", "The board address")
-//   .addParam("participant", "The participant address")
-//   .addParam("score", "score to set")
-//   .setAction(async (taskArgs) => {
-//     console.log("scoreBoard", taskArgs.scoreBoard);
-
-//     const ScoreBoard = await ethers.getContractFactory("ScoreBoard");
-//     const scoreBoard = await ScoreBoard.attach(`${taskArgs.scoreBoard}`);
-//     const scores = await scoreBoard.updateScore(
-//       taskArgs.participant,
-//       taskArgs.score
-//     );
-//     console.log("Scores:", scores);
-//   });
-
-// const fs = require("fs");
-// const privateKey = fs.readFileSync(".secrets/key.secret").toString().trim();
-
-console.log(process.env.MATIC_MAINNET_URL);
 export default {
   gasReporter: {
     currency: "EUR",
@@ -84,16 +41,14 @@ export default {
   },
   defaultNetwork: "hardhat",
   networks: {
-    hardhat: {
-      // accounts: { count: 30 },
-    },
+    hardhat: {},
     mumbai: {
       url: "https://matic-mumbai.chainstacklabs.com",
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
     },
     matic: {
       url: process.env.MATIC_MAINNET_URL ?? "",
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
     },
   },
   paths: {
@@ -166,9 +121,10 @@ export default {
     path: "./abi",
     runOnCompile: true,
     clear: true,
+    format: "fullName",
     // flat: true,
     // only: [":ERC20$"],
     spacing: 2,
-    pretty: true,
+    pretty: false,
   },
 };
