@@ -594,7 +594,7 @@ describe(scriptName, () => {
                 //   .connect(adr.player1.wallet)
                 //   .submitVote(1, badVote.voteHidden, badVote.proof);
 
-                votes = await mockVotes({
+                const badVotes = await mockVotes({
                   gameId: 1,
                   turn: 2,
                   verifierAddress: env.bestOfGame.address,
@@ -602,7 +602,7 @@ describe(scriptName, () => {
                   gm: adr.gameMaster1,
                   proposals: proposalsStruct.map((item) => item.proposal),
                 });
-                votes[0] = badVote;
+                badVotes[0] = badVote;
                 votersAddresses = getPlayers(
                   adr,
                   BOGSettings.BOG_MAX_PLAYERS
@@ -611,7 +611,7 @@ describe(scriptName, () => {
                   let name = `player${i + 1}` as any as keyof AdrSetupResult;
                   await env.bestOfGame
                     .connect(adr[`${name}`].wallet)
-                    .submitVote(1, votes[i].voteHidden, votes[i].proof);
+                    .submitVote(1, badVotes[i].voteHidden, badVotes[i].proof);
                 }
                 await mineBlocks(BOGSettings.BOG_BLOCKS_PER_TURN + 1);
                 await expect(
@@ -619,7 +619,7 @@ describe(scriptName, () => {
                     1,
                     getTurnSalt({ gameId: 1, turn: 2 }),
                     votersAddresses,
-                    votes.map((vote) => vote.vote)
+                    badVotes.map((vote) => vote.vote)
                   )
                 ).to.be.revertedWith("voted for himself");
               });
@@ -674,7 +674,6 @@ describe(scriptName, () => {
                       });
                     });
                   }
-                  console.log(expectedScores);
                   await expect(
                     env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
                       1,

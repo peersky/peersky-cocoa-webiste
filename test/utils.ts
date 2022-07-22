@@ -814,21 +814,23 @@ export const mockVotes = async ({
     voteHidden: [BytesLike, BytesLike, BytesLike];
   }> = [];
   for (let k = 0; k < players.length; k++) {
-    const firstSelected = (Number(gameId) + Number(turn) + k) % players.length;
+    let firstSelected = (Number(gameId) + Number(turn) + k) % players.length;
+    firstSelected =
+      firstSelected == k ? (firstSelected + 1) % players.length : firstSelected;
+
     let secondSelected = (firstSelected + 1 * k) % players.length;
-    secondSelected =
-      firstSelected == secondSelected
-        ? (secondSelected + 1) % players.length
-        : secondSelected;
+    while (secondSelected == k || firstSelected == secondSelected) {
+      secondSelected = (secondSelected + 1) % players.length;
+    }
+
     let thirdSelected = (secondSelected + 1 * k) % players.length;
-    thirdSelected =
-      firstSelected == thirdSelected
-        ? (thirdSelected + 1) % players.length
-        : thirdSelected;
-    thirdSelected =
-      secondSelected == thirdSelected
-        ? (thirdSelected + 1) % players.length
-        : thirdSelected;
+    while (
+      thirdSelected == k ||
+      thirdSelected == secondSelected ||
+      thirdSelected == firstSelected
+    ) {
+      thirdSelected = (thirdSelected + 1) % players.length;
+    }
 
     const { vote, voteHidden, proof } = await mockVote({
       voter: players[k],
