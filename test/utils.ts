@@ -814,8 +814,22 @@ export const mockVotes = async ({
     voteHidden: [BytesLike, BytesLike, BytesLike];
   }> = [];
   for (let k = 0; k < players.length; k++) {
-    const selectedProposal =
-      (Number(gameId) + Number(turn) + k) % players.length;
+    const firstSelected = (Number(gameId) + Number(turn) + k) % players.length;
+    let secondSelected = (firstSelected + 1 * k) % players.length;
+    secondSelected =
+      firstSelected == secondSelected
+        ? (secondSelected + 1) % players.length
+        : secondSelected;
+    let thirdSelected = (secondSelected + 1 * k) % players.length;
+    thirdSelected =
+      firstSelected == thirdSelected
+        ? (thirdSelected + 1) % players.length
+        : thirdSelected;
+    thirdSelected =
+      secondSelected == thirdSelected
+        ? (thirdSelected + 1) % players.length
+        : thirdSelected;
+
     const { vote, voteHidden, proof } = await mockVote({
       voter: players[k],
       gameId,
@@ -823,9 +837,9 @@ export const mockVotes = async ({
       gm,
       verifierAddress,
       vote: [
-        proposals[selectedProposal],
-        proposals[(selectedProposal + 1) % players.length],
-        proposals[(selectedProposal + 2) % players.length],
+        proposals[firstSelected],
+        proposals[secondSelected],
+        proposals[thirdSelected],
       ],
     });
     votes[k] = { vote, voteHidden, proof };
