@@ -461,7 +461,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
                     gameId.getScore(players[i]) +
                     getProposalScore(
                         gameId,
-                        game.proposals[turn][prevTurnProposerHash].proposal,
+                        game.proposals[turn - 1][prevTurnProposerHash].proposal,
                         voters,
                         votesRevealed,
                         players[i]
@@ -510,20 +510,18 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         return bytes4("");
     }
 
-     function onERC721Received(
+    function onERC721Received(
         address operator,
         address,
         uint256,
         bytes calldata
-    ) external view override returns (bytes4)
-    {
+    ) external view override returns (bytes4) {
         enforceIsInitialized();
         if (operator == address(this)) {
             return IERC721Receiver.onERC721Received.selector;
         }
         return bytes4("");
     }
-
 
     function getContractState() public view returns (ContractState memory) {
         BOGSettings storage settings = BOGStorage();

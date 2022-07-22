@@ -525,6 +525,24 @@ describe(scriptName, () => {
                 )
             ).to.be.revertedWith("Only game master");
           });
+          it("Can end turn if timeout reached with zero scores", async () => {
+            await mineBlocks(BOGSettings.BOG_BLOCKS_PER_TURN + 1);
+            await expect(
+              env.bestOfGame
+                .connect(adr.gameMaster1.wallet)
+                .endTurn(1, getTurnSalt({ gameId: 1, turn: 1 }), [], [])
+            )
+              .to.be.emit(env.bestOfGame, "TurnEnded")
+              .withArgs(
+                1,
+                1,
+                getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
+                  (identity) => identity.wallet.address
+                ),
+                getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(() => 0),
+                getTurnSalt({ gameId: 1, turn: 1 })
+              );
+          });
           describe("When all proposals received", () => {
             beforeEach(async () => {
               proposalsStruct = await mockProposals({
@@ -560,12 +578,6 @@ describe(scriptName, () => {
               });
               describe("When all players voted", () => {
                 beforeEach(async () => {
-                  // proposalsStruct = await mockProposals({
-                  //   players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-                  //   gameId: 1,
-                  //   turn: 2,
-                  //   verifierAddress: env.bestOfGame.address,
-                  // });
                   votes = await mockVotes({
                     gameId: 1,
                     turn: 2,
@@ -597,9 +609,24 @@ describe(scriptName, () => {
                     "Some players still have time to propose"
                   );
                 });
-                it("Can end turn if timeout reached", async () => {
+                it.only("Can end turn if timeout reached", async () => {
                   await mineBlocks(BOGSettings.BOG_BLOCKS_PER_TURN + 1);
                   expect(await env.bestOfGame.getTurn(1)).to.be.equal(2);
+                  const expectedScores: number[] = [];
+                  const players = getPlayers(
+                    adr,
+                    BOGSettings.BOG_MAX_PLAYERS
+                  ).length;
+                  for (let i = 0; i < players; i++) {
+                    expectedScores[i] = 0;
+                    votes.forEach((playerVote) => {
+                      playerVote.vote.forEach((vote, idx) => {
+                        if (proposalsStruct[i].proposal === vote) {
+                          expectedScores[i] += 3 - idx;
+                        }
+                      });
+                    });
+                  }
                   await expect(
                     env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
                       1,
@@ -607,7 +634,17 @@ describe(scriptName, () => {
                       votersAddresses,
                       votes.map((vote) => vote.vote)
                     )
-                  ).to.be.emit(env.bestOfGame, "TurnEnded");
+                  )
+                    .to.be.emit(env.bestOfGame, "TurnEnded")
+                    .withArgs(
+                      1,
+                      2,
+                      getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
+                        (identity) => identity.wallet.address
+                      ),
+                      expectedScores,
+                      getTurnSalt({ gameId: 1, turn: 2 })
+                    );
                 });
               });
             });
