@@ -22,9 +22,6 @@ import Table from "cli-table";
 import { BaseContract, constants, Contract, utils } from "ethers";
 import fetch from "node-fetch";
 import readline from "readline";
-import DiamondCutFacetABI from "../abi/contracts/vendor/facets/DiamondCutFacet.sol/DiamondCutFacet.json";
-import DiamondLoupeFacetABI from "../abi/contracts/vendor/facets/DiamondLoupeFacet.sol/DiamondLoupeFacet.json";
-import OwnershipFacetABI from "../abi/contracts/vendor/facets/OwnershipFacet.sol/OwnershipFacet.json";
 
 export const enum FacetCutAction {
   Add = 0,
@@ -174,7 +171,7 @@ export class DiamondChanges {
    * @param cuts A list of "add"/"remove" `cuts` to made
    * @returns The `cuts` for your Diamond
    */
-  public getRemoveCuts(cuts: FacetCut[]): FacetCut[] {
+  public async getRemoveCuts(cuts: FacetCut[]): Promise<FacetCut[]> {
     if (!this.previous) {
       throw new Error(
         "You must construct DiamondChanges with previous cuts to find removals"
@@ -188,10 +185,9 @@ export class DiamondChanges {
     for (const { functionSelectors } of this.previous) {
       for (const selector of functionSelectors) {
         // TODO: Do we need to check `isIncluded`? I don't want to deal with contract names
-        if (
-          !seenSelectors.has(selector) &&
-          !this.isDiamondSpecSelector(selector)
-        ) {
+        const isDS = !(await this.isDiamondSpecSelector(selector));
+        console.log(isDS);
+        if (!seenSelectors.has(selector) && isDS) {
           toRemove.push(selector);
           this.changes.removed.push(selector);
         }
@@ -330,7 +326,13 @@ export class DiamondChanges {
     return diff;
   }
 
-  private isDiamondSpecSelector(selector: string): boolean {
+  private async isDiamondSpecSelector(selector: string): Promise<boolean> {
+    const DiamondCutFacetABI =
+      await require("../abi/contracts/vendor/facets/DiamondCutFacet.sol/DiamondCutFacet.json");
+    const DiamondLoupeFacetABI =
+      await require("../abi/contracts/vendor/facets/DiamondLoupeFacet.sol/DiamondLoupeFacet.json");
+    const OwnershipFacetABI =
+      await require("../abi/contracts/vendor/facets/OwnershipFacet.sol/OwnershipFacet.json");
     const diamondCutFacetInterface = Contract.getInterface(DiamondCutFacetABI);
     const diamondLoupeFacetInterface =
       Contract.getInterface(DiamondLoupeFacetABI);
