@@ -27,6 +27,7 @@ export const deploy = async ({
       "OwnershipFacet",
       "BestOfFacet",
       "SignatureCheckerFacet",
+      "RequirementsFacet",
     ],
     signer,
     "BestOfInit",

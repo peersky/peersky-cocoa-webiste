@@ -60,8 +60,35 @@ interface IBestOf {
         uint256[] scores,
         bytes32 indexed turnSalt
     );
+
+    struct Proposal {
+        string proposal;
+        bytes proof;
+    }
+
+    struct OnTokenRecieved {
+        TokenAction req;
+        uint256 gameId;
+    }
+
+    struct VoteHidden {
+        bytes32[3] votedFor;
+        bytes proof;
+    }
+
+    struct BOGInstance {
+        uint256 rank;
+        address createdBy;
+        TokenAction[] joinRequirements;
+        mapping(uint256 => mapping(bytes32 => Proposal)) proposals;
+        mapping(uint256 => mapping(address => VoteHidden)) votesHidden;
+        mapping(uint256 => TokenAction[]) rewards;
+        mapping(uint256 => mapping(address => Token[])) lockedTokens;
+        bytes32 prevTurnSalt;
+        uint256 numProposals;
+    }
+
     event GameOver(uint256 indexed gameId, uint256[] scores);
-    event RequirementAdded(uint256 indexed gameId, TokenAction indexed requirement);
     event RegistrationOpen(uint256 indexed gameid);
     event PlayerJoined(uint256 indexed gameId, address participant);
     event GameStarted(uint256 indexed gameId);

@@ -17,7 +17,7 @@
         "type": "address"
       }
     ],
-    "name": "isValidSignature",
+    "name": "checkSignature",
     "outputs": [
       {
         "internalType": "bool",

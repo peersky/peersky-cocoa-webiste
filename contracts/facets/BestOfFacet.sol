@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import {ISignatureCheckerFacet} from "../interfaces/ISignatureCheckerFacet.sol";
+import "../facets/SignatureCheckerFacet.sol";
 import {LibTBG} from "../libraries/LibTurnBasedGame.sol";
 import {IBestOf} from "../interfaces/IBestOf.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -19,37 +19,9 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
     using LibTBG for uint256;
     using LibTBG for LibTBG.GameSettings;
 
-    struct Proposal {
-        string proposal;
-        bytes proof;
-    }
 
-    struct OnTokenRecieved {
-        TokenAction req;
-        uint256 gameId;
-    }
 
-    struct VoteHidden {
-        bytes32[3] votedFor;
-        bytes proof;
-    }
 
-    //     struct VoteRevealed {
-    //     bytes32[3] votedFor;
-    //     bytes proof;
-    // }
-
-    struct BOGInstance {
-        uint256 rank;
-        address createdBy;
-        TokenAction[] joinRequirements;
-        mapping(uint256 => mapping(bytes32 => Proposal)) proposals;
-        mapping(uint256 => mapping(address => VoteHidden)) votesHidden;
-        mapping(uint256 => TokenAction[]) rewards;
-        mapping(uint256 => mapping(address => Token[])) lockedTokens;
-        bytes32 prevTurnSalt;
-        uint256 numProposals;
-    }
 
     function enforceIsInitialized() internal view {
         BOGSettings storage settings = BOGStorage();
@@ -91,8 +63,8 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         bytes memory signature,
         address account
     ) private view returns (bool) {
-        ISignatureCheckerFacet checker = ISignatureCheckerFacet(address(this));
-        return checker.isValidSignature(message, signature, account);
+        SignatureCheckerFacet checker = SignatureCheckerFacet(address(this));
+        return checker.checkSignature(message, signature, account);
     }
 
     function playerSalt(address player, bytes32 turnSalt) public pure returns (bytes32) {
@@ -298,34 +270,6 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         gameId.enforceIsPreRegistrationStage();
         gameId.openRegistration();
         emit RegistrationOpen(gameId);
-    }
-
-    function addJoinRequirements(uint256 gameId, TokenAction memory requirement) public {
-        enforceIsGameCreator(gameId);
-        gameId.enforceIsPreRegistrationStage();
-        BOGInstance storage game = getGameStorage(gameId);
-        game.joinRequirements.push(requirement);
-        emit RequirementAdded(gameId, requirement);
-    }
-
-    function popJoinRequirements(uint256 gameId) public {
-        enforceIsGameCreator(gameId);
-        BOGInstance storage game = getGameStorage(gameId);
-        gameId.enforceIsPreRegistrationStage();
-        require(game.joinRequirements.length > 0, "No requirements exist");
-        game.joinRequirements.pop();
-    }
-
-    function removeJoinRequirement(uint256 gameId, uint256 index) public {
-        enforceIsGameCreator(gameId);
-        BOGInstance storage game = getGameStorage(gameId);
-        gameId.enforceIsPreRegistrationStage();
-        delete game.joinRequirements[index];
-    }
-
-    function getJoinRequirements(uint256 gameId) public view returns (TokenAction[] memory) {
-        BOGInstance storage game = getGameStorage(gameId);
-        return game.joinRequirements;
     }
 
     function getCreateGameRequirements() public view returns (TokenAction memory) {

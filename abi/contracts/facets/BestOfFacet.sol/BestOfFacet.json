@@ -104,64 +104,6 @@
         "type": "uint256"
       },
       {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "enum IBestOf.TokenTypes",
-                "name": "tokenType",
-                "type": "uint8"
-              },
-              {
-                "internalType": "address",
-                "name": "tokenAddress",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct IBestOf.Token",
-            "name": "token",
-            "type": "tuple"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "requireParticularERC721",
-            "type": "bool"
-          },
-          {
-            "internalType": "enum IBestOf.TokenMust",
-            "name": "must",
-            "type": "uint8"
-          }
-        ],
-        "indexed": true,
-        "internalType": "struct IBestOf.TokenAction",
-        "name": "requirement",
-        "type": "tuple"
-      }
-    ],
-    "name": "RequirementAdded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
         "indexed": true,
         "internalType": "uint256",
         "name": "turn",
@@ -213,63 +155,6 @@
     ],
     "name": "gameCreated",
     "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "enum IBestOf.TokenTypes",
-                "name": "tokenType",
-                "type": "uint8"
-              },
-              {
-                "internalType": "address",
-                "name": "tokenAddress",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct IBestOf.Token",
-            "name": "token",
-            "type": "tuple"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "requireParticularERC721",
-            "type": "bool"
-          },
-          {
-            "internalType": "enum IBestOf.TokenMust",
-            "name": "must",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct IBestOf.TokenAction",
-        "name": "requirement",
-        "type": "tuple"
-      }
-    ],
-    "name": "addJoinRequirements",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   },
   {
     "inputs": [
@@ -583,64 +468,6 @@
         "type": "uint256"
       }
     ],
-    "name": "getJoinRequirements",
-    "outputs": [
-      {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "enum IBestOf.TokenTypes",
-                "name": "tokenType",
-                "type": "uint8"
-              },
-              {
-                "internalType": "address",
-                "name": "tokenAddress",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct IBestOf.Token",
-            "name": "token",
-            "type": "tuple"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "requireParticularERC721",
-            "type": "bool"
-          },
-          {
-            "internalType": "enum IBestOf.TokenMust",
-            "name": "must",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct IBestOf.TokenAction[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      }
-    ],
     "name": "getTurn",
     "outputs": [
       {
@@ -812,37 +639,6 @@
       }
     ],
     "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      }
-    ],
-    "name": "popJoinRequirements",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "removeJoinRequirement",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
