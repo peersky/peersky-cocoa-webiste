@@ -6,7 +6,7 @@ import "@nomiclabs/hardhat-ethers";
 import "hardhat-diamond-abi";
 import "@typechain/hardhat";
 import "hardhat-abi-exporter";
-import * as diamondUtils from "./utils/diamond";
+import { toSignature, isIncluded } from "./utils/diamond";
 import * as ipfsUtils from "./utils/ipfs";
 import fs from "fs";
 import "hardhat-gas-reporter";
@@ -91,13 +91,19 @@ export default {
         fullyQualifiedName: string
       ) {
         // const changes = new diamondUtils.DiamondChanges();
-        const signature = diamondUtils.toSignature(abiElement);
-        return diamondUtils.isIncluded(fullyQualifiedName, signature);
+        const signature = toSignature(abiElement);
+        return isIncluded(fullyQualifiedName, signature);
       },
     },
     {
       name: "BestOfDiamond",
-      include: ["BestOfFacet", "OwnershipFacet", "DiamondLoupeFacet"],
+      include: [
+        "BestOfFacet",
+        "OwnershipFacet",
+        "DiamondLoupeFacet",
+        "RequirementsFacet",
+        "SignatureCheckerFacet",
+      ],
       strict: true,
       filter(
         abiElement: unknown,
@@ -105,8 +111,8 @@ export default {
         abi: unknown[],
         fullyQualifiedName: string
       ) {
-        const signature = diamondUtils.toSignature(abiElement);
-        return diamondUtils.isIncluded(fullyQualifiedName, signature);
+        const signature = toSignature(abiElement);
+        return isIncluded(fullyQualifiedName, signature);
       },
     },
   ],
