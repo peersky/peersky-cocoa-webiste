@@ -793,25 +793,10 @@ describe(scriptName, () => {
         await env.bestOfGame
           .connect(adr.gameMaster1.wallet)
           .endTurn(1, getTurnSalt({ gameId: 1, turn: 1 }), [], []);
-        // votes = await mockVotes({
-        //   gameId: 1,
-        //   turn: 2,
-        //   verifierAddress: env.bestOfGame.address,
-        //   players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-        //   gm: adr.gameMaster1,
-        //   proposals: proposalsStruct.map((item) => item.proposal),
-        // });
         votersAddresses = getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
           (player) => player.wallet.address
         );
-        // for (let i = 0; i < votersAddresses.length; i++) {
-        //   let name = `player${i + 1}` as any as keyof AdrSetupResult;
-        //   await env.bestOfGame
-        //     .connect(adr[`${name}`].wallet)
-        //     .submitVote(1, votes[i].voteHidden, votes[i].proof);
-        // }
         for (let turn = 2; turn < BOGSettings.BOG_MAX_TURNS; turn++) {
-          // console.log("turn...,", turn);
           votes = await mockVotes({
             gameId: 1,
             turn: turn,
@@ -838,13 +823,10 @@ describe(scriptName, () => {
                 proposalsStruct[i].proposal
               );
             let name = `player${i + 1}` as any as keyof AdrSetupResult;
-            // console.log("submitting vote...,", i);
             await env.bestOfGame
               .connect(adr[`${name}`].wallet)
               .submitVote(1, votes[i].voteHidden, votes[i].proof);
           }
-          // console.log("ending turn...,", turn);
-          // console.dir(votersAddresses);
           const x = await (await env.bestOfGame.getTurn(1)).toString();
           console.log("turn1:", x, "js:", turn);
           await env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
@@ -930,4 +912,4 @@ describe(scriptName, () => {
     });
   });
 });
-//TODO: Tim, decide how the equal scores should split rewards?
+
