@@ -855,7 +855,7 @@ describe(scriptName, () => {
           );
         }
       });
-      it("reverts only on submit proposals", async () => {
+      it("reverts on submit proposals", async () => {
         proposalsStruct = await mockProposals({
           players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
           gameId: 1,
