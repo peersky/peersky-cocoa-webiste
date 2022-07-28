@@ -10,6 +10,7 @@ import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {LibArray} from "../libraries/LibArray.sol";
 
 library LibTBG {
     using EnumerableMap for EnumerableMap.AddressToUintMap;
@@ -35,6 +36,7 @@ library LibTBG {
         uint256 numPlayersMadeMove;
         mapping(address => uint256) score;
         bytes32 implemenationStoragePointer;
+        bool isOvertime;
     }
 
     struct TBGStorageStruct {
@@ -62,15 +64,7 @@ library LibTBG {
 
     function init(GameSettings memory settings) internal {
         TBGStorageStruct storage tbg = TBGStorage();
-        require(settings.blocksPerTurn != 0, "LibTurnBasedGame->gameInit: gameInitblocksPerTurn cannot be zero");
-        require(settings.maxPlayersSize != 0, "LibTurnBasedGame->gameInit: maxPartySize cannot be zero");
-        require(settings.minPlayersSize != 0, "LibTurnBasedGame->gameInit: minPartySize cannot be zero");
-        require(settings.maxTurns != 0, "LibTurnBasedGame->gameInit: maxTurns cannot be zero");
-        require(settings.blocksToJoin != 0, "LibTurnBasedGame->gameInit: blocksToJoin cannot be zero");
-        require(
-            settings.maxPlayersSize >= settings.minPlayersSize,
-            "LibTurnBasedGame->gameInit: maxPlayersSize must be greater or equal to minPlayersSize"
-        );
+        require((settings.numWinners != 0) && (settings.numWinners < settings.minPlayersSize), "init->numWinners");
         tbg.settings = settings;
     }
 
@@ -250,18 +244,24 @@ library LibTBG {
         else return false;
     }
 
+    function isGameOver(uint256 gameId) internal view returns (bool) {
+        TBGStorageStruct storage tbg = TBGStorage();
+        GameInstance storage _game = _getGame(gameId);
+        if ((_game.currentTurn >= tbg.settings.maxTurns) && !_game.isOvertime) return true;
+        else return false;
+    }
+
+    function enforceIsNotOver(uint256 gameId) internal view {
+        require(!isGameOver(gameId), "Game over");
+    }
+
     function playerMove(uint256 gameId, address player) internal onlyInTurnTime(gameId) {
         GameInstance storage _game = _getGame(gameId);
         enforceHasStarted(gameId);
-        require(
-            _game.madeMove[player] == false,
-            "LibTurnBasedGame->playerMove: Player already made a move in this turn"
-        );
+        enforceIsNotOver(gameId);
+        require(_game.madeMove[player] == false, "already made a move");
         TBGStorageStruct storage tbg = TBGStorage();
-        require(
-            gameId == tbg.playerInGame[player],
-            "LibTurnBasedGame->playerMove: Player is not participating in the game"
-        );
+        require(gameId == tbg.playerInGame[player], "is not in the game");
         _game.madeMove[player] = true;
         _game.numPlayersMadeMove += 1;
     }
@@ -271,13 +271,30 @@ library LibTBG {
         return _game.hasStarted;
     }
 
-    function nextTurn(uint256 gameId) internal returns (bool) {
+    function nextTurn(uint256 gameId)
+        internal
+        returns (
+            bool,
+            bool,
+            bool
+        )
+    {
         GameInstance storage _game = _getGame(gameId);
         enforceHasStarted(gameId);
-        require(!isLastTurn(gameId), "LibTurnBasedGame->nextTurn: game is over");
+        enforceIsNotOver(gameId);
         _clearCurrentMoves(_game);
         _game.currentTurn += 1;
-        return isLastTurn(gameId);
+        _game.turnStartedAt = block.number;
+        bool _isLastTurn = isLastTurn(gameId);
+        bool _isOvertime = _game.isOvertime;
+        if (_isOvertime) {
+            assert(!_isLastTurn);
+        }
+        if (_isLastTurn || _game.isOvertime) {
+            _isOvertime = isLeadersScoresEqual(gameId);
+            _game.isOvertime = _isOvertime;
+        }
+        return (_isLastTurn, _isOvertime, isGameOver(gameId));
     }
 
     function getDataStorage() internal pure returns (bytes32 pointer) {
@@ -311,5 +328,41 @@ library LibTBG {
     function enforceIsPreRegistrationStage(uint256 gameId) internal view {
         require(!isRegistrationOpen(gameId), "Cannot do when registration is open");
         require(!hasStarted(gameId), "Cannot do when game started");
+    }
+
+    function addOvertime(uint256 gameId) internal {
+        GameInstance storage _game = _getGame(gameId);
+        _game.isOvertime = true;
+    }
+
+    function isOvertime(uint256 gameId) internal view returns (bool) {
+        GameInstance storage _game = _getGame(gameId);
+        return _game.isOvertime;
+    }
+
+    function resetOvertime(uint256 gameId) internal {
+        GameInstance storage _game = _getGame(gameId);
+        _game.isOvertime = false;
+    }
+
+    function isLeadersScoresEqual(uint256 gameId) public view returns (bool) {
+        TBGStorageStruct storage tbg = TBGStorage();
+        (address[] memory players, uint256[] memory scores) = getScores(gameId);
+
+        LibArray.quickSort(scores, int256(0), int256(scores.length - 1));
+        // console.log("Sorted:");
+        // for (uint256 y = 0; y < scores.length; y++) {
+        //     console.logUint(scores[y]);
+        // }
+        for (uint256 i = 0; i < players.length - 1; i++) {
+            if ((i <= tbg.settings.numWinners - 1)) {
+                if (scores[i] == scores[i + 1]) {
+                    return true;
+                }
+            } else {
+                break;
+            }
+        }
+        return false;
     }
 }
