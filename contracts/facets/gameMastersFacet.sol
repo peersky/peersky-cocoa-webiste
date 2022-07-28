@@ -138,6 +138,7 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
         uint256[] memory scores = new uint256[](players.length);
 
         IBestOf.BOGInstance storage game = gameId.getGameStorage();
+        require(!gameId.isGameOver(), "Game over");
         gameId.enforceHasStarted();
         if (turn != 1) {
             require(gameId.canEndTurn() == true, "Cannot do this now");
@@ -148,6 +149,7 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
                 "Some players still have time to propose"
             );
         }
+
         for (uint256 i = 0; i < players.length; i++) {
             require(gameId.isPlayerInGame(players[i]), "Proposer is not in the game");
             bytes32 playerPrevTurnSalt = keccak256(abi.encodePacked(players[i], game.prevTurnSalt));
@@ -194,17 +196,7 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
         }
         if (_isGameOver) {
             gameId.closeGame();
-            // rewardWinners(gameId);
             emit GameOver(gameId, players, scores);
         }
-        // else if (isOvertime) {
-        //     // extraRoundFacet xtrFacet = extraRoundFacet(address(this));
-        //     // bool needExtraRound = xtrFacet.isLeadersScoresEqual(gameId);
-
-        //     if (needExtraRound) {
-        //         // console.log("E..");
-        //         gameId.addExtraRound();
-        //     }
-        // }
     }
 }
