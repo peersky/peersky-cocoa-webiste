@@ -1,4 +1,4 @@
-# DAO CACAO
+# DAO COCOA
 
 ### DISCLAIMER
 
@@ -8,15 +8,14 @@ This is Work in progress, bugs may reside.
 
 This repository holds various ideas and their implementation made with solo purpose of make world around us better, safer. Author trully belives that decentralization is a key aspect to solving many today social and socio-economical problems so even though some of the projects might seem as silly game, they hold larger vision and values.
 
-### Why cacao?
+### Why COCOA?
 
-First things first: I love this drink and I find spirit of cacao to be bold, playful, truethworthy and interconnected: exactly same values which this repository represents.
+I love it.
 
-Second, more objective: Instead of working on multiple different projects in different repositories or managing complicated monorepo with multiple build configuration - I decided to go with one repo which mixes it all together and allows developer to avoid hassle of importing from dependencies.
----> _building dao in cup of my cacao_
+Also it represents what happens inside - hot chocolate on every corner.
 
-## Facets
 
+## Projects
 ### BestOf
 
 Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated democracy.
@@ -34,16 +33,20 @@ Terminology:
 
 Privacy: Votes are hidden until `Round` is present. GameMaster holds a secret that together with tournament id and turn - hashes all votes, and proposals that way that noone can know who votes for whom until round is over.
 
-0. Initialize game contract with number of rounds and basic entry requirements
+0. Initialize game contract with number of rounds
 1. Create a tornament with fixed number of rounds
-2. Set up whatever additional entry requirement rules you want
-3. Start playing game with your friends - vote for best playlist, for best picture on instagram, whatever.
+2. Start playing game with your friends - vote for best playlist, for best picture on instagram, whatever.
    - Send your links to game master and he will post them on to the contract on your behalf
    - Once there is enough links - start voting. Each player can give 6 points in a round divided as 3/2/1 and cannot vote for himself
-   - Once turn is over - scores are updated
-4. At the end of all rounds winner will receive rankToken of corresponding game depth
-5. Now winner of game can create his own new tornament of increased level ( has token of needed gameRank)
-6. Become part of comunity who plays this game! It results a ladder: higher rank games are only avalible to very good players... or ones who can afford to buy rank token from such good player. (There is no other way to receive rank tokens)
+   - Once turn is over - scores is updated
+3. At the end of all rounds
+   -  Game will continue in overtime if and until winner scores are equal
+   -  Once game and overtime finishes:
+        -   1th place will receive rankToken of `gameRank+1`, 1piece;
+        -   2nd place will receive `gameRank`, 2 pieces;
+        -   2rd place will receive `gameRank`, 1 piece;
+4. Now winner of game can create his own new tornament of increased level ( has token of needed gameRank)
+5. Become part of comunity who plays this game! It results a ladder: higher rank games are only avalible to very good players... or ones who can afford to buy rank token from such good player. (There is no other way to receive rank tokens)
 
 ### MultipassDNS
 
