@@ -63,8 +63,6 @@ library LibBestOf {
         address[] memory players = gameId.getPlayers();
         assert(voters.length <= players.length);
         uint256 score = 0;
-        console.log("getProposalScore", players[0], votesRevealed[0][0], proposal);
-
         for (uint256 i = 0; i < voters.length; i++) {
             if (compareStrings(votesRevealed[i][0], proposal)) score += 3;
             if (compareStrings(votesRevealed[i][1], proposal)) score += 2;
@@ -75,7 +73,6 @@ library LibBestOf {
                     bytes(votesRevealed[i][2]).length == 0) && (voters[i] != proposer)
             ) score += 3;
         }
-        console.log(score);
         return score;
     }
 }

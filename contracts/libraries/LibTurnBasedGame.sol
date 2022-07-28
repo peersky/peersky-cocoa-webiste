@@ -373,10 +373,6 @@ library LibTBG {
         (address[] memory players, uint256[] memory scores) = getScores(gameId);
 
         LibArray.quickSort(scores, int256(0), int256(scores.length - 1));
-        // console.log("Sorted:");
-        // for (uint256 y = 0; y < scores.length; y++) {
-        //     console.logUint(scores[y]);
-        // }
         for (uint256 i = 0; i < players.length - 1; i++) {
             if ((i <= tbg.settings.numWinners - 1)) {
                 if (scores[i] == scores[i + 1]) {
