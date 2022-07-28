@@ -26,8 +26,7 @@ export const deploy = async ({
       "DiamondLoupeFacet",
       "OwnershipFacet",
       "BestOfFacet",
-      "SignatureCheckerFacet",
-      "RequirementsFacet",
+      "GameMastersFacet",
     ],
     signer,
     "BestOfInit",
@@ -63,7 +62,8 @@ if (require.main === module) {
     !process.env.BLOCKS_TO_JOIN ||
     !process.env.GAME_PRICE_ETH ||
     !process.env.JOIN_GAME_PRICE_ETH ||
-    !process.env.MAX_TURNS
+    !process.env.MAX_TURNS ||
+    !process.env.NUM_WINNERS
   )
     throw new Error("Best of initializer variables not set");
   const joinPolicy = Number(process.env.JOIN_POLICY);
@@ -80,6 +80,7 @@ if (require.main === module) {
     blocksToJoin: process.env.BLOCKS_TO_JOIN,
     gamePrice: ethers.utils.parseEther(process.env.GAME_PRICE_ETH),
     joinGamePrice: ethers.utils.parseEther(process.env.JOIN_GAME_PRICE_ETH),
+    numWinners: process.env.NUM_WINNERS,
   };
 
   const signer = new ethers.Wallet(process.env.PRIVATE_KEY);

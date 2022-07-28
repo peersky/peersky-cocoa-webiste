@@ -49,6 +49,7 @@ contract BestOfInit {
         uint256 gamePrice;
         uint256 joinGamePrice;
         uint256 maxTurns;
+        uint256 numWinners;
     }
 
     // You can add parameters to this function in order to pass in
@@ -96,6 +97,7 @@ contract BestOfInit {
         settings.minPlayersSize = initializer.minPlayersSize;
         settings.blocksToJoin = initializer.blocksToJoin;
         settings.maxTurns =  initializer.maxTurns;
+        settings.numWinners = initializer.numWinners;
         LibTBG.init(settings);
 
         // add your own state variables

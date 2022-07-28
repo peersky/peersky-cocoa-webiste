@@ -23,6 +23,7 @@ library LibTBG {
         uint256 minPlayersSize;
         uint256 blocksToJoin;
         uint256 maxTurns;
+        uint256 numWinners;
     }
 
     struct GameInstance {
@@ -64,15 +65,21 @@ library LibTBG {
 
     function init(GameSettings memory settings) internal {
         TBGStorageStruct storage tbg = TBGStorage();
+        require(settings.blocksPerTurn != 0, "init->blocksPerTurn");
+        require(settings.maxPlayersSize != 0, "init->maxPartySize");
+        require(settings.minPlayersSize != 0, "init->minPartySize");
+        require(settings.maxTurns != 0, "init->maxTurns");
         require((settings.numWinners != 0) && (settings.numWinners < settings.minPlayersSize), "init->numWinners");
+        require(settings.blocksToJoin != 0, "init->blocksToJoin");
+        require(settings.maxPlayersSize >= settings.minPlayersSize, "init->maxPlayersSize");
         tbg.settings = settings;
     }
 
     function createGame(uint256 gameId, address gm) internal {
         TBGStorageStruct storage tbg = TBGStorage();
-        require(gm != address(0), "LibTurnBasedGame->createGame GM cannot be zero");
-        require(gameId != 0, "LibTurnBasedGame->createGame gameId cannot be empty");
-        require(tbg.games[gameId].gameMaster == address(0), "LibTurnBasedGame->createGame gameId already exists");
+        require(gm != address(0), "createGame->GM");
+        require(gameId != 0, "createGame->gameId");
+        require(tbg.games[gameId].gameMaster == address(0), "createGame->gameId");
         tbg.gameNum += 1;
         gameId = tbg.gameNum;
         tbg.games[tbg.gameNum].gameMaster = gm;
@@ -93,16 +100,13 @@ library LibTBG {
 
     function addPlayer(uint256 gameId, address participant) internal {
         TBGStorageStruct storage tbg = TBGStorage();
-        require(gameExists(gameId), "LibTurnBasedGame->addPlayer: game does not exist");
+        require(gameExists(gameId), "addPlayer->invalid game");
 
-        require(
-            tbg.playerInGame[participant] == 0,
-            "LibTurnBasedGame->addPlayer: Can participate only in one game instance at a time"
-        );
+        require(tbg.playerInGame[participant] == 0, "addPlayer->Player in game");
         GameInstance storage _game = _getGame(gameId);
-        require(_game.players.length() < tbg.settings.maxPlayersSize, "Game is full");
+        require(_game.players.length() < tbg.settings.maxPlayersSize, "addPlayer->party full");
 
-        require(canBeJoined(gameId), "LibTurnBasedGame->addPlayer: Game cannot be joined at the moment");
+        require(canBeJoined(gameId), "addPlayer->cant join now");
         _game.players.set(_game.players.length(), participant);
         _game.madeMove[participant] = false;
         tbg.playerInGame[participant] = gameId;
@@ -118,7 +122,13 @@ library LibTBG {
     }
 
     function removePlayer(uint256 gameId, address participant) internal {
+        TBGStorageStruct storage tbg = TBGStorage();
         GameInstance storage _game = _getGame(gameId);
+        require(gameExists(gameId), "game does not exist");
+        require(tbg.playerInGame[participant] == gameId, "Not in the game");
+        require(_game.hasStarted == false, "Cannot leave once started");
+        tbg.playerInGame[participant] = 0;
+
         uint256 playerIdx = getIdx(_game.players, participant);
         _game.players.remove(playerIdx);
     }
@@ -170,7 +180,7 @@ library LibTBG {
         game.numPlayersMadeMove = 0;
     }
 
-    function _resetPlayerStates(GameInstance storage game, bool) internal {
+    function _resetPlayerStates(GameInstance storage game) internal {
         for (uint256 i = 0; i < game.players.length(); i++) {
             (, address player) = game.players.at(i);
             game.madeMove[player] = false;
@@ -184,18 +194,26 @@ library LibTBG {
         uint256 value
     ) internal {
         GameInstance storage _game = _getGame(gameId);
-        require(isPlayerInGame(gameId, player), "LibTurnBasedGame->setScore: player not in a game");
+        require(isPlayerInGame(gameId, player), "player not in a game");
         _game.score[player] = value;
     }
 
     function getScore(uint256 gameId, address player) internal view returns (uint256) {
         GameInstance storage _game = _getGame(gameId);
-        require(isPlayerInGame(gameId, player), "LibTurnBasedGame->getScore: player not in a game");
         return _game.score[player];
     }
 
+    function getScores(uint256 gameId) internal view returns (address[] memory, uint256[] memory) {
+        address[] memory players = getPlayers(gameId);
+        uint256[] memory scores = new uint256[](players.length);
+        for (uint256 i = 0; i < players.length; i++) {
+            scores[i] = getScore(gameId, players[i]);
+        }
+        return (players, scores);
+    }
+
     function openRegistration(uint256 gameId) internal {
-        require(gameExists(gameId), "LibTurnBasedGame->openRegistration: game not found");
+        require(gameExists(gameId), "game not found");
         GameInstance storage _game = _getGame(gameId);
         _game.registrationOpenAt = block.number;
     }
@@ -210,21 +228,18 @@ library LibTBG {
         }
     }
 
-    function startGame(uint256 gameId, bool startWithMovesMade) internal {
+    function startGame(uint256 gameId) internal {
         GameInstance storage _game = _getGame(gameId);
         TBGStorageStruct storage tbg = TBGStorage();
-        require(_game.hasStarted == false, "LibTurnBasedGame->startGame Game already started");
-        require(_game.registrationOpenAt != 0, "Game registration was not yet open");
-        require(
-            block.number > _game.registrationOpenAt + tbg.settings.blocksToJoin,
-            "LibTurnBasedGame->startGame Joining period has not yet finished"
-        );
-        require(gameId != 0, "Game does not exist");
-        require(_game.players.length() >= tbg.settings.minPlayersSize, "Not enough players to start the game");
+        require(_game.hasStarted == false, "startGame->already started");
+        require(_game.registrationOpenAt != 0, "startGame->Game registration was not yet open");
+        require(block.number > _game.registrationOpenAt + tbg.settings.blocksToJoin, "startGame->Still Can Join");
+        require(gameId != 0, "startGame->Game not found");
+        require(_game.players.length() >= tbg.settings.minPlayersSize, "startGame->Not enough players");
         _game.hasStarted = true;
         _game.currentTurn = 1;
         _game.turnStartedAt = block.number;
-        _resetPlayerStates(_game, startWithMovesMade);
+        _resetPlayerStates(_game);
     }
 
     function getTurn(uint256 gameId) internal view returns (uint256) {
@@ -269,6 +284,14 @@ library LibTBG {
     function hasStarted(uint256 gameId) internal view returns (bool) {
         GameInstance storage _game = _getGame(gameId);
         return _game.hasStarted;
+    }
+
+    function closeGame(uint256 gameId) internal {
+        TBGStorageStruct storage tbg = TBGStorage();
+        address[] memory players = getPlayers(gameId);
+        for (uint256 i = 0; i < players.length; i++) {
+            tbg.playerInGame[players[i]] = 0;
+        }
     }
 
     function nextTurn(uint256 gameId)

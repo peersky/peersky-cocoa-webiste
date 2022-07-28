@@ -102,7 +102,7 @@ export default {
         "OwnershipFacet",
         "DiamondLoupeFacet",
         "RequirementsFacet",
-        "SignatureCheckerFacet",
+        "GameMastersFacet",
       ],
       strict: true,
       filter(

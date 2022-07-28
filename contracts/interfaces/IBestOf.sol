@@ -53,13 +53,7 @@ interface IBestOf {
     }
 
     event gameCreated(address indexed gameMaster, uint256 indexed gameId, uint256 indexed gameRank);
-    event TurnEnded(
-        uint256 indexed gameId,
-        uint256 indexed turn,
-        address[] players,
-        uint256[] scores,
-        bytes32 indexed turnSalt
-    );
+
 
     struct Proposal {
         string proposal;
@@ -88,14 +82,11 @@ interface IBestOf {
         uint256 numProposals;
     }
 
-    event GameOver(uint256 indexed gameId, uint256[] scores);
+
     event RegistrationOpen(uint256 indexed gameid);
     event PlayerJoined(uint256 indexed gameId, address participant);
     event GameStarted(uint256 indexed gameId);
-    event ProposalSubmitted(
-        uint256 indexed gameId,
-        bytes32 hashedProposer,
-        bytes indexed proof,
-        string indexed proposal
-    );
+
+    event GameClosed(uint256 indexed gameId);
+    event PlayerLeft(uint256 indexed gameId, address indexed player);
 }
