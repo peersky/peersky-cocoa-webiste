@@ -148,6 +148,7 @@ describe(scriptName, () => {
       players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
       gm: adr.gameMaster1,
       proposals: proposalsStruct.map((item) => item.proposal),
+      distribution: "semiUniform",
     });
     await expect(
       env.bestOfGame
@@ -157,20 +158,20 @@ describe(scriptName, () => {
     await expect(
       env.bestOfGame.connect(adr.gameMaster1.wallet).openRegistration(1)
     ).to.be.revertedWith("no game found");
-    await expect(
-      env.bestOfGame.connect(adr.gameMaster1.wallet).addJoinRequirements(0, {
-        token: { tokenAddress: ZERO_ADDRESS, tokenType: 0, tokenId: 1 },
-        amount: 1,
-        must: 0,
-        requireParticularERC721: false,
-      })
-    ).to.be.revertedWith("no game found");
-    await expect(
-      env.bestOfGame.connect(adr.gameMaster1.wallet).removeJoinRequirement(0, 0)
-    ).to.be.revertedWith("no game found");
-    await expect(
-      env.bestOfGame.connect(adr.gameMaster1.wallet).popJoinRequirements(0)
-    ).to.be.revertedWith("no game found");
+    // await expect(
+    //   env.bestOfGame.connect(adr.gameMaster1.wallet).addJoinRequirements(0, {
+    //     token: { tokenAddress: ZERO_ADDRESS, tokenType: 0, tokenId: 1 },
+    //     amount: 1,
+    //     must: 0,
+    //     requireParticularERC721: false,
+    //   })
+    // ).to.be.revertedWith("no game found");
+    // await expect(
+    //   env.bestOfGame.connect(adr.gameMaster1.wallet).removeJoinRequirement(0, 0)
+    // ).to.be.revertedWith("no game found");
+    // await expect(
+    //   env.bestOfGame.connect(adr.gameMaster1.wallet).popJoinRequirements(0)
+    // ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame.connect(adr.gameMaster1.wallet).joinGame(0)
     ).to.be.revertedWith("no game found");
@@ -227,27 +228,25 @@ describe(scriptName, () => {
     it("Players cannot join until registration is open", async () => {
       await expect(
         env.bestOfGame.connect(adr.player1.wallet).joinGame(1)
-      ).to.be.revertedWith(
-        "LibTurnBasedGame->addPlayer: Game cannot be joined at the moment"
-      );
+      ).to.be.revertedWith("addPlayer->cant join now");
     });
-    it("Game creator can add join requirements", async () => {
-      const requirement: IBestOf.TokenActionStruct = {
-        token: {
-          tokenAddress: env.mockERC20.address,
-          tokenType: TokenTypes.ERC20,
-          tokenId: 0,
-        },
-        amount: "1",
-        requireParticularERC721: false,
-        must: TokenMust.HAVE,
-      };
-      await expect(
-        env.bestOfGame
-          .connect(adr.gameCreator1.wallet)
-          .addJoinRequirements(1, requirement)
-      ).to.be.emit(env.bestOfGame, "RequirementAdded");
-    });
+    // it("Game creator can add join requirements", async () => {
+    //   const requirement: IBestOf.TokenActionStruct = {
+    //     token: {
+    //       tokenAddress: env.mockERC20.address,
+    //       tokenType: TokenTypes.ERC20,
+    //       tokenId: 0,
+    //     },
+    //     amount: "1",
+    //     requireParticularERC721: false,
+    //     must: TokenMust.HAVE,
+    //   };
+    //   await expect(
+    //     env.bestOfGame
+    //       .connect(adr.gameCreator1.wallet)
+    //       .addJoinRequirements(1, requirement)
+    //   ).to.be.emit(env.bestOfGame, "RequirementAdded");
+    // });
     it("Only game creator can open registration", async () => {
       await expect(
         env.bestOfGame.connect(adr.gameCreator1.wallet).openRegistration(1)
@@ -262,31 +261,31 @@ describe(scriptName, () => {
           .connect(adr.gameCreator1.wallet)
           .openRegistration(1);
       });
-      it("Mutating join requirements is no longer possible", async () => {
-        const requirement: IBestOf.TokenActionStruct = {
-          token: {
-            tokenAddress: env.mockERC20.address,
-            tokenType: TokenTypes.ERC20,
-            tokenId: 0,
-          },
-          amount: "1",
-          requireParticularERC721: false,
-          must: TokenMust.HAVE,
-        };
-        await expect(
-          env.bestOfGame
-            .connect(adr.gameCreator1.wallet)
-            .addJoinRequirements(1, requirement)
-        ).to.be.revertedWith("Cannot do when registration is open");
-        await expect(
-          env.bestOfGame.connect(adr.gameCreator1.wallet).popJoinRequirements(1)
-        ).to.be.revertedWith("Cannot do when registration is open");
-        await expect(
-          env.bestOfGame
-            .connect(adr.gameCreator1.wallet)
-            .removeJoinRequirement(1, 1)
-        ).to.be.revertedWith("Cannot do when registration is open");
-      });
+      // it("Mutating join requirements is no longer possible", async () => {
+      //   const requirement: IBestOf.TokenActionStruct = {
+      //     token: {
+      //       tokenAddress: env.mockERC20.address,
+      //       tokenType: TokenTypes.ERC20,
+      //       tokenId: 0,
+      //     },
+      //     amount: "1",
+      //     requireParticularERC721: false,
+      //     must: TokenMust.HAVE,
+      //   };
+      //   await expect(
+      //     env.bestOfGame
+      //       .connect(adr.gameCreator1.wallet)
+      //       .addJoinRequirements(1, requirement)
+      //   ).to.be.revertedWith("Cannot do when registration is open");
+      //   await expect(
+      //     env.bestOfGame.connect(adr.gameCreator1.wallet).popJoinRequirements(1)
+      //   ).to.be.revertedWith("Cannot do when registration is open");
+      //   await expect(
+      //     env.bestOfGame
+      //       .connect(adr.gameCreator1.wallet)
+      //       .removeJoinRequirement(1, 1)
+      //   ).to.be.revertedWith("Cannot do when registration is open");
+      // });
       it("Qualified players can join", async () => {
         await expect(
           env.bestOfGame
@@ -307,9 +306,7 @@ describe(scriptName, () => {
 
         await expect(
           env.bestOfGame.connect(adr.player1.wallet).startGame(1)
-        ).to.be.revertedWith(
-          "LibTurnBasedGame->startGame Joining period has not yet finished"
-        );
+        ).to.be.revertedWith("startGame->Still Can Join");
       });
       it("No more than max players can join", async () => {
         for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
@@ -320,14 +317,12 @@ describe(scriptName, () => {
         }
         await expect(
           env.bestOfGame.connect(adr.maliciousActor1.wallet).joinGame(1)
-        ).to.be.revertedWith("Game is full");
+        ).to.be.revertedWith("addPlayer->party full");
       });
       it("Game cannot start too early", async () => {
         await expect(
           env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1)
-        ).to.be.revertedWith(
-          "LibTurnBasedGame->startGame Joining period has not yet finished"
-        );
+        ).to.be.revertedWith("startGame->Still Can Join");
       });
       it("Game methods beside join and start are inactive", async () => {
         await expect(
@@ -353,6 +348,7 @@ describe(scriptName, () => {
           players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
           gm: adr.gameMaster1,
           proposals: proposalsStruct.map((item) => item.proposal),
+          distribution: "semiUniform",
         });
         votersAddresses = getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
           (player) => player.wallet.address
@@ -373,24 +369,24 @@ describe(scriptName, () => {
         await expect(
           env.bestOfGame.connect(adr.gameCreator1.wallet).openRegistration(1)
         ).to.be.revertedWith("Cannot do when registration is open");
-        await expect(
-          env.bestOfGame
-            .connect(adr.gameCreator1.wallet)
-            .addJoinRequirements(1, {
-              token: { tokenAddress: ZERO_ADDRESS, tokenType: 0, tokenId: 1 },
-              amount: 1,
-              must: 0,
-              requireParticularERC721: false,
-            })
-        ).to.be.revertedWith("Cannot do when registration is open");
-        await expect(
-          env.bestOfGame
-            .connect(adr.gameCreator1.wallet)
-            .removeJoinRequirement(1, 0)
-        ).to.be.revertedWith("Cannot do when registration is open");
-        await expect(
-          env.bestOfGame.connect(adr.gameCreator1.wallet).popJoinRequirements(1)
-        ).to.be.revertedWith("Cannot do when registration is open");
+        // await expect(
+        //   env.bestOfGame
+        //     .connect(adr.gameCreator1.wallet)
+        //     .addJoinRequirements(1, {
+        //       token: { tokenAddress: ZERO_ADDRESS, tokenType: 0, tokenId: 1 },
+        //       amount: 1,
+        //       must: 0,
+        //       requireParticularERC721: false,
+        //     })
+        // ).to.be.revertedWith("Cannot do when registration is open");
+        // await expect(
+        //   env.bestOfGame
+        //     .connect(adr.gameCreator1.wallet)
+        //     .removeJoinRequirement(1, 0)
+        // ).to.be.revertedWith("Cannot do when registration is open");
+        // await expect(
+        //   env.bestOfGame.connect(adr.gameCreator1.wallet).popJoinRequirements(1)
+        // ).to.be.revertedWith("Cannot do when registration is open");
         await expect(
           env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
             1,
@@ -404,7 +400,7 @@ describe(scriptName, () => {
         await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
         await expect(
           env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1)
-        ).to.be.revertedWith("Not enough players to start the game");
+        ).to.be.revertedWith("startGame->Not enough players");
       });
       describe("When there is enough players in game", () => {
         beforeEach(() => {
@@ -418,9 +414,7 @@ describe(scriptName, () => {
         it("Can start game only after joining period is over", async () => {
           await expect(
             env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1)
-          ).to.be.revertedWith(
-            "LibTurnBasedGame->startGame Joining period has not yet finished"
-          );
+          ).to.be.revertedWith("startGame->Still Can Join");
           await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
           await expect(
             env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1)
@@ -451,6 +445,7 @@ describe(scriptName, () => {
             players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
             gm: adr.gameMaster1,
             proposals: proposalsStruct.map((item) => item.proposal),
+            distribution: "semiUniform",
           });
           votersAddresses = getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
             (player) => player.wallet.address
@@ -601,6 +596,7 @@ describe(scriptName, () => {
                   players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
                   gm: adr.gameMaster1,
                   proposals: proposalsStruct.map((item) => item.proposal),
+                  distribution: "semiUniform",
                 });
                 badVotes[0] = badVote;
                 votersAddresses = getPlayers(
@@ -632,6 +628,7 @@ describe(scriptName, () => {
                     players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
                     gm: adr.gameMaster1,
                     proposals: proposalsStruct.map((item) => item.proposal),
+                    distribution: "semiUniform",
                   });
                   votersAddresses = getPlayers(
                     adr,
@@ -709,7 +706,228 @@ describe(scriptName, () => {
           // it("Winner can create next rank game", async () => {});
           // describe("When next round starts, previous scores are reset", async () => {});
         });
+        describe("When another game  of first rank is created", () => {
+          beforeEach(async () => {
+            await env.bestOfGame
+              .connect(adr.gameCreator2.wallet)
+              ["createGame(address,uint256)"](
+                adr.gameMaster2.wallet.address,
+                1,
+                {
+                  value: BOGSettings.BOG_GAME_PRICE,
+                }
+              );
+          });
+          it("Reverts if players from another game tries to join", async () => {
+            await env.bestOfGame
+              .connect(adr.gameCreator2.wallet)
+              .openRegistration(2);
+            await expect(
+              env.bestOfGame.connect(adr.player1.wallet).joinGame(2, {
+                value: BOGSettings.BOG_GAME_PRICE,
+              })
+            ).to.be.revertedWith("addPlayer->Player in game");
+            // env.bestOfGame.connect(adr.gameCreator1.wallet).joinGame(1, {
+            //   value: BOGSettings.BOG_GAME_PRICE,
+            // })
+          });
+        });
+      });
+      describe("When there is not enough players and join time is out", () => {
+        beforeEach(async () => {
+          for (let i = 1; i < BOGSettings.BOG_MIN_PLAYERS; i++) {
+            let name = `player${i}` as any as keyof AdrSetupResult;
+            await env.bestOfGame
+              .connect(adr[`${name}`].wallet)
+              .joinGame(1, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
+          }
+          await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
+        });
+        it("It throws on game start", async () => {
+          await expect(
+            env.bestOfGame.connect(adr.gameCreator1.wallet).startGame(1)
+          ).to.be.revertedWith("startGame->Not enough players");
+        });
+        it("Allows creator can close the game", async () => {
+          await expect(
+            env.bestOfGame.connect(adr.gameCreator1.wallet).cancelGame(1)
+          ).to.emit(env.bestOfGame, "GameClosed");
+        });
+        it("Allows player to leave the game", async () => {
+          await expect(
+            env.bestOfGame.connect(adr.player1.wallet).leaveGame(1)
+          ).to.emit(env.bestOfGame, "PlayerLeft");
+        });
+      });
+    });
+    describe("When it is last turn and equal scores", () => {
+      beforeEach(async () => {
+        await env.bestOfGame
+          .connect(adr.gameCreator1.wallet)
+          .openRegistration(1);
+        for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
+          let name = `player${i}` as any as keyof AdrSetupResult;
+          env.bestOfGame
+            .connect(adr[`${name}`].wallet)
+            .joinGame(1, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
+        }
+        await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
+        await env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1);
+        proposalsStruct = await mockProposals({
+          players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          gameId: 1,
+          turn: 1,
+          verifierAddress: env.bestOfGame.address,
+        });
+
+        for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
+          await env.bestOfGame
+            .connect(adr.gameMaster1.wallet)
+            .submitProposal(
+              1,
+              proposalsStruct[i].proposerHidden,
+              proposalsStruct[i].proof,
+              proposalsStruct[i].proposal
+            );
+        }
+        await env.bestOfGame
+          .connect(adr.gameMaster1.wallet)
+          .endTurn(1, getTurnSalt({ gameId: 1, turn: 1 }), [], []);
+        // votes = await mockVotes({
+        //   gameId: 1,
+        //   turn: 2,
+        //   verifierAddress: env.bestOfGame.address,
+        //   players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+        //   gm: adr.gameMaster1,
+        //   proposals: proposalsStruct.map((item) => item.proposal),
+        // });
+        votersAddresses = getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
+          (player) => player.wallet.address
+        );
+        // for (let i = 0; i < votersAddresses.length; i++) {
+        //   let name = `player${i + 1}` as any as keyof AdrSetupResult;
+        //   await env.bestOfGame
+        //     .connect(adr[`${name}`].wallet)
+        //     .submitVote(1, votes[i].voteHidden, votes[i].proof);
+        // }
+        for (let turn = 2; turn < BOGSettings.BOG_MAX_TURNS; turn++) {
+          // console.log("turn...,", turn);
+          votes = await mockVotes({
+            gameId: 1,
+            turn: turn,
+            verifierAddress: env.bestOfGame.address,
+            players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+            gm: adr.gameMaster1,
+            proposals: proposalsStruct.map((item) => item.proposal),
+            distribution: "equal",
+          });
+          proposalsStruct = await mockProposals({
+            players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+            gameId: 1,
+            turn: turn,
+            verifierAddress: env.bestOfGame.address,
+          });
+          for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
+            // console.log("submitting proposal...,", i);
+            await env.bestOfGame
+              .connect(adr.gameMaster1.wallet)
+              .submitProposal(
+                1,
+                proposalsStruct[i].proposerHidden,
+                proposalsStruct[i].proof,
+                proposalsStruct[i].proposal
+              );
+            let name = `player${i + 1}` as any as keyof AdrSetupResult;
+            // console.log("submitting vote...,", i);
+            await env.bestOfGame
+              .connect(adr[`${name}`].wallet)
+              .submitVote(1, votes[i].voteHidden, votes[i].proof);
+          }
+          // console.log("ending turn...,", turn);
+          // console.dir(votersAddresses);
+          const x = await (await env.bestOfGame.getTurn(1)).toString();
+          console.log("turn1:", x, "js:", turn);
+          await env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+            1,
+            getTurnSalt({ gameId: 1, turn: turn }),
+            votersAddresses,
+            votes.map((vote) => vote.vote)
+          );
+        }
+      });
+      it("reverts only on submit proposals", async () => {
+        proposalsStruct = await mockProposals({
+          players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          gameId: 1,
+          turn: BOGSettings.BOG_MAX_TURNS,
+          verifierAddress: env.bestOfGame.address,
+        });
+        await expect(
+          env.bestOfGame
+            .connect(adr.gameMaster1.wallet)
+            .submitProposal(
+              1,
+              proposalsStruct[0].proposerHidden,
+              proposalsStruct[0].proof,
+              proposalsStruct[0].proposal
+            )
+        ).to.be.revertedWith("Cannot propose in last turn");
+      });
+      it("Game is in overtime conditions", async () => {
+        let isGameOver = await env.bestOfGame.isGameOver(1);
+        expect(isGameOver).to.be.false;
+        expect(await env.bestOfGame.isOvertime(1)).to.be.true;
+      });
+      it.only("emits game Over when submited votes result unique leaders", async () => {
+        votes = await mockVotes({
+          gameId: 1,
+          turn: BOGSettings.BOG_MAX_TURNS,
+          verifierAddress: env.bestOfGame.address,
+          players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          gm: adr.gameMaster1,
+          proposals: proposalsStruct.map((item) => item.proposal),
+          distribution: "ftw",
+        });
+        proposalsStruct = await mockProposals({
+          players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          gameId: 1,
+          turn: BOGSettings.BOG_MAX_TURNS,
+          verifierAddress: env.bestOfGame.address,
+        });
+
+        for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
+          const currentTurn = await env.bestOfGame.getTurn(1);
+          if (currentTurn.toNumber() !== BOGSettings.BOG_MAX_TURNS) {
+            await env.bestOfGame
+              .connect(adr.gameMaster1.wallet)
+              .submitProposal(
+                1,
+                proposalsStruct[i].proposerHidden,
+                proposalsStruct[i].proof,
+                proposalsStruct[i].proposal
+              );
+          }
+          let name = `player${i + 1}` as any as keyof AdrSetupResult;
+          await env.bestOfGame
+            .connect(adr[`${name}`].wallet)
+            .submitVote(1, votes[i].voteHidden, votes[i].proof);
+        }
+        const turn2 = await env.bestOfGame.getTurn(1);
+        await expect(
+          await env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+            1,
+            getTurnSalt({
+              gameId: 1,
+              turn: BOGSettings.BOG_MAX_TURNS,
+            }),
+            votersAddresses,
+            votes.map((vote) => vote.vote)
+          )
+        ).to.emit(env.bestOfGame, "GameOver");
+        const scores = await env.bestOfGame.getScores(1);
+        console.dir(scores[1].map((score) => score.toString()));
       });
     });
   });
 });
+//TODO: Tim, decide how the equal scores should split rewards?

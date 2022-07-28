@@ -273,14 +273,15 @@ const MULTIPASS_CONTRACT_NAME = "MultipassDNS";
 export const MULTIPASS_CONTRACT_VERSION = "0.0.1";
 const BESTOF_CONTRACT_NAME = "BESTOFNAME";
 export const BESTOF_CONTRACT_VERSION = "0.0.1";
-export const BOG_BLOCKS_PER_TURN = "14";
-export const BOG_MAX_PLAYERS = 6;
-export const BOG_MIN_PLAYERS = "3";
-export const BOG_MAX_TURNS = "18";
+export const BOG_BLOCKS_PER_TURN = "25";
+export const BOG_MAX_PLAYERS = 4;
+export const BOG_MIN_PLAYERS = 4;
+export const BOG_MAX_TURNS = 3;
 export const BOG_BLOCKS_TO_JOIN = "200";
 export const BOG_GAME_PRICE = ethers.utils.parseEther("0.001");
 export const BOG_JOIN_GAME_PRICE = ethers.utils.parseEther("0.001");
 export const BOG_JOIN_POLICY = 0;
+export const BOG_NUM_WINNERS = 3;
 export const BOGSettings = {
   BOG_BLOCKS_PER_TURN,
   BOG_MAX_PLAYERS,
@@ -290,6 +291,7 @@ export const BOGSettings = {
   BOG_GAME_PRICE,
   BOG_JOIN_GAME_PRICE,
   BOG_JOIN_POLICY,
+  BOG_NUM_WINNERS,
   // BOG_NUM_ACTIONS_TO_TAKE,
 };
 export const setupEnvironment = async ({
@@ -333,6 +335,7 @@ export const setupEnvironment = async ({
     gamePrice: BOG_GAME_PRICE,
     joinGamePrice: BOG_JOIN_GAME_PRICE,
     maxTurns: BOG_MAX_TURNS,
+    numWinners: BOG_NUM_WINNERS,
   };
 
   const bestOfGameAddress = await deployBestOfGame({
@@ -800,6 +803,7 @@ export const mockVotes = async ({
   proposals,
   verifierAddress,
   players,
+  distribution,
 }: {
   gameId: BigNumberish;
   turn: BigNumberish;
@@ -807,6 +811,7 @@ export const mockVotes = async ({
   proposals: [...string[]];
   verifierAddress: string;
   players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]];
+  distribution: "ftw" | "semiUniform" | "equal";
 }): Promise<MockVotes> => {
   const votes: Array<{
     proof: string;
@@ -814,22 +819,63 @@ export const mockVotes = async ({
     voteHidden: [BytesLike, BytesLike, BytesLike];
   }> = [];
   for (let k = 0; k < players.length; k++) {
-    let firstSelected = (Number(gameId) + Number(turn) + k) % players.length;
-    firstSelected =
-      firstSelected == k ? (firstSelected + 1) % players.length : firstSelected;
+    let firstSelected = 0;
+    let secondSelected = 0;
+    let thirdSelected = 0;
+    if (distribution == "ftw") {
+      if (k == 0) {
+        firstSelected = 1;
+        secondSelected = 2;
+        thirdSelected = 3;
+      } else if (k == 1) {
+        firstSelected = 0;
+        secondSelected = 2;
+        thirdSelected = 3;
+      } else if (k == 2) {
+        firstSelected = 0;
+        secondSelected = 1;
+        thirdSelected = 3;
+      } else {
+        firstSelected = 0;
+        secondSelected = 1;
+        thirdSelected = 2;
+      }
+    } else if (distribution == "semiUniform") {
+      firstSelected = (Number(gameId) + Number(turn) + k) % players.length;
+      firstSelected =
+        firstSelected == k
+          ? (firstSelected + 1) % players.length
+          : firstSelected;
 
-    let secondSelected = (firstSelected + 1 * k) % players.length;
-    while (secondSelected == k || firstSelected == secondSelected) {
-      secondSelected = (secondSelected + 1) % players.length;
-    }
+      secondSelected = (firstSelected + 1 * k) % players.length;
+      while (secondSelected == k || firstSelected == secondSelected) {
+        secondSelected = (secondSelected + 1) % players.length;
+      }
 
-    let thirdSelected = (secondSelected + 1 * k) % players.length;
-    while (
-      thirdSelected == k ||
-      thirdSelected == secondSelected ||
-      thirdSelected == firstSelected
-    ) {
-      thirdSelected = (thirdSelected + 1) % players.length;
+      thirdSelected = (secondSelected + 1 * k) % players.length;
+      while (
+        thirdSelected == k ||
+        thirdSelected == secondSelected ||
+        thirdSelected == firstSelected
+      ) {
+        thirdSelected = (thirdSelected + 1) % players.length;
+      }
+    } else {
+      firstSelected = k;
+      firstSelected =
+        firstSelected == k
+          ? (firstSelected + 1) % players.length
+          : firstSelected;
+      secondSelected = (firstSelected + 1) % players.length;
+      secondSelected =
+        secondSelected == k
+          ? (secondSelected + 1) % players.length
+          : secondSelected;
+      thirdSelected = (secondSelected + 2) % players.length;
+      thirdSelected =
+        thirdSelected == k
+          ? (thirdSelected + 1) % players.length
+          : thirdSelected;
     }
 
     const { vote, voteHidden, proof } = await mockVote({
