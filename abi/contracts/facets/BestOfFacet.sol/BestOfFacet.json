@@ -7,15 +7,9 @@
         "internalType": "uint256",
         "name": "gameId",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "scores",
-        "type": "uint256[]"
       }
     ],
-    "name": "GameOver",
+    "name": "GameClosed",
     "type": "event"
   },
   {
@@ -60,25 +54,13 @@
         "type": "uint256"
       },
       {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "hashedProposer",
-        "type": "bytes32"
-      },
-      {
         "indexed": true,
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
-      },
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "proposal",
-        "type": "string"
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
       }
     ],
-    "name": "ProposalSubmitted",
+    "name": "PlayerLeft",
     "type": "event"
   },
   {
@@ -92,43 +74,6 @@
       }
     ],
     "name": "RegistrationOpen",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "turn",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address[]",
-        "name": "players",
-        "type": "address[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "scores",
-        "type": "uint256[]"
-      },
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "turnSalt",
-        "type": "bytes32"
-      }
-    ],
-    "name": "TurnEnded",
     "type": "event"
   },
   {
@@ -159,94 +104,55 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "a",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "b",
-        "type": "string"
-      }
-    ],
-    "name": "compareStrings",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "gameMaster",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "gameRank",
-        "type": "uint256"
-      }
-    ],
-    "name": "createGame",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "gameMaster",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "gameId",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "gameRank",
-        "type": "uint256"
       }
     ],
-    "name": "createGame",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "turnSalt",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address[]",
-        "name": "voters",
-        "type": "address[]"
-      },
-      {
-        "internalType": "string[3][]",
-        "name": "votesRevealed",
-        "type": "string[3][]"
-      }
-    ],
-    "name": "endTurn",
+    "name": "cancelGame",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "gameMaster",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gameRank",
+        "type": "uint256"
+      }
+    ],
+    "name": "createGame",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "gameMaster",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gameRank",
+        "type": "uint256"
+      }
+    ],
+    "name": "createGame",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -374,6 +280,11 @@
                 "internalType": "uint256",
                 "name": "maxTurns",
                 "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "numWinners",
+                "type": "uint256"
               }
             ],
             "internalType": "struct LibTBG.GameSettings",
@@ -468,6 +379,30 @@
         "type": "uint256"
       }
     ],
+    "name": "getScores",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      }
+    ],
     "name": "getTurn",
     "outputs": [
       {
@@ -487,9 +422,60 @@
         "type": "uint256"
       }
     ],
+    "name": "isGameOver",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isOvertime",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      }
+    ],
     "name": "joinGame",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      }
+    ],
+    "name": "leaveGame",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -620,64 +606,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "player",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "turnSalt",
-        "type": "bytes32"
-      }
-    ],
-    "name": "playerSalt",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "gameId",
         "type": "uint256"
       }
     ],
     "name": "startGame",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "proposerHidden",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
-      },
-      {
-        "internalType": "string",
-        "name": "proposal",
-        "type": "string"
-      }
-    ],
-    "name": "submitProposal",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -703,34 +637,6 @@
     "name": "submitVote",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "voter",
-        "type": "address"
-      },
-      {
-        "internalType": "string[3]",
-        "name": "vote",
-        "type": "string[3]"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "turnSalt",
-        "type": "bytes32"
-      }
-    ],
-    "name": "validateVote",
-    "outputs": [],
-    "stateMutability": "view",
     "type": "function"
   }
 ]

@@ -52,6 +52,11 @@
             "internalType": "uint256",
             "name": "maxTurns",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "numWinners",
+            "type": "uint256"
           }
         ],
         "internalType": "struct BestOfInit.contractInitializer",
