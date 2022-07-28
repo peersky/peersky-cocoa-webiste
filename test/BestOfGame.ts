@@ -878,7 +878,7 @@ describe(scriptName, () => {
         expect(isGameOver).to.be.false;
         expect(await env.bestOfGame.isOvertime(1)).to.be.true;
       });
-      it.only("emits game Over when submited votes result unique leaders", async () => {
+      it("emits game Over when submited votes result unique leaders", async () => {
         votes = await mockVotes({
           gameId: 1,
           turn: BOGSettings.BOG_MAX_TURNS,
