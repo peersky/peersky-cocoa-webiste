@@ -28,20 +28,10 @@ import {
 } from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
 import { ethers } from "hardhat";
 const path = require("path");
-const { time, constants } = require("@openzeppelin/test-helpers");
-const { BigNumber } = require("ethers");
-const {
-  ZERO_ADDRESS,
-  ZERO_BYTES32,
-} = require("@openzeppelin/test-helpers/src/constants");
 import { TokenMust, TokenTypes } from "../types/enums";
 import { BigNumberish } from "ethers";
 const scriptName = path.basename(__filename);
 
-interface Proposal {
-  proposerHidden: string;
-  proposal: string;
-}
 let votes: MockVotes;
 let proposalsStruct: ProposalSubmittion[];
 let adr: AdrSetupResult;
@@ -62,7 +52,9 @@ const createGame = async (
     });
   const gameId = await gameContract
     .getContractState()
-    .then((state) => state.BestOfState.numGames);
+    .then(
+      (state: IBestOf.ContractStateStructOutput) => state.BestOfState.numGames
+    );
   if (openNow)
     await gameContract.connect(signer.wallet).openRegistration(gameId);
 };
@@ -1128,5 +1120,5 @@ describe(scriptName, () => {
   });
   describe("When there was multiple first rank games played so higher rank game can be filled", () => {
     //TODO: Test locking/unlocking a rank token here
-  })
+  });
 });
