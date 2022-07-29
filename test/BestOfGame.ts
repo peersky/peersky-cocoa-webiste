@@ -143,6 +143,7 @@ const runExistingUntilLastTurn = async (
 };
 
 const mockValidVotes = async (
+  players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]],
   gameContract: BestOfDiamond,
   gameId: BigNumberish,
   submitNow?: boolean
@@ -152,13 +153,13 @@ const mockValidVotes = async (
     gameId: gameId,
     turn: turn,
     verifierAddress: env.bestOfGame.address,
-    players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+    players: players,
     gm: adr.gameMaster1,
     proposals: proposalsStruct.map((item) => item.proposal),
     distribution: "semiUniform",
   });
   if (submitNow) {
-    votersAddresses = getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
+    votersAddresses = getPlayers(adr, players.length).map(
       (player) => player.wallet.address
     );
     for (let i = 0; i < votersAddresses.length; i++) {
@@ -708,17 +709,17 @@ describe(scriptName, () => {
               .withArgs(
                 1,
                 1,
-                getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
+                getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS).map(
                   (identity) => identity.wallet.address
                 ),
-                getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(() => 0),
+                getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS).map(() => 0),
                 getTurnSalt({ gameId: 1, turn: 1 })
               );
           });
           describe("When all proposals received", () => {
             beforeEach(async () => {
               await mockValidProposals(
-                getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+                getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS),
                 env.bestOfGame,
                 adr.gameMaster1,
                 1,
@@ -759,7 +760,7 @@ describe(scriptName, () => {
                   gameId: 1,
                   turn: 2,
                   verifierAddress: env.bestOfGame.address,
-                  players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+                  players: getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS),
                   gm: adr.gameMaster1,
                   proposals: proposalsStruct.map((item) => item.proposal),
                   distribution: "semiUniform",
@@ -767,7 +768,7 @@ describe(scriptName, () => {
                 badVotes[0] = badVote;
                 votersAddresses = getPlayers(
                   adr,
-                  BOGSettings.BOG_MAX_PLAYERS
+                  BOGSettings.BOG_MIN_PLAYERS
                 ).map((player) => player.wallet.address);
                 for (let i = 0; i < votersAddresses.length; i++) {
                   let name = `player${i + 1}` as any as keyof AdrSetupResult;
@@ -787,7 +788,12 @@ describe(scriptName, () => {
               });
               describe("When all players voted", () => {
                 beforeEach(async () => {
-                  mockValidVotes(env.bestOfGame, 1, true);
+                  await mockValidVotes(
+                    getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS),
+                    env.bestOfGame,
+                    1,
+                    true
+                  );
                 });
                 it("cannot end turn because players still have time to propose", async () => {
                   await expect(
@@ -807,7 +813,7 @@ describe(scriptName, () => {
                   const expectedScores: number[] = [];
                   const players = getPlayers(
                     adr,
-                    BOGSettings.BOG_MAX_PLAYERS
+                    BOGSettings.BOG_MIN_PLAYERS
                   ).length;
                   for (let i = 0; i < players; i++) {
                     expectedScores[i] = 0;
@@ -831,7 +837,7 @@ describe(scriptName, () => {
                     .withArgs(
                       1,
                       2,
-                      getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
+                      getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS).map(
                         (identity) => identity.wallet.address
                       ),
                       expectedScores,
@@ -1120,4 +1126,7 @@ describe(scriptName, () => {
       });
     });
   });
+  describe("When there was multiple first rank games played so higher rank game can be filled", () => {
+    //TODO: Test locking/unlocking a rank token here
+  })
 });
