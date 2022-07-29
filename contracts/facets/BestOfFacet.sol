@@ -94,6 +94,23 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         }
     }
 
+    function fulfillRankRq(
+        address applicant,
+        uint256 gameId,
+        uint256 gameRank,
+        bool lock
+    ) private {
+        BOGSettings storage settings = BOGStorage();
+        if (gameRank > 1) {
+            TokenAction memory rankReq;
+            rankReq.token = settings.rankToken;
+            rankReq.token.tokenId = gameRank;
+            rankReq.amount = 1;
+            rankReq.must = lock ? TokenMust.LOCK : TokenMust.HAVE;
+            fulfillTokenRequirement(applicant, gameId, rankReq);
+        }
+    }
+
     function createGame(
         address gameMaster,
         uint256 gameId,
@@ -104,25 +121,13 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         gameId.createGame(gameMaster);
         fulfillTokenRequirement(msg.sender, gameId, settings.newGameReq);
         require(gameRank != 0, "game rank not specified");
-        if (gameRank > 1) {
-            TokenAction memory rankReq;
-            rankReq.token = settings.rankToken;
-            rankReq.token.tokenId = gameRank;
-            rankReq.amount = 1;
-            fulfillTokenRequirement(msg.sender, gameId, rankReq);
-        }
         require(msg.value >= settings.gamePrice, "Not enough payment");
+        fulfillRankRq(msg.sender, gameId, gameRank, false);
         BOGInstance storage game = gameId.getGameStorage();
         game.createdBy = msg.sender;
         settings.numGames += 1;
         game.rank = gameRank;
 
-        // uint256[] memory ranks = new uint256[](2);
-        // ranks[0] = gameRank;
-        // ranks[1] = gameRank + 1;
-        // uint256[] memory amounts = new uint256[](2);
-        // amounts[0] = 3;
-        // amounts[1] = 1;
         IRankToken rankTokenContract = IRankToken(settings.rankToken.tokenAddress);
         rankTokenContract.mint(address(this), 1, gameRank + 1, "");
         rankTokenContract.mint(address(this), 3, gameRank, "");
@@ -139,7 +144,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
 
         reward.amount = 1;
         game.rewards[2].push(reward);
-        emit gameCreated(gameMaster, gameId, gameRank);
+        emit gameCreated(gameId, gameMaster, msg.sender, gameRank);
     }
 
     function createGame(address gameMaster, uint256 gameRank) public payable {
@@ -177,6 +182,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         gameId.enforceGameExists();
         BOGInstance storage game = gameId.getGameStorage();
         fulfillTokenRequirements(msg.sender, gameId, game.joinRequirements);
+        fulfillRankRq(msg.sender, gameId, game.rank, true);
         gameId.addPlayer(msg.sender);
         emit PlayerJoined(gameId, msg.sender);
     }

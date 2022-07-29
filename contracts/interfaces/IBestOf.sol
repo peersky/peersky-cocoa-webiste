@@ -52,8 +52,6 @@ interface IBestOf {
         LibTBG.GameSettings TBGSEttings;
     }
 
-    event gameCreated(address indexed gameMaster, uint256 indexed gameId, uint256 indexed gameRank);
-
 
     struct Proposal {
         string proposal;
@@ -82,11 +80,10 @@ interface IBestOf {
         uint256 numProposals;
     }
 
-
     event RegistrationOpen(uint256 indexed gameid);
     event PlayerJoined(uint256 indexed gameId, address participant);
     event GameStarted(uint256 indexed gameId);
-
+    event gameCreated(uint256 gameId, address indexed gm, address indexed creator, uint256 rank);
     event GameClosed(uint256 indexed gameId);
     event PlayerLeft(uint256 indexed gameId, address indexed player);
 }
