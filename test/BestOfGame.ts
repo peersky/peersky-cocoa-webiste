@@ -998,6 +998,43 @@ describe(scriptName, () => {
             )
           ).to.be.revertedWith("Game over");
         });
+        it("Gave rewards to winners", async () => {
+          expect(
+            await env.rankToken.balanceOf(adr.player1.wallet.address, 2)
+          ).to.be.equal(1);
+          expect(
+            await env.rankToken.balanceOf(adr.player2.wallet.address, 1)
+          ).to.be.equal(2);
+          expect(
+            await env.rankToken.balanceOf(adr.player3.wallet.address, 1)
+          ).to.be.equal(1);
+        });
+        it.only("Allows winner to create game of next rank", async () => {
+          await expect(
+            env.bestOfGame
+              .connect(adr.player1.wallet)
+              ["createGame(address,uint256)"](
+                adr.gameMaster1.wallet.address,
+                2,
+                {
+                  value: BOGSettings.BOG_GAME_PRICE,
+                }
+              )
+          ).to.emit(env.bestOfGame, "gameCreated");
+        });
+        describe("When game of next rank is created", () => {
+          beforeEach(async () => {
+            env.bestOfGame
+              .connect(adr.player1.wallet)
+              ["createGame(address,uint256)"](
+                adr.gameMaster1.wallet.address,
+                2,
+                {
+                  value: BOGSettings.BOG_GAME_PRICE,
+                }
+              );
+          });
+        });
       });
     });
   });

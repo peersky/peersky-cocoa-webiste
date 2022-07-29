@@ -115,16 +115,17 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         BOGInstance storage game = gameId.getGameStorage();
         game.createdBy = msg.sender;
         settings.numGames += 1;
+        game.rank = gameRank;
 
-        uint256[] memory ranks = new uint256[](2);
-        ranks[0] = gameRank;
-        ranks[1] = gameRank + 1;
-        uint256[] memory amounts = new uint256[](2);
-        amounts[0] = 3;
-        amounts[1] = 1;
+        // uint256[] memory ranks = new uint256[](2);
+        // ranks[0] = gameRank;
+        // ranks[1] = gameRank + 1;
+        // uint256[] memory amounts = new uint256[](2);
+        // amounts[0] = 3;
+        // amounts[1] = 1;
         IRankToken rankTokenContract = IRankToken(settings.rankToken.tokenAddress);
-
-        rankTokenContract.batchMint(address(this), ranks, amounts, "");
+        rankTokenContract.mint(address(this), 1, gameRank + 1, "");
+        rankTokenContract.mint(address(this), 3, gameRank, "");
         TokenAction memory reward;
         reward.token.tokenAddress = settings.rankToken.tokenAddress;
         reward.token.tokenType = TokenTypes.ERC1155;

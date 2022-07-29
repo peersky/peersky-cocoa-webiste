@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-// import "./LibDiamondOwner.sol";
-// import { IMultipass } from "../interfaces/sol";
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
@@ -299,7 +297,8 @@ library LibTBG {
         returns (
             bool,
             bool,
-            bool
+            bool,
+            address[] memory
         )
     {
         GameInstance storage _game = _getGame(gameId);
@@ -310,14 +309,15 @@ library LibTBG {
         _game.turnStartedAt = block.number;
         bool _isLastTurn = isLastTurn(gameId);
         bool _isOvertime = _game.isOvertime;
+        address[] memory sortedLeaders = new address[](getPlayers(gameId).length);
         if (_isOvertime) {
             assert(!_isLastTurn);
         }
         if (_isLastTurn || _game.isOvertime) {
-            _isOvertime = isLeadersScoresEqual(gameId);
+            (_isOvertime, sortedLeaders) = isLeadersScoresEqual(gameId);
             _game.isOvertime = _isOvertime;
         }
-        return (_isLastTurn, _isOvertime, isGameOver(gameId));
+        return (_isLastTurn, _isOvertime, isGameOver(gameId), sortedLeaders);
     }
 
     function getDataStorage() internal pure returns (bytes32 pointer) {
@@ -368,7 +368,7 @@ library LibTBG {
         _game.isOvertime = false;
     }
 
-    function isLeadersScoresEqual(uint256 gameId) public view returns (bool) {
+    function isLeadersScoresEqual(uint256 gameId) public view returns (bool, address[] memory) {
         TBGStorageStruct storage tbg = TBGStorage();
         (address[] memory players, uint256[] memory scores) = getScores(gameId);
 
@@ -376,12 +376,12 @@ library LibTBG {
         for (uint256 i = 0; i < players.length - 1; i++) {
             if ((i <= tbg.settings.numWinners - 1)) {
                 if (scores[i] == scores[i + 1]) {
-                    return true;
+                    return (true, players);
                 }
             } else {
                 break;
             }
         }
-        return false;
+        return (false, players);
     }
 }

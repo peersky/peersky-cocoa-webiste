@@ -9,6 +9,7 @@ import "../abstracts/DiamondReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "../abstracts/draft-EIP712Diamond.sol";
+import {RankToken} from "../tokens/RankToken.sol";
 
 contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
     using LibTBG for uint256;
@@ -184,7 +185,7 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
                 //Unless there is still time to submit proposals
             }
         }
-        (bool _isLastTurn, bool _isOvertime, bool _isGameOver) = gameId.nextTurn();
+        (bool _isLastTurn, bool _isOvertime, bool _isGameOver, address[] memory leaderboard) = gameId.nextTurn();
         game.numProposals = 0;
         game.prevTurnSalt = turnSalt;
         emit TurnEnded(gameId, turn, players, scores, turnSalt);
@@ -196,7 +197,20 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
         }
         if (_isGameOver) {
             gameId.closeGame();
+            emitRewards(gameId, leaderboard);
             emit GameOver(gameId, players, scores);
         }
+    }
+
+    function emitRewards(uint256 gameId, address[] memory leaderboard) private {
+        IBestOf.BOGInstance storage game = gameId.getGameStorage();
+        IBestOf.BOGSettings storage settings = LibBestOf.BOGStorage();
+        // for (uint256 i = 0; i < tbgSettings.numWinners; i++) {
+        RankToken rankTokenContract = RankToken(settings.rankToken.tokenAddress);
+        rankTokenContract.safeTransferFrom(address(this), leaderboard[0], game.rank + 1, 1, "");
+        rankTokenContract.safeTransferFrom(address(this), leaderboard[1], game.rank, 2, "");
+        rankTokenContract.safeTransferFrom(address(this), leaderboard[2], game.rank, 1, "");
+
+        // }
     }
 }
