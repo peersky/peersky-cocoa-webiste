@@ -368,7 +368,7 @@ library LibTBG {
         _game.isOvertime = false;
     }
 
-    function isLeadersScoresEqual(uint256 gameId) public view returns (bool, address[] memory) {
+    function isLeadersScoresEqual(uint256 gameId) internal view returns (bool, address[] memory) {
         TBGStorageStruct storage tbg = TBGStorage();
         (address[] memory players, uint256[] memory scores) = getScores(gameId);
 
