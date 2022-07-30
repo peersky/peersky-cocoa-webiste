@@ -58,11 +58,6 @@ interface IBestOf {
         bytes proof;
     }
 
-    struct OnTokenRecieved {
-        TokenAction req;
-        uint256 gameId;
-    }
-
     struct VoteHidden {
         bytes32[3] votedFor;
         bytes proof;
@@ -75,7 +70,7 @@ interface IBestOf {
         mapping(uint256 => mapping(bytes32 => Proposal)) proposals;
         mapping(uint256 => mapping(address => VoteHidden)) votesHidden;
         mapping(uint256 => TokenAction[]) rewards;
-        mapping(uint256 => mapping(address => Token[])) lockedTokens;
+        mapping(uint256 => mapping(address => TokenAction[])) lockedTokens;
         bytes32 prevTurnSalt;
         uint256 numProposals;
     }

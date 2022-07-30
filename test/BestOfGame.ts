@@ -1357,8 +1357,25 @@ describe(scriptName, () => {
           await env.rankToken.balanceOf(adr.player1.wallet.address, 2)
         ).to.be.equal(balance.toNumber() - 1);
       });
-      it("Returns rank token if player leaves game or game is being closed", async () => {
-        //TODO: Implement this
+      it("Returns rank token if player leaves game", async () => {
+        const lastCreatedGameId = await env.bestOfGame
+          .getContractState()
+          .then((r) => r.BestOfState.numGames);
+        await env.rankToken
+          .connect(adr.player1.wallet)
+          .setApprovalForAll(env.bestOfGame.address, true);
+        await env.bestOfGame
+          .connect(adr.player1.wallet)
+          .joinGame(lastCreatedGameId);
+        expect(
+          await env.rankToken.balanceOf(adr.player1.wallet.address, 2)
+        ).to.be.equal(0);
+        await env.bestOfGame
+          .connect(adr.player1.wallet)
+          .leaveGame(lastCreatedGameId);
+        expect(
+          await env.rankToken.balanceOf(adr.player1.wallet.address, 2)
+        ).to.be.equal(1);
       });
     });
   });

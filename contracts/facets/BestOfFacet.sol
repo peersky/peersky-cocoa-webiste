@@ -27,6 +27,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
 
     function fulfillTokenRequirement(
         address applicant,
+        address to,
         uint256 gameId,
         TokenAction memory req
     ) private {
@@ -47,7 +48,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
                 ERC20Contract.transferFrom(applicant, address(0), req.amount);
             }
             if (req.must == TokenMust.GIVE) {
-                ERC20Contract.transferFrom(applicant, address(this), req.amount);
+                ERC20Contract.transferFrom(applicant, to, req.amount);
             }
         }
         if (req.token.tokenType == TokenTypes.ERC1155) {
@@ -60,11 +61,8 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
                 ERC1155Contract.safeTransferFrom(applicant, address(0), req.token.tokenId, req.amount, "");
             }
             if (req.must == TokenMust.LOCK) {
-                OnTokenRecieved memory payload;
-                payload.req = req;
-                payload.gameId = gameId;
-                ERC1155Contract.safeTransferFrom(applicant, address(this), req.token.tokenId, req.amount, "");
-                game.lockedTokens[gameId][applicant].push(payload.req.token);
+                ERC1155Contract.safeTransferFrom(applicant, to, req.token.tokenId, req.amount, "");
+                game.lockedTokens[gameId][applicant].push(req);
             }
         }
         if (req.token.tokenType == TokenTypes.ERC721) {
@@ -86,19 +84,21 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
 
     function fulfillTokenRequirements(
         address applicant,
+        address to,
         uint256 gameId,
         TokenAction[] memory reqs
     ) private {
         for (uint256 i = 0; i < reqs.length; i++) {
-            fulfillTokenRequirement(applicant, gameId, reqs[i]);
+            fulfillTokenRequirement(applicant, to, gameId, reqs[i]);
         }
     }
 
     function fulfillRankRq(
         address applicant,
+        address to,
         uint256 gameId,
         uint256 gameRank,
-        bool lock
+        bool mustLock
     ) private {
         BOGSettings storage settings = BOGStorage();
         if (gameRank > 1) {
@@ -106,8 +106,8 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
             rankReq.token = settings.rankToken;
             rankReq.token.tokenId = gameRank;
             rankReq.amount = 1;
-            rankReq.must = lock ? TokenMust.LOCK : TokenMust.HAVE;
-            fulfillTokenRequirement(applicant, gameId, rankReq);
+            rankReq.must = mustLock ? TokenMust.LOCK : TokenMust.HAVE;
+            fulfillTokenRequirement(applicant, to, gameId, rankReq);
         }
     }
 
@@ -119,10 +119,10 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         LibBestOf.enforceIsInitialized();
         BOGSettings storage settings = BOGStorage();
         gameId.createGame(gameMaster);
-        fulfillTokenRequirement(msg.sender, gameId, settings.newGameReq);
+        fulfillTokenRequirement(msg.sender, address(this), gameId, settings.newGameReq);
         require(gameRank != 0, "game rank not specified");
         require(msg.value >= settings.gamePrice, "Not enough payment");
-        fulfillRankRq(msg.sender, gameId, gameRank, false);
+        fulfillRankRq(msg.sender, address(this), gameId, gameRank, false);
         BOGInstance storage game = gameId.getGameStorage();
         game.createdBy = msg.sender;
         settings.numGames += 1;
@@ -153,16 +153,25 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         createGame(gameMaster, settings.numGames + 1, gameRank);
     }
 
-    function cancelGame(uint256 gameId) public {
+    function cancelGame(uint256 gameId) public nonReentrant {
         gameId.enforceGameExists();
         LibBestOf.enforceIsGameCreator(gameId);
         require(!gameId.hasStarted(), "Game already has started");
+        address[] memory players = gameId.getPlayers();
+        BOGInstance storage game = gameId.getGameStorage();
+        for (uint256 i = 0; i < players.length; i++) {
+            fulfillRankRq(address(this), msg.sender, gameId, game.rank, true);
+        }
+        // gameId.removePlayer(msg.sender);
+
         gameId.closeGame();
         emit GameClosed(gameId);
     }
 
-    function leaveGame(uint256 gameId) public {
+    function leaveGame(uint256 gameId) public nonReentrant {
         gameId.removePlayer(msg.sender);
+        BOGInstance storage game = gameId.getGameStorage();
+        fulfillRankRq(address(this), msg.sender, gameId, game.rank, true);
         emit PlayerLeft(gameId, msg.sender);
     }
 
@@ -181,8 +190,8 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
     function joinGame(uint256 gameId) public payable {
         gameId.enforceGameExists();
         BOGInstance storage game = gameId.getGameStorage();
-        fulfillTokenRequirements(msg.sender, gameId, game.joinRequirements);
-        fulfillRankRq(msg.sender, gameId, game.rank, true);
+        fulfillTokenRequirements(msg.sender, address(this), gameId, game.joinRequirements);
+        fulfillRankRq(msg.sender, address(this), gameId, game.rank, true);
         gameId.addPlayer(msg.sender);
         emit PlayerJoined(gameId, msg.sender);
     }
