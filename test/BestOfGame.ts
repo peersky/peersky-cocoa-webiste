@@ -29,7 +29,8 @@ import {
 import { ethers } from "hardhat";
 const path = require("path");
 import { TokenMust, TokenTypes } from "../types/enums";
-import { BigNumberish } from "ethers";
+import { BigNumberish, Signer } from "ethers";
+import { assert } from "console";
 const scriptName = path.basename(__filename);
 
 let votes: MockVotes;
@@ -57,121 +58,216 @@ const createGame = async (
     );
   if (openNow)
     await gameContract.connect(signer.wallet).openRegistration(gameId);
+  return gameId;
 };
-const runExistingUntilLastTurn = async (
+const runToTheEnd = async (
   gameId: BigNumberish,
   gameContract: BestOfDiamond,
-  gameMaster: SignerIdentity
-): Promise<void> => {
-  await gameContract.connect(adr.gameCreator1.wallet).openRegistration(1);
-  for (let i = 1; i < BOGSettings.BOG_MAX_PLAYERS + 1; i++) {
-    let name = `player${i}` as any as keyof AdrSetupResult;
-    gameContract
-      .connect(adr[`${name}`].wallet)
-      .joinGame(gameId, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
-  }
-  await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
-  await gameContract.connect(gameMaster.wallet).startGame(1);
-  proposalsStruct = await mockProposals({
-    players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-    gameId: gameId,
-    turn: 1,
-    verifierAddress: gameContract.address,
-  });
-
-  for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
+  gameMaster: SignerIdentity,
+  players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]],
+  distribution?: "ftw" | "semiUniform" | "equal"
+) => {
+  // console.log("running to the end");
+  // const initialTurn = await env.bestOfGame.getTurn(gameId);
+  let isGameOver = await env.bestOfGame.isGameOver(gameId);
+  while (!isGameOver) {
+    const isLastTurn = await env.bestOfGame.isLastTurn(gameId);
+    const turn = await env.bestOfGame.getTurn(gameId).then((r) => r.toNumber());
+    if (turn !== 1) {
+      votes = await mockValidVotes(
+        players,
+        gameContract,
+        gameId,
+        gameMaster,
+        true,
+        distribution ?? "ftw"
+      );
+    }
+    if (!isLastTurn) {
+      await mockValidProposals(players, gameContract, gameMaster, gameId, true);
+    }
     await gameContract
       .connect(gameMaster.wallet)
-      .submitProposal(
+      .endTurn(
         gameId,
-        proposalsStruct[i].proposerHidden,
-        proposalsStruct[i].proof,
-        proposalsStruct[i].proposal
+        getTurnSalt({ gameId: gameId, turn: turn }),
+        turn == 1 ? [] : votersAddresses,
+        turn == 1 ? [] : votes?.map((vote) => vote.vote)
       );
-  }
-  await gameContract
-    .connect(gameMaster.wallet)
-    .endTurn(gameId, getTurnSalt({ gameId: gameId, turn: 1 }), [], []);
-  votersAddresses = getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS).map(
-    (player) => player.wallet.address
-  );
-  for (let turn = 2; turn < BOGSettings.BOG_MAX_TURNS; turn++) {
-    votes = await mockVotes({
-      gameId: gameId,
-      turn: turn,
-      verifierAddress: gameContract.address,
-      players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-      gm: gameMaster,
-      proposals: proposalsStruct.map((item) => item.proposal),
-      distribution: "equal",
-    });
-    proposalsStruct = await mockProposals({
-      players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-      gameId: gameId,
-      turn: turn,
-      verifierAddress: gameContract.address,
-    });
-    for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
-      await gameContract
-        .connect(gameMaster.wallet)
-        .submitProposal(
-          1,
-          proposalsStruct[i].proposerHidden,
-          proposalsStruct[i].proof,
-          proposalsStruct[i].proposal
-        );
-      let name = `player${i + 1}` as any as keyof AdrSetupResult;
-      await gameContract
-        .connect(adr[`${name}`].wallet)
-        .submitVote(gameId, votes[i].voteHidden, votes[i].proof);
-    }
-    await gameContract.connect(gameMaster.wallet).endTurn(
-      gameId,
-      getTurnSalt({ gameId: 1, turn: turn }),
-      votersAddresses,
-      votes.map((vote) => vote.vote)
-    );
+    isGameOver = await env.bestOfGame.isGameOver(gameId);
   }
 };
+const runToLastTurn = async (
+  gameId: BigNumberish,
+  gameContract: BestOfDiamond,
+  gameMaster: SignerIdentity,
+  players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]],
+  distribution?: "ftw" | "semiUniform" | "equal"
+): Promise<void> => {
+  const initialTurn = await env.bestOfGame.getTurn(gameId);
+  // console.log("running to last turn, initial: ", initialTurn.toString());
+  for (
+    let turn = initialTurn.toNumber();
+    turn < BOGSettings.BOG_MAX_TURNS;
+    turn++
+  ) {
+    if (turn !== 1) {
+      votes = await mockValidVotes(
+        players,
+        gameContract,
+        gameId,
+        gameMaster,
+        true,
+        distribution ?? "ftw"
+      );
+    }
+
+    await mockValidProposals(players, gameContract, gameMaster, gameId, true);
+    await gameContract
+      .connect(gameMaster.wallet)
+      .endTurn(
+        gameId,
+        getTurnSalt({ gameId: gameId, turn: turn }),
+        turn == 1 ? [] : votersAddresses,
+        turn == 1 ? [] : votes?.map((vote) => vote.vote)
+      );
+  }
+  const isLastTurn = await gameContract.isLastTurn(gameId);
+  assert(isLastTurn, "should be last turn");
+};
+
+const endTurn = async (gameId: BigNumberish, gameContract: BestOfDiamond) => {
+  const turn = await gameContract.getTurn(gameId);
+  await gameContract.connect(adr.gameMaster1.wallet).endTurn(
+    gameId,
+    getTurnSalt({
+      gameId: gameId,
+      turn: turn,
+    }),
+    votersAddresses,
+    votes.map((vote) => vote.vote)
+  );
+};
+
+const runToOvertime = async (
+  gameId: BigNumberish,
+  gameContract: BestOfDiamond,
+  gameMaster: SignerIdentity,
+  players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]]
+) => {
+  await runToLastTurn(gameId, gameContract, gameMaster, players, "equal");
+
+  await mockValidVotes(
+    players,
+    gameContract,
+    gameId,
+    gameMaster,
+    true,
+    "equal"
+  );
+
+  const turn = await gameContract.getTurn(gameId);
+  await gameContract.connect(gameMaster.wallet).endTurn(
+    gameId,
+    getTurnSalt({
+      gameId: gameId,
+      turn: turn,
+    }),
+    votersAddresses,
+    votes.map((vote) => vote.vote)
+  );
+};
+
+// const runToTheEnd = async (
+//   gameId: BigNumberish,
+//   gameContract: BestOfDiamond,
+//   gameMaster: SignerIdentity,
+//   players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]]
+// ) => {
+
+// await runToLastTurn(gameId, gameContract, gameMaster, players);
+
+// await mockValidVotes(players, gameContract, gameId, gameMaster, true, "ftw");
+// let turn = await gameContract.getTurn(gameId);
+// console.log("attempt to finish last turn", turn.toString());
+// await gameContract.connect(gameMaster.wallet).endTurn(
+//   gameId,
+//   getTurnSalt({
+//     gameId: gameId,
+//     turn: turn,
+//   }),
+//   votersAddresses,
+//   votes.map((vote) => vote.vote)
+// );
+// turn = await gameContract.getTurn(gameId);
+// const isOvertime = await env.bestOfGame.isOvertime(gameId);
+// const isGameOver = await env.bestOfGame.isGameOver(gameId);
+// while (!isGameOver) {
+//   console.log("running isGameOver", isGameOver, isOvertime, turn.toString());
+//   assert(isOvertime, "should be ovetime, now?");
+//   await mockValidVotes(
+//     players,
+//     gameContract,
+//     gameId,
+//     gameMaster,
+//     true,
+//     "ftw"
+//   );
+//   await mockValidProposals(players, gameContract, gameMaster, gameId, true);
+//   await gameContract.connect(gameMaster.wallet).endTurn(
+//     gameId,
+//     getTurnSalt({
+//       gameId: gameId,
+//       turn: turn,
+//     }),
+//     votersAddresses,
+//     votes.map((vote) => vote.vote)
+//   );
+// }
+// console.log("runToTheEnd", turn);
+// };
 
 const mockValidVotes = async (
   players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]],
   gameContract: BestOfDiamond,
   gameId: BigNumberish,
-  submitNow?: boolean
+  gameMaster: SignerIdentity,
+  submitNow?: boolean,
+  distribution?: "ftw" | "semiUniform" | "equal"
 ) => {
   const turn = await gameContract.getTurn(gameId);
   votes = await mockVotes({
     gameId: gameId,
     turn: turn,
-    verifierAddress: env.bestOfGame.address,
+    verifierAddress: gameContract.address,
     players: players,
-    gm: adr.gameMaster1,
+    gm: gameMaster,
     proposals: proposalsStruct.map((item) => item.proposal),
-    distribution: "semiUniform",
+    distribution: distribution ?? "semiUniform",
   });
   if (submitNow) {
-    votersAddresses = getPlayers(adr, players.length).map(
-      (player) => player.wallet.address
-    );
-    for (let i = 0; i < votersAddresses.length; i++) {
-      let name = `player${i + 1}` as any as keyof AdrSetupResult;
+    votersAddresses = players.map((player) => player.wallet.address);
+    for (let i = 0; i < players.length; i++) {
       await env.bestOfGame
-        .connect(adr[`${name}`].wallet)
+        .connect(players[i].wallet)
         .submitVote(gameId, votes[i].voteHidden, votes[i].proof);
     }
   }
+  return votes;
 };
 
-const startGame = async (gameId: BigNumberish) => {
+const startGame = async (
+  gameId: BigNumberish
+  // players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]]
+) => {
   await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
-  await env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(1);
-  proposalsStruct = await mockProposals({
-    players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-    gameId: 1,
-    turn: 1,
-    verifierAddress: env.bestOfGame.address,
-  });
+  await env.bestOfGame.connect(adr.gameMaster1.wallet).startGame(gameId);
+  // proposalsStruct = await mockProposals({
+  //   players: players,
+  //   gameId: 1,
+  //   turn: 1,
+  //   verifierAddress: env.bestOfGame.address,
+  // });
 };
 
 const mockValidProposals = async (
@@ -195,7 +291,7 @@ const mockValidProposals = async (
       await gameContract
         .connect(gameMaster.wallet)
         .submitProposal(
-          1,
+          gameId,
           proposalsStruct[i].proposerHidden,
           proposalsStruct[i].proof,
           proposalsStruct[i].proposal
@@ -208,7 +304,9 @@ const fillParty = async (
   players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]],
   gameContract: BestOfDiamond,
   gameId: BigNumberish,
-  mineJoinBlocks: boolean
+  mineJoinBlocks: boolean,
+  startGame?: boolean,
+  gameMaster?: SignerIdentity
 ) => {
   for (let i = 0; i < players.length; i++) {
     // let name = `player${i}` as any as keyof AdrSetupResult;
@@ -217,6 +315,9 @@ const fillParty = async (
       .joinGame(gameId, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
   }
   if (mineJoinBlocks) await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
+  if (startGame && gameMaster) {
+    await env.bestOfGame.connect(gameMaster.wallet).startGame(gameId);
+  }
 };
 describe(scriptName, () => {
   beforeEach(async () => {
@@ -784,6 +885,7 @@ describe(scriptName, () => {
                     getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS),
                     env.bestOfGame,
                     1,
+                    adr.gameMaster1,
                     true
                   );
                 });
@@ -890,7 +992,24 @@ describe(scriptName, () => {
     });
     describe("When it is last turn and equal scores", () => {
       beforeEach(async () => {
-        await runExistingUntilLastTurn(1, env.bestOfGame, adr.gameMaster1);
+        await env.bestOfGame
+          .connect(adr.gameCreator1.wallet)
+          .openRegistration(1);
+        await fillParty(
+          getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          env.bestOfGame,
+          1,
+          true,
+          true,
+          adr.gameMaster1
+        );
+        await runToLastTurn(
+          1,
+          env.bestOfGame,
+          adr.gameMaster1,
+          getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          "equal"
+        );
       });
       it("reverts on submit proposals", async () => {
         proposalsStruct = await mockProposals({
@@ -910,101 +1029,116 @@ describe(scriptName, () => {
             )
         ).to.be.revertedWith("Cannot propose in last turn");
       });
-      it("Game is in overtime conditions", async () => {
+      it("Next turn without winner brings Game is in overtime conditions", async () => {
         let isGameOver = await env.bestOfGame.isGameOver(1);
         expect(isGameOver).to.be.false;
+        await mockValidVotes(
+          getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          env.bestOfGame,
+          1,
+          adr.gameMaster1,
+          true,
+          "equal"
+        );
+        await endTurn(1, env.bestOfGame);
+
         expect(await env.bestOfGame.isOvertime(1)).to.be.true;
       });
-      it("emits game Over when submited votes result unique leaders", async () => {
-        votes = await mockVotes({
-          gameId: 1,
-          turn: BOGSettings.BOG_MAX_TURNS,
-          verifierAddress: env.bestOfGame.address,
-          players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-          gm: adr.gameMaster1,
-          proposals: proposalsStruct.map((item) => item.proposal),
-          distribution: "ftw",
-        });
-        proposalsStruct = await mockProposals({
-          players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-          gameId: 1,
-          turn: BOGSettings.BOG_MAX_TURNS,
-          verifierAddress: env.bestOfGame.address,
-        });
-
-        for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
-          const currentTurn = await env.bestOfGame.getTurn(1);
-          if (currentTurn.toNumber() !== BOGSettings.BOG_MAX_TURNS) {
-            await env.bestOfGame
-              .connect(adr.gameMaster1.wallet)
-              .submitProposal(
-                1,
-                proposalsStruct[i].proposerHidden,
-                proposalsStruct[i].proof,
-                proposalsStruct[i].proposal
-              );
-          }
-          let name = `player${i + 1}` as any as keyof AdrSetupResult;
-          await env.bestOfGame
-            .connect(adr[`${name}`].wallet)
-            .submitVote(1, votes[i].voteHidden, votes[i].proof);
-        }
-        expect(
-          await env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+      describe("when is ovetime", () => {
+        beforeEach(async () => {
+          await mockValidVotes(
+            getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+            env.bestOfGame,
             1,
-            getTurnSalt({
-              gameId: 1,
-              turn: BOGSettings.BOG_MAX_TURNS,
-            }),
-            votersAddresses,
-            votes.map((vote) => vote.vote)
-          )
-        ).to.emit(env.bestOfGame, "GameOver");
+            adr.gameMaster1,
+            true,
+            "equal"
+          );
+          await endTurn(1, env.bestOfGame);
+        });
+        it("emits game Over when submited votes result unique leaders", async () => {
+          await mockValidVotes(
+            getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+            env.bestOfGame,
+            1,
+            adr.gameMaster1,
+            true,
+            "ftw"
+          );
+          await mockValidProposals(
+            getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+            env.bestOfGame,
+            adr.gameMaster1,
+            1,
+            true
+          );
+          const currentTurn = await env.bestOfGame.getTurn(1);
+          expect(
+            await env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+              1,
+              getTurnSalt({
+                gameId: 1,
+                turn: currentTurn,
+              }),
+              votersAddresses,
+              votes.map((vote) => vote.vote)
+            )
+          ).to.emit(env.bestOfGame, "GameOver");
+        });
       });
+
       describe("When game is over", () => {
         beforeEach(async () => {
-          votes = await mockVotes({
-            gameId: 1,
-            turn: BOGSettings.BOG_MAX_TURNS,
-            verifierAddress: env.bestOfGame.address,
-            players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-            gm: adr.gameMaster1,
-            proposals: proposalsStruct.map((item) => item.proposal),
-            distribution: "ftw",
-          });
-          proposalsStruct = await mockProposals({
-            players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-            gameId: 1,
-            turn: BOGSettings.BOG_MAX_TURNS,
-            verifierAddress: env.bestOfGame.address,
-          });
-
-          for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
-            const currentTurn = await env.bestOfGame.getTurn(1);
-            if (currentTurn.toNumber() !== BOGSettings.BOG_MAX_TURNS) {
-              await env.bestOfGame
-                .connect(adr.gameMaster1.wallet)
-                .submitProposal(
-                  1,
-                  proposalsStruct[i].proposerHidden,
-                  proposalsStruct[i].proof,
-                  proposalsStruct[i].proposal
-                );
-            }
-            let name = `player${i + 1}` as any as keyof AdrSetupResult;
-            await env.bestOfGame
-              .connect(adr[`${name}`].wallet)
-              .submitVote(1, votes[i].voteHidden, votes[i].proof);
-          }
-          await env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+          await runToTheEnd(
             1,
-            getTurnSalt({
-              gameId: 1,
-              turn: BOGSettings.BOG_MAX_TURNS,
-            }),
-            votersAddresses,
-            votes.map((vote) => vote.vote)
+            env.bestOfGame,
+            adr.gameMaster1,
+            getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS)
           );
+          const isover = await env.bestOfGame.isGameOver(1);
+          // console.log("isover", isover);
+          // votes = await mockVotes({
+          //   gameId: 1,
+          //   turn: BOGSettings.BOG_MAX_TURNS,
+          //   verifierAddress: env.bestOfGame.address,
+          //   players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          //   gm: adr.gameMaster1,
+          //   proposals: proposalsStruct.map((item) => item.proposal),
+          //   distribution: "ftw",
+          // });
+          // proposalsStruct = await mockProposals({
+          //   players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
+          //   gameId: 1,
+          //   turn: BOGSettings.BOG_MAX_TURNS,
+          //   verifierAddress: env.bestOfGame.address,
+          // });
+
+          // for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
+          //   const currentTurn = await env.bestOfGame.getTurn(1);
+          //   if (currentTurn.toNumber() !== BOGSettings.BOG_MAX_TURNS + 1) {
+          //     await env.bestOfGame
+          //       .connect(adr.gameMaster1.wallet)
+          //       .submitProposal(
+          //         1,
+          //         proposalsStruct[i].proposerHidden,
+          //         proposalsStruct[i].proof,
+          //         proposalsStruct[i].proposal
+          //       );
+          //   }
+          //   let name = `player${i + 1}` as any as keyof AdrSetupResult;
+          //   await env.bestOfGame
+          //     .connect(adr[`${name}`].wallet)
+          //     .submitVote(1, votes[i].voteHidden, votes[i].proof);
+          // }
+          // await env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
+          //   1,
+          //   getTurnSalt({
+          //     gameId: 1,
+          //     turn: BOGSettings.BOG_MAX_TURNS,
+          //   }),
+          //   votersAddresses,
+          //   votes.map((vote) => vote.vote)
+          // );
         });
         it("Throws on attempt to make another turn", async () => {
           const currentTurn = await env.bestOfGame.getTurn(1);
@@ -1120,5 +1254,112 @@ describe(scriptName, () => {
   });
   describe("When there was multiple first rank games played so higher rank game can be filled", () => {
     //TODO: Test locking/unlocking a rank token here
+    beforeEach(async () => {
+      for (
+        let numGames = 0;
+        numGames < BOGSettings.BOG_MAX_PLAYERS;
+        numGames++
+      ) {
+        const gameId = await createGame(
+          env.bestOfGame,
+          adr.gameCreator1,
+          adr.gameMaster1.wallet.address,
+          1,
+          true
+        );
+        await fillParty(
+          getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS, numGames),
+          env.bestOfGame,
+          gameId,
+          true,
+          true,
+          adr.gameMaster1
+        );
+        // await runFirstToLastTurn(gameId, env.bestOfGame, adr.gameMaster1);
+        await runToTheEnd(
+          gameId,
+          env.bestOfGame,
+          adr.gameMaster1,
+          getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS, numGames)
+        );
+      }
+    });
+    it("Winners have reward tokens", async () => {
+      const balances: number[] = [];
+      balances[0] = await env.rankToken
+        .balanceOf(adr.player1.wallet.address, 2)
+        .then((balance) => balances.push(balance.toNumber()));
+      expect(
+        await env.rankToken.balanceOf(adr.player1.wallet.address, 2)
+      ).to.be.equal(1);
+      expect(
+        await env.rankToken.balanceOf(adr.player2.wallet.address, 2)
+      ).to.be.equal(1);
+      expect(
+        await env.rankToken.balanceOf(adr.player3.wallet.address, 2)
+      ).to.be.equal(1);
+      expect(
+        await env.rankToken.balanceOf(adr.player4.wallet.address, 2)
+      ).to.be.equal(1);
+      expect(
+        await env.rankToken.balanceOf(adr.player5.wallet.address, 2)
+      ).to.be.equal(1);
+      expect(
+        await env.rankToken.balanceOf(adr.player6.wallet.address, 2)
+      ).to.be.equal(0);
+    });
+    describe("When game of next rank is created", () => {
+      beforeEach(async () => {
+        await createGame(
+          env.bestOfGame,
+          adr.player1,
+          adr.gameMaster1.wallet.address,
+          2,
+          true
+        );
+      });
+      it("Can be joined only by bearers of rank token", async () => {
+        const lastCreatedGameId = await env.bestOfGame
+          .getContractState()
+          .then((r) => r.BestOfState.numGames);
+        await env.rankToken
+          .connect(adr.player2.wallet)
+          .setApprovalForAll(env.bestOfGame.address, true);
+        await expect(
+          env.bestOfGame.connect(adr.player2.wallet).joinGame(lastCreatedGameId)
+        ).to.emit(env.bestOfGame, "PlayerJoined");
+        await env.rankToken
+          .connect(adr.player6.wallet)
+          .setApprovalForAll(env.bestOfGame.address, true);
+        await expect(
+          env.bestOfGame.connect(adr.player6.wallet).joinGame(lastCreatedGameId)
+        ).to.be.revertedWith("ERC1155: insufficient balance for transfer");
+      });
+      it("Locks rank tokens when player joins", async () => {
+        const balance = await env.rankToken.balanceOf(
+          adr.player1.wallet.address,
+          2
+        );
+        const lastCreatedGameId = await env.bestOfGame
+          .getContractState()
+          .then((r) => r.BestOfState.numGames);
+        await env.rankToken
+          .connect(adr.player1.wallet)
+          .setApprovalForAll(env.bestOfGame.address, true);
+        await env.bestOfGame
+          .connect(adr.player1.wallet)
+          .joinGame(lastCreatedGameId);
+        const balance2 = await env.rankToken.balanceOf(
+          adr.player1.wallet.address,
+          2
+        );
+        expect(
+          await env.rankToken.balanceOf(adr.player1.wallet.address, 2)
+        ).to.be.equal(balance.toNumber() - 1);
+      });
+      it("Returns rank token if player leaves game or game is being closed", async () => {
+        //TODO: Implement this
+      });
+    });
   });
 });

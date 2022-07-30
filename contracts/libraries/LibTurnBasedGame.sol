@@ -260,7 +260,7 @@ library LibTBG {
     function isGameOver(uint256 gameId) internal view returns (bool) {
         TBGStorageStruct storage tbg = TBGStorage();
         GameInstance storage _game = _getGame(gameId);
-        if ((_game.currentTurn >= tbg.settings.maxTurns) && !_game.isOvertime) return true;
+        if ((_game.currentTurn > tbg.settings.maxTurns) && !_game.isOvertime) return true;
         else return false;
     }
 
@@ -310,13 +310,11 @@ library LibTBG {
         bool _isLastTurn = isLastTurn(gameId);
         bool _isOvertime = _game.isOvertime;
         address[] memory sortedLeaders = new address[](getPlayers(gameId).length);
-        if (_isOvertime) {
-            assert(!_isLastTurn);
-        }
-        if (_isLastTurn || _game.isOvertime) {
+        if (_isLastTurn || _game.isOvertime || isGameOver(gameId)) {
             (_isOvertime, sortedLeaders) = isLeadersScoresEqual(gameId);
             _game.isOvertime = _isOvertime;
         }
+
         return (_isLastTurn, _isOvertime, isGameOver(gameId), sortedLeaders);
     }
 
@@ -383,5 +381,11 @@ library LibTBG {
             }
         }
         return (false, players);
+    }
+
+    function getPlayersGame(address player) internal view returns (uint256) {
+        TBGStorageStruct storage tbg = TBGStorage();
+
+        return tbg.playerInGame[player];
     }
 }

@@ -25,6 +25,7 @@ import { deploy as deployBestOfGame } from "../scripts/deployBestOfGame";
 import { LibMultipass } from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 import { RankToken } from "../types/typechain/contracts/tokens/RankToken";
 import { BestOfInit } from "../types/typechain/contracts/initializers/BestOfInit";
+import { assert } from "console";
 
 export interface SignerIdentity {
   name: string;
@@ -776,11 +777,14 @@ export const mockVote = async ({
 };
 export const getPlayers = (
   adr: AdrSetupResult,
-  numPlayers: number
+  numPlayers: number,
+  offset?: number
 ): [SignerIdentity, SignerIdentity, ...SignerIdentity[]] => {
+  const _offset = offset ?? 0;
   let players: SignerIdentity[] = [];
   for (let i = 1; i < numPlayers + 1; i++) {
-    let name = `player${i}` as any as keyof AdrSetupResult;
+    assert(i + _offset < 19, "Such player does not exist in adr generation");
+    let name = `player${i + _offset}` as any as keyof AdrSetupResult;
     players.push(adr[`${name}`]);
   }
   return players as any as [
