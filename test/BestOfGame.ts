@@ -31,6 +31,7 @@ const path = require("path");
 import { TokenMust, TokenTypes } from "../types/enums";
 import { BigNumberish, Signer } from "ethers";
 import { assert } from "console";
+import { RankToken } from "../types/typechain/contracts/tokens/RankToken";
 const scriptName = path.basename(__filename);
 
 let votes: MockVotes;
@@ -310,6 +311,11 @@ const fillParty = async (
 ) => {
   for (let i = 0; i < players.length; i++) {
     // let name = `player${i}` as any as keyof AdrSetupResult;
+    if (!env.rankToken.address)
+      throw new Error("Rank token undefined or undeployed");
+    await env.rankToken
+      .connect(players[i].wallet)
+      .setApprovalForAll(env.bestOfGame.address, true);
     await gameContract
       .connect(players[i].wallet)
       .joinGame(gameId, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
@@ -1377,7 +1383,7 @@ describe(scriptName, () => {
           await env.rankToken.balanceOf(adr.player1.wallet.address, 2)
         ).to.be.equal(1);
       });
-      it.only("Returns rank token if was game closed", async () => {
+      it("Returns rank token if was game closed", async () => {
         const lastCreatedGameId = await env.bestOfGame
           .getContractState()
           .then((r) => r.BestOfState.numGames);
@@ -1414,6 +1420,40 @@ describe(scriptName, () => {
         expect(
           await env.rankToken.balanceOf(adr.player2.wallet.address, 2)
         ).to.be.equal(p2balance);
+      });
+      describe("when this game is over", () => {
+        beforeEach(async () => {
+          const lastCreatedGameId = await env.bestOfGame
+            .getContractState()
+            .then((r) => r.BestOfState.numGames);
+          await fillParty(
+            getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS, 0),
+            env.bestOfGame,
+            lastCreatedGameId,
+            true,
+            true,
+            adr.gameMaster1
+          );
+          await runToTheEnd(
+            lastCreatedGameId,
+            env.bestOfGame,
+            adr.gameMaster1,
+            getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS),
+            "ftw"
+          );
+        });
+        it.only("Winners have reward tokens", async () => {
+          const balances: number[] = [];
+          const players = getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS, 0);
+          for (let i = 0; i < players.length; i++) {
+            balances[i] = await env.rankToken
+              .balanceOf(players[i].wallet.address, 3)
+              .then((_balance) => _balance.toNumber());
+          }
+          expect(balances[0]).to.be.equal(1);
+          expect(balances[1]).to.be.equal(0);
+          expect(balances[2]).to.be.equal(0);
+        });
       });
     });
   });
