@@ -1377,6 +1377,44 @@ describe(scriptName, () => {
           await env.rankToken.balanceOf(adr.player1.wallet.address, 2)
         ).to.be.equal(1);
       });
+      it.only("Returns rank token if was game closed", async () => {
+        const lastCreatedGameId = await env.bestOfGame
+          .getContractState()
+          .then((r) => r.BestOfState.numGames);
+        await env.rankToken
+          .connect(adr.player1.wallet)
+          .setApprovalForAll(env.bestOfGame.address, true);
+        await env.rankToken
+          .connect(adr.player2.wallet)
+          .setApprovalForAll(env.bestOfGame.address, true);
+        await env.bestOfGame
+          .connect(adr.player1.wallet)
+          .joinGame(lastCreatedGameId);
+        await env.bestOfGame
+          .connect(adr.player2.wallet)
+          .joinGame(lastCreatedGameId);
+        let p1balance = await env.rankToken.balanceOf(
+          adr.player1.wallet.address,
+          2
+        );
+        p1balance = p1balance.add(1);
+
+        let p2balance = await env.rankToken.balanceOf(
+          adr.player2.wallet.address,
+          2
+        );
+        p2balance = p2balance.add(1);
+        console.log(p2balance.toString(), p1balance.toString());
+        await env.bestOfGame
+          .connect(adr.player1.wallet)
+          .cancelGame(lastCreatedGameId);
+        expect(
+          await env.rankToken.balanceOf(adr.player1.wallet.address, 2)
+        ).to.be.equal(p1balance);
+        expect(
+          await env.rankToken.balanceOf(adr.player2.wallet.address, 2)
+        ).to.be.equal(p2balance);
+      });
     });
   });
 });

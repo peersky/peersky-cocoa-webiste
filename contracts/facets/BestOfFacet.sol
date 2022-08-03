@@ -158,21 +158,22 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         LibBestOf.enforceIsGameCreator(gameId);
         require(!gameId.hasStarted(), "Game already has started");
         address[] memory players = gameId.getPlayers();
-        BOGInstance storage game = gameId.getGameStorage();
         for (uint256 i = 0; i < players.length; i++) {
-            fulfillRankRq(address(this), msg.sender, gameId, game.rank, true);
+            _removePlayer(gameId, players[i]);
         }
-        // gameId.removePlayer(msg.sender);
-
         gameId.closeGame();
         emit GameClosed(gameId);
     }
 
-    function leaveGame(uint256 gameId) public nonReentrant {
-        gameId.removePlayer(msg.sender);
+    function _removePlayer(uint256 gameId, address player) internal {
+        gameId.removePlayer(player);
         BOGInstance storage game = gameId.getGameStorage();
-        fulfillRankRq(address(this), msg.sender, gameId, game.rank, true);
-        emit PlayerLeft(gameId, msg.sender);
+        fulfillRankRq(address(this), player, gameId, game.rank, true);
+        emit PlayerLeft(gameId, player);
+    }
+
+    function leaveGame(uint256 gameId) public nonReentrant {
+        _removePlayer(gameId, msg.sender);
     }
 
     function openRegistration(uint256 gameId) public {
