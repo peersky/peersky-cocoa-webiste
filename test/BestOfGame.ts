@@ -11,27 +11,23 @@ import {
 import {
   setupAddresses,
   setupEnvironment,
-  getUserRegisterProps,
-  signRegistrarMessage,
+
   BOGSettings,
   mineBlocks,
-  mockProposalSecrets,
   mockProposals,
   mockVotes,
   getPlayers,
 } from "./utils";
-import { getInterfaceID } from "../scripts/libraries/utils";
-import { expect, util } from "chai";
+import { expect } from "chai";
 import {
   BestOfDiamond,
   IBestOf,
 } from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
 import { ethers } from "hardhat";
 const path = require("path");
-import { TokenMust, TokenTypes } from "../types/enums";
-import { BigNumberish, Signer } from "ethers";
+// import { TokenMust, TokenTypes } from "../types/enums";
+import { BigNumber, BigNumberish } from "ethers";
 import { assert } from "console";
-import { RankToken } from "../types/typechain/contracts/tokens/RankToken";
 const scriptName = path.basename(__filename);
 
 let votes: MockVotes;
@@ -1410,7 +1406,6 @@ describe(scriptName, () => {
           2
         );
         p2balance = p2balance.add(1);
-        console.log(p2balance.toString(), p1balance.toString());
         await env.bestOfGame
           .connect(adr.player1.wallet)
           .cancelGame(lastCreatedGameId);
@@ -1422,18 +1417,27 @@ describe(scriptName, () => {
         ).to.be.equal(p2balance);
       });
       describe("when this game is over", () => {
+        const balancesBeforeJoined: BigNumber[] = [];
         beforeEach(async () => {
+          const players = getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS, 0);
           const lastCreatedGameId = await env.bestOfGame
             .getContractState()
             .then((r) => r.BestOfState.numGames);
+          for (let i = 0; i < players.length; i++) {
+            balancesBeforeJoined[i] = await env.rankToken.balanceOf(
+              players[i].wallet.address,
+              2
+            );
+          }
           await fillParty(
-            getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS, 0),
+            players,
             env.bestOfGame,
             lastCreatedGameId,
             true,
             true,
             adr.gameMaster1
           );
+
           await runToTheEnd(
             lastCreatedGameId,
             env.bestOfGame,
@@ -1442,17 +1446,34 @@ describe(scriptName, () => {
             "ftw"
           );
         });
-        it.only("Winners have reward tokens", async () => {
+        it("Winners have reward tokens", async () => {
           const balances: number[] = [];
           const players = getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS, 0);
           for (let i = 0; i < players.length; i++) {
             balances[i] = await env.rankToken
               .balanceOf(players[i].wallet.address, 3)
-              .then((_balance) => _balance.toNumber());
+              .then((bn) => bn.toNumber());
           }
           expect(balances[0]).to.be.equal(1);
           expect(balances[1]).to.be.equal(0);
           expect(balances[2]).to.be.equal(0);
+        });
+        it("Returned locked rank tokens", async () => {
+          const balances: BigNumberish[] = [];
+          const players = getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS, 0);
+          for (let i = 0; i < players.length; i++) {
+            balances[i] = await env.rankToken.balanceOf(
+              players[i].wallet.address,
+              2
+            );
+          }
+
+          expect(balances[0]).to.be.equal(balancesBeforeJoined[0]);
+          expect(balances[1]).to.be.equal(balancesBeforeJoined[1].add(2));
+          expect(balances[2]).to.be.equal(balancesBeforeJoined[2].add(1));
+          for (let i = 3; i < players.length; i++) {
+            expect(balances[i]).to.be.equal(balancesBeforeJoined[i]);
+          }
         });
       });
     });

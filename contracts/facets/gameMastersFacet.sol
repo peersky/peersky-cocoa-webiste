@@ -126,13 +126,28 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
         return checkSignature(message, signature, account);
     }
 
+    function _endGame(
+        uint256 gameId,
+        address[] memory leaderboard,
+        uint256[] memory scores,
+        address[] memory players
+    ) internal nonReentrant {
+        IBestOf.BOGInstance storage game = gameId.getGameStorage();
+        gameId.closeGame();
+        emitRewards(gameId, leaderboard);
+        for (uint256 i = 0; i < players.length; i++) {
+            LibBestOf.fulfillRankRq(address(this), players[i], gameId, game.rank, true);
+        }
+        emit GameOver(gameId, players, scores);
+    }
+
     //Proposers order must be same as hidden proposal ordering in game.proposals
     function endTurn(
         uint256 gameId,
         bytes32 turnSalt,
         address[] memory voters,
         string[3][] memory votesRevealed
-    ) public nonReentrant {
+    ) public {
         LibBestOf.enforceIsGM(gameId);
         address[] memory players = gameId.getPlayers();
         uint256 turn = gameId.getTurn();
@@ -196,9 +211,7 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
             emit LastTurn(gameId);
         }
         if (_isGameOver) {
-            gameId.closeGame();
-            emitRewards(gameId, leaderboard);
-            emit GameOver(gameId, players, scores);
+            _endGame(gameId, leaderboard, scores, players);
         }
     }
 

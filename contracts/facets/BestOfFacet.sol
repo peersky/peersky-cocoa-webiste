@@ -3,9 +3,7 @@ pragma solidity ^0.8.4;
 
 import {LibTBG} from "../libraries/LibTurnBasedGame.sol";
 import {IBestOf} from "../interfaces/IBestOf.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+
 import {IERC1155Receiver} from "../interfaces/IERC1155Receiver.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {IRankToken} from "../interfaces/IRankToken.sol";
@@ -25,92 +23,6 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         }
     }
 
-    function fulfillTokenRequirement(
-        address applicant,
-        address to,
-        uint256 gameId,
-        TokenAction memory req
-    ) private {
-        BOGInstance storage game = gameId.getGameStorage();
-
-        if (req.token.tokenType == TokenTypes.NATIVE) {
-            if (req.must == TokenMust.GIVE) {
-                require(msg.value >= req.amount, "Not enough payment");
-            }
-        }
-        if (req.token.tokenType == TokenTypes.ERC20) {
-            IERC20 ERC20Contract = IERC20(req.token.tokenAddress);
-            if (req.must == TokenMust.HAVE) {
-                uint256 balance = ERC20Contract.balanceOf(applicant);
-                require(balance >= req.amount, "ERC20 balance not valid");
-            }
-            if (req.must == TokenMust.BURN) {
-                ERC20Contract.transferFrom(applicant, address(0), req.amount);
-            }
-            if (req.must == TokenMust.GIVE) {
-                ERC20Contract.transferFrom(applicant, to, req.amount);
-            }
-        }
-        if (req.token.tokenType == TokenTypes.ERC1155) {
-            IERC1155 ERC1155Contract = IERC1155(req.token.tokenAddress);
-            if (req.must == TokenMust.HAVE) {
-                uint256 balance = ERC1155Contract.balanceOf(applicant, req.token.tokenId);
-                require(balance >= req.amount, "ERC1155 balance not valid");
-            }
-            if (req.must == TokenMust.BURN) {
-                ERC1155Contract.safeTransferFrom(applicant, address(0), req.token.tokenId, req.amount, "");
-            }
-            if (req.must == TokenMust.LOCK) {
-                ERC1155Contract.safeTransferFrom(applicant, to, req.token.tokenId, req.amount, "");
-                game.lockedTokens[gameId][applicant].push(req);
-            }
-        }
-        if (req.token.tokenType == TokenTypes.ERC721) {
-            ERC721Burnable ERC721Contract = ERC721Burnable(req.token.tokenAddress);
-            if (req.must == TokenMust.HAVE) {
-                if (req.requireParticularERC721) {
-                    address owner = ERC721Contract.ownerOf(req.token.tokenId);
-                    require(owner == applicant, "ERC721 not owner of particular token by id");
-                } else {
-                    uint256 balance = ERC721Contract.balanceOf(applicant);
-                    require(balance >= req.amount, "ERC721 balance is not valid");
-                }
-            }
-            if (req.must == TokenMust.BURN) {
-                ERC721Contract.burn(req.token.tokenId);
-            }
-        }
-    }
-
-    function fulfillTokenRequirements(
-        address applicant,
-        address to,
-        uint256 gameId,
-        TokenAction[] memory reqs
-    ) private {
-        for (uint256 i = 0; i < reqs.length; i++) {
-            fulfillTokenRequirement(applicant, to, gameId, reqs[i]);
-        }
-    }
-
-    function fulfillRankRq(
-        address applicant,
-        address to,
-        uint256 gameId,
-        uint256 gameRank,
-        bool mustLock
-    ) private {
-        BOGSettings storage settings = BOGStorage();
-        if (gameRank > 1) {
-            TokenAction memory rankReq;
-            rankReq.token = settings.rankToken;
-            rankReq.token.tokenId = gameRank;
-            rankReq.amount = 1;
-            rankReq.must = mustLock ? TokenMust.LOCK : TokenMust.HAVE;
-            fulfillTokenRequirement(applicant, to, gameId, rankReq);
-        }
-    }
-
     function createGame(
         address gameMaster,
         uint256 gameId,
@@ -119,10 +31,10 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         LibBestOf.enforceIsInitialized();
         BOGSettings storage settings = BOGStorage();
         gameId.createGame(gameMaster);
-        fulfillTokenRequirement(msg.sender, address(this), gameId, settings.newGameReq);
+        LibBestOf.fulfillTokenRequirement(msg.sender, address(this), gameId, settings.newGameReq);
         require(gameRank != 0, "game rank not specified");
         require(msg.value >= settings.gamePrice, "Not enough payment");
-        fulfillRankRq(msg.sender, address(this), gameId, gameRank, false);
+        LibBestOf.fulfillRankRq(msg.sender, address(this), gameId, gameRank, false);
         BOGInstance storage game = gameId.getGameStorage();
         game.createdBy = msg.sender;
         settings.numGames += 1;
@@ -159,21 +71,16 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         require(!gameId.hasStarted(), "Game already has started");
         address[] memory players = gameId.getPlayers();
         for (uint256 i = 0; i < players.length; i++) {
-            _removePlayer(gameId, players[i]);
+            gameId.removeAndUnlockPlayer(players[i]);
+            emit PlayerLeft(gameId, players[i]);
         }
         gameId.closeGame();
         emit GameClosed(gameId);
     }
 
-    function _removePlayer(uint256 gameId, address player) internal {
-        gameId.removePlayer(player);
-        BOGInstance storage game = gameId.getGameStorage();
-        fulfillRankRq(address(this), player, gameId, game.rank, true);
-        emit PlayerLeft(gameId, player);
-    }
-
     function leaveGame(uint256 gameId) public nonReentrant {
-        _removePlayer(gameId, msg.sender);
+        gameId.removeAndUnlockPlayer(msg.sender);
+        emit PlayerLeft(gameId, msg.sender);
     }
 
     function openRegistration(uint256 gameId) public {
@@ -191,8 +98,8 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
     function joinGame(uint256 gameId) public payable {
         gameId.enforceGameExists();
         BOGInstance storage game = gameId.getGameStorage();
-        fulfillTokenRequirements(msg.sender, address(this), gameId, game.joinRequirements);
-        fulfillRankRq(msg.sender, address(this), gameId, game.rank, true);
+        LibBestOf.fulfillTokenRequirements(msg.sender, address(this), gameId, game.joinRequirements);
+        LibBestOf.fulfillRankRq(msg.sender, address(this), gameId, game.rank, true);
         gameId.addPlayer(msg.sender);
         emit PlayerJoined(gameId, msg.sender);
     }
