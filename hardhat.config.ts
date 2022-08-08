@@ -1,4 +1,5 @@
 import { task } from "hardhat/config";
+import { ethers } from "hardhat";
 import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomiclabs/hardhat-truffle5";
 import "@nomiclabs/hardhat-web3";
@@ -11,6 +12,7 @@ import * as ipfsUtils from "./utils/ipfs";
 import fs from "fs";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
+import { Contract } from "ethers";
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
 
@@ -30,6 +32,12 @@ task("uploadDir2IPFS", "Uploads directory to ipfs")
   .addParam("path", "path")
   .setAction(async (taskArgs) => {
     await ipfsUtils.uploadDir2IPFS(taskArgs.path);
+  });
+
+task("PublishIPNS", "Publishes IPNS with new pointer")
+  .addParam("value")
+  .setAction(async (taskArgs) => {
+    await ipfsUtils.publish(`${taskArgs.value}`);
   });
 
 export default {
