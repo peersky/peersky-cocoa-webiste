@@ -11,7 +11,6 @@ import {
 import {
   setupAddresses,
   setupEnvironment,
-
   BOGSettings,
   mineBlocks,
   mockProposals,
@@ -344,7 +343,7 @@ describe(scriptName, () => {
       BOGSettings.BOG_JOIN_GAME_PRICE
     );
     expect(state.BestOfState.numGames).to.be.equal(0);
-    expect(state.BestOfState.rankToken.tokenAddress).to.be.equal(
+    expect(state.BestOfState.rankTokenAddress).to.be.equal(
       env.rankToken.address
     );
     expect(state.TBGSEttings.maxTurns).to.be.equal(BOGSettings.BOG_MAX_TURNS);
@@ -374,7 +373,7 @@ describe(scriptName, () => {
   });
   it("has rank token assigned", async () => {
     const state = await env.bestOfGame.getContractState();
-    await expect(state.BestOfState.rankToken.tokenAddress).to.be.equal(
+    await expect(state.BestOfState.rankTokenAddress).to.be.equal(
       env.rankToken.address
     );
     expect(await env.rankToken.owner()).to.be.equal(env.bestOfGame.address);
@@ -475,14 +474,14 @@ describe(scriptName, () => {
         )
     ).to.be.revertedWith("no game found");
   });
-  it("Succedes to create ranked game only if sender has correspoding tier rank token", async () => {
+  it.only("Succedes to create ranked game only if sender has correspoding tier rank token", async () => {
     await expect(
       env.bestOfGame
         .connect(adr.maliciousActor1.wallet)
         ["createGame(address,uint256)"](adr.gameMaster1.wallet.address, 2, {
           value: BOGSettings.BOG_GAME_PRICE,
         })
-    ).to.be.revertedWith("ERC1155 balance not valid");
+    ).to.be.revertedWith("Has no rank for this action");
   });
   describe("When a game of first rank was created", () => {
     beforeEach(async () => {
