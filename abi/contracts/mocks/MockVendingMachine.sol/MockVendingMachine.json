@@ -7,9 +7,9 @@
   {
     "inputs": [
       {
-        "internalType": "string",
+        "internalType": "bytes32",
         "name": "position",
-        "type": "string"
+        "type": "bytes32"
       },
       {
         "components": [
@@ -111,9 +111,9 @@
   {
     "inputs": [
       {
-        "internalType": "string",
+        "internalType": "bytes32",
         "name": "_positionName",
-        "type": "string"
+        "type": "bytes32"
       }
     ],
     "name": "fund",
@@ -255,9 +255,9 @@
   {
     "inputs": [
       {
-        "internalType": "string",
+        "internalType": "bytes32",
         "name": "_positionName",
-        "type": "string"
+        "type": "bytes32"
       },
       {
         "internalType": "address",
@@ -273,9 +273,9 @@
   {
     "inputs": [
       {
-        "internalType": "string",
+        "internalType": "bytes32",
         "name": "_positionName",
-        "type": "string"
+        "type": "bytes32"
       }
     ],
     "name": "refundBatch",
@@ -286,9 +286,9 @@
   {
     "inputs": [
       {
-        "internalType": "string",
+        "internalType": "bytes32",
         "name": "_positionName",
-        "type": "string"
+        "type": "bytes32"
       },
       {
         "internalType": "address",
@@ -309,9 +309,9 @@
   {
     "inputs": [
       {
-        "internalType": "string",
+        "internalType": "bytes32",
         "name": "_positionName",
-        "type": "string"
+        "type": "bytes32"
       },
       {
         "internalType": "address",
