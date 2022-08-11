@@ -2,10 +2,9 @@
 pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {LibTBG} from "../libraries/LibTurnBasedGame.sol";
+import {LibCoinVending} from "../libraries/LibCoinVending.sol";
 
 interface IBestOf {
-
-
     struct Score {
         address participant;
         uint256 score;
@@ -14,9 +13,8 @@ interface IBestOf {
     struct BOGSettings {
         uint256 gamePrice;
         uint256 joinGamePrice;
-        TokenAction newGameReq;
         uint256 numGames;
-        Token rankToken;
+        address rankTokenAddress;
         bool contractInitialized;
     }
 
@@ -24,7 +22,6 @@ interface IBestOf {
         BOGSettings BestOfState;
         LibTBG.GameSettings TBGSEttings;
     }
-
 
     struct Proposal {
         string proposal;
@@ -39,11 +36,8 @@ interface IBestOf {
     struct BOGInstance {
         uint256 rank;
         address createdBy;
-        TokenAction[] joinRequirements;
         mapping(uint256 => mapping(bytes32 => Proposal)) proposals;
         mapping(uint256 => mapping(address => VoteHidden)) votesHidden;
-        mapping(uint256 => TokenAction[]) rewards;
-        mapping(uint256 => mapping(address => TokenAction[])) lockedTokens;
         bytes32 prevTurnSalt;
         uint256 numProposals;
     }

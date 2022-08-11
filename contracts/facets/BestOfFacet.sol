@@ -9,6 +9,8 @@ import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Recei
 import {IRankToken} from "../interfaces/IRankToken.sol";
 import "../abstracts/DiamondReentrancyGuard.sol";
 import {LibBestOf} from "../libraries/LibBestOf.sol";
+import {LibCoinVending} from "../libraries/LibCoinVending.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC721Receiver {
     using LibTBG for LibTBG.GameInstance;
@@ -31,31 +33,22 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         LibBestOf.enforceIsInitialized();
         BOGSettings storage settings = BOGStorage();
         gameId.createGame(gameMaster);
-        LibBestOf.fulfillTokenRequirement(msg.sender, address(this), gameId, settings.newGameReq);
+        // LibBestOf.fulfillTokenRequirement(msg.sender, address(this), gameId, settings.newGameReq);
         require(gameRank != 0, "game rank not specified");
         require(msg.value >= settings.gamePrice, "Not enough payment");
-        LibBestOf.fulfillRankRq(msg.sender, address(this), gameId, gameRank, false);
+        LibBestOf.fulfillRankRq(msg.sender, address(this), gameRank, false);
         BOGInstance storage game = gameId.getGameStorage();
         game.createdBy = msg.sender;
         settings.numGames += 1;
         game.rank = gameRank;
 
-        IRankToken rankTokenContract = IRankToken(settings.rankToken.tokenAddress);
+        IRankToken rankTokenContract = IRankToken(settings.rankTokenAddress);
         rankTokenContract.mint(address(this), 1, gameRank + 1, "");
         rankTokenContract.mint(address(this), 3, gameRank, "");
-        TokenAction memory reward;
-        reward.token.tokenAddress = settings.rankToken.tokenAddress;
-        reward.token.tokenType = TokenTypes.ERC1155;
-        reward.amount = 3;
-        reward.token.tokenId = gameRank + 1;
-        game.rewards[0].push(reward);
 
-        reward.amount = 2;
-        reward.token.tokenId = gameRank;
-        game.rewards[1].push(reward);
+        LibCoinVending.ConfigPosition memory emptyConfig;
+        LibCoinVending.configure(bytes32(gameId), emptyConfig);
 
-        reward.amount = 1;
-        game.rewards[2].push(reward);
         emit gameCreated(gameId, gameMaster, msg.sender, gameRank);
     }
 
@@ -72,6 +65,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         address[] memory players = gameId.getPlayers();
         for (uint256 i = 0; i < players.length; i++) {
             gameId.removeAndUnlockPlayer(players[i]);
+            LibCoinVending.refund(bytes32(gameId), msg.sender);
             emit PlayerLeft(gameId, players[i]);
         }
         gameId.closeGame();
@@ -80,6 +74,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
 
     function leaveGame(uint256 gameId) public nonReentrant {
         gameId.removeAndUnlockPlayer(msg.sender);
+        LibCoinVending.refund(bytes32(gameId), msg.sender);
         emit PlayerLeft(gameId, msg.sender);
     }
 
@@ -90,16 +85,16 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         emit RegistrationOpen(gameId);
     }
 
-    function getCreateGameRequirements() public view returns (TokenAction memory) {
-        BOGSettings storage settings = BOGStorage();
-        return settings.newGameReq;
-    }
+    // function getCreateGameRequirements() public view returns (TokenAction memory) {
+    //     BOGSettings storage settings = BOGStorage();
+    //     return settings.newGameReq;
+    // }
 
     function joinGame(uint256 gameId) public payable {
-        gameId.enforceGameExists();
         BOGInstance storage game = gameId.getGameStorage();
-        LibBestOf.fulfillTokenRequirements(msg.sender, address(this), gameId, game.joinRequirements);
-        LibBestOf.fulfillRankRq(msg.sender, address(this), gameId, game.rank, true);
+        gameId.enforceGameExists();
+        LibCoinVending.fund(bytes32(gameId));
+        LibBestOf.fulfillRankRq(msg.sender, address(this), game.rank, true);
         gameId.addPlayer(msg.sender);
         emit PlayerJoined(gameId, msg.sender);
     }

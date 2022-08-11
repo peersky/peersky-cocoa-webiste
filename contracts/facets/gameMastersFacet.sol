@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "../abstracts/draft-EIP712Diamond.sol";
 import {RankToken} from "../tokens/RankToken.sol";
+import {LibCoinVending} from "../libraries/LibCoinVending.sol";
 
 contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
     using LibTBG for uint256;
@@ -134,9 +135,11 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
     ) internal nonReentrant {
         IBestOf.BOGInstance storage game = gameId.getGameStorage();
         gameId.closeGame();
-        emitRewards(gameId, leaderboard);
+        emitRankRewards(gameId, leaderboard);
+
         for (uint256 i = 0; i < players.length; i++) {
-            LibBestOf.fulfillRankRq(address(this), players[i], gameId, game.rank, true);
+            LibCoinVending.release(bytes32(gameId), game.createdBy, leaderboard[0], players[i]);
+            LibBestOf.fulfillRankRq(address(this), players[i], game.rank, true);
         }
         emit GameOver(gameId, players, scores);
     }
@@ -215,15 +218,12 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
         }
     }
 
-    function emitRewards(uint256 gameId, address[] memory leaderboard) private {
+    function emitRankRewards(uint256 gameId, address[] memory leaderboard) private {
         IBestOf.BOGInstance storage game = gameId.getGameStorage();
         IBestOf.BOGSettings storage settings = LibBestOf.BOGStorage();
-        // for (uint256 i = 0; i < tbgSettings.numWinners; i++) {
-        RankToken rankTokenContract = RankToken(settings.rankToken.tokenAddress);
+        RankToken rankTokenContract = RankToken(settings.rankTokenAddress);
         rankTokenContract.safeTransferFrom(address(this), leaderboard[0], game.rank + 1, 1, "");
         rankTokenContract.safeTransferFrom(address(this), leaderboard[1], game.rank, 2, "");
         rankTokenContract.safeTransferFrom(address(this), leaderboard[2], game.rank, 1, "");
-
-        // }
     }
 }
