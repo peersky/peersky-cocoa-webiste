@@ -224,26 +224,35 @@ describe("LibCoinVending Test", async function () {
 
   it("Should be able to create new position without tokens", async () => {
     await expect(
-      mockCoinVending.createPosition("test position", {
-        valueToHave: valueToHave,
-        valueToLock: valueToLock,
-        valueToBurn: valueToBurn,
-        valueToAward: valueToAward,
-        valueToAccept: valueToAccept,
-        tokenConfigs: [],
-      })
+      mockCoinVending.createPosition(
+        ethers.utils.formatBytes32String("test position"),
+        {
+          valueToHave: valueToHave,
+          valueToLock: valueToLock,
+          valueToBurn: valueToBurn,
+          valueToAward: valueToAward,
+          valueToAccept: valueToAccept,
+          tokenConfigs: [],
+        }
+      )
     ).not.to.be.reverted;
   });
   it("Should revert on interaction with non exsistent positions", async () => {
     await expect(
-      mockCoinVending.fund("nonExistentPosition", { value: eth1 })
+      mockCoinVending.fund(
+        ethers.utils.formatBytes32String("nonExistentPosition"),
+        { value: eth1 }
+      )
     ).to.be.revertedWith("Position does not exist");
     await expect(
-      mockCoinVending.refund("nonExistentPosition", signer.address)
+      mockCoinVending.refund(
+        ethers.utils.formatBytes32String("nonExistentPosition"),
+        signer.address
+      )
     ).to.be.revertedWith("Not enough balance to refund");
     await expect(
       mockCoinVending.release(
-        "nonExistentPosition",
+        ethers.utils.formatBytes32String("nonExistentPosition"),
         payee.address,
         benificiary.address
       )
@@ -259,26 +268,39 @@ describe("LibCoinVending Test", async function () {
         valueToAccept: valueToAccept,
         tokenConfigs: [],
       };
-      await mockCoinVending.createPosition("test position1", _req);
+      await mockCoinVending.createPosition(
+        ethers.utils.formatBytes32String("test position1"),
+        _req
+      );
     });
     it("Allows to fund with correct value", async () => {
-      await expect(mockCoinVending.fund("test position1", { value: eth10 })).not
-        .to.be.reverted;
+      await expect(
+        mockCoinVending.fund(
+          ethers.utils.formatBytes32String("test position1"),
+          { value: eth10 }
+        )
+      ).not.to.be.reverted;
     });
     it("Reverts attempt to fund with not enough value", async () => {
       await expect(
-        mockCoinVending.fund("test position1", { value: eth5 })
+        mockCoinVending.fund(
+          ethers.utils.formatBytes32String("test position1"),
+          { value: eth5 }
+        )
       ).to.be.revertedWith("msg.value too low");
     });
     it("Reverts attempt to refund", async () => {
       await expect(
-        mockCoinVending.refund("test position1", signer.address)
+        mockCoinVending.refund(
+          ethers.utils.formatBytes32String("test position1"),
+          signer.address
+        )
       ).to.be.revertedWith("Not enough balance to refund");
     });
     it("Reverts attempt to release", async () => {
       await expect(
         mockCoinVending.release(
-          "test position1",
+          ethers.utils.formatBytes32String("test position1"),
           signer.address,
           signer.address
         )
@@ -287,14 +309,20 @@ describe("LibCoinVending Test", async function () {
     it("Funding takes away proper value and Refunded address gets same balance as before funding", async () => {
       const initialBalance = await ethers.provider.getBalance(signer.address);
 
-      let tx = await mockCoinVending.fund("test position1", { value: eth10 });
+      let tx = await mockCoinVending.fund(
+        ethers.utils.formatBytes32String("test position1"),
+        { value: eth10 }
+      );
       let txReceipt = await tx.wait();
       let gasSpent = txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice);
       let updatedBalance = await ethers.provider.getBalance(signer.address);
       expect(initialBalance).to.be.equal(
         updatedBalance.add(gasSpent).add(eth10)
       );
-      tx = await mockCoinVending.refund("test position1", signer.address);
+      tx = await mockCoinVending.refund(
+        ethers.utils.formatBytes32String("test position1"),
+        signer.address
+      );
       txReceipt = await tx.wait();
       let gasSpent2 = txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice);
       updatedBalance = await ethers.provider.getBalance(signer.address);
@@ -311,7 +339,10 @@ describe("LibCoinVending Test", async function () {
         benificiary.address
       );
 
-      let tx = await mockCoinVending.fund("test position1", { value: eth10 });
+      let tx = await mockCoinVending.fund(
+        ethers.utils.formatBytes32String("test position1"),
+        { value: eth10 }
+      );
       let txReceipt = await tx.wait();
       let gasSpent = txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice);
       let updatedBalance = await ethers.provider.getBalance(signer.address);
@@ -319,7 +350,7 @@ describe("LibCoinVending Test", async function () {
         updatedBalance.add(gasSpent).add(eth10)
       );
       tx = await mockCoinVending.release(
-        "test position1",
+        ethers.utils.formatBytes32String("test position1"),
         payee.address,
         benificiary.address
       );
@@ -349,19 +380,26 @@ describe("LibCoinVending Test", async function () {
         valueToAccept: "0",
         tokenConfigs: ReqTokens,
       };
-      await mockCoinVending.createPosition("tokens", _req);
+      await mockCoinVending.createPosition(
+        ethers.utils.formatBytes32String("tokens"),
+        _req
+      );
     });
     it("Takes all required tokens in fund stage", async () => {
-      await mockCoinVending.fund("tokens");
+      await mockCoinVending.fund(ethers.utils.formatBytes32String("tokens"));
     });
     it("Reverts attempt to fund with not enough tokens", async () => {
       await expect(
-        mockCoinVending.connect(maliciousActor).fund("tokens")
+        mockCoinVending
+          .connect(maliciousActor)
+          .fund(ethers.utils.formatBytes32String("tokens"))
       ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
       const balanceERC20 = await mockERC20.balanceOf(signer.address);
       await mockERC20.transfer(maliciousActor.address, balanceERC20);
       await expect(
-        mockCoinVending.connect(maliciousActor).fund("tokens")
+        mockCoinVending
+          .connect(maliciousActor)
+          .fund(ethers.utils.formatBytes32String("tokens"))
       ).to.be.revertedWith("ERC1155 balance is not valid");
       const balanceERC1155 = await mockERC1155.balanceOf(signer.address, "1");
       await mockERC1155.safeTransferFrom(
@@ -372,7 +410,9 @@ describe("LibCoinVending Test", async function () {
         "0x"
       );
       await expect(
-        mockCoinVending.connect(maliciousActor).fund("tokens")
+        mockCoinVending
+          .connect(maliciousActor)
+          .fund(ethers.utils.formatBytes32String("tokens"))
       ).to.be.revertedWith("Not enough ERC721 balance");
       await mockERC721["safeTransferFrom(address,address,uint256)"](
         signer.address,
@@ -380,7 +420,9 @@ describe("LibCoinVending Test", async function () {
         "1"
       );
       await expect(
-        mockCoinVending.connect(maliciousActor).fund("tokens")
+        mockCoinVending
+          .connect(maliciousActor)
+          .fund(ethers.utils.formatBytes32String("tokens"))
       ).to.be.revertedWith("ERC721: transfer from incorrect owner");
       await mockERC721["safeTransferFrom(address,address,uint256)"](
         signer.address,
@@ -388,7 +430,9 @@ describe("LibCoinVending Test", async function () {
         "2"
       );
       await expect(
-        mockCoinVending.connect(maliciousActor).fund("tokens")
+        mockCoinVending
+          .connect(maliciousActor)
+          .fund(ethers.utils.formatBytes32String("tokens"))
       ).to.be.revertedWith("ERC721: transfer from incorrect owner");
       await mockERC721["safeTransferFrom(address,address,uint256)"](
         signer.address,
@@ -396,7 +440,9 @@ describe("LibCoinVending Test", async function () {
         "3"
       );
       await expect(
-        mockCoinVending.connect(maliciousActor).fund("tokens")
+        mockCoinVending
+          .connect(maliciousActor)
+          .fund(ethers.utils.formatBytes32String("tokens"))
       ).to.be.revertedWith("ERC721: transfer from incorrect owner");
       await mockERC721["safeTransferFrom(address,address,uint256)"](
         signer.address,
@@ -404,7 +450,9 @@ describe("LibCoinVending Test", async function () {
         "4"
       );
       await expect(
-        mockCoinVending.connect(maliciousActor).fund("tokens")
+        mockCoinVending
+          .connect(maliciousActor)
+          .fund(ethers.utils.formatBytes32String("tokens"))
       ).to.be.revertedWith("ERC721: transfer from incorrect owner");
       await mockERC721["safeTransferFrom(address,address,uint256)"](
         signer.address,
@@ -412,24 +460,36 @@ describe("LibCoinVending Test", async function () {
         "5"
       );
       await expect(
-        mockCoinVending.connect(maliciousActor).fund("tokens")
+        mockCoinVending
+          .connect(maliciousActor)
+          .fund(ethers.utils.formatBytes32String("tokens"))
       ).to.be.revertedWith("ERC721: transfer from incorrect owner");
       await mockERC721["safeTransferFrom(address,address,uint256)"](
         signer.address,
         maliciousActor.address,
         "6"
       );
-      await expect(mockCoinVending.connect(maliciousActor).fund("tokens")).to
-        .not.be.reverted;
+      await expect(
+        mockCoinVending
+          .connect(maliciousActor)
+          .fund(ethers.utils.formatBytes32String("tokens"))
+      ).to.not.be.reverted;
     });
     it("Reverts attempt to refund", async () => {
       await expect(
-        mockCoinVending.refund("tokens", signer.address)
+        mockCoinVending.refund(
+          ethers.utils.formatBytes32String("tokens"),
+          signer.address
+        )
       ).to.be.revertedWith("Not enough balance to refund");
     });
     it("Reverts attempt to release", async () => {
       await expect(
-        mockCoinVending.release("tokens", signer.address, signer.address)
+        mockCoinVending.release(
+          ethers.utils.formatBytes32String("tokens"),
+          signer.address,
+          signer.address
+        )
       ).to.be.revertedWith("Not enough balance to release");
     });
     it("Funding takes away proper tokens and Refunded address getstokens back as before funding", async () => {
@@ -438,7 +498,7 @@ describe("LibCoinVending Test", async function () {
         signer.address,
         "1"
       );
-      await mockCoinVending.fund("tokens");
+      await mockCoinVending.fund(ethers.utils.formatBytes32String("tokens"));
 
       expect(await mockERC20.balanceOf(mockCoinVending.address)).to.be.equal(
         eth10
@@ -460,7 +520,10 @@ describe("LibCoinVending Test", async function () {
       expect(await mockERC721.ownerOf("6")).to.be.equal(
         mockCoinVending.address
       );
-      await mockCoinVending.refund("tokens", signer.address);
+      await mockCoinVending.refund(
+        ethers.utils.formatBytes32String("tokens"),
+        signer.address
+      );
       expect(await mockERC20.balanceOf(signer.address)).to.be.equal(
         erc20initialBalance
       );
@@ -475,9 +538,9 @@ describe("LibCoinVending Test", async function () {
       expect(await mockERC721.ownerOf("6")).to.be.equal(signer.address);
     });
     it("brings correct values upon Fund & Release back to funder, benificiary and payee", async () => {
-      await mockCoinVending.fund("tokens");
+      await mockCoinVending.fund(ethers.utils.formatBytes32String("tokens"));
       //   await mockCoinVending.release(
-      //     "tokens",
+      //     ethers.utils.formatBytes32String("tokens"),
       //     payee.address,
       //     benificiary.address
       //   );
