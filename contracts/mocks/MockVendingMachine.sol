@@ -13,32 +13,32 @@ contract MockVendingMachine is ReentrancyGuard {
 
     address[] public participants;
 
-    function createPosition(string memory position, LibCoinVending.ConfigPosition memory configuration) public {
+    function createPosition(bytes32 position, LibCoinVending.ConfigPosition memory configuration) public {
         LibCoinVending.configure(position, configuration);
     }
 
-    function fund(string memory _positionName) public payable nonReentrant {
+    function fund(bytes32 _positionName) public payable nonReentrant {
         LibCoinVending.fund(_positionName);
     }
 
     function release(
-        string memory _positionName,
+        bytes32 _positionName,
         address payee,
         address beneficiary
     ) public nonReentrant {
         LibCoinVending.release(_positionName, payee, beneficiary, msg.sender);
     }
 
-    function refund(string memory _positionName, address to) public nonReentrant {
+    function refund(bytes32 _positionName, address to) public nonReentrant {
         LibCoinVending.refund(_positionName, to);
     }
 
-    function refundBatch(string memory _positionName) public nonReentrant {
+    function refundBatch(bytes32 _positionName) public nonReentrant {
         LibCoinVending.batchRefund(_positionName, participants);
     }
 
     function releaseAll(
-        string memory _positionName,
+        bytes32 _positionName,
         address payee,
         address beneficiary
     ) public nonReentrant {

@@ -111,11 +111,11 @@ library LibCoinVending {
 
     bytes32 constant COIN_VENDING_STORAGE_POSITION = keccak256("coin.vending.storage.position");
 
-    function coinVendingPosition(string memory position) internal view returns (Position storage) {
+    function coinVendingPosition(bytes32  position) internal view returns (Position storage) {
         return coinVendingStorage().positions[keccak256(abi.encode(position))];
     }
 
-    function coinVendingStorage() internal view returns (LibCoinVendingStorage storage es) {
+    function coinVendingStorage() internal pure returns (LibCoinVendingStorage storage es) {
         bytes32 position = COIN_VENDING_STORAGE_POSITION;
         assembly {
             es.slot := position
@@ -290,12 +290,12 @@ library LibCoinVending {
         reqPos.timesRefunded += 1;
     }
 
-    function refund(string memory position, address to) internal {
+    function refund(bytes32  position, address to) internal {
         Position storage reqPos = coinVendingPosition(position);
         _refund(reqPos, to);
     }
 
-    function batchRefund(string memory position, address[] memory returnAddresses) internal {
+    function batchRefund(bytes32  position, address[] memory returnAddresses) internal {
         Position storage reqPos = coinVendingPosition(position);
         for (uint256 i = 0; i < returnAddresses.length; i++) {
             _refund(reqPos, returnAddresses[i]);
@@ -314,7 +314,7 @@ library LibCoinVending {
     }
 
     function release(
-        string memory position,
+        bytes32  position,
         address payee,
         address beneficiary,
         address returnAddress
@@ -324,7 +324,7 @@ library LibCoinVending {
     }
 
     function batchRelease(
-        string memory position,
+        bytes32  position,
         address payee,
         address beneficiary,
         address[] memory returnAddresses
@@ -343,12 +343,12 @@ library LibCoinVending {
         reqPos.timesFunded += 1;
     }
 
-    function fund(string memory position) internal {
+    function fund(bytes32  position) internal {
         Position storage reqPos = coinVendingPosition(position);
         _fund(reqPos, msg.sender);
     }
 
-    function configure(string memory position, ConfigPosition memory configuration) internal {
+    function configure(bytes32 position, ConfigPosition memory configuration) internal {
         Position storage reqPos = coinVendingPosition(position);
         require(
             reqPos.timesFunded == 0 || (reqPos.timesFunded == (reqPos.timesRefunded + reqPos.timesReleased)),
