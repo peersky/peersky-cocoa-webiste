@@ -33,7 +33,7 @@ describe("LibCoinVending Test", async function () {
   let mockERC1155: MockERC1155;
   let mockERC20: MockERC20;
   let mockERC721: MockERC721;
-  let ReqTokens: LibCoinVending.TokenConfigurationStruct[] = [];
+  let ReqTokens: LibCoinVending.ConfigSmartRequirementStruct[] = [];
 
   beforeEach(async function () {
     const signers = await ethers.getSigners();
@@ -98,121 +98,43 @@ describe("LibCoinVending Test", async function () {
     ReqTokens = [];
     //ERC20
     ReqTokens.push({
-      tokenAddress: _mockERC20.address,
-      tokenId: "0",
-      tokenReq: {
-        valueToHave: valueToHave,
-        valueToLock: valueToLock,
-        valueToBurn: valueToBurn,
-        valueToAward: valueToAward,
-        valueToAccept: valueToAccept,
-        _type: "0",
-        own712Id: "0",
+      contractAddress: _mockERC20.address,
+      contractId: "0",
+      contractType: "0",
+      contractRequirement: {
+        have: { amount: valueToHave, data: "0x" },
+        lock: { amount: valueToLock, data: "0x" },
+        burn: { amount: valueToBurn, data: "0x" },
+        bet: { amount: valueToAward, data: "0x" },
+        pay: { amount: valueToAccept, data: "0x" },
       },
     });
 
     //ERC1155
     ReqTokens.push({
-      tokenAddress: _mockERC1155.address,
-      tokenId: "1",
-      tokenReq: {
-        valueToHave: valueToHave,
-        valueToLock: valueToLock,
-        valueToBurn: valueToBurn,
-        valueToAward: valueToAward,
-        valueToAccept: valueToAccept,
-        _type: "1",
-        own712Id: "0",
+      contractAddress: _mockERC1155.address,
+      contractId: "1",
+      contractType: "1",
+      contractRequirement: {
+        have: { amount: valueToHave, data: "0x" },
+        lock: { amount: valueToLock, data: "0x" },
+        burn: { amount: valueToBurn, data: "0x" },
+        bet: { amount: valueToAward, data: "0x" },
+        pay: { amount: valueToAccept, data: "0x" },
       },
     });
 
     //ERC721 have (balance)
     ReqTokens.push({
-      tokenAddress: _mockERC721.address,
-      tokenId: "1",
-      tokenReq: {
-        valueToHave: "1",
-        valueToLock: "0",
-        valueToBurn: "0",
-        valueToAward: "0",
-        valueToAccept: "0",
-        _type: "2",
-        own712Id: "0",
-      },
-    });
-
-    //ERC721 have (tokenId)
-    ReqTokens.push({
-      tokenAddress: _mockERC721.address,
-      tokenId: "2",
-      tokenReq: {
-        valueToHave: "0",
-        valueToLock: "0",
-        valueToBurn: "0",
-        valueToAward: "0",
-        valueToAccept: "0",
-        _type: "2",
-        own712Id: "1",
-      },
-    });
-
-    //ERC721 lock
-    ReqTokens.push({
-      tokenAddress: _mockERC721.address,
-      tokenId: "3",
-      tokenReq: {
-        valueToHave: "0",
-        valueToLock: "1",
-        valueToBurn: "0",
-        valueToAward: "0",
-        valueToAccept: "0",
-        _type: "2",
-        own712Id: "0",
-      },
-    });
-
-    //ERC721 burn
-    ReqTokens.push({
-      tokenAddress: _mockERC721.address,
-      tokenId: "4",
-      tokenReq: {
-        valueToHave: "0",
-        valueToLock: "0",
-        valueToBurn: "1",
-        valueToAward: "0",
-        valueToAccept: "0",
-        _type: "2",
-        own712Id: "0",
-      },
-    });
-
-    //ERC721 award
-    ReqTokens.push({
-      tokenAddress: _mockERC721.address,
-      tokenId: "5",
-      tokenReq: {
-        valueToHave: "0",
-        valueToLock: "0",
-        valueToBurn: "0",
-        valueToAward: "1",
-        valueToAccept: "0",
-        _type: "2",
-        own712Id: "0",
-      },
-    });
-
-    //ERC721 accept
-    ReqTokens.push({
-      tokenAddress: _mockERC721.address,
-      tokenId: "6",
-      tokenReq: {
-        valueToHave: "0",
-        valueToLock: "0",
-        valueToBurn: "0",
-        valueToAward: "0",
-        valueToAccept: "1",
-        _type: "2",
-        own712Id: "0",
+      contractAddress: _mockERC721.address,
+      contractId: "1",
+      contractType: "2",
+      contractRequirement: {
+        have: { amount: "1", data: "0x" },
+        lock: { amount: "0", data: "0x" },
+        burn: { amount: "0", data: "0x" },
+        bet: { amount: "0", data: "0x" },
+        pay: { amount: "0", data: "0x" },
       },
     });
 
@@ -227,12 +149,14 @@ describe("LibCoinVending Test", async function () {
       mockCoinVending.createPosition(
         ethers.utils.formatBytes32String("test position"),
         {
-          valueToHave: valueToHave,
-          valueToLock: valueToLock,
-          valueToBurn: valueToBurn,
-          valueToAward: valueToAward,
-          valueToAccept: valueToAccept,
-          tokenConfigs: [],
+          ethValues: {
+            have: valueToHave,
+            lock: valueToLock,
+            burn: valueToBurn,
+            bet: valueToAward,
+            pay: valueToAccept,
+          },
+          contracts: [],
         }
       )
     ).not.to.be.reverted;
@@ -261,12 +185,14 @@ describe("LibCoinVending Test", async function () {
   describe("When position without tokens created", () => {
     beforeEach(async () => {
       const _req: LibCoinVending.ConfigPositionStruct = {
-        valueToHave: valueToHave,
-        valueToLock: valueToLock,
-        valueToBurn: valueToBurn,
-        valueToAward: valueToAward,
-        valueToAccept: valueToAccept,
-        tokenConfigs: [],
+        ethValues: {
+          have: valueToHave,
+          lock: valueToLock,
+          burn: valueToBurn,
+          bet: valueToAward,
+          pay: valueToAccept,
+        },
+        contracts: [],
       };
       await mockCoinVending.createPosition(
         ethers.utils.formatBytes32String("test position1"),
@@ -373,12 +299,14 @@ describe("LibCoinVending Test", async function () {
   describe("When position with custom tokens is implemented", () => {
     beforeEach(async () => {
       const _req: LibCoinVending.ConfigPositionStruct = {
-        valueToHave: "0",
-        valueToLock: "0",
-        valueToBurn: "0",
-        valueToAward: "0",
-        valueToAccept: "0",
-        tokenConfigs: ReqTokens,
+        ethValues: {
+          have: "0",
+          lock: "0",
+          burn: "0",
+          bet: "0",
+          pay: "0",
+        },
+        contracts: ReqTokens,
       };
       await mockCoinVending.createPosition(
         ethers.utils.formatBytes32String("tokens"),
@@ -423,56 +351,6 @@ describe("LibCoinVending Test", async function () {
         mockCoinVending
           .connect(maliciousActor)
           .fund(ethers.utils.formatBytes32String("tokens"))
-      ).to.be.revertedWith("ERC721: transfer from incorrect owner");
-      await mockERC721["safeTransferFrom(address,address,uint256)"](
-        signer.address,
-        maliciousActor.address,
-        "2"
-      );
-      await expect(
-        mockCoinVending
-          .connect(maliciousActor)
-          .fund(ethers.utils.formatBytes32String("tokens"))
-      ).to.be.revertedWith("ERC721: transfer from incorrect owner");
-      await mockERC721["safeTransferFrom(address,address,uint256)"](
-        signer.address,
-        maliciousActor.address,
-        "3"
-      );
-      await expect(
-        mockCoinVending
-          .connect(maliciousActor)
-          .fund(ethers.utils.formatBytes32String("tokens"))
-      ).to.be.revertedWith("ERC721: transfer from incorrect owner");
-      await mockERC721["safeTransferFrom(address,address,uint256)"](
-        signer.address,
-        maliciousActor.address,
-        "4"
-      );
-      await expect(
-        mockCoinVending
-          .connect(maliciousActor)
-          .fund(ethers.utils.formatBytes32String("tokens"))
-      ).to.be.revertedWith("ERC721: transfer from incorrect owner");
-      await mockERC721["safeTransferFrom(address,address,uint256)"](
-        signer.address,
-        maliciousActor.address,
-        "5"
-      );
-      await expect(
-        mockCoinVending
-          .connect(maliciousActor)
-          .fund(ethers.utils.formatBytes32String("tokens"))
-      ).to.be.revertedWith("ERC721: transfer from incorrect owner");
-      await mockERC721["safeTransferFrom(address,address,uint256)"](
-        signer.address,
-        maliciousActor.address,
-        "6"
-      );
-      await expect(
-        mockCoinVending
-          .connect(maliciousActor)
-          .fund(ethers.utils.formatBytes32String("tokens"))
       ).to.not.be.reverted;
     });
     it("Reverts attempt to refund", async () => {
@@ -507,19 +385,7 @@ describe("LibCoinVending Test", async function () {
         await mockERC1155.balanceOf(mockCoinVending.address, "1")
       ).to.be.equal(eth10);
       expect(await mockERC721.ownerOf("1")).to.be.equal(signer.address);
-      expect(await mockERC721.ownerOf("2")).to.be.equal(signer.address);
-      expect(await mockERC721.ownerOf("3")).to.be.equal(
-        mockCoinVending.address
-      );
-      expect(await mockERC721.ownerOf("4")).to.be.equal(
-        mockCoinVending.address
-      );
-      expect(await mockERC721.ownerOf("5")).to.be.equal(
-        mockCoinVending.address
-      );
-      expect(await mockERC721.ownerOf("6")).to.be.equal(
-        mockCoinVending.address
-      );
+
       await mockCoinVending.refund(
         ethers.utils.formatBytes32String("tokens"),
         signer.address
@@ -531,31 +397,43 @@ describe("LibCoinVending Test", async function () {
         erc1155initialBalance
       );
       expect(await mockERC721.ownerOf("1")).to.be.equal(signer.address);
-      expect(await mockERC721.ownerOf("2")).to.be.equal(signer.address);
-      expect(await mockERC721.ownerOf("3")).to.be.equal(signer.address);
-      expect(await mockERC721.ownerOf("4")).to.be.equal(signer.address);
-      expect(await mockERC721.ownerOf("5")).to.be.equal(signer.address);
-      expect(await mockERC721.ownerOf("6")).to.be.equal(signer.address);
     });
     it("brings correct values upon Fund & Release back to funder, benificiary and payee", async () => {
       await mockCoinVending.fund(ethers.utils.formatBytes32String("tokens"));
-      //   await mockCoinVending.release(
-      //     ethers.utils.formatBytes32String("tokens"),
-      //     payee.address,
-      //     benificiary.address
-      //   );
-      //   expect(await mockERC20.balanceOf(benificiary.address)).to.be.equal(
-      //     valueToAward
-      //   );
-      //   expect(await mockERC20.balanceOf(payee.address)).to.be.equal(
-      //     valueToAccept
-      //   );
-      //   expect(await mockERC721.ownerOf("3")).to.be.equal(signer.address);
-      //   expect(await mockERC721.ownerOf("4")).to.be.equal(
-      //     ethers.constants.AddressZero
-      //   );
-      //   expect(await mockERC721.ownerOf("5")).to.be.equal(benificiary.address);
-      //   expect(await mockERC721.ownerOf("6")).to.be.equal(payee.address);
+      const balanceBefore1155 = await mockERC1155.balanceOf(
+        signer.address,
+        "1"
+      );
+      const balanceBefore20 = await mockERC20.balanceOf(signer.address);
+      await mockCoinVending.release(
+        ethers.utils.formatBytes32String("tokens"),
+        payee.address,
+        benificiary.address
+      );
+      expect(await mockERC20.balanceOf(benificiary.address)).to.be.equal(
+        valueToAward
+      );
+      expect(await mockERC20.balanceOf(payee.address)).to.be.equal(
+        valueToAccept
+      );
+      expect(await mockERC20.balanceOf(signer.address)).to.be.equal(
+        valueToLock.add(balanceBefore20)
+      );
+      expect(
+        await mockERC1155.balanceOf(mockCoinVending.address, "1")
+      ).to.be.equal("0");
+      expect(await mockERC1155.balanceOf(benificiary.address, "1")).to.be.equal(
+        valueToAward
+      );
+      expect(await mockERC1155.balanceOf(payee.address, "1")).to.be.equal(
+        valueToAccept
+      );
+      expect(await mockERC1155.balanceOf(signer.address, "1")).to.be.equal(
+        valueToLock.add(balanceBefore1155)
+      );
+      expect(
+        await mockERC1155.balanceOf(mockCoinVending.address, "1")
+      ).to.be.equal("0");
     });
   });
 });

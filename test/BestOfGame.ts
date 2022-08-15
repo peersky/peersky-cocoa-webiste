@@ -1,5 +1,6 @@
 import {
   AdrSetupResult,
+  BOG_MAX_PLAYERS,
   BOG_MIN_PLAYERS,
   EnvSetupResult,
   getTurnSalt,
@@ -21,8 +22,9 @@ import { expect } from "chai";
 import {
   BestOfDiamond,
   IBestOf,
+  LibCoinVending,
 } from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
-import { ethers } from "hardhat";
+import { contract, ethers } from "hardhat";
 const path = require("path");
 // import { TokenMust, TokenTypes } from "../types/enums";
 import { BigNumber, BigNumberish } from "ethers";
@@ -246,7 +248,12 @@ const mockValidVotes = async (
     for (let i = 0; i < players.length; i++) {
       await env.bestOfGame
         .connect(players[i].wallet)
-        .submitVote(gameId, votes[i].voteHidden, votes[i].proof);
+        .submitVote(
+          gameId,
+          votes[i].voteHidden,
+          votes[i].proof,
+          votes[i].publicSignature
+        );
     }
   }
   return votes;
@@ -304,6 +311,9 @@ const fillParty = async (
   startGame?: boolean,
   gameMaster?: SignerIdentity
 ) => {
+  const valueToJoin = BOGSettings.BOG_JOIN_GAME_PRICE.add(
+    ethers.utils.parseEther("0.4")
+  );
   for (let i = 0; i < players.length; i++) {
     // let name = `player${i}` as any as keyof AdrSetupResult;
     if (!env.rankToken.address)
@@ -313,7 +323,7 @@ const fillParty = async (
       .setApprovalForAll(env.bestOfGame.address, true);
     await gameContract
       .connect(players[i].wallet)
-      .joinGame(gameId, { value: BOGSettings.BOG_JOIN_GAME_PRICE });
+      .joinGame(gameId, { value: valueToJoin });
   }
   if (mineJoinBlocks) await mineBlocks(BOGSettings.BOG_BLOCKS_TO_JOIN + 1);
   if (startGame && gameMaster) {
@@ -321,12 +331,60 @@ const fillParty = async (
   }
 };
 describe(scriptName, () => {
+  const requirement: LibCoinVending.ConfigPositionStruct = {
+    ethValues: {
+      have: ethers.utils.parseEther("0.1"),
+      burn: ethers.utils.parseEther("0.1"),
+      pay: ethers.utils.parseEther("0.1"),
+      bet: ethers.utils.parseEther("0.1"),
+      lock: ethers.utils.parseEther("0.1"),
+    },
+    contracts: [],
+  };
   beforeEach(async () => {
     adr = await setupAddresses();
     env = await setupEnvironment({
       contractDeployer: adr.contractDeployer,
       multipassOwner: adr.multipassOwner,
       bestOfOwner: adr.gameOwner,
+    });
+    requirement.contracts = [];
+    requirement.contracts.push({
+      contractAddress: env.mockERC20.address,
+      contractId: "0",
+      contractType: "0",
+      contractRequirement: {
+        lock: { amount: ethers.utils.parseEther("0.1"), data: "0x" },
+        pay: { amount: ethers.utils.parseEther("0.1"), data: "0x" },
+        bet: { amount: ethers.utils.parseEther("0.1"), data: "0x" },
+        burn: { amount: ethers.utils.parseEther("0.1"), data: "0x" },
+        have: { amount: ethers.utils.parseEther("0.1"), data: "0x" },
+      },
+    });
+    requirement.contracts.push({
+      contractAddress: env.mockERC1155.address,
+      contractId: "1",
+      contractType: "1",
+      contractRequirement: {
+        lock: { amount: ethers.utils.parseEther("0.1"), data: "0x" },
+        pay: { amount: ethers.utils.parseEther("0.1"), data: "0x" },
+        bet: { amount: ethers.utils.parseEther("0.1"), data: "0x" },
+        burn: { amount: ethers.utils.parseEther("0.1"), data: "0x" },
+        have: { amount: ethers.utils.parseEther("0.1"), data: "0x" },
+      },
+    });
+
+    requirement.contracts.push({
+      contractAddress: env.mockERC721.address,
+      contractId: "1",
+      contractType: "2",
+      contractRequirement: {
+        lock: { amount: ethers.utils.parseEther("0"), data: "0x" },
+        pay: { amount: ethers.utils.parseEther("0"), data: "0x" },
+        bet: { amount: ethers.utils.parseEther("0"), data: "0x" },
+        burn: { amount: ethers.utils.parseEther("0"), data: "0x" },
+        have: { amount: "1", data: "0x" },
+      },
     });
   });
   it("Is Owned by contract owner", async () => {
@@ -430,7 +488,12 @@ describe(scriptName, () => {
     await expect(
       env.bestOfGame
         .connect(adr.gameMaster1.wallet)
-        .submitVote(1, votes[0].voteHidden, votes[0].proof)
+        .submitVote(
+          1,
+          votes[0].voteHidden,
+          votes[0].proof,
+          votes[0].publicSignature
+        )
     ).to.be.revertedWith("no game found");
     await expect(
       env.bestOfGame.connect(adr.gameMaster1.wallet).openRegistration(1)
@@ -474,7 +537,7 @@ describe(scriptName, () => {
         )
     ).to.be.revertedWith("no game found");
   });
-  it.only("Succedes to create ranked game only if sender has correspoding tier rank token", async () => {
+  it("Succedes to create ranked game only if sender has correspoding tier rank token", async () => {
     await expect(
       env.bestOfGame
         .connect(adr.maliciousActor1.wallet)
@@ -508,23 +571,23 @@ describe(scriptName, () => {
         env.bestOfGame.connect(adr.player1.wallet).joinGame(1)
       ).to.be.revertedWith("addPlayer->cant join now");
     });
-    // it("Game creator can add join requirements", async () => {
-    //   const requirement: IBestOf.TokenActionStruct = {
-    //     token: {
-    //       tokenAddress: env.mockERC20.address,
-    //       tokenType: TokenTypes.ERC20,
-    //       tokenId: 0,
-    //     },
-    //     amount: "1",
-    //     requireParticularERC721: false,
-    //     must: TokenMust.HAVE,
-    //   };
-    //   await expect(
-    //     env.bestOfGame
-    //       .connect(adr.gameCreator1.wallet)
-    //       .addJoinRequirements(1, requirement)
-    //   ).to.be.emit(env.bestOfGame, "RequirementAdded");
-    // });
+    it("Allows only game creator to add join requirements", async () => {
+      await expect(
+        env.bestOfGame
+          .connect(adr.gameCreator1.wallet)
+          .setJoinRequirements(1, requirement)
+      ).to.be.emit(env.bestOfGame, "RequirementsConfigured");
+      await expect(
+        env.bestOfGame
+          .connect(adr.maliciousActor1.wallet)
+          .setJoinRequirements(1, requirement)
+      ).to.be.revertedWith("Only game creator");
+      await expect(
+        env.bestOfGame
+          .connect(adr.maliciousActor1.wallet)
+          .setJoinRequirements(11, requirement)
+      ).to.be.revertedWith("no game found");
+    });
     it("Only game creator can open registration", async () => {
       await expect(
         env.bestOfGame.connect(adr.gameCreator1.wallet).openRegistration(1)
@@ -539,31 +602,13 @@ describe(scriptName, () => {
           .connect(adr.gameCreator1.wallet)
           .openRegistration(1);
       });
-      // it("Mutating join requirements is no longer possible", async () => {
-      //   const requirement: IBestOf.TokenActionStruct = {
-      //     token: {
-      //       tokenAddress: env.mockERC20.address,
-      //       tokenType: TokenTypes.ERC20,
-      //       tokenId: 0,
-      //     },
-      //     amount: "1",
-      //     requireParticularERC721: false,
-      //     must: TokenMust.HAVE,
-      //   };
-      //   await expect(
-      //     env.bestOfGame
-      //       .connect(adr.gameCreator1.wallet)
-      //       .addJoinRequirements(1, requirement)
-      //   ).to.be.revertedWith("Cannot do when registration is open");
-      //   await expect(
-      //     env.bestOfGame.connect(adr.gameCreator1.wallet).popJoinRequirements(1)
-      //   ).to.be.revertedWith("Cannot do when registration is open");
-      //   await expect(
-      //     env.bestOfGame
-      //       .connect(adr.gameCreator1.wallet)
-      //       .removeJoinRequirement(1, 1)
-      //   ).to.be.revertedWith("Cannot do when registration is open");
-      // });
+      it("Mutating join requirements is no longer possible", async () => {
+        await expect(
+          env.bestOfGame
+            .connect(adr.gameCreator1.wallet)
+            .setJoinRequirements(1, requirement)
+        ).to.be.revertedWith("Cannot do when registration is open");
+      });
       it("Qualified players can join", async () => {
         await expect(
           env.bestOfGame
@@ -642,29 +687,22 @@ describe(scriptName, () => {
         await expect(
           env.bestOfGame
             .connect(adr.gameMaster1.wallet)
-            .submitVote(1, votes[0].voteHidden, votes[0].proof)
+            .submitVote(
+              1,
+              votes[0].voteHidden,
+              votes[0].proof,
+              votes[0].publicSignature
+            )
         ).to.be.revertedWith("Game has not yet started");
         await expect(
           env.bestOfGame.connect(adr.gameCreator1.wallet).openRegistration(1)
         ).to.be.revertedWith("Cannot do when registration is open");
-        // await expect(
-        //   env.bestOfGame
-        //     .connect(adr.gameCreator1.wallet)
-        //     .addJoinRequirements(1, {
-        //       token: { tokenAddress: ZERO_ADDRESS, tokenType: 0, tokenId: 1 },
-        //       amount: 1,
-        //       must: 0,
-        //       requireParticularERC721: false,
-        //     })
-        // ).to.be.revertedWith("Cannot do when registration is open");
-        // await expect(
-        //   env.bestOfGame
-        //     .connect(adr.gameCreator1.wallet)
-        //     .removeJoinRequirement(1, 0)
-        // ).to.be.revertedWith("Cannot do when registration is open");
-        // await expect(
-        //   env.bestOfGame.connect(adr.gameCreator1.wallet).popJoinRequirements(1)
-        // ).to.be.revertedWith("Cannot do when registration is open");
+        await expect(
+          env.bestOfGame
+            .connect(adr.gameCreator1.wallet)
+            .setJoinRequirements(1, requirement)
+        ).to.be.revertedWith("Cannot do when registration is open");
+
         await expect(
           env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
             1,
@@ -740,7 +778,12 @@ describe(scriptName, () => {
           await expect(
             env.bestOfGame
               .connect(adr.gameMaster1.wallet)
-              .submitVote(1, votes[0].voteHidden, votes[0].proof)
+              .submitVote(
+                1,
+                votes[0].voteHidden,
+                votes[0].proof,
+                votes[0].publicSignature
+              )
           ).to.be.revertedWith("Game has not yet started");
         });
         describe("When game has started", () => {
@@ -767,7 +810,12 @@ describe(scriptName, () => {
             await expect(
               env.bestOfGame
                 .connect(adr.player1.wallet)
-                .submitVote(1, votes[0].voteHidden, votes[0].proof)
+                .submitVote(
+                  1,
+                  votes[0].voteHidden,
+                  votes[0].proof,
+                  votes[0].publicSignature
+                )
             ).to.be.revertedWith("No proposals exist at turn 1: cannot vote");
           });
           it("Processes only proposals only from game master", async () => {
@@ -846,9 +894,6 @@ describe(scriptName, () => {
                     proposalsStruct[2].proposal,
                   ],
                 });
-                // await env.bestOfGame
-                //   .connect(adr.player1.wallet)
-                //   .submitVote(1, badVote.voteHidden, badVote.proof);
 
                 const badVotes = await mockVotes({
                   gameId: 1,
@@ -868,7 +913,12 @@ describe(scriptName, () => {
                   let name = `player${i + 1}` as any as keyof AdrSetupResult;
                   await env.bestOfGame
                     .connect(adr[`${name}`].wallet)
-                    .submitVote(1, badVotes[i].voteHidden, badVotes[i].proof);
+                    .submitVote(
+                      1,
+                      badVotes[i].voteHidden,
+                      badVotes[i].proof,
+                      badVotes[i].publicSignature
+                    );
                 }
                 await mineBlocks(BOGSettings.BOG_BLOCKS_PER_TURN + 1);
                 await expect(
@@ -959,9 +1009,6 @@ describe(scriptName, () => {
                 value: BOGSettings.BOG_GAME_PRICE,
               })
             ).to.be.revertedWith("addPlayer->Player in game");
-            // env.bestOfGame.connect(adr.gameCreator1.wallet).joinGame(1, {
-            //   value: BOGSettings.BOG_GAME_PRICE,
-            // })
           });
         });
       });
@@ -989,6 +1036,152 @@ describe(scriptName, () => {
             env.bestOfGame.connect(adr.player1.wallet).leaveGame(1)
           ).to.emit(env.bestOfGame, "PlayerLeft");
         });
+      });
+    });
+    describe("When registration was open with additional join requirements", () => {
+      beforeEach(async () => {
+        await env.bestOfGame
+          .connect(adr.gameCreator1.wallet)
+          .setJoinRequirements(1, requirement);
+        await env.bestOfGame
+          .connect(adr.gameCreator1.wallet)
+          .openRegistration(1);
+        const players = getPlayers(adr, BOG_MAX_PLAYERS, 0);
+        for (let i = 0; i < players.length; i++) {
+          await env.mockERC1155.mint(
+            players[i].wallet.address,
+            ethers.utils.parseEther("10"),
+            "1",
+            "0x"
+          );
+          await env.mockERC20.mint(
+            players[i].wallet.address,
+            ethers.utils.parseEther("10")
+          );
+          await env.mockERC721.mint(players[i].wallet.address, i + 1, "0x");
+          await env.mockERC20
+            .connect(players[i].wallet)
+            .approve(env.bestOfGame.address, ethers.utils.parseEther("100"));
+          await env.mockERC1155
+            .connect(players[i].wallet)
+            .setApprovalForAll(env.bestOfGame.address, true);
+          await env.mockERC721
+            .connect(players[i].wallet)
+            .setApprovalForAll(env.bestOfGame.address, true);
+        }
+      });
+      it("Fulfills funding requirement on join", async () => {
+        await env.mockERC20
+          .connect(adr.player1.wallet)
+          .increaseAllowance(
+            env.bestOfGame.address,
+            ethers.utils.parseEther("100")
+          );
+        await env.bestOfGame
+          .connect(adr.player1.wallet)
+          .joinGame(1, { value: ethers.utils.parseEther("0.4") });
+        expect(
+          await env.mockERC1155.balanceOf(env.bestOfGame.address, "1")
+        ).to.be.equal(ethers.utils.parseEther("0.4"));
+        expect(
+          await env.mockERC20.balanceOf(env.bestOfGame.address)
+        ).to.be.equal(ethers.utils.parseEther("0.4"));
+      });
+      it("Returns requirements on leave", async () => {
+        await env.mockERC20
+          .connect(adr.player1.wallet)
+          .increaseAllowance(
+            env.bestOfGame.address,
+            ethers.utils.parseEther("100")
+          );
+        await env.bestOfGame
+          .connect(adr.player1.wallet)
+          .joinGame(1, { value: ethers.utils.parseEther("10") });
+        await env.bestOfGame.connect(adr.player1.wallet).leaveGame(1);
+        expect(
+          await env.mockERC1155.balanceOf(adr.player1.wallet.address, "1")
+        ).to.be.equal(ethers.utils.parseEther("10"));
+        expect(
+          await env.mockERC20.balanceOf(adr.player1.wallet.address)
+        ).to.be.equal(ethers.utils.parseEther("10"));
+      });
+      it("Returns requirements on game closed", async () => {
+        await env.mockERC20
+          .connect(adr.player1.wallet)
+          .increaseAllowance(
+            env.bestOfGame.address,
+            ethers.utils.parseEther("100")
+          );
+        await env.bestOfGame
+          .connect(adr.player1.wallet)
+          .joinGame(1, { value: ethers.utils.parseEther("10") });
+        await env.bestOfGame.connect(adr.gameCreator1.wallet).cancelGame(1);
+        expect(
+          await env.mockERC1155.balanceOf(adr.player1.wallet.address, "1")
+        ).to.be.equal(ethers.utils.parseEther("10"));
+        expect(
+          await env.mockERC20.balanceOf(adr.player1.wallet.address)
+        ).to.be.equal(ethers.utils.parseEther("10"));
+      });
+      it("Distributes rewards correctly when game is over", async () => {
+        await fillParty(
+          getPlayers(adr, BOG_MIN_PLAYERS, 0),
+          env.bestOfGame,
+          1,
+          true,
+          true,
+          adr.gameMaster1
+        );
+        const balanceBefore1155 = await env.mockERC1155.balanceOf(
+          adr.player1.wallet.address,
+          "1"
+        );
+        const balanceBefore20 = await env.mockERC20.balanceOf(
+          adr.player1.wallet.address
+        );
+        const creatorBalanceBefore20 = await env.mockERC20.balanceOf(
+          adr.gameCreator1.wallet.address
+        );
+
+        const creatorBalanceBefore1155 = await env.mockERC1155.balanceOf(
+          adr.gameCreator1.wallet.address,
+          "1"
+        );
+        await runToTheEnd(
+          1,
+          env.bestOfGame,
+          adr.gameMaster1,
+          getPlayers(adr, BOG_MIN_PLAYERS, 0),
+          "ftw"
+        );
+        expect(
+          await env.mockERC20.balanceOf(adr.player1.wallet.address)
+        ).to.be.equal(
+          balanceBefore20
+            .add(ethers.utils.parseEther("0.1").mul(BOG_MIN_PLAYERS))
+            .add(ethers.utils.parseEther("0.1")) // Value to lock
+        );
+        expect(
+          await env.mockERC20.balanceOf(adr.gameCreator1.wallet.address)
+        ).to.be.equal(
+          creatorBalanceBefore20.add(
+            ethers.utils.parseEther("0.1").mul(BOG_MIN_PLAYERS)
+          )
+        );
+        expect(
+          await env.mockERC1155.balanceOf(adr.player1.wallet.address, "1")
+        ).to.be.equal(
+          balanceBefore1155
+            .add(ethers.utils.parseEther("0.1").mul(BOG_MIN_PLAYERS))
+            .add(ethers.utils.parseEther("0.1")) // Value to lock
+        );
+        expect(
+          await env.mockERC1155.balanceOf(adr.gameCreator1.wallet.address, "1")
+        ).to.be.equal(
+          creatorBalanceBefore1155.add(
+            ethers.utils.parseEther("0.1").mul(BOG_MIN_PLAYERS)
+          )
+        );
       });
     });
     describe("When it is last turn and equal scores", () => {
@@ -1097,49 +1290,6 @@ describe(scriptName, () => {
             getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS)
           );
           const isover = await env.bestOfGame.isGameOver(1);
-          // console.log("isover", isover);
-          // votes = await mockVotes({
-          //   gameId: 1,
-          //   turn: BOGSettings.BOG_MAX_TURNS,
-          //   verifierAddress: env.bestOfGame.address,
-          //   players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-          //   gm: adr.gameMaster1,
-          //   proposals: proposalsStruct.map((item) => item.proposal),
-          //   distribution: "ftw",
-          // });
-          // proposalsStruct = await mockProposals({
-          //   players: getPlayers(adr, BOGSettings.BOG_MAX_PLAYERS),
-          //   gameId: 1,
-          //   turn: BOGSettings.BOG_MAX_TURNS,
-          //   verifierAddress: env.bestOfGame.address,
-          // });
-
-          // for (let i = 0; i < BOGSettings.BOG_MAX_PLAYERS; i++) {
-          //   const currentTurn = await env.bestOfGame.getTurn(1);
-          //   if (currentTurn.toNumber() !== BOGSettings.BOG_MAX_TURNS + 1) {
-          //     await env.bestOfGame
-          //       .connect(adr.gameMaster1.wallet)
-          //       .submitProposal(
-          //         1,
-          //         proposalsStruct[i].proposerHidden,
-          //         proposalsStruct[i].proof,
-          //         proposalsStruct[i].proposal
-          //       );
-          //   }
-          //   let name = `player${i + 1}` as any as keyof AdrSetupResult;
-          //   await env.bestOfGame
-          //     .connect(adr[`${name}`].wallet)
-          //     .submitVote(1, votes[i].voteHidden, votes[i].proof);
-          // }
-          // await env.bestOfGame.connect(adr.gameMaster1.wallet).endTurn(
-          //   1,
-          //   getTurnSalt({
-          //     gameId: 1,
-          //     turn: BOGSettings.BOG_MAX_TURNS,
-          //   }),
-          //   votersAddresses,
-          //   votes.map((vote) => vote.vote)
-          // );
         });
         it("Throws on attempt to make another turn", async () => {
           const currentTurn = await env.bestOfGame.getTurn(1);
@@ -1175,7 +1325,12 @@ describe(scriptName, () => {
             await expect(
               env.bestOfGame
                 .connect(adr[`${name}`].wallet)
-                .submitVote(1, votes[i].voteHidden, votes[i].proof)
+                .submitVote(
+                  1,
+                  votes[i].voteHidden,
+                  votes[i].proof,
+                  votes[i].publicSignature
+                )
             ).to.be.revertedWith("Game over");
           }
           await expect(
@@ -1254,7 +1409,6 @@ describe(scriptName, () => {
     });
   });
   describe("When there was multiple first rank games played so higher rank game can be filled", () => {
-    //TODO: Test locking/unlocking a rank token here
     beforeEach(async () => {
       for (
         let numGames = 0;
@@ -1276,7 +1430,6 @@ describe(scriptName, () => {
           true,
           adr.gameMaster1
         );
-        // await runFirstToLastTurn(gameId, env.bestOfGame, adr.gameMaster1);
         await runToTheEnd(
           gameId,
           env.bestOfGame,

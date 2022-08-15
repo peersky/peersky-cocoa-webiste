@@ -647,6 +647,13 @@ interface VoteMessage {
   turn: BigNumberish;
   salt: BytesLike;
 }
+interface PublicVoteMessage {
+  vote1: BytesLike;
+  vote2: BytesLike;
+  vote3: BytesLike;
+  gameId: BigNumberish;
+  turn: BigNumberish;
+}
 const VoteTypes = {
   signVote: [
     {
@@ -676,6 +683,31 @@ const VoteTypes = {
   ],
 };
 
+const publicVoteTypes = {
+  publicSignVote: [
+    {
+      type: "uint256",
+      name: "gameId",
+    },
+    {
+      type: "uint256",
+      name: "turn",
+    },
+    {
+      type: "bytes32",
+      name: "vote1",
+    },
+    {
+      type: "bytes32",
+      name: "vote2",
+    },
+    {
+      type: "bytes32",
+      name: "vote3",
+    },
+  ],
+};
+
 export const signVoteMessage = async (
   message: VoteMessage,
   verifierAddress: string,
@@ -690,6 +722,25 @@ export const signVoteMessage = async (
     verifyingContract: verifierAddress,
   };
   const s = await signer.wallet._signTypedData(domain, VoteTypes, {
+    ...message,
+  });
+  return s;
+};
+
+export const signPublicVoteMessage = async (
+  message: PublicVoteMessage,
+  verifierAddress: string,
+  signer: SignerIdentity
+) => {
+  let { chainId } = await ethers.provider.getNetwork();
+
+  const domain = {
+    name: BESTOF_CONTRACT_NAME,
+    version: BESTOF_CONTRACT_VERSION,
+    chainId,
+    verifyingContract: verifierAddress,
+  };
+  const s = await signer.wallet._signTypedData(domain, publicVoteTypes, {
     ...message,
   });
   return s;
@@ -743,6 +794,7 @@ export const mockVote = async ({
   proof: string;
   vote: [string, string, string];
   voteHidden: [BytesLike, BytesLike, BytesLike];
+  publicSignature: string;
 }> => {
   const playerSalt = getTurnPlayersSalt({
     gameId,
@@ -758,6 +810,7 @@ export const mockVote = async ({
     turn,
     salt: playerSalt,
   };
+
   const voteHidden: [BytesLike, BytesLike, BytesLike] = [
     ethers.utils.solidityKeccak256(
       ["string", "bytes32"],
@@ -772,8 +825,20 @@ export const mockVote = async ({
       [vote[2], playerSalt]
     ),
   ];
+  const publicMessage = {
+    vote1: voteHidden[0],
+    vote2: voteHidden[1],
+    vote3: voteHidden[2],
+    gameId,
+    turn,
+  };
   const proof = await signVoteMessage(message, verifierAddress, gm);
-  return { proof, vote, voteHidden };
+  const publicSignature = await signPublicVoteMessage(
+    publicMessage,
+    verifierAddress,
+    gm
+  );
+  return { proof, vote, voteHidden, publicSignature };
 };
 export const getPlayers = (
   adr: AdrSetupResult,
@@ -798,6 +863,7 @@ export type MockVotes = Array<{
   proof: string;
   vote: [string, string, string];
   voteHidden: [BytesLike, BytesLike, BytesLike];
+  publicSignature: string;
 }>;
 
 export const mockVotes = async ({
@@ -821,6 +887,7 @@ export const mockVotes = async ({
     proof: string;
     vote: [string, string, string];
     voteHidden: [BytesLike, BytesLike, BytesLike];
+    publicSignature: string;
   }> = [];
   for (let k = 0; k < players.length; k++) {
     let firstSelected = 0;
@@ -882,7 +949,7 @@ export const mockVotes = async ({
           : thirdSelected;
     }
 
-    const { vote, voteHidden, proof } = await mockVote({
+    const { vote, voteHidden, proof, publicSignature } = await mockVote({
       voter: players[k],
       gameId,
       turn,
@@ -894,7 +961,7 @@ export const mockVotes = async ({
         proposals[thirdSelected],
       ],
     });
-    votes[k] = { vote, voteHidden, proof };
+    votes[k] = { vote, voteHidden, proof, publicSignature };
   }
   return votes;
 };
