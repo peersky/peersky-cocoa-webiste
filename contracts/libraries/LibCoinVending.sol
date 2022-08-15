@@ -42,11 +42,13 @@ library LibCoinVending {
             1. fund position with assets via fund(...)
             2. release or refund assets via release(...) or refund(...)
             3. repeat steps 1 and 2 as needed.
-                Position can be recofigured at any time when it's effective balance is zero (timesFunded - timesRefuned - timesReleased )
+                Position can be recofigured at any time when it's effective balance is zero: `timesFunded - timesRefuned - timesReleased = 0`
 
 
         Test state:
-            This library has not been not tested nor audited so far and is not guaranteed to work as expected.
+            This library most functionality has been tested: see ../tests/LibCoinVending.ts and ../tests/report.md for details.
+            ERC721 token is checked only for "HAVE" condition since putting requirements on non fungable token id yet to be resolved
+                (see ERC721 section in the code below)
 
     */
 
