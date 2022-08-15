@@ -27,6 +27,7 @@ export const deploy = async ({
       "OwnershipFacet",
       "BestOfFacet",
       "GameMastersFacet",
+      "RequirementsFacet",
     ],
     signer,
     "BestOfInit",
