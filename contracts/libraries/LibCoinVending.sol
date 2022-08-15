@@ -49,6 +49,7 @@ library LibCoinVending {
             This library most functionality has been tested: see ../tests/LibCoinVending.ts and ../tests/report.md for details.
             ERC721 token is checked only for "HAVE" condition since putting requirements on non fungable token id yet to be resolved
                 (see ERC721 section in the code below)
+            This library has not been yet audited
 
     */
 
