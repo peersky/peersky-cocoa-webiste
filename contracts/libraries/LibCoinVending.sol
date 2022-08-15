@@ -125,14 +125,6 @@ library LibCoinVending {
         address beneficiary;
     }
 
-    // struct TokenRequirement {
-    //     uint256 valueToLock;
-    //     uint256 valueToBurn;
-    //     uint256 valueToAward;
-    //     uint256 valueToHave;
-    //     uint256 valueToAccept;
-    // }
-
     enum ContractTypes {
         ERC20,
         ERC1155,
