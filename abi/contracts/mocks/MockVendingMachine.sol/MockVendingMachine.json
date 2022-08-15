@@ -14,87 +14,149 @@
       {
         "components": [
           {
-            "internalType": "uint256",
-            "name": "valueToHave",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "valueToLock",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "valueToBurn",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "valueToAward",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "valueToAccept",
-            "type": "uint256"
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "have",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lock",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "burn",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "pay",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "bet",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct LibCoinVending.NumericCondition",
+            "name": "ethValues",
+            "type": "tuple"
           },
           {
             "components": [
               {
                 "internalType": "address",
-                "name": "tokenAddress",
+                "name": "contractAddress",
                 "type": "address"
               },
               {
                 "internalType": "uint256",
-                "name": "tokenId",
+                "name": "contractId",
                 "type": "uint256"
+              },
+              {
+                "internalType": "enum LibCoinVending.ContractTypes",
+                "name": "contractType",
+                "type": "uint8"
               },
               {
                 "components": [
                   {
-                    "internalType": "enum LibCoinVending.TokenTypes",
-                    "name": "_type",
-                    "type": "uint8"
+                    "components": [
+                      {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct LibCoinVending.TransactionProperties",
+                    "name": "have",
+                    "type": "tuple"
                   },
                   {
-                    "internalType": "uint256",
-                    "name": "valueToLock",
-                    "type": "uint256"
+                    "components": [
+                      {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct LibCoinVending.TransactionProperties",
+                    "name": "lock",
+                    "type": "tuple"
                   },
                   {
-                    "internalType": "uint256",
-                    "name": "valueToBurn",
-                    "type": "uint256"
+                    "components": [
+                      {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct LibCoinVending.TransactionProperties",
+                    "name": "burn",
+                    "type": "tuple"
                   },
                   {
-                    "internalType": "uint256",
-                    "name": "valueToAward",
-                    "type": "uint256"
+                    "components": [
+                      {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct LibCoinVending.TransactionProperties",
+                    "name": "pay",
+                    "type": "tuple"
                   },
                   {
-                    "internalType": "uint256",
-                    "name": "valueToHave",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "own712Id",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "valueToAccept",
-                    "type": "uint256"
+                    "components": [
+                      {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct LibCoinVending.TransactionProperties",
+                    "name": "bet",
+                    "type": "tuple"
                   }
                 ],
-                "internalType": "struct LibCoinVending.TokenRequirement",
-                "name": "tokenReq",
+                "internalType": "struct LibCoinVending.ContractCondition",
+                "name": "contractRequirement",
                 "type": "tuple"
               }
             ],
-            "internalType": "struct LibCoinVending.TokenConfiguration[]",
-            "name": "tokenConfigs",
+            "internalType": "struct LibCoinVending.configSmartRequirement[]",
+            "name": "contracts",
             "type": "tuple[]"
           }
         ],
