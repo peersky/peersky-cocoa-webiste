@@ -33,6 +33,8 @@ library LibBestOf {
         keccak256("signHashedProposal(uint256 gameId,uint256 turn,bytes32 salt,string proposal)");
     bytes32 internal constant _VOTE_PROOF_TYPEHASH =
         keccak256("signVote(string vote1,string vote2,string vote3,uint256 gameId,uint256 turn,bytes32 salt)");
+    bytes32 internal constant _VOTE_SUBMIT_PROOF_TYPEHASH =
+        keccak256("publicSignVote(uint256 gameId,uint256 turn,bytes32 vote1,bytes32 vote2,bytes32 vote3)");
 
     function enforceIsInitialized() internal view {
         IBestOf.BOGSettings storage settings = BOGStorage();

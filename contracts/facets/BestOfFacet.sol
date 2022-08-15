@@ -11,12 +11,32 @@ import "../abstracts/DiamondReentrancyGuard.sol";
 import {LibBestOf} from "../libraries/LibBestOf.sol";
 import {LibCoinVending} from "../libraries/LibCoinVending.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "../abstracts/draft-EIP712Diamond.sol";
 
-contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC721Receiver {
+contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC721Receiver, EIP712 {
     using LibTBG for LibTBG.GameInstance;
     using LibTBG for uint256;
     using LibTBG for LibTBG.GameSettings;
     using LibBestOf for uint256;
+
+    function checkSignature(
+        bytes memory message,
+        bytes memory signature,
+        address account
+    ) private view returns (bool) {
+        bytes32 typedHash = _hashTypedDataV4(keccak256(message));
+        return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
+    }
+
+    function _isValidSignature(
+        bytes memory message,
+        bytes memory signature,
+        address account
+    ) private view returns (bool) {
+        return checkSignature(message, signature, account);
+    }
 
     function BOGStorage() internal pure returns (BOGSettings storage bog) {
         bytes32 position = LibTBG.getDataStorage();
@@ -65,7 +85,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         address[] memory players = gameId.getPlayers();
         for (uint256 i = 0; i < players.length; i++) {
             gameId.removeAndUnlockPlayer(players[i]);
-            LibCoinVending.refund(bytes32(gameId), msg.sender);
+            LibCoinVending.refund(bytes32(gameId), players[i]);
             emit PlayerLeft(gameId, players[i]);
         }
         gameId.closeGame();
@@ -90,7 +110,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
     //     return settings.newGameReq;
     // }
 
-    function joinGame(uint256 gameId) public payable {
+    function joinGame(uint256 gameId) public payable nonReentrant {
         BOGInstance storage game = gameId.getGameStorage();
         gameId.enforceGameExists();
         LibCoinVending.fund(bytes32(gameId));
@@ -137,18 +157,23 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
     function submitVote(
         uint256 gameId,
         bytes32[3] memory votesHidden,
-        bytes memory proof
+        bytes memory proof,
+        bytes memory submitSignature
     ) public {
-        // enforceIsGM(gameId);
         gameId.enforceGameExists();
         gameId.enforceHasStarted();
+        bytes memory message = abi.encode(
+            LibBestOf._VOTE_SUBMIT_PROOF_TYPEHASH,
+            gameId,
+            gameId.getTurn(),
+            votesHidden[0],
+            votesHidden[1],
+            votesHidden[2]
+        );
         BOGInstance storage game = gameId.getGameStorage();
+        _isValidSignature(message, submitSignature, gameId.getGM());
         require(!gameId.isGameOver(), "Game over");
         require(gameId.getTurn() > 1, "No proposals exist at turn 1: cannot vote");
-
-        // for (uint8 i = 0; i < 3; i++) {
-        //     require(votesHidden[i] >= game.proposals.length, "index is out of proposal bounds");
-        // }
         game.votesHidden[gameId.getTurn()][msg.sender].votedFor = votesHidden;
         game.votesHidden[gameId.getTurn()][msg.sender].proof = proof;
         gameId.playerMove(msg.sender);

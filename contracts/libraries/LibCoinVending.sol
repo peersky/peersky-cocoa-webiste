@@ -4,7 +4,7 @@
 pragma solidity ^0.8.4;
 
 import {MockERC20} from "../mocks/MockERC20.sol";
-import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {ERC1155Burnable} from "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
 library LibCoinVending {
@@ -50,57 +50,17 @@ library LibCoinVending {
 
     */
 
-    struct Position {
-        mapping(address => mapping(uint256 => TokenRequirement)) tokens;
-        uint256 valueToHave;
-        uint256 valueToLock;
-        uint256 valueToBurn;
-        uint256 valueToAccept;
-        uint256 valueToAward;
+    struct Condition {
+        mapping(ContractTypes => mapping(address => mapping(uint256 => ContractCondition))) contracts;
+        NumericCondition ethValues;
         uint256 timesRefunded;
         uint256 timesReleased;
         uint256 timesFunded;
-        address[] tokenAddresses;
-        uint256[] tokenIds;
-        bool isConfigured;
+        ContractTypes[] contractTypes;
+        address[] contractAddresses;
+        uint256[] contractIds;
+        bool _isConfigured;
     }
-
-    struct TokenConfiguration {
-        address tokenAddress;
-        uint256 tokenId;
-        TokenRequirement tokenReq;
-    }
-
-    struct ConfigPosition {
-        uint256 valueToHave;
-        uint256 valueToLock;
-        uint256 valueToBurn;
-        uint256 valueToAward;
-        uint256 valueToAccept;
-        TokenConfiguration[] tokenConfigs;
-    }
-
-    struct LibCoinVendingStorage {
-        mapping(bytes32 => Position) positions;
-        address beneficiary;
-    }
-
-    struct TokenRequirement {
-        TokenTypes _type;
-        uint256 valueToLock;
-        uint256 valueToBurn;
-        uint256 valueToAward;
-        uint256 valueToHave;
-        uint256 own712Id;
-        uint256 valueToAccept;
-    }
-
-    enum TokenTypes {
-        ERC20,
-        ERC1155,
-        ERC721
-    }
-
     enum RequirementTypes {
         HAVE,
         LOCK,
@@ -109,9 +69,76 @@ library LibCoinVending {
         PAY
     }
 
+    struct TransactionProperties {
+        bytes data;
+        uint256 amount;
+    }
+    struct ContractCondition {
+        TransactionProperties have;
+        TransactionProperties lock;
+        TransactionProperties burn;
+        TransactionProperties pay;
+        TransactionProperties bet;
+    }
+
+    struct NumericCondition {
+        uint256 have;
+        uint256 lock;
+        uint256 burn;
+        uint256 pay;
+        uint256 bet;
+    }
+
+    enum TransferTypes {
+        FUND,
+        REFUND,
+        RELEASE
+    }
+
+    struct ConditionReturn {
+        NumericCondition ethValues;
+        uint256 timesRefunded;
+        uint256 timesReleased;
+        uint256 timesFunded;
+        address[] conctractAddresses;
+        uint256[] contractIds;
+        bool _isConfigured;
+    }
+
+    struct configSmartRequirement {
+        address contractAddress;
+        uint256 contractId;
+        ContractTypes contractType;
+        ContractCondition contractRequirement;
+    }
+
+    struct ConfigPosition {
+        NumericCondition ethValues;
+        configSmartRequirement[] contracts;
+    }
+
+    struct LibCoinVendingStorage {
+        mapping(bytes32 => Condition) positions;
+        address beneficiary;
+    }
+
+    // struct TokenRequirement {
+    //     uint256 valueToLock;
+    //     uint256 valueToBurn;
+    //     uint256 valueToAward;
+    //     uint256 valueToHave;
+    //     uint256 valueToAccept;
+    // }
+
+    enum ContractTypes {
+        ERC20,
+        ERC1155,
+        ERC721
+    }
+
     bytes32 constant COIN_VENDING_STORAGE_POSITION = keccak256("coin.vending.storage.position");
 
-    function coinVendingPosition(bytes32  position) internal view returns (Position storage) {
+    function coinVendingPosition(bytes32 position) internal view returns (Condition storage) {
         return coinVendingStorage().positions[keccak256(abi.encode(position))];
     }
 
@@ -149,101 +176,104 @@ library LibCoinVending {
 
     function fulfillERC20(
         address erc20Addr,
-        TokenRequirement storage tokenReq,
+        ContractCondition storage tokenReq,
         address from,
         address payee,
         address beneficiary,
         address burnAddress,
         address lockAddress
     ) private {
-        assert(tokenReq._type == TokenTypes.ERC20);
-        trasferFromAny(erc20Addr, from, lockAddress, tokenReq.valueToLock);
-        trasferFromAny(erc20Addr, from, burnAddress, tokenReq.valueToBurn);
-        trasferFromAny(erc20Addr, from, payee, tokenReq.valueToAccept);
-        trasferFromAny(erc20Addr, from, beneficiary, tokenReq.valueToAward);
-        uint256 value = tokenReq.valueToHave;
+        trasferFromAny(erc20Addr, from, lockAddress, tokenReq.lock.amount);
+        trasferFromAny(erc20Addr, from, burnAddress, tokenReq.burn.amount);
+        trasferFromAny(erc20Addr, from, payee, tokenReq.pay.amount);
+        trasferFromAny(erc20Addr, from, beneficiary, tokenReq.bet.amount);
+        uint256 value = tokenReq.have.amount;
         if (value != 0 && from != address(this)) {
             MockERC20 token = MockERC20(erc20Addr);
             require(token.balanceOf(from) >= value, "Not enough erc20 tokens");
         }
     }
 
-    function fulfillERC721(
-        address erc721addr,
-        uint256 id,
-        TokenRequirement storage tokenReq,
-        address from,
-        address payee,
-        address beneficiary,
-        address burnAddress,
-        address lockAddress
-    ) private {
-        ERC721 token = ERC721(erc721addr);
-        assert(tokenReq._type == TokenTypes.ERC721);
+    /*
+            ERC721
+            Due to non fungable nature it's an open question how to implement this method correctly for lock/burn/pay/bet cases.
+            In this library I assume that requirements are for multiple members, hence it makes no sense to put requirement on particular tokenId for ERC721.
+            I think best approach would be to split in to two methods:
+                1. fulfillERC72Balance: Treats tokens as fungible - requires one to lock/burn/pay/bet ANY token id, but in total should be equal to desired value.
+                2. fulfillERC721Ids: Requires one to lock/burn/pay/bet specific token id. (useful when requirements are unique per applicant).
+            fulfillERC72Balance is easy. fulfillERC721Ids brings up a question of how to select those ID's(since must specify for ERC721 contract on transfer method).
+            Two possible solutions:
+                - 1: modify fund() method to accept array of address+id pairs of NFT's and parse trough it. Compucationaly inefficient.
+                - 2: implement onERC721Received such that there is NFT vault in the contract, later fill funding position from that vault.
+                    That way applicant could pre-send NFT's to the contract and callfing fund later would pull those out from the vault.
 
-        if (tokenReq.own712Id != 0) {
-            if (from == address(this)) {
-                require(token.ownerOf(tokenReq.own712Id) == lockAddress, "ERC721 not owner of particular token by id");
-            } else {
-                require(token.ownerOf(tokenReq.own712Id) == from, "ERC721 not owner of particular token by id");
-            }
-        }
-        if (tokenReq.valueToAccept != 0) {
-            token.transferFrom(from, payee, id);
-        }
-        if (tokenReq.valueToAward != 0) {
-            token.transferFrom(from, beneficiary, id);
-        }
-        if (tokenReq.valueToLock != 0) {
-            token.transferFrom(from, lockAddress, id);
-        }
-        if (tokenReq.valueToBurn != 0) {
-            token.transferFrom(from, burnAddress, id);
-        }
-        if (tokenReq.valueToHave != 0) {
+    */
+    //    function fulfillERC721Ids() private
+    //    {
+
+    //    }
+    function fulfillERC72Balance(
+        address erc721addr,
+        // uint256 id,
+        ContractCondition storage tokenReq,
+        address from // address payee, // address beneficiary, // address burnAddress, // address lockAddress
+    ) private view {
+        ERC721 token = ERC721(erc721addr);
+
+        require(
+            tokenReq.lock.amount == 0 &&
+                tokenReq.burn.amount == 0 &&
+                tokenReq.pay.amount == 0 &&
+                tokenReq.bet.amount == 0,
+            "ERC721 transfers not supported"
+        );
+        if (tokenReq.have.amount != 0 && from != address(this)) {
             uint256 balance = token.balanceOf(from);
-            require(balance >= tokenReq.valueToHave, "Not enough ERC721 balance");
+            require(balance >= tokenReq.have.amount, "Not enough ERC721 balance");
         }
     }
 
     function fulfillERC1155(
         address erc1155addr,
         uint256 id,
-        TokenRequirement storage tokenReq,
+        ContractCondition storage tokenReq,
         address from,
         address payee,
         address beneficiary,
         address burnAddress,
         address lockAddress
     ) private {
-        IERC1155 token = IERC1155(erc1155addr);
-        assert(tokenReq._type == TokenTypes.ERC1155);
-        uint256 value = tokenReq.valueToHave;
+        ERC1155Burnable token = ERC1155Burnable(erc1155addr);
+        uint256 value = tokenReq.have.amount;
         if (value != 0) {
             uint256 balance = token.balanceOf(from, id);
             require(balance >= value, "ERC1155 balance is not valid");
         }
-        value = tokenReq.valueToAccept;
+        value = tokenReq.pay.amount;
         if (value != 0) {
             // token.transfe
-            token.safeTransferFrom(from, payee, id, value, "");
+            token.safeTransferFrom(from, payee, id, value, tokenReq.pay.data);
         }
-        value = tokenReq.valueToAward;
+        value = tokenReq.bet.amount;
         if (value != 0) {
-            token.safeTransferFrom(from, beneficiary, id, value, "");
+            token.safeTransferFrom(from, beneficiary, id, value, tokenReq.bet.data);
         }
-        value = tokenReq.valueToBurn;
+        value = tokenReq.burn.amount;
         if (value != 0) {
-            token.safeTransferFrom(from, burnAddress, id, value, "");
+            if (burnAddress == address(0)) {
+                token.burn(from, id, value);
+            } else {
+                token.safeTransferFrom(from, burnAddress, id, value, tokenReq.burn.data);
+            }
         }
-        value = tokenReq.valueToLock;
+        value = tokenReq.lock.amount;
         if (value != 0) {
-            token.safeTransferFrom(from, lockAddress, id, value, "");
+            token.safeTransferFrom(from, lockAddress, id, value, tokenReq.lock.data);
         }
     }
 
     function fulfill(
-        Position storage position,
+        Condition storage position,
         address from,
         address payee,
         address beneficiary,
@@ -251,59 +281,69 @@ library LibCoinVending {
         address lockAddress
     ) private {
         if (from == address(this)) {
-            if (position.valueToLock != 0) {
-                payable(lockAddress).transfer(position.valueToLock);
+            if (position.ethValues.lock != 0) {
+                payable(lockAddress).transfer(position.ethValues.lock);
             }
-            if (position.valueToAccept != 0) {
-                payable(payee).transfer(position.valueToAccept);
+            if (position.ethValues.pay != 0) {
+                payable(payee).transfer(position.ethValues.pay);
             }
-            if (position.valueToAward != 0) {
-                payable(beneficiary).transfer(position.valueToAward);
+            if (position.ethValues.bet != 0) {
+                payable(beneficiary).transfer(position.ethValues.bet);
             }
-            if (position.valueToBurn != 0) {
-                payable(burnAddress).transfer(position.valueToBurn);
+            if (position.ethValues.burn != 0) {
+                payable(burnAddress).transfer(position.ethValues.burn);
             }
         } else {
-            uint256 VLReq = position.valueToLock +
-                position.valueToBurn +
-                position.valueToAccept +
-                position.valueToAward;
+            uint256 VLReq = position.ethValues.lock +
+                position.ethValues.pay +
+                position.ethValues.bet +
+                position.ethValues.burn;
             require(msg.value >= VLReq, "msg.value too low");
         }
-        for (uint256 i = 0; i < position.tokenAddresses.length; i++) {
-            address tokenAddress = position.tokenAddresses[i];
-            uint256 id = position.tokenIds[i];
-            TokenRequirement storage requirement = position.tokens[tokenAddress][id];
-            if (requirement._type == TokenTypes.ERC20) {
-                fulfillERC20(tokenAddress, requirement, from, payee, beneficiary, burnAddress, lockAddress);
-            } else if (requirement._type == TokenTypes.ERC721) {
-                fulfillERC721(tokenAddress, id, requirement, from, payee, beneficiary, burnAddress, lockAddress);
-            } else if (requirement._type == TokenTypes.ERC1155) {
-                fulfillERC1155(tokenAddress, id, requirement, from, payee, beneficiary, burnAddress, lockAddress);
+        for (uint256 i = 0; i < position.contractAddresses.length; i++) {
+            address contractAddress = position.contractAddresses[i];
+            uint256 id = position.contractIds[i];
+            ContractTypes contractType = position.contractTypes[i];
+            ContractCondition storage requirement = position.contracts[contractType][contractAddress][id];
+            if (contractType == ContractTypes.ERC20) {
+                fulfillERC20(contractAddress, requirement, from, payee, beneficiary, burnAddress, lockAddress);
+            } else if (contractType == ContractTypes.ERC721) {
+                fulfillERC72Balance(
+                    contractAddress,
+                    // id,
+                    requirement,
+                    from
+                    // payee,
+                    // beneficiary,
+                    // burnAddress,
+                    // lockAddress
+                );
+            } else if (contractType == ContractTypes.ERC1155) {
+                fulfillERC1155(contractAddress, id, requirement, from, payee, beneficiary, burnAddress, lockAddress);
             }
         }
     }
 
-    function _refund(Position storage reqPos, address to) private {
+    function _refund(Condition storage reqPos, address to) private {
         require((reqPos.timesRefunded + reqPos.timesReleased) < reqPos.timesFunded, "Not enough balance to refund");
         fulfill(reqPos, address(this), to, to, to, to);
         reqPos.timesRefunded += 1;
     }
 
-    function refund(bytes32  position, address to) internal {
-        Position storage reqPos = coinVendingPosition(position);
+    function refund(bytes32 position, address to) internal {
+        Condition storage reqPos = coinVendingPosition(position);
         _refund(reqPos, to);
     }
 
-    function batchRefund(bytes32  position, address[] memory returnAddresses) internal {
-        Position storage reqPos = coinVendingPosition(position);
+    function batchRefund(bytes32 position, address[] memory returnAddresses) internal {
+        Condition storage reqPos = coinVendingPosition(position);
         for (uint256 i = 0; i < returnAddresses.length; i++) {
             _refund(reqPos, returnAddresses[i]);
         }
     }
 
     function _release(
-        Position storage reqPos,
+        Condition storage reqPos,
         address payee,
         address beneficiary,
         address returnAddress
@@ -314,22 +354,22 @@ library LibCoinVending {
     }
 
     function release(
-        bytes32  position,
+        bytes32 position,
         address payee,
         address beneficiary,
         address returnAddress
     ) internal {
-        Position storage reqPos = coinVendingPosition(position);
+        Condition storage reqPos = coinVendingPosition(position);
         _release(reqPos, payee, beneficiary, returnAddress);
     }
 
     function batchRelease(
-        bytes32  position,
+        bytes32 position,
         address payee,
         address beneficiary,
         address[] memory returnAddresses
     ) internal {
-        Position storage reqPos = coinVendingPosition(position);
+        Condition storage reqPos = coinVendingPosition(position);
         for (uint256 i = 0; i < returnAddresses.length; i++) {
             {
                 _release(reqPos, payee, beneficiary, returnAddresses[i]);
@@ -337,35 +377,58 @@ library LibCoinVending {
         }
     }
 
-    function _fund(Position storage reqPos, address funder) private {
-        require(reqPos.isConfigured, "Position does not exist");
+    function _fund(Condition storage reqPos, address funder) private {
+        require(reqPos._isConfigured, "Position does not exist");
         fulfill(reqPos, funder, address(this), address(this), address(this), address(this));
         reqPos.timesFunded += 1;
     }
 
-    function fund(bytes32  position) internal {
-        Position storage reqPos = coinVendingPosition(position);
+    function fund(bytes32 position) internal {
+        Condition storage reqPos = coinVendingPosition(position);
         _fund(reqPos, msg.sender);
     }
 
     function configure(bytes32 position, ConfigPosition memory configuration) internal {
-        Position storage reqPos = coinVendingPosition(position);
+        Condition storage mustDo = coinVendingPosition(position);
         require(
-            reqPos.timesFunded == 0 || (reqPos.timesFunded == (reqPos.timesRefunded + reqPos.timesReleased)),
+            mustDo.timesFunded == 0 || (mustDo.timesFunded == (mustDo.timesRefunded + mustDo.timesReleased)),
             "Cannot mutate position with currently positive balance"
         );
-        reqPos.valueToHave = configuration.valueToHave;
-        reqPos.valueToLock = configuration.valueToLock;
-        reqPos.valueToBurn = configuration.valueToBurn;
-        reqPos.valueToAccept = configuration.valueToAccept;
-        reqPos.valueToAward = configuration.valueToAward;
-        for (uint256 i = 0; i < configuration.tokenConfigs.length; i++) {
-            reqPos.tokenAddresses.push(configuration.tokenConfigs[i].tokenAddress);
-            reqPos.tokenIds.push(configuration.tokenConfigs[i].tokenId);
-            reqPos.tokens[configuration.tokenConfigs[i].tokenAddress][
-                configuration.tokenConfigs[i].tokenId
-            ] = configuration.tokenConfigs[i].tokenReq;
+        mustDo.ethValues = configuration.ethValues;
+        delete mustDo.contractAddresses;
+        delete mustDo.contractIds;
+        delete mustDo.contractTypes;
+        for (uint256 i = 0; i < configuration.contracts.length; i++) {
+            mustDo.contractAddresses.push(configuration.contracts[i].contractAddress);
+            mustDo.contractIds.push(configuration.contracts[i].contractId);
+            mustDo.contractTypes.push(configuration.contracts[i].contractType);
+            mustDo.contracts[configuration.contracts[i].contractType][configuration.contracts[i].contractAddress][
+                    configuration.contracts[i].contractId
+                ] = configuration.contracts[i].contractRequirement;
         }
-        reqPos.isConfigured = true;
+        mustDo._isConfigured = true;
+    }
+
+    function getPosition(bytes32 position) internal view returns (ConditionReturn memory) {
+        Condition storage pos = coinVendingPosition(position);
+        ConditionReturn memory ret;
+        ret.ethValues = pos.ethValues;
+        ret.timesFunded = pos.timesFunded;
+        ret.timesRefunded = pos.timesRefunded;
+        ret.timesReleased = pos.timesReleased;
+        ret._isConfigured = pos._isConfigured;
+        ret.conctractAddresses = pos.contractAddresses;
+        ret.contractIds = pos.contractIds;
+        return ret;
+    }
+
+    function getPositionByContract(
+        bytes32 position,
+        address contractAddress,
+        uint256 contractId,
+        ContractTypes contractType
+    ) internal view returns (ContractCondition memory) {
+        Condition storage pos = coinVendingPosition(position);
+        return pos.contracts[contractType][contractAddress][contractId];
     }
 }
