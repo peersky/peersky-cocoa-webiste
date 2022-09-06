@@ -14,8 +14,8 @@ I love it.
 
 Also it represents what happens inside - hot chocolate on every corner.
 
-
 ## Projects
+
 ### BestOf
 
 Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated democracy.
@@ -23,13 +23,14 @@ Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated d
 Idea is simple - vote for best ideas with small group of your fellows for many rounds to decide who has most support. Winner can represent your group on higher rank votings.
 
 Terminology:
+
 - `RankToken` - Token used to estimate how many games bearer has won;
 - `Game` - the contract
 - `Tournament` instance of game (can be many of those)
 - `Proposal` string text (link, idea, etc) that player submits
 - `vote` - array of three proposals that player selects as his favorites
 - `Round, Turn` - One set of giving `proposals` and `votes`. First round only `proposals` exist, last round only `votes` exist.
-`GameMaster` - Trusted wallet that executes some of transactions for sake of player privacy and fun. It can be a player, but for sake of automation - API server is being developed.
+  `GameMaster` - Trusted wallet that executes some of transactions for sake of player privacy and fun. It can be a player, but for sake of automation - API server is being developed.
 
 Privacy: Votes are hidden until `Round` is present. GameMaster holds a secret that together with tournament id and turn - hashes all votes, and proposals that way that noone can know who votes for whom until round is over.
 
@@ -40,11 +41,11 @@ Privacy: Votes are hidden until `Round` is present. GameMaster holds a secret th
    - Once there is enough links - start voting. Each player can give 6 points in a round divided as 3/2/1 and cannot vote for himself
    - Once turn is over - scores is updated
 3. At the end of all rounds
-   -  Game will continue in overtime if and until winner scores are equal
-   -  Once game and overtime finishes:
-        -   1th place will receive rankToken of `gameRank+1`, 1piece;
-        -   2nd place will receive `gameRank`, 2 pieces;
-        -   2rd place will receive `gameRank`, 1 piece;
+   - Game will continue in overtime if and until winner scores are equal
+   - Once game and overtime finishes:
+     - 1th place will receive rankToken of `gameRank+1`, 1piece;
+     - 2nd place will receive `gameRank`, 2 pieces;
+     - 2rd place will receive `gameRank`, 1 piece;
 4. Now winner of game can create his own new tornament of increased level ( has token of needed gameRank)
 5. Become part of comunity who plays this game! It results a ladder: higher rank games are only avalible to very good players... or ones who can afford to buy rank token from such good player. (There is no other way to receive rank tokens)
 
@@ -172,3 +173,12 @@ struct DomainNameService {
 }
 
 ```
+
+### Why there is no <you_name_it>
+
+Author works on this package for pure enthusiasm. If you want to contribute or request a feature: please contact on github:
+https://github.com/peersky/daococoa/issues
+
+### Fund
+
+You can fund this project @ `0x60D5fe6238bBd887632d90C480B013C32cA29804`. All funding trough this will receive dao tokens distributed on initial token mint for Daocoacoa
