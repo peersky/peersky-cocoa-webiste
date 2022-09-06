@@ -92,5 +92,6 @@
     "type": "git",
     "url": "https://github.com/peersky/daococoa.git",
     "directory": "packages/next-web3-chakra"
-  }
+  },
+  "homepage": "https://github.com/peersky/daococoa/tree/main/packages/next-web3-chakra#readme"
 }
