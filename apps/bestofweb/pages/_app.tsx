@@ -5,8 +5,6 @@ import "../styles/sidebar.css";
 import dynamic from "next/dynamic";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-// import HeadLinks from "../../../packages/moonstream-components/src/components/HeadLinks";
-// import HeadSEO from "../../../packages/moonstream-components/src/components/HeadSEO";
 const AppContext = dynamic(() => import("../AppContext"), {
   ssr: false,
 });

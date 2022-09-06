@@ -28,7 +28,6 @@ import ChainSelector from "./ChainSelector";
 const _Navbar = ({ sitemap, defaultLogo, selectorSchema, metamaskSchema, ...props}: {sitemap?: any, defaultLogo?: string, selectorSchema?: string, metamaskSchema?: string}) => {
     const ui = useContext(UIContext);
     const web3Provider = useContext(Web3Context);
-    console.log('render navbar')
   return (
     <Flex
       {...props}

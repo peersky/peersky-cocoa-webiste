@@ -14,7 +14,6 @@ import {
 import RouterLink from "next/link";
 import { FaGithub, FaTwitter, FaDiscord } from "react-icons/fa";
 import moment from "moment";
-// import MoonstreamContext from "../core/providers/MoonstreamProvider/context";
 
 const LINKS_SIZES = {
   fontWeight: "300",
@@ -61,8 +60,6 @@ const SocialButton = ({ children, label, href }: any) => {
 };
 
 const Footer = () => {
-  // const { WHITE_LOGO_W_TEXT_URL, SITEMAP } =
-  //   React.useContext(MoonstreamContext);
   return (
     <Box
       bg={useColorModeValue("blue.900", "gray.900")}
