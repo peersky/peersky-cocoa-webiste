@@ -39,6 +39,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/peersky/daococoa.git",
-    "directory": "packages/next-web3-chakra"
+    "directory": "apps/bestofweb"
   }
 }

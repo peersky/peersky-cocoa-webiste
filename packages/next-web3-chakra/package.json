@@ -87,5 +87,10 @@
     "uuid": "^8.3.2",
     "web3": "^1.7.3",
     "web3-utils": "^1.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peersky/daococoa.git",
+    "directory": "packages/next-web3-chakra"
   }
 }
