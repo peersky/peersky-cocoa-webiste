@@ -54,7 +54,7 @@ export default function CachingApp({ Component, pageProps }: any) {
     };
   }, [router]);
   const getLayout =
-    Component.getLayout || ((page: React.ReactNode) => <DefaultLayout bgColor="#00f">{page}</DefaultLayout>);
+    Component.getLayout || ((page: React.ReactNode) => <DefaultLayout selectorSchema="gray" metamaskSchema="gray" navbarBG="gray.900">{page}</DefaultLayout>);
 
   const headLinks = [
     // { rel: "preload", as: "image", href: WHITE_LOGO_W_TEXT_URL },
