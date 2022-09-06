@@ -1,6 +1,6 @@
 {
   "name": "@peersky/next-web3-chakra",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Web3 enabled react components made for nextjs and chakra ui",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
