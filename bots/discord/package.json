@@ -3,13 +3,18 @@
   "version": "0.0.1",
   "description": "Discord bot for daocoacoa",
   "main": "bot.js",
+  "type": "module",
   "scripts": {
-    "server": "node bot.js"
+    "server": "node bot.js",
+    "dev": "nodemon bot.js"
   },
   "repository": "https://github.com/peersky/daococoa.git",
   "author": "Peersky",
   "license": "MIT",
   "dependencies": {
     "discord.js": "^14.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
   }
 }
