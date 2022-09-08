@@ -9,7 +9,7 @@
     "build": "tsc"
   },
   "author": "Peersky",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.14.3",
     "@babel/eslint-parser": "^7.14.4",

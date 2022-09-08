@@ -2,6 +2,7 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-await-in-loop */
 // import { time } from "@openzeppelin/test-helpers";
+import hre from "hardhat";
 import { contract, ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
@@ -26,6 +27,7 @@ import { LibMultipass } from "../types/typechain/hardhat-diamond-abi/HardhatDiam
 import { RankToken } from "../types/typechain/contracts/tokens/RankToken";
 import { BestOfInit } from "../types/typechain/contracts/initializers/BestOfInit";
 import { assert } from "console";
+import { MultipassJs } from "@daocoacoa/multipass-js";
 
 export interface SignerIdentity {
   name: string;
@@ -453,41 +455,47 @@ export const signRegistrarMessage = async (
   signer: SignerIdentity
 ) => {
   let { chainId } = await ethers.provider.getNetwork();
+  const multipassJs = new MultipassJs({ chainId: chainId, ...hre.network });
+  return await multipassJs.signRegistrarMessage(
+    message,
+    verifierAddress,
+    signer
+  );
 
-  const domain = {
-    name: process.env.MULTIPASS_CONTRACT_NAME,
-    version: process.env.MULTIPASS_CONTRACT_VERSION,
-    chainId,
-    verifyingContract: verifierAddress,
-  };
+  // const domain = {
+  //   name: process.env.MULTIPASS_CONTRACT_NAME,
+  //   version: process.env.MULTIPASS_CONTRACT_VERSION,
+  //   chainId,
+  //   verifyingContract: verifierAddress,
+  // };
 
-  const types = {
-    registerName: [
-      {
-        type: "bytes32",
-        name: "name",
-      },
-      {
-        type: "bytes32",
-        name: "id",
-      },
-      {
-        type: "bytes32",
-        name: "domainName",
-      },
-      {
-        type: "uint256",
-        name: "deadline",
-      },
-      {
-        type: "uint96",
-        name: "nonce",
-      },
-    ],
-  };
+  // const types = {
+  //   registerName: [
+  //     {
+  //       type: "bytes32",
+  //       name: "name",
+  //     },
+  //     {
+  //       type: "bytes32",
+  //       name: "id",
+  //     },
+  //     {
+  //       type: "bytes32",
+  //       name: "domainName",
+  //     },
+  //     {
+  //       type: "uint256",
+  //       name: "deadline",
+  //     },
+  //     {
+  //       type: "uint96",
+  //       name: "nonce",
+  //     },
+  //   ],
+  // };
 
-  const s = await signer.wallet._signTypedData(domain, types, { ...message });
-  return s;
+  // const s = await signer.wallet._signTypedData(domain, types, { ...message });
+  // return s;
 };
 
 export default {
@@ -1014,7 +1022,7 @@ export const mockProposals = async ({
   turn: BigNumberish;
   verifierAddress: string;
 }) => {
-  let proposals = [];
+  let proposals = [] as any as ProposalSubmittion[];
   for (let i = 0; i < players.length; i++) {
     let proposal = await mockProposalSecrets({
       proposer: players[i],

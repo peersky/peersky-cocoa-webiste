@@ -1,5 +1,5 @@
 {
-  "name": "crypto_playlist",
+  "name": "Daocoacoa workspace",
   "version": "1.0.0",
   "private": true,
   "description": "",
@@ -8,8 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Tim Pechersky (@Peersky)",
+  "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.1",
     "@nomiclabs/buidler": "^1.4.8",
