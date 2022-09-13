@@ -317,12 +317,12 @@ export const setupEnvironment = async ({
     multipassAddress
   )) as MultipassDiamond;
 
-  if (!process.env.INFURA_URL || !process.env.RANK_TOKEN_PATH)
+  if (!process.env.IPFS_GATEWAY_URL || !process.env.RANK_TOKEN_PATH)
     throw new Error("Rank token IPFS route not exported");
   const rankTokenAddress = await deployRankToken({
     owner: contractDeployer.wallet.address,
     signer: contractDeployer.wallet,
-    URI: process.env.INFURA_URL + process.env.RANK_TOKEN_PATH,
+    URI: process.env.IPFS_GATEWAY_URL + process.env.RANK_TOKEN_PATH,
   });
   const rankToken = (await ethers.getContractAt(
     "RankToken",
@@ -459,7 +459,7 @@ export const signRegistrarMessage = async (
   return await multipassJs.signRegistrarMessage(
     message,
     verifierAddress,
-    signer
+    signer.wallet
   );
 
   // const domain = {

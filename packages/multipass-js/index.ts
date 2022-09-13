@@ -21,18 +21,41 @@ interface RegisterMessage {
 type signatureMessage = ReferrerMesage | RegisterMessage;
 
 export class MultipassJs {
-  private JsonRpcProvider;
+  // private JsonRpcProvider;
   private chainId;
-  constructor(ProviderNetwork: ethers.providers.Network) {
-    if (!ProviderNetwork) throw new Error("Provider network not defined");
-    this.JsonRpcProvider = new ethers.providers.BaseProvider(ProviderNetwork);
-    this.chainId = ProviderNetwork.chainId;
+  constructor(chainId: any) {
+    // console.log("ProviderNetwork", ProviderNetwork);
+    // if (!ProviderNetwork) throw new Error("Provider network not defined");
+    // this.JsonRpcProvider = new ethers.providers.BaseProvider(ProviderNetwork);
+    this.chainId = chainId;
   }
-
+  public getDappURL(
+    message: any,
+    signature: string,
+    // type: string,
+    basepath: string,
+    contractAddress: string,
+    domain: string
+  ) {
+    console.dir(message);
+    return (
+      basepath +
+      "/?message=" +
+      Buffer.from(JSON.stringify(message)).toString("base64") +
+      "&contractAddess=" +
+      contractAddress +
+      "&domain=" +
+      domain +
+      "&signature=" +
+      signature +
+      "&chainId=" +
+      this.chainId
+    );
+  }
   public signRegistrarMessage = async (
     message: RegisterMessage,
     verifierAddress: string,
-    signer: SignerIdentity
+    signer: Wallet | SignerWithAddress
   ) => {
     let chainId = this.chainId;
 
@@ -68,7 +91,7 @@ export class MultipassJs {
       ],
     };
 
-    const s = await signer.wallet._signTypedData(domain, types, { ...message });
+    const s = await signer._signTypedData(domain, types, { ...message });
     return s;
   };
 }

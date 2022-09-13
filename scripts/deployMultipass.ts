@@ -11,21 +11,21 @@ export const deploy = async ({
   name,
 }: {
   ownerAddress: string;
-  signer: Wallet | SignerWithAddress;
+  signer?: Wallet | SignerWithAddress;
   version: string;
   name: string;
 }) => {
-  if (!ownerAddress || !signer || !version || !name)
+  const _signer = signer ?? (await ethers.getSigners().then((s) => s[0]));
+  if (!_signer || !ownerAddress || !version || !name)
     throw new Error("Missing properties");
-
   const diamondAddress = await deployDiamond(
     ["DiamondLoupeFacet", "OwnershipFacet", "MultipassDNS"],
-    signer,
+    _signer,
     "MultipassInit",
     [name, version]
   );
 
-  await transferOwnership(signer, ownerAddress, diamondAddress);
+  await transferOwnership(_signer, ownerAddress, diamondAddress);
 
   return diamondAddress;
 };
@@ -40,8 +40,8 @@ if (require.main === module) {
     !process.env.MULTIPASS_CONTRACT_NAME
   )
     throw new Error("Contract name/version not exported");
+  // const signer = ethers.getSigners().then((signers) => signers[0]
   deploy({
-    signer: new ethers.Wallet(process.env.PRIVATE_KEY),
     ownerAddress: process.env.CONTRACTS_OWNER,
     version: process.env.MULTIPASS_CONTRACT_VERSION,
     name: process.env.MULTIPASS_CONTRACT_NAME,
