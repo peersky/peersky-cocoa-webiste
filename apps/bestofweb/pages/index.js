@@ -4,7 +4,7 @@ import styles from "../styles/Home.module.css";
 import useRouter from "../hooks/useRouter";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
 import { Button, Image, useBreakpointValue, Box } from "@chakra-ui/react";
-
+import { ethers } from "ethers";
 const Home = () => {
   const bp = useBreakpointValue({ base: "md" });
   const [hydrated, setHydrated] = React.useState(false);
@@ -12,10 +12,13 @@ const Home = () => {
   const web3ctx = useContext(Web3Context);
   const action = query?.action;
   const gmSignature = query?.gmSignature;
-  const message = query?.msg;
+  const message = JSON.parse(
+    `${Buffer.from(query?.message, "base64").toString("ascii")}`
+  );
   const chainId = query?.chainId;
   useEffect(() => {
     if (chainId && web3ctx.chainId != chainId) {
+      console.log("request change chain id", web3ctx.chainId, chainId);
       web3ctx.changeChain(web3ctx.getChainFromId(chainId));
     }
   }, [chainId, web3ctx.chainId, web3ctx.getChainFromId]);
@@ -26,7 +29,7 @@ const Home = () => {
     // Returns null on first render, so the client and server match
     return null;
   }
-
+  console.dir(message);
   // console.log(window.location.hostname);
 
   return (
