@@ -41,13 +41,16 @@ export default {
   },
   defaultNetwork: "hardhat",
   networks: {
-    hardhat: {},
     mumbai: {
       url: "https://matic-mumbai.chainstacklabs.com",
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
     },
     matic: {
       url: process.env.MATIC_MAINNET_URL ?? "",
+      accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
+    },
+    ganache: {
+      url: process.env.RPC_URL ?? "",
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
     },
   },
