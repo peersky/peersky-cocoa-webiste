@@ -11,7 +11,7 @@ if (!process.env.RPC_URL) throw new Error("no RPC_URL provided");
 
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
-
+const DOMAIN_NAME = "discord";
 function wait(ms: any) {
   var start = new Date().getTime();
   var end = start;
@@ -43,55 +43,58 @@ client.on("messageCreate", async (msg: any) => {
   console.log(msg.content.startsWith("ping"));
   const channel = msg.channel;
   if (channel.type == Discord.ChannelType.DM) {
-    if (msg.content.startsWith(`authenticate`)) {
+    if (msg.content.startsWith(`signup`)) {
       const args = msg.content.split(" ");
-      const address = args[1];
-      if (ethers.utils.isAddress(address)) {
-        const username = msg.author.username + "#" + msg.author.discriminator;
-        console.log("trying to get deadline");
-        const deadline = (await provider.getBlockNumber()) + 1000;
-        console.log("is Address", deadline);
-        const registrarMessage = {
-          name: ethers.utils.formatBytes32String(
-            msg.author.username + "#" + msg.author.discriminator
-          ),
-          id: ethers.utils.formatBytes32String(msg.author.id),
-          domainName: ethers.utils.formatBytes32String("discord"),
-          deadline: ethers.BigNumber.from(deadline),
-          nonce: ethers.BigNumber.from(0),
-        };
-        multipassJs
-          .signRegistrarMessage(
-            registrarMessage,
-            process.env.MULTIPASS_ADDRESS,
-            signer
-          )
-          .then((signature: any) => {
-            if (!process.env.WEBURL) throw new Error("no WEBURL provided ");
-            if (!process.env.MULTIPASS_ADDRESS) {
-              channel.send("Please specify address: authenticate <address>");
-            } else {
-              channel.send(
-                "authentication link: " +
-                  multipassJs.getDappURL(
-                    registrarMessage,
-                    signature,
-                    process.env.WEBURL,
-                    process.env.MULTIPASS_ADDRESS,
-                    "discord"
-                  )
-              );
-            }
-          });
-      } else {
-        channel.send("Invalid address");
-        msg.reply("pooong");
-      }
+      // const address = args[1];
+      // if (ethers.utils.isAddress(address)) {
+      const username = msg.author.username + "#" + msg.author.discriminator;
+      const deadline = (await provider.getBlockNumber()) + 1000;
+      const registrarMessage = multipassJs.getRegistrarMessage({
+        username,
+        id: msg.author.id,
+        domainName: DOMAIN_NAME,
+        validUntil: deadline,
+      });
+      multipassJs
+        .signRegistrarMessage(
+          registrarMessage,
+          process.env.MULTIPASS_ADDRESS,
+          signer
+        )
+        .then((signature: any) => {
+          if (!process.env.WEBURL) throw new Error("no WEBURL provided ");
+          if (!process.env.MULTIPASS_ADDRESS) {
+            channel.send("Please specify address: authenticate <address>");
+          } else {
+            channel.send(
+              "authentication link: " +
+                multipassJs.getDappURL(
+                  registrarMessage,
+                  signature,
+                  process.env.WEBURL,
+                  process.env.MULTIPASS_ADDRESS,
+                  DOMAIN_NAME
+                )
+            );
+          }
+        });
+      // } else {
+      //   channel.send("Invalid address");
+      //   msg.reply("pooong");
+      // }
     }
   } else {
-    if (msg.content === "ping") {
-      msg.reply("pong");
+  }
+  if (msg.content === "ping") {
+    msg.reply("pong");
+  }
+  if (msg.content.startsWith(`get`)) {
+    for (const [key, value] of msg.mentions.users) {
+      console.log(`${key} goes ${value}`);
     }
+    // msg.reply("gets user info: ", msg.mentions[0]);
+    // console.log(msg.mentions.users);
+    // console.log(Object.keys(msg.mentions.users));
   }
 });
 
