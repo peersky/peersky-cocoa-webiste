@@ -46,7 +46,7 @@ export default {
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
     },
     matic: {
-      url: process.env.MATIC_MAINNET_URL ?? "",
+      url: process.env.RPC_URL ?? "",
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
     },
     ganache: {
