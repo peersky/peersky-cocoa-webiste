@@ -6,7 +6,7 @@ import {
   GetMethodsAbiType,
   supportedChains,
   TokenInterface,
-} from "../../types"
+} from "../../types";
 import router from "next/router";
 
 export const MAX_INT =
@@ -112,7 +112,6 @@ const isKnownChain = (_chainId: number) => {
 const Web3Provider = ({ children }: { children: JSX.Element }) => {
   const [web3] = React.useState<Web3>(new Web3(null));
 
-
   const [targetChain, _setChain] = React.useState<ChainInterface | undefined>();
 
   web3.eth.transactionBlockTimeout = 100;
@@ -143,10 +142,10 @@ const Web3Provider = ({ children }: { children: JSX.Element }) => {
     if (window?.ethereum) {
       _askWalletProviderToChangeChain(chains[chainName], setChainId, web3).then(
         () => {
-          if (chainId) {
-            _setChain(chains[chainName]);
-            setButtonText(WALLET_STATES.CONNECTED);
-          }
+          // if (chainId) {
+          //   _setChain(chains[chainName]);
+          //   setButtonText(WALLET_STATES.CONNECTED);
+          // }
         },
         (err: any) => {
           console.error("changeChainFromUI:", err.message);
@@ -156,6 +155,7 @@ const Web3Provider = ({ children }: { children: JSX.Element }) => {
   };
 
   const setWeb3ProviderAsWindowEthereum = async () => {
+    console.log("setWeb3ProviderAsWindowEthereum");
     let wasSetupSuccess = false;
     await window.ethereum
       .request({ method: "eth_requestAccounts" })
@@ -293,18 +293,14 @@ const Web3Provider = ({ children }: { children: JSX.Element }) => {
     //eslint-disable-next-line
   }, []);
 
-  const getChainFromId = (chainId: string | number ) =>
-  {
-
-   const [chainName] = Object.entries(chains).find(([chainName, chain]) => {
-
-      if(chain.chainId == chainId) return true;
-
-    }) ?? [];
-    if(!chainName) throw new Error("chain id is not found");
+  const getChainFromId = (chainId: string | number) => {
+    const [chainName] =
+      Object.entries(chains).find(([chainName, chain]) => {
+        if (chain.chainId == chainId) return true;
+      }) ?? [];
+    if (!chainName) throw new Error("chain id is not found");
     return chainName as any as supportedChains;
-  }
-
+  };
 
   const defaultTxConfig = { from: account };
   return (
