@@ -42,7 +42,7 @@ export class MultipassJs {
       basepath +
       "/?message=" +
       Buffer.from(JSON.stringify(message)).toString("base64") +
-      "&contractAddess=" +
+      "&contractAddress=" +
       contractAddress +
       "&domain=" +
       domain +
@@ -93,5 +93,27 @@ export class MultipassJs {
 
     const s = await signer._signTypedData(domain, types, { ...message });
     return s;
+  };
+
+  public getRegistrarMessage = ({
+    username,
+    id,
+    domainName,
+    validUntil,
+  }: {
+    username: string;
+    id: string;
+    domainName: string;
+    validUntil: number;
+  }) => {
+    const registrarMessage = {
+      name: ethers.utils.formatBytes32String(username),
+      id: ethers.utils.formatBytes32String(id),
+      domainName: ethers.utils.formatBytes32String(domainName),
+      deadline: ethers.BigNumber.from(validUntil),
+      nonce: ethers.BigNumber.from(0),
+    };
+
+    return registrarMessage;
   };
 }
