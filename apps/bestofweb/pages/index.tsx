@@ -19,11 +19,14 @@ const multipassABI = require("../../../abi/hardhat-diamond-abi/HardhatDiamondABI
 const Home = () => {
   const bp = useBreakpointValue({ base: "md" });
   const [hydrated, setHydrated] = React.useState(false);
-  const [domainState, setDomainState] = React.useState({exists: false, active: false})
+  const [domainState, setDomainState] = React.useState({
+    exists: false,
+    active: false,
+  });
   const [changeChainRequested, setChainChangeRequested] = React.useState(false);
   const { query } = useRouter();
   const domain = query?.domain;
-  const domainBytes32 = ethers.utils.formatBytes32String(domain);
+  const domainBytes32 = domain ? ethers.utils.formatBytes32String(domain) : "";
   const web3ctx = useContext(Web3Context);
   const action = query?.action;
   const message = query?.message && {
@@ -32,26 +35,23 @@ const Home = () => {
   };
   const chainId = query?.chainId;
 
-
   useEffect(() => {
-
-    const getDomainState = async () =>
-    {
+    const getDomainState = async () => {
       const _multipass = new web3ctx.web3.eth.Contract(
         multipassABI,
         query.contractAddress
       );
-      const state = await _multipass.methods.getDomainState(domainBytes32).call()
-      setDomainState({exists: !!state.name, active: state.isActive})
+      const state = await _multipass.methods
+        .getDomainState(domainBytes32)
+        .call();
+      setDomainState({ exists: !!state.name, active: state.isActive });
+    };
+    if (domain && web3ctx.account) {
+      getDomainState();
     }
-    if(domain && web3ctx.account)
-    {
-       getDomainState()
-    }
+  }, [domain, web3ctx.account]);
 
-  }, [domain, web3ctx.account])
-
-  console.log('domain state', domainState)
+  console.log("domain state", domainState);
   useEffect(() => {
     if (chainId && web3ctx.chainId != chainId) {
       // console.log("request change chain id", web3ctx.chainId, chainId);
@@ -85,7 +85,7 @@ const Home = () => {
     console.dir(message.domainName);
     console.dir(query.signature);
     console.dir(message.deadline);
-    console.dir(emptyUserQuery)
+    console.dir(emptyUserQuery);
 
     await multipass.methods
       .register(
@@ -209,5 +209,5 @@ const Home = () => {
     </Box>
   );
 };
-Home.getLayout  =   getLayout;
+Home.getLayout = getLayout;
 export default Home;
