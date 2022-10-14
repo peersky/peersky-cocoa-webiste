@@ -30,6 +30,7 @@ import BN from "bn.js";
 import FileUpload from "./FileUpload";
 import Papa from "papaparse";
 import { AbiInput } from "web3-utils";
+import { ethers } from "ethers";
 const BoolInputItem = ({
   inputItem,
   dispatchArguments,
@@ -73,7 +74,6 @@ const Bytes32InputItem = ({
 }) => {
   console.log("input item bytes32", inputItem);
   const web3ctx = useContext(Web3Context);
-  const [isStringToBytes, setIsStringToBytes] = React.useState(false);
   return (
     <>
       <Flex
@@ -84,57 +84,42 @@ const Bytes32InputItem = ({
       >
         <FormLabel mb="8px" wordBreak={"break-all"} w="fit-content"></FormLabel>
         {inputItem["meta"].label}
-        <Spacer />
-        <Switch
-          size="sm"
-          ml={4}
-          justifySelf={"flex-end"}
-          aria-label="as string"
-          onChange={() => setIsStringToBytes((old) => !old)}
-        >
-          Convert from ASCII
-        </Switch>
       </Flex>
-      {(inputItem.type === "string" ||
-        inputItem.type === "bytes" ||
-        inputItem.type === "bytes32" ||
-        inputItem.type === "uint256" ||
-        inputItem.type === "uint256[]") && (
-        <>
-          <InputGroup
-            textColor={"blue.800"}
-            key={`argument-string-${inputItem.name}${inputItem.type}`}
-            fontSize={"sm"}
-            w="100%"
-            variant={"outline"}
-          >
-            <Input
-              type="search"
-              value={
-                isStringToBytes && inputItem.meta.value
-                  ? web3ctx.web3.utils.hexToAscii(inputItem.meta.value)
-                  : inputItem.meta.value
-              }
-              onKeyPress={onKeyPress}
-              placeholder={
-                inputItem.type.includes("[]")
-                  ? `[value, value] `
-                  : inputItem.meta.placeholder ||
-                    inputItem.name ||
-                    inputItem.type
-              }
-              onChange={(event) =>
-                dispatchArguments({
-                  value: isStringToBytes
-                    ? web3ctx.web3.utils.asciiToHex(event.target.value ?? " ")
-                    : event.target.value,
-                  index,
-                })
-              }
-            />
-          </InputGroup>
-        </>
-      )}
+      <InputGroup
+        textColor={"blue.800"}
+        key={`argument-string-${inputItem.name}${inputItem.type}`}
+        fontSize={"sm"}
+        w="100%"
+        variant={"outline"}
+      >
+        <Input
+          type="search"
+          value={
+            inputItem.meta.convertToBytes &&
+            inputItem.meta.value &&
+            ethers.utils.isBytesLike(inputItem.meta.value)
+              ? ethers.utils.parseBytes32String(inputItem.meta.value)
+              : inputItem.meta.value
+          }
+          onKeyPress={onKeyPress}
+          placeholder={
+            inputItem.type.includes("[]")
+              ? `[value, value] `
+              : inputItem.meta.placeholder || inputItem.name || inputItem.type
+          }
+          onChange={(event) =>
+            dispatchArguments({
+              value: inputItem.meta.convertToBytes
+                ? //  web3ctx.web3.utils.padLeft(
+                  ethers.utils.formatBytes32String(event.target.value)
+                : // 32
+                  // )
+                  event.target.value,
+              index,
+            })
+          }
+        />
+      </InputGroup>
     </>
   );
 };
@@ -412,6 +397,20 @@ const TupleInputItem = ({
   }>;
   index: number;
 }) => {
+  const dispatchTupleArguments = ({
+    internalIndex,
+    internalValue,
+  }: {
+    internalIndex: any;
+    internalValue: any;
+  }) => {
+    const newComponents = [...inputItem.components];
+    newComponents[internalIndex]["meta"]["value"] = internalValue;
+    dispatchArguments({
+      value: newComponents,
+      index,
+    });
+  };
   return (
     <Box
       w="100%"
@@ -428,7 +427,12 @@ const TupleInputItem = ({
         return (
           <Web3MethodField
             key={`tuple-${idx}`}
-            dispatchArguments={dispatchArguments}
+            dispatchArguments={({ index, value }) => {
+              dispatchTupleArguments({
+                internalIndex: index,
+                internalValue: value,
+              });
+            }}
             inputItem={internalProperty}
             index={idx}
             onKeyPress={onKeyPress}
@@ -465,7 +469,6 @@ const Web3MethodField = ({
   onKeyPress: (e: KeyboardEvent) => void;
   //   inputsProps: any;
 }) => {
-  console.log("inutItem Web3MethodField", inputItem);
   if (inputItem.type === "tuple") console.dir(inputItem);
   console.log("inputItem.type", inputItem.type);
   const item = () => {
@@ -473,7 +476,12 @@ const Web3MethodField = ({
       case "bool":
         return (
           <BoolInputItem
-            dispatchArguments={dispatchArguments}
+            dispatchArguments={
+              dispatchArguments as React.Dispatch<{
+                value: any;
+                index: any;
+              }>
+            }
             inputItem={inputItem}
             index={index}
           />

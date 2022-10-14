@@ -21,6 +21,7 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  Spacer,
 } from "@chakra-ui/react";
 import { AbiInput, AbiItem } from "web3-utils";
 import { useMutation } from "react-query";
@@ -33,21 +34,24 @@ interface argumentField {
   initialValue?: string;
   label?: string;
   valueIsEther?: boolean;
+  convertToBytes: boolean;
   // hide: boolean;
 }
 interface argumentFields {
   [Key: string]: argumentField;
 }
-
-interface extendedInputs extends AbiInput {
-  meta?: {
+interface extendedInputs extends Omit<AbiInput, "components"> {
+  components?: extendedInputs[];
+  meta: {
     value: string;
     placeholder: string;
     hide: boolean;
     label: string;
     valueIsEther?: boolean;
+    convertToBytes: boolean;
   };
 }
+
 interface stateInterface extends Omit<AbiItem, "inputs"> {
   inputs: Array<extendedInputs>;
 }
@@ -86,13 +90,42 @@ const Web3MethodForm = ({
   // inputsProps?: ThemingProps<"Input">;
   props?: any;
 }) => {
+  const setTupleBytesFormat = (tuple: extendedInputs, value: boolean) => {
+    tuple.components?.forEach((internalElement, idx) => {
+      if (internalElement.type === "tuple") {
+        setTupleBytesFormat(internalElement, value);
+      } else {
+        internalElement.meta.convertToBytes = value;
+      }
+    });
+  };
   const setArguments = (
-    state: any,
-    { value, index }: { value: any; index: any }
+    state: stateInterface,
+    {
+      value,
+      index,
+      type,
+    }: { value: any; index: any; type?: "bytesFormat" | undefined }
   ) => {
     const newState = { ...state };
+    if (type !== "bytesFormat") {
+      if (newState.inputs[index].type === "tuple") {
+        newState.inputs[index].components = [...value];
+      } else {
+        newState.inputs[index].meta.value = value;
+      }
+    } else {
+      newState.inputs.forEach((inputElement, idx) => {
+        if (inputElement.type === "tuple") {
+          setTupleBytesFormat(inputElement, value);
+        } else {
+          console.log("buggy", newState.inputs[idx], idx);
+          newState.inputs[idx] = { ...inputElement };
+          newState.inputs[idx].meta.convertToBytes = !!value;
+        }
+      });
+    }
 
-    newState.inputs[index]["meta"]["value"] = value;
     return { ...newState };
   };
 
@@ -101,7 +134,7 @@ const Web3MethodForm = ({
     if (element.type === "tuple") {
       return {
         ...element,
-        components: element.components?.map((comp: AbiInput) => {
+        components: element.components?.map((comp) => {
           return {
             ...comp,
             meta: {
@@ -110,6 +143,7 @@ const Web3MethodForm = ({
               hide: false,
               label: ` ${comp.name}  [${comp.type}]`,
               valueIsEther: false,
+              convertToBytes: false,
             },
           };
         }),
@@ -131,6 +165,9 @@ const Web3MethodForm = ({
           valueIsEther:
             (argumentFields && argumentFields[element.name]?.valueIsEther) ??
             false,
+          convertToBytes:
+            (argumentFields && argumentFields[element.name]?.convertToBytes) ??
+            false,
         },
       };
   };
@@ -150,7 +187,7 @@ const Web3MethodForm = ({
     setArguments,
     initialState
   );
-
+  const [allBytesAreStrings, setAllBytesAreStrings] = React.useState(false);
   const [wasSent, setWasSent] = React.useState(false);
 
   const handleClose = React.useCallback(() => {
@@ -192,6 +229,14 @@ const Web3MethodForm = ({
   });
   const web3ctx = useContext(Web3Context);
   const handleSubmit = () => {
+    const extractTupleParams = (tuple: extendedInputs) => {
+      return tuple?.components?.map((internalElement: any): any[] =>
+        internalElement.type === "tuple"
+          ? extractTupleParams(internalElement)
+          : internalElement.meta.value
+      );
+    };
+    console.log("submited state", state);
     const returnedObject: any = [];
     state.inputs.forEach((inputElement: any, index: number) => {
       returnedObject[index] =
@@ -201,6 +246,8 @@ const Web3MethodForm = ({
             )
             ? web3ctx.web3.utils.toChecksumAddress(inputElement.meta.value)
             : console.error("not an address", returnedObject[index])
+          : inputElement.type === "tuple"
+          ? extractTupleParams(inputElement)
           : inputElement.meta.value;
       if (inputElement.type.includes("[]")) {
         returnedObject[index] = JSON.parse(returnedObject[index]);
@@ -224,6 +271,7 @@ const Web3MethodForm = ({
     beforeSubmit && beforeSubmit(returnedObject);
     console.log("returnedObject", returnedObject);
     tx.mutate({ args: returnedObject });
+
     // if (onClose) {
     //   onClose();
     // }
@@ -274,7 +322,7 @@ const Web3MethodForm = ({
   };
   if (method.name === "deleteName") console.log("deleteName", state);
   if (!rendered) return <></>;
-  console.log("state", state);
+  console.log("from state", state);
   return (
     <>
       <Stack
@@ -287,16 +335,41 @@ const Web3MethodForm = ({
         {...props}
       >
         {/* <Fade in={rendered}> */}
-        <Heading
-          wordBreak={"break-all"}
-          fontSize={
-            method?.name?.length && method?.name?.length > 12 ? "xl" : "3xl"
-          }
-        >
-          {title ?? method.name}
-        </Heading>
+        <Flex direction={"row"} w="100%">
+          <Heading
+            wordBreak={"break-all"}
+            fontSize={
+              method?.name?.length && method?.name?.length > 12 ? "xl" : "3xl"
+            }
+          >
+            {title ?? method.name}
+          </Heading>
+          <Spacer />
+          <Switch
+            size="sm"
+            ml={4}
+            justifySelf={"flex-end"}
+            aria-label="as string"
+            onChange={() => {
+              setAllBytesAreStrings((old) => {
+                dispatchArguments({
+                  value: !old,
+                  index: 0,
+                  type: "bytesFormat",
+                });
+                return !old;
+              });
+            }}
+          >
+            All Bytes as strings
+          </Switch>
+        </Flex>
         {state.inputs.map((inputItem: any, index: any) => {
-          if (!inputItem.meta.hide && !_BatchInputs?.includes(inputItem.name)) {
+          console.log("state input map", inputItem);
+          if (
+            !inputItem?.meta?.hide &&
+            !_BatchInputs?.includes(inputItem.name)
+          ) {
             return (
               <Web3MethodField
                 key={`${inputItem.name}-${index}-abiitems`}
