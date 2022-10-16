@@ -29,6 +29,7 @@ import Web3Context from "../providers/Web3Provider/context";
 import useToast from "../hooks/useToast";
 import FileUpload from "./FileUpload";
 import Web3MethodField from "./We3MethodField";
+import { ethers } from "ethers";
 interface argumentField {
   placeholder?: string;
   initialValue?: string;
@@ -122,6 +123,14 @@ const Web3MethodForm = ({
           console.log("buggy", newState.inputs[idx], idx);
           newState.inputs[idx] = { ...inputElement };
           newState.inputs[idx].meta.convertToBytes = !!value;
+          if (
+            !!value &&
+            !ethers.utils.isBytesLike(newState.inputs[idx].meta.value)
+          ) {
+            newState.inputs[idx].meta.value = ethers.utils.formatBytes32String(
+              newState.inputs[idx].meta.value
+            );
+          }
         }
       });
     }

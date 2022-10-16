@@ -76,7 +76,7 @@ export const chains: { [key in supportedChains]: ChainInterface } = {
   localhost: {
     chainId: 1337,
     name: "localhost",
-    rpcs: ["http://127.0.0.1:8545"],
+    rpcs: ["http://localhost:8545"],
   },
   mumbai: {
     chainId: 80001,
