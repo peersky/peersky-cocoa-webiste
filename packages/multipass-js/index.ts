@@ -23,11 +23,23 @@ type signatureMessage = ReferrerMesage | RegisterMessage;
 export class MultipassJs {
   // private JsonRpcProvider;
   private chainId;
-  constructor(chainId: any) {
+  private name;
+  private version;
+  constructor({
+    chainId,
+    contractName,
+    version,
+  }: {
+    chainId: any;
+    contractName: string;
+    version: string;
+  }) {
     // console.log("ProviderNetwork", ProviderNetwork);
     // if (!ProviderNetwork) throw new Error("Provider network not defined");
     // this.JsonRpcProvider = new ethers.providers.BaseProvider(ProviderNetwork);
     this.chainId = chainId;
+    this.name = contractName;
+    this.version = version;
   }
   public getDappURL(
     message: any,

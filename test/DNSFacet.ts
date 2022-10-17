@@ -89,6 +89,77 @@ describe(scriptName, () => {
     ).to.emit(env.multipass, "InitializedDomain");
     expect(await env.multipass.getContractState()).to.be.equal(1);
   });
+  it("Reverts domain specific methods if domain does not exists", async () => {
+    await expect(
+      env.multipass
+        .connect(adr.multipassOwner.wallet)
+        .activateDomain(ethers.utils.formatBytes32String("invalidDomain"))
+    ).to.be.revertedWith("Domain does not exist");
+    await expect(
+      env.multipass
+        .connect(adr.multipassOwner.wallet)
+        .deactivateDomain(ethers.utils.formatBytes32String("invalidDomain"))
+    ).to.be.revertedWith("Domain does not exist");
+    await expect(
+      env.multipass
+        .connect(adr.multipassOwner.wallet)
+        .changeFee(ethers.utils.formatBytes32String("invalidDomain"), "1")
+    ).to.be.revertedWith("Domain does not exist");
+    await expect(
+      env.multipass
+        .connect(adr.multipassOwner.wallet)
+        .changeRegistrar(
+          ethers.utils.formatBytes32String("invalidDomain"),
+          adr.gameCreator1.wallet.address
+        )
+    ).to.be.revertedWith("Domain does not exist");
+    const invalidDomainQuery = { ...emptyUserQuery };
+    invalidDomainQuery.domainName =
+      ethers.utils.formatBytes32String("invalidDomain");
+    invalidDomainQuery.targetDomain =
+      ethers.utils.formatBytes32String("invalidDomain");
+
+    const registrarMessage = {
+      name: ethers.utils.formatBytes32String(adr.player1.name),
+      id: ethers.utils.formatBytes32String(adr.player1.id),
+      domainName: ethers.utils.formatBytes32String(NEW_DOMAIN_NAME1),
+      deadline: ethers.BigNumber.from(9999),
+      nonce: ethers.BigNumber.from(0),
+    };
+
+    const registarSignature = await signRegistrarMessage(
+      registrarMessage,
+      env.multipass.address,
+      adr.registrar1
+    );
+
+    await expect(
+      env.multipass
+        .connect(adr.multipassOwner.wallet)
+        .deleteName(invalidDomainQuery)
+    ).to.be.revertedWith("Domain does not exist");
+
+    let applicantData: LibMultipass.RecordStruct = {
+      name: ethers.utils.formatBytes32String(adr.player1.name),
+      id: ethers.utils.formatBytes32String(adr.player1.id),
+      wallet: adr.player1.wallet.address,
+      nonce: 0,
+      domainName: ethers.utils.formatBytes32String("invalidDomain"),
+    };
+
+    await expect(
+      env.multipass
+        .connect(adr.multipassOwner.wallet)
+        .register(
+          applicantData,
+          ethers.utils.formatBytes32String("invalidDomain"),
+          registarSignature,
+          registrarMessage.deadline,
+          emptyUserQuery,
+          ZERO_BYTES32
+        )
+    ).to.be.revertedWith("Domain does not exist");
+  });
   it("Reverts if intializing domain name props are wrong", async () => {
     await expect(
       env.multipass

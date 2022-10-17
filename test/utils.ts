@@ -455,47 +455,21 @@ export const signRegistrarMessage = async (
   signer: SignerIdentity
 ) => {
   let { chainId } = await ethers.provider.getNetwork();
-  const multipassJs = new MultipassJs({ chainId: chainId, ...hre.network });
+  if (!process.env.MULTIPASS_CONTRACT_NAME)
+    throw new Error("MULTIPASS_CONTRACT_NAME not exported");
+  if (!process.env.MULTIPASS_CONTRACT_VERSION)
+    throw new Error("MULTIPASS_CONTRACT_VERSION not exported");
+  const multipassJs = new MultipassJs({
+    chainId: chainId,
+    contractName: process.env.MULTIPASS_CONTRACT_NAME,
+    version: process.env.MULTIPASS_CONTRACT_VERSION,
+    ...hre.network,
+  });
   return await multipassJs.signRegistrarMessage(
     message,
     verifierAddress,
     signer.wallet
   );
-
-  // const domain = {
-  //   name: process.env.MULTIPASS_CONTRACT_NAME,
-  //   version: process.env.MULTIPASS_CONTRACT_VERSION,
-  //   chainId,
-  //   verifyingContract: verifierAddress,
-  // };
-
-  // const types = {
-  //   registerName: [
-  //     {
-  //       type: "bytes32",
-  //       name: "name",
-  //     },
-  //     {
-  //       type: "bytes32",
-  //       name: "id",
-  //     },
-  //     {
-  //       type: "bytes32",
-  //       name: "domainName",
-  //     },
-  //     {
-  //       type: "uint256",
-  //       name: "deadline",
-  //     },
-  //     {
-  //       type: "uint96",
-  //       name: "nonce",
-  //     },
-  //   ],
-  // };
-
-  // const s = await signer.wallet._signTypedData(domain, types, { ...message });
-  // return s;
 };
 
 export default {
