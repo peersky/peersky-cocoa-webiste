@@ -13,7 +13,7 @@ import "../vendor/facets/OwnershipFacet.sol";
 
 // Consider upgrade for https://eips.ethereum.org/EIPS/eip-4834
 
-contract MultipassDNS is EIP712, IMultipass {
+contract DNSFacet is EIP712, IMultipass {
     using ECDSA for bytes32;
     using LibMultipass for bytes32;
 
