@@ -120,6 +120,41 @@ async function cutFacets({
   }
 }
 
+async function replaceFacet(
+  DiamondAddress,
+  facetName,
+  signer,
+  initializer,
+  initializerArgs
+) {
+  const Facet = await hre.ethers.getContractFactory(facetName, signer);
+  const facet = await Facet.deploy();
+  await facet.deployed();
+
+  const diamond = await ethers.getContractAt("IDiamondCut", DiamondAddress);
+  const cut = [
+    {
+      facetAddress: facet.address,
+      action: FacetCutAction.Replace,
+      functionSelectors: getSelectors(facet),
+    },
+  ];
+
+  let functionCall = initializer
+    ? initializer.interface.encodeFunctionData("init", initializerArgs)
+    : [];
+
+  tx = await diamond
+    .connect(signer)
+    .diamondCut(
+      cut,
+      initializer?.address ?? hre.ethers.constants.AddressZero,
+      functionCall
+    );
+
+  return tx;
+}
+
 async function deployDiamond(FacetNames, signer, initializer, initializerArgs) {
   // console.log(
   //   "deploying diamond",
@@ -183,6 +218,7 @@ async function deployDiamond(FacetNames, signer, initializer, initializerArgs) {
 }
 
 exports.deployDiamond = deployDiamond;
+exports.replaceFacet = replaceFacet;
 exports.cutFacets = cutFacets;
 exports.getSelectors = getSelectors;
 exports.getSelector = getSelector;

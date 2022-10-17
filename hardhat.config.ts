@@ -7,6 +7,7 @@ import "hardhat-diamond-abi";
 import "@typechain/hardhat";
 import "hardhat-abi-exporter";
 import { toSignature, isIncluded } from "./utils/diamond";
+import { replaceFacet } from "./scripts/libraries/diamond";
 import * as ipfsUtils from "./utils/ipfs";
 import fs from "fs";
 import "hardhat-gas-reporter";
@@ -30,6 +31,18 @@ task("uploadDir2IPFS", "Uploads directory to ipfs")
   .addParam("path", "path")
   .setAction(async (taskArgs) => {
     await ipfsUtils.uploadDir2IPFS(taskArgs.path);
+  });
+
+task("replaceFacet", "Upgrades facet")
+  .addParam("facet", "facet")
+  .addParam("address", "contract address")
+  .setAction(async (taskArgs, hre) => {
+    const accounts = await hre.ethers.getSigners();
+    const response = await replaceFacet(
+      taskArgs.address,
+      taskArgs.facet,
+      accounts[0]
+    );
   });
 
 export default {

@@ -9,3 +9,22 @@ export function deployDiamond(
   initializer?: string,
   initializerArgs?: any
 ): Promise<string>;
+export function cutFacets({
+  facets,
+  initializer,
+  diamondAddress,
+  signer,
+  initializerArgs,
+}: {
+  facet: string;
+  diamondAddress: string;
+  signer: Wallet | SignerWithAddress;
+  initializerArgs: any;
+});
+async function replaceFacet(
+  DiamondAddress: string,
+  facetName: string,
+  signer: Wallet | SignerWithAddress,
+  initializer?: string,
+  initializerArgs?: any
+): Promise<any>;
