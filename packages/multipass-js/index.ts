@@ -34,7 +34,6 @@ export class MultipassJs {
     contractName: string;
     version: string;
   }) {
-    // console.log("ProviderNetwork", ProviderNetwork);
     // if (!ProviderNetwork) throw new Error("Provider network not defined");
     // this.JsonRpcProvider = new ethers.providers.BaseProvider(ProviderNetwork);
     this.chainId = chainId;
@@ -49,7 +48,6 @@ export class MultipassJs {
     contractAddress: string,
     domain: string
   ) {
-    console.dir(message);
     return (
       basepath +
       "/?message=" +

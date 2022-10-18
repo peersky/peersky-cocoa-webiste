@@ -23,7 +23,16 @@ function wait(ms: any) {
 // wait(7000);
 // console.log("provider", provider);
 // if (!provider.network) throw new Error("WTF?");
-const multipassJs = new MultipassJs(process.env.CHAIN_ID);
+if (!process.env.MULTIPASS_CONTRACT_NAME)
+  throw new Error("process.env.MULTIPASS_CONTRACT_NAME not set");
+
+if (!process.env.MULTIPASS_CONTRACT_VERSION)
+  throw new Error("process.env.MULTIPASS_CONTRACT_VERSION not set");
+const multipassJs = new MultipassJs({
+  chainId: process.env.CHAIN_ID,
+  contractName: process.env.MULTIPASS_CONTRACT_NAME,
+  version: process.env.MULTIPASS_CONTRACT_VERSION,
+});
 const myIntents = new Discord.IntentsBitField();
 
 myIntents.add("GuildMessages", "DirectMessages", "Guilds", "MessageContent");

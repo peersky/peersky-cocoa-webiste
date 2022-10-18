@@ -3,7 +3,8 @@ import { Flex, Center } from "@chakra-ui/react";
 import PixelsCard from "@peersky/next-web3-chakra/components/PixelsCard";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
 
-const CONTRACTS = ["erc20", "erc721", "Multipass", "erc1155"];
+const CONTRACTS = ["erc20", "erc721", "Multipass", "erc1155", "BestOfGame"];
+const COLORS = ["blue", "green", "pink", "orange"];
 const ContractsList = () => {
   return (
     <Flex
@@ -17,10 +18,20 @@ const ContractsList = () => {
     >
       <Center>
         <Flex flexWrap={"wrap"}>
-          {CONTRACTS.map((contract) => {
+          <PixelsCard
+            bgColor={"purple.300"}
+            w="300px"
+            p={4}
+            key={`generic-c-contracts`}
+            link={`contracts/generic`}
+            heading={`Use my ABI`}
+            textColor={"white.100"}
+            level="h2"
+          />
+          {CONTRACTS.map((contract, idx) => {
             return (
               <PixelsCard
-                bgColor={"red.900"}
+                bgColor={`${COLORS[idx % COLORS.length]}.300`}
                 w="300px"
                 p={4}
                 key={`${contract}-contracts`}

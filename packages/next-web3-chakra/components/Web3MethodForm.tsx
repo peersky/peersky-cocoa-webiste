@@ -29,34 +29,9 @@ import Web3Context from "../providers/Web3Provider/context";
 import useToast from "../hooks/useToast";
 import FileUpload from "./FileUpload";
 import Web3MethodField from "./We3MethodField";
-import { ethers } from "ethers";
-interface argumentField {
-  placeholder?: string;
-  initialValue?: string;
-  label?: string;
-  valueIsEther?: boolean;
-  convertToBytes: boolean;
-  // hide: boolean;
-}
-interface argumentFields {
-  [Key: string]: argumentField;
-}
-interface extendedInputs extends Omit<AbiInput, "components"> {
-  components?: extendedInputs[];
-  meta: {
-    value: string;
-    placeholder: string;
-    hide: boolean;
-    label: string;
-    valueIsEther?: boolean;
-    convertToBytes: boolean;
-  };
-}
 
-interface stateInterface extends Omit<AbiItem, "inputs"> {
-  inputs: Array<extendedInputs>;
-}
-
+import { ArgumentFields, StateInterface, ExtendedInputs } from "../types";
+import useABIItemForm from "../hooks/useAbiItemForm";
 // interface
 
 const Web3MethodForm = ({
@@ -79,126 +54,24 @@ const Web3MethodForm = ({
   key: string;
   method: AbiItem;
   className?: string;
-  argumentFields?: argumentFields;
+  argumentFields?: ArgumentFields;
   hide?: string[];
   BatchInputs?: string[];
   rendered: boolean;
   onClose?: () => void;
   onCancel?: () => void;
   onSuccess?: (resp: any) => void;
-  beforeSubmit?: (state: stateInterface) => any;
+  beforeSubmit?: (state: StateInterface) => any;
   contractAddress: string;
   // inputsProps?: ThemingProps<"Input">;
   props?: any;
 }) => {
-  const setTupleBytesFormat = (tuple: extendedInputs, value: boolean) => {
-    tuple.components?.forEach((internalElement, idx) => {
-      if (internalElement.type === "tuple") {
-        setTupleBytesFormat(internalElement, value);
-      } else {
-        internalElement.meta.convertToBytes = value;
-      }
-    });
-  };
-  const setArguments = (
-    state: stateInterface,
-    {
-      value,
-      index,
-      type,
-    }: { value: any; index: any; type?: "bytesFormat" | undefined }
-  ) => {
-    const newState = { ...state };
-    if (type !== "bytesFormat") {
-      if (newState.inputs[index].type === "tuple") {
-        newState.inputs[index].components = [...value];
-      } else {
-        newState.inputs[index].meta.value = value;
-      }
-    } else {
-      newState.inputs.forEach((inputElement, idx) => {
-        if (inputElement.type === "tuple") {
-          setTupleBytesFormat(inputElement, value);
-        } else {
-          console.log("buggy", newState.inputs[idx], idx);
-          newState.inputs[idx] = { ...inputElement };
-          newState.inputs[idx].meta.convertToBytes = !!value;
-          if (
-            !!value &&
-            !ethers.utils.isBytesLike(newState.inputs[idx].meta.value)
-          ) {
-            newState.inputs[idx].meta.value = ethers.utils.formatBytes32String(
-              newState.inputs[idx].meta.value
-            );
-          }
-        }
-      });
-    }
-
-    return { ...newState };
-  };
-
-  const extendInputs = (element: extendedInputs): any => {
-    console.log("extendInputs", element);
-    if (element.type === "tuple") {
-      return {
-        ...element,
-        components: element.components?.map((comp) => {
-          return {
-            ...comp,
-            meta: {
-              placeholder: comp.name,
-              value: "",
-              hide: false,
-              label: ` ${comp.name}  [${comp.type}]`,
-              valueIsEther: false,
-              convertToBytes: false,
-            },
-          };
-        }),
-      };
-    } else
-      return {
-        ...element,
-        meta: {
-          placeholder:
-            (argumentFields && argumentFields[element.name]?.placeholder) ??
-            element.name,
-          value:
-            (argumentFields && argumentFields[element.name]?.initialValue) ??
-            "",
-          hide: hide?.includes(element.name) ?? false,
-          label:
-            (argumentFields && argumentFields[element.name]?.label) ??
-            ` ${element.name}  [${element.type}]`,
-          valueIsEther:
-            (argumentFields && argumentFields[element.name]?.valueIsEther) ??
-            false,
-          convertToBytes:
-            (argumentFields && argumentFields[element.name]?.convertToBytes) ??
-            false,
-        },
-      };
-  };
-
   const toast = useToast();
   const _BatchInputs = BatchInputs ?? [];
-  const initialState = React.useMemo(() => {
-    const newState: stateInterface = { ...(method as any) };
-    newState.inputs?.forEach((element: extendedInputs, index: number) => {
-      newState.inputs[index] = extendInputs(element);
-    });
-    return newState;
-    //eslint-disable-next-line
-  }, [method]);
 
-  const [state, dispatchArguments] = React.useReducer(
-    setArguments,
-    initialState
-  );
   const [allBytesAreStrings, setAllBytesAreStrings] = React.useState(false);
   const [wasSent, setWasSent] = React.useState(false);
-
+  const { state, dispatchArguments, getArgs } = useABIItemForm(method);
   const handleClose = React.useCallback(() => {
     if (onCancel) {
       state.inputs.forEach((inputElement: any, index: any) => {
@@ -214,6 +87,8 @@ const Web3MethodForm = ({
     }
   }, [state, argumentFields, onCancel]);
 
+  const [queryEnabled, setQueryEnabled] = React.useState(false);
+
   const web3call = async ({ args }: { args: any }) => {
     const contract = new web3ctx.web3.eth.Contract([method]);
 
@@ -227,6 +102,7 @@ const Web3MethodForm = ({
       }));
     return response;
   };
+
   const tx = useMutation(({ args }: { args: any }) => web3call({ args }), {
     onSuccess: (resp) => {
       toast("Transaction went to the moon!", "success");
@@ -236,55 +112,21 @@ const Web3MethodForm = ({
       toast("Transaction failed >.<", "error");
     },
   });
-  const web3ctx = useContext(Web3Context);
-  const handleSubmit = () => {
-    const extractTupleParams = (tuple: extendedInputs) => {
-      return tuple?.components?.map((internalElement: any): any[] =>
-        internalElement.type === "tuple"
-          ? extractTupleParams(internalElement)
-          : internalElement.meta.value
-      );
-    };
-    console.log("submited state", state);
-    const returnedObject: any = [];
-    state.inputs.forEach((inputElement: any, index: number) => {
-      returnedObject[index] =
-        inputElement.type === "address"
-          ? web3ctx.web3.utils.isAddress(
-              web3ctx.web3.utils.toChecksumAddress(inputElement.meta.value)
-            )
-            ? web3ctx.web3.utils.toChecksumAddress(inputElement.meta.value)
-            : console.error("not an address", returnedObject[index])
-          : inputElement.type === "tuple"
-          ? extractTupleParams(inputElement)
-          : inputElement.meta.value;
-      if (inputElement.type.includes("[]")) {
-        returnedObject[index] = JSON.parse(returnedObject[index]);
-      }
-      if (
-        inputElement.type.includes("uint") &&
-        inputElement.meta?.valueIsEther
-      ) {
-        if (inputElement.type.includes("[]")) {
-          returnedObject[index] = returnedObject.map((value: string) =>
-            web3ctx.web3.utils.toWei(value, "ether")
-          );
-        } else {
-          returnedObject[index] = web3ctx.web3.utils.toWei(
-            returnedObject[index],
-            "ether"
-          );
-        }
-      }
-    });
-    beforeSubmit && beforeSubmit(returnedObject);
-    console.log("returnedObject", returnedObject);
-    tx.mutate({ args: returnedObject });
 
-    // if (onClose) {
-    //   onClose();
-    // }
+  console.log("state", state);
+  const handleSubmit = () => {
+    if (
+      method.stateMutability === "view" ||
+      method.stateMutability === "pure"
+    ) {
+    } else {
+      const returnedObject = getArgs();
+      beforeSubmit && beforeSubmit(returnedObject);
+      tx.mutate({ args: returnedObject });
+    }
   };
+
+  const web3ctx = useContext(Web3Context);
 
   React.useEffect(() => {
     if (!tx.isLoading && wasSent) {
@@ -329,9 +171,7 @@ const Web3MethodForm = ({
     }
     return header;
   };
-  if (method.name === "deleteName") console.log("deleteName", state);
   if (!rendered) return <></>;
-  console.log("from state", state);
   return (
     <>
       <Stack
@@ -374,7 +214,6 @@ const Web3MethodForm = ({
           </Switch>
         </Flex>
         {state.inputs.map((inputItem: any, index: any) => {
-          console.log("state input map", inputItem);
           if (
             !inputItem?.meta?.hide &&
             !_BatchInputs?.includes(inputItem.name)

@@ -72,7 +72,6 @@ const Bytes32InputItem = ({
   index: any;
   onKeyPress: any;
 }) => {
-  console.log("input item bytes32", inputItem);
   const web3ctx = useContext(Web3Context);
   return (
     <>
@@ -139,6 +138,8 @@ const NumberInputItem = ({
   index: number;
 }) => {
   const [multiplier, setMultiplier] = React.useState("1");
+
+  console.log("inputItem", inputItem);
 
   return (
     <>
@@ -423,7 +424,6 @@ const TupleInputItem = ({
         {inputItem.name}
       </Heading>
       {inputItem.components.map((internalProperty: any, idx: number) => {
-        console.log("value name", internalProperty);
         return (
           <Web3MethodField
             key={`tuple-${idx}`}
@@ -469,8 +469,6 @@ const Web3MethodField = ({
   onKeyPress: (e: KeyboardEvent) => void;
   //   inputsProps: any;
 }) => {
-  if (inputItem.type === "tuple") console.dir(inputItem);
-  console.log("inputItem.type", inputItem.type);
   const item = () => {
     switch (inputItem.type) {
       case "bool":
@@ -565,7 +563,20 @@ const Web3MethodField = ({
               />
             );
         }
-        return <h1>No project match</h1>;
+        if (inputItem?.type.startsWith("bytes")) {
+          if (inputItem.type.endsWith("[]"))
+            return "Batch bytes are not implemented yet";
+          else
+            return (
+              <Bytes32InputItem
+                dispatchArguments={dispatchArguments}
+                inputItem={inputItem}
+                index={index}
+                onKeyPress={onKeyPress}
+              />
+            );
+        }
+        return <h1>Unimplemented input type {inputItem.type}</h1>;
     }
   };
   return <>{item()}</>;

@@ -60,17 +60,6 @@ const Contract = () => {
 
   const { contractAddress } = router.query;
 
-  const ctx = useContext(Web3Context);
-  const getState = async () => {
-    const contract = new ctx.web3.eth.Contract(abi);
-    contract.options.address = contractAddress;
-    const uri1 = await contract.methods.tokenURI(1).call();
-    // const owner = await contract.methods.owner().call();
-    // const uri2 = await contract.methods.contractURI().call();
-    return { uri1 };
-  };
-  const state = useQuery(["erc721state", contractAddress], getState);
-  console.dir(state.data);
   return (
     <ContractInterface
       abi={abi}

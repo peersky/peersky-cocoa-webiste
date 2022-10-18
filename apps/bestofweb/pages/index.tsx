@@ -51,7 +51,6 @@ const Home = () => {
     }
   }, [domain, web3ctx.account]);
 
-  console.log("domain state", domainState);
   useEffect(() => {
     if (chainId && web3ctx.chainId != chainId) {
       // console.log("request change chain id", web3ctx.chainId, chainId);
@@ -67,7 +66,6 @@ const Home = () => {
   }
 
   const submitRegistrationTx = async () => {
-    console.log("submitting", query.contractAddress);
     const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
     const emptyUserQuery = {
       name: ethers.utils.formatBytes32String(""),
@@ -81,11 +79,6 @@ const Home = () => {
       multipassABI,
       query.contractAddress
     );
-    console.dir(message);
-    console.dir(message.domainName);
-    console.dir(query.signature);
-    console.dir(message.deadline);
-    console.dir(emptyUserQuery);
 
     await multipass.methods
       .register(
@@ -98,9 +91,6 @@ const Home = () => {
       )
       .send({ from: web3ctx.account });
   };
-
-  console.dir(message);
-  console.log("nonce", message?.nonce);
 
   return (
     <Box h="100vh">
