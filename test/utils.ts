@@ -283,7 +283,6 @@ export const BOG_MAX_TURNS = 3;
 export const BOG_BLOCKS_TO_JOIN = "200";
 export const BOG_GAME_PRICE = ethers.utils.parseEther("0.001");
 export const BOG_JOIN_GAME_PRICE = ethers.utils.parseEther("0.001");
-export const BOG_JOIN_POLICY = 0;
 export const BOG_NUM_WINNERS = 3;
 export const BOGSettings = {
   BOG_BLOCKS_PER_TURN,
@@ -293,7 +292,6 @@ export const BOGSettings = {
   BOG_BLOCKS_TO_JOIN,
   BOG_GAME_PRICE,
   BOG_JOIN_GAME_PRICE,
-  BOG_JOIN_POLICY,
   BOG_NUM_WINNERS,
   // BOG_NUM_ACTIONS_TO_TAKE,
 };

@@ -68,11 +68,7 @@ if (require.main === module) {
     !process.env.NUM_WINNERS
   )
     throw new Error("Best of initializer variables not set");
-  const joinPolicy = Number(process.env.JOIN_POLICY);
-  if (isNaN(joinPolicy))
-    throw new Error(
-      "Join policy must be enum number defined in LibTBG.JoinPolicy"
-    );
+
   const settings: BestOfInit.ContractInitializerStruct = {
     blocksPerTurn: process.env.BLOCKS_PER_TURN,
     maxTurns: process.env.MAX_TURNS,
