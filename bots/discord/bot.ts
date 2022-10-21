@@ -6,10 +6,11 @@ import { MultipassJs } from "@daocoacoa/multipass-js";
 // const _ethers = require("ethers");
 // const ethers = _ethers.ethers;
 import { ethers } from "ethers";
-if (!process.env.PRIVATE_KEY) throw new Error("no PRIVATE_KEY provided");
+if (!process.env.DISCORD_REGISTRAR_PRIVATE_KEY)
+  throw new Error("no DISCORD_REGISTRAR_PRIVATE_KEY provided");
 if (!process.env.RPC_URL) throw new Error("no RPC_URL provided");
 
-const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+const signer = new ethers.Wallet(process.env.DISCORD_REGISTRAR_PRIVATE_KEY);
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const DOMAIN_NAME = "discord";
 function wait(ms: any) {
