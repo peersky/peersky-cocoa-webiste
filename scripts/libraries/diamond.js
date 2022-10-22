@@ -103,14 +103,18 @@ async function cutFacets({
   const diamondCut = await ethers.getContractAt("IDiamondCut", diamondAddress);
   let tx;
   let receipt;
+
   // call to init function
-  let functionCall = initializer.interface.encodeFunctionData(
-    "init",
-    initializerArgs
-  );
+  let functionCall = initializer
+    ? initializer.interface.encodeFunctionData("init", initializerArgs)
+    : [];
   tx = await diamondCut
     .connect(signer)
-    .diamondCut(cut, initializer.address, functionCall);
+    .diamondCut(
+      cut,
+      initializer?.address ?? hre.ethers.constants.AddressZero,
+      functionCall
+    );
   if (require.main === module) {
     console.log("Diamond cut tx: ", tx.hash);
   }
@@ -118,6 +122,8 @@ async function cutFacets({
   if (!receipt.status) {
     throw Error(`Diamond upgrade failed: ${tx.hash}`);
   }
+
+  return receipt;
 }
 
 async function replaceFacet(

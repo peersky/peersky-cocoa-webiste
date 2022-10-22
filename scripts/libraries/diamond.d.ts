@@ -16,10 +16,11 @@ export function cutFacets({
   signer,
   initializerArgs,
 }: {
-  facet: string;
+  facets: Contract[];
+  initializer?: string;
   diamondAddress: string;
   signer: Wallet | SignerWithAddress;
-  initializerArgs: any;
+  initializerArgs?: any;
 });
 async function replaceFacet(
   DiamondAddress: string,
