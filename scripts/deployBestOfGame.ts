@@ -29,6 +29,7 @@ export const deploy = async ({
       "BestOfFacet",
       "GameMastersFacet",
       "RequirementsFacet",
+      "EIP712InspectorFacet",
     ],
     _signer,
     "BestOfInit",

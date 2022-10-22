@@ -7,7 +7,7 @@ import "hardhat-diamond-abi";
 import "@typechain/hardhat";
 import "hardhat-abi-exporter";
 import { toSignature, isIncluded } from "./utils/diamond";
-import { replaceFacet } from "./scripts/libraries/diamond";
+import { cutFacets, replaceFacet } from "./scripts/libraries/diamond";
 import * as ipfsUtils from "./utils/ipfs";
 import fs from "fs";
 import "hardhat-gas-reporter";
@@ -43,6 +43,24 @@ task("replaceFacet", "Upgrades facet")
       taskArgs.facet,
       accounts[0]
     );
+  });
+
+task("addFacet", "adds a facet")
+  .addParam("facet", "facet")
+  .addParam("address", "contract address")
+  .setAction(async (taskArgs, hre) => {
+    const Facet = await hre.ethers.getContractFactory(taskArgs.facet);
+    const accounts = await hre.ethers.getSigners();
+    const facet = await Facet.deploy();
+    await facet.deployed();
+
+    const response = await cutFacets({
+      facets: [facet],
+      diamondAddress: taskArgs.address,
+      signer: accounts[0],
+    });
+
+    console.log(response.hash);
   });
 
 export default {
@@ -96,7 +114,12 @@ export default {
     {
       // (required) The name of your Diamond ABI
       name: "MultipassDiamond",
-      include: ["DNSFacet", "OwnershipFacet", "DiamondLoupeFacet"],
+      include: [
+        "DNSFacet",
+        "OwnershipFacet",
+        "DiamondLoupeFacet",
+        "EIP712InspectorFacet",
+      ],
       // We explicitly set `strict` to `true` because we want to validate our facets don't accidentally provide overlapping functions
       strict: true,
       // We use our diamond utils to filter some functions we ignore from the combined ABI
@@ -119,6 +142,7 @@ export default {
         "DiamondLoupeFacet",
         "RequirementsFacet",
         "GameMastersFacet",
+        "EIP712InspectorFacet",
       ],
       strict: true,
       filter(

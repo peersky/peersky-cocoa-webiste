@@ -19,7 +19,7 @@ export const deploy = async ({
   if (!_signer || !ownerAddress || !version || !name)
     throw new Error("Missing properties");
   const diamondAddress = await deployDiamond(
-    ["DiamondLoupeFacet", "OwnershipFacet", "DNSFacet"],
+    ["DiamondLoupeFacet", "OwnershipFacet", "DNSFacet", "EIP712InspectorFacet"],
     _signer,
     "MultipassInit",
     [name, version]
