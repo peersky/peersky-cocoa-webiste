@@ -40,7 +40,7 @@ const signaturesToIgnore = [
   // but we already provide that function through DiamondLoupeFacet
   // ["DiamondLoupeFacet", "supportsInterface(bytes4)"],
   ["BestOfFacet", "supportsInterface(bytes4)"],
-  ["MultipassDNS", "supportsInterface(bytes4)"],
+  ["DNSFacet", "supportsInterface(bytes4)"],
 ] as const;
 
 export function isIncluded(contractName: string, signature: string): boolean {
