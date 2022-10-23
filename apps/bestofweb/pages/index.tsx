@@ -15,6 +15,8 @@ import {
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
+import { LibMultipass } from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
+import { MultipassJs } from "@daocoacoa/multipass-js";
 const multipassABI = require("../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
 const Home = () => {
   const bp = useBreakpointValue({ base: "md" });
@@ -80,9 +82,17 @@ const Home = () => {
       query.contractAddress
     );
 
+    const applicantData: LibMultipass.RecordStruct = {
+      id: message.id,
+      name: message.name,
+      wallet: message.wallet,
+      nonce: message.nonce,
+      domainName: message.domainName,
+    };
+
     await multipass.methods
       .register(
-        message,
+        applicantData,
         message.domainName,
         query.signature,
         message.deadline,
@@ -157,6 +167,7 @@ const Home = () => {
             </Stack>
             <Button
               onClick={() => submitRegistrationTx()}
+              // isLoading={}
               colorScheme={"blue"}
               placeSelf="center"
             >
