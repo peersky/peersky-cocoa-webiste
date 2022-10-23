@@ -1,5 +1,5 @@
 import Web3 from "web3/types";
-import { AbiItem } from "web3-utils";
+import { AbiItem, AbiInput } from "web3-utils";
 
 export interface WalletStatesInterface {
   ONBOARD: String;
@@ -8,7 +8,12 @@ export interface WalletStatesInterface {
   UNKNOWN_CHAIN: String;
 }
 
-export type supportedChains = "localhost" | "mumbai" | "polygon" | "ethereum";
+export type supportedChains =
+  | "localhost"
+  | "mumbai"
+  | "polygon"
+  | "ethereum"
+  | "gorli";
 
 export interface ChainInterface {
   chainId: number;
@@ -57,4 +62,34 @@ export interface UIProviderInterface {
   setSidebarToggled: Function;
   setSidebarVisible: Function;
   sessionId: string | undefined;
+}
+
+export interface ArgumentField {
+  placeholder?: string;
+  initialValue?: string;
+  label?: string;
+  valueIsEther?: boolean;
+  convertToBytes: boolean;
+  // hide: boolean;
+}
+export interface ArgumentFields {
+  [Key: string]: ArgumentField;
+}
+
+export interface Web3InpuUIField {
+  value: string;
+  placeholder: string;
+  hide: boolean;
+  label: string;
+  valueIsEther?: boolean;
+  convertToBytes: boolean;
+  initialValue: string;
+}
+export interface ExtendedInputs extends Omit<AbiInput, "components"> {
+  components?: ExtendedInputs[];
+  meta: Web3InpuUIField;
+}
+
+export interface StateInterface extends Omit<AbiItem, "inputs"> {
+  inputs: Array<ExtendedInputs>;
 }

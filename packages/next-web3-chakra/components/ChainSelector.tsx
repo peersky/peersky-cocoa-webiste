@@ -12,7 +12,7 @@ import {
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { MdOutlineLaptopMac } from "react-icons/md";
 import Web3Context from "../providers/Web3Provider/context";
-const ChainSelector = ({selectorScheme} : { selectorScheme?: string}) => {
+const ChainSelector = ({ selectorScheme }: { selectorScheme?: string }) => {
   const web3Provider = useContext(Web3Context);
   return (
     <code>
@@ -28,7 +28,8 @@ const ChainSelector = ({selectorScheme} : { selectorScheme?: string}) => {
               h="24px"
               mr={4}
               src={
-                web3Provider.targetChain?.name === "ethereum"
+                web3Provider.targetChain?.name === "ethereum" ||
+                web3Provider.targetChain?.name === "gorli"
                   ? "https://s3.amazonaws.com/static.simiotics.com/moonstream/assets/ethereum/eth-diamond-rainbow.png"
                   : web3Provider.targetChain?.name === "localhost"
                   ? ""
@@ -42,11 +43,11 @@ const ChainSelector = ({selectorScheme} : { selectorScheme?: string}) => {
         >
           {web3Provider.targetChain?.name ?? "Chain selector"}
         </MenuButton>
-        <MenuList >
+        <MenuList bgColor={"blue.50"}>
           <MenuItem
             fontSize={"24px"}
             isDisabled={web3Provider.targetChain?.name === "ethereum"}
-            _hover={{ backgroundColor: "gray.100"}}
+            _hover={{ backgroundColor: "gray.100" }}
             onClick={() => {
               web3Provider.changeChain("ethereum");
             }}
@@ -61,7 +62,23 @@ const ChainSelector = ({selectorScheme} : { selectorScheme?: string}) => {
           </MenuItem>
           <MenuItem
             fontSize={"24px"}
-            _hover={{ backgroundColor: "gray.100"}}
+            isDisabled={web3Provider.targetChain?.name === "gorli"}
+            _hover={{ backgroundColor: "gray.100" }}
+            onClick={() => {
+              web3Provider.changeChain("gorli");
+            }}
+          >
+            <Image
+              // w="24px"
+              h="24px"
+              mr={6}
+              src="https://s3.amazonaws.com/static.simiotics.com/moonstream/assets/eth-diamond-black.png"
+            ></Image>
+            Gorli
+          </MenuItem>
+          <MenuItem
+            fontSize={"24px"}
+            _hover={{ backgroundColor: "gray.100" }}
             isDisabled={web3Provider.targetChain?.name === "polygon"}
             onClick={() => {
               web3Provider.changeChain("polygon");
@@ -77,7 +94,7 @@ const ChainSelector = ({selectorScheme} : { selectorScheme?: string}) => {
           </MenuItem>
           <MenuItem
             fontSize={"24px"}
-            _hover={{ backgroundColor: "gray.100"}}
+            _hover={{ backgroundColor: "gray.100" }}
             isDisabled={web3Provider.targetChain?.name === "mumbai"}
             onClick={() => {
               web3Provider.changeChain("mumbai");
@@ -93,7 +110,7 @@ const ChainSelector = ({selectorScheme} : { selectorScheme?: string}) => {
           </MenuItem>
           <MenuItem
             fontSize={"24px"}
-            _hover={{ backgroundColor: "gray.100"}}
+            _hover={{ backgroundColor: "gray.100" }}
             isDisabled={web3Provider.targetChain?.name === "localhost"}
             onClick={() => {
               web3Provider.changeChain("localhost");

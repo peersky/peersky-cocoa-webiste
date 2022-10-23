@@ -6,9 +6,8 @@ import {
   GetMethodsAbiType,
   supportedChains,
   TokenInterface,
-} from "../../types"
+} from "../../types";
 import router from "next/router";
-
 export const MAX_INT =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 
@@ -74,10 +73,15 @@ export const chains: { [key in supportedChains]: ChainInterface } = {
     name: "ethereum",
     rpcs: ["https://mainnet.infura.io/v3/"],
   },
+  gorli: {
+    chainId: 5,
+    name: "gorli",
+    rpcs: ["https://gorli.infura.io/v3/"],
+  },
   localhost: {
     chainId: 1337,
     name: "localhost",
-    rpcs: ["http://127.0.0.1:8545"],
+    rpcs: ["http://localhost:8545"],
   },
   mumbai: {
     chainId: 80001,
@@ -112,7 +116,6 @@ const isKnownChain = (_chainId: number) => {
 const Web3Provider = ({ children }: { children: JSX.Element }) => {
   const [web3] = React.useState<Web3>(new Web3(null));
 
-
   const [targetChain, _setChain] = React.useState<ChainInterface | undefined>();
 
   web3.eth.transactionBlockTimeout = 100;
@@ -143,10 +146,10 @@ const Web3Provider = ({ children }: { children: JSX.Element }) => {
     if (window?.ethereum) {
       _askWalletProviderToChangeChain(chains[chainName], setChainId, web3).then(
         () => {
-          if (chainId) {
-            _setChain(chains[chainName]);
-            setButtonText(WALLET_STATES.CONNECTED);
-          }
+          // if (chainId) {
+          //   _setChain(chains[chainName]);
+          //   setButtonText(WALLET_STATES.CONNECTED);
+          // }
         },
         (err: any) => {
           console.error("changeChainFromUI:", err.message);
@@ -156,6 +159,7 @@ const Web3Provider = ({ children }: { children: JSX.Element }) => {
   };
 
   const setWeb3ProviderAsWindowEthereum = async () => {
+    console.log("setWeb3ProviderAsWindowEthereum");
     let wasSetupSuccess = false;
     await window.ethereum
       .request({ method: "eth_requestAccounts" })
@@ -293,18 +297,14 @@ const Web3Provider = ({ children }: { children: JSX.Element }) => {
     //eslint-disable-next-line
   }, []);
 
-  const getChainFromId = (chainId: string | number ) =>
-  {
-
-   const [chainName] = Object.entries(chains).find(([chainName, chain]) => {
-
-      if(chain.chainId == chainId) return true;
-
-    }) ?? [];
-    if(!chainName) throw new Error("chain id is not found");
+  const getChainFromId = (chainId: string | number) => {
+    const [chainName] =
+      Object.entries(chains).find(([chainName, chain]) => {
+        if (chain.chainId == chainId) return true;
+      }) ?? [];
+    if (!chainName) throw new Error("chain id is not found");
     return chainName as any as supportedChains;
-  }
-
+  };
 
   const defaultTxConfig = { from: account };
   return (
