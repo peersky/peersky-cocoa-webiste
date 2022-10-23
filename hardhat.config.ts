@@ -81,8 +81,14 @@ export default {
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
     },
     ganache: {
-      url: process.env.RPC_URL ?? "",
+      url: process.env.GANACHE_RPC_URL ?? "",
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
+    },
+    gorli: {
+      url: process.env.GORLI_RPC_URL ?? "",
+      accounts: [
+        process.env.GORLI_PRIVATE_KEY && process.env.GORLI_PRIVATE_KEY,
+      ],
     },
   },
   paths: {
