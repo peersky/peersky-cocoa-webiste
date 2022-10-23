@@ -2,6 +2,7 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-await-in-loop */
 // import { time } from "@openzeppelin/test-helpers";
+import hre from "hardhat";
 import { contract, ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
@@ -26,6 +27,7 @@ import { LibMultipass } from "../types/typechain/hardhat-diamond-abi/HardhatDiam
 import { RankToken } from "../types/typechain/contracts/tokens/RankToken";
 import { BestOfInit } from "../types/typechain/contracts/initializers/BestOfInit";
 import { assert } from "console";
+import { MultipassJs } from "@daocoacoa/multipass-js";
 
 export interface SignerIdentity {
   name: string;
@@ -281,7 +283,6 @@ export const BOG_MAX_TURNS = 3;
 export const BOG_BLOCKS_TO_JOIN = "200";
 export const BOG_GAME_PRICE = ethers.utils.parseEther("0.001");
 export const BOG_JOIN_GAME_PRICE = ethers.utils.parseEther("0.001");
-export const BOG_JOIN_POLICY = 0;
 export const BOG_NUM_WINNERS = 3;
 export const BOGSettings = {
   BOG_BLOCKS_PER_TURN,
@@ -291,7 +292,6 @@ export const BOGSettings = {
   BOG_BLOCKS_TO_JOIN,
   BOG_GAME_PRICE,
   BOG_JOIN_GAME_PRICE,
-  BOG_JOIN_POLICY,
   BOG_NUM_WINNERS,
   // BOG_NUM_ACTIONS_TO_TAKE,
 };
@@ -315,12 +315,12 @@ export const setupEnvironment = async ({
     multipassAddress
   )) as MultipassDiamond;
 
-  if (!process.env.INFURA_URL || !process.env.RANK_TOKEN_PATH)
+  if (!process.env.IPFS_GATEWAY_URL || !process.env.RANK_TOKEN_PATH)
     throw new Error("Rank token IPFS route not exported");
   const rankTokenAddress = await deployRankToken({
     owner: contractDeployer.wallet.address,
     signer: contractDeployer.wallet,
-    URI: process.env.INFURA_URL + process.env.RANK_TOKEN_PATH,
+    URI: process.env.IPFS_GATEWAY_URL + process.env.RANK_TOKEN_PATH,
   });
   const rankToken = (await ethers.getContractAt(
     "RankToken",
@@ -453,41 +453,21 @@ export const signRegistrarMessage = async (
   signer: SignerIdentity
 ) => {
   let { chainId } = await ethers.provider.getNetwork();
-
-  const domain = {
-    name: process.env.MULTIPASS_CONTRACT_NAME,
+  if (!process.env.MULTIPASS_CONTRACT_NAME)
+    throw new Error("MULTIPASS_CONTRACT_NAME not exported");
+  if (!process.env.MULTIPASS_CONTRACT_VERSION)
+    throw new Error("MULTIPASS_CONTRACT_VERSION not exported");
+  const multipassJs = new MultipassJs({
+    chainId: chainId,
+    contractName: process.env.MULTIPASS_CONTRACT_NAME,
     version: process.env.MULTIPASS_CONTRACT_VERSION,
-    chainId,
-    verifyingContract: verifierAddress,
-  };
-
-  const types = {
-    registerName: [
-      {
-        type: "bytes32",
-        name: "name",
-      },
-      {
-        type: "bytes32",
-        name: "id",
-      },
-      {
-        type: "bytes32",
-        name: "domainName",
-      },
-      {
-        type: "uint256",
-        name: "deadline",
-      },
-      {
-        type: "uint96",
-        name: "nonce",
-      },
-    ],
-  };
-
-  const s = await signer.wallet._signTypedData(domain, types, { ...message });
-  return s;
+    ...hre.network,
+  });
+  return await multipassJs.signRegistrarMessage(
+    message,
+    verifierAddress,
+    signer.wallet
+  );
 };
 
 export default {
@@ -1014,7 +994,7 @@ export const mockProposals = async ({
   turn: BigNumberish;
   verifierAddress: string;
 }) => {
-  let proposals = [];
+  let proposals = [] as any as ProposalSubmittion[];
   for (let i = 0; i < players.length; i++) {
     let proposal = await mockProposalSecrets({
       proposer: players[i],

@@ -103,14 +103,18 @@ async function cutFacets({
   const diamondCut = await ethers.getContractAt("IDiamondCut", diamondAddress);
   let tx;
   let receipt;
+
   // call to init function
-  let functionCall = initializer.interface.encodeFunctionData(
-    "init",
-    initializerArgs
-  );
+  let functionCall = initializer
+    ? initializer.interface.encodeFunctionData("init", initializerArgs)
+    : [];
   tx = await diamondCut
     .connect(signer)
-    .diamondCut(cut, initializer.address, functionCall);
+    .diamondCut(
+      cut,
+      initializer?.address ?? hre.ethers.constants.AddressZero,
+      functionCall
+    );
   if (require.main === module) {
     console.log("Diamond cut tx: ", tx.hash);
   }
@@ -118,6 +122,43 @@ async function cutFacets({
   if (!receipt.status) {
     throw Error(`Diamond upgrade failed: ${tx.hash}`);
   }
+
+  return receipt;
+}
+
+async function replaceFacet(
+  DiamondAddress,
+  facetName,
+  signer,
+  initializer,
+  initializerArgs
+) {
+  const Facet = await hre.ethers.getContractFactory(facetName, signer);
+  const facet = await Facet.deploy();
+  await facet.deployed();
+
+  const diamond = await ethers.getContractAt("IDiamondCut", DiamondAddress);
+  const cut = [
+    {
+      facetAddress: facet.address,
+      action: FacetCutAction.Replace,
+      functionSelectors: getSelectors(facet),
+    },
+  ];
+
+  let functionCall = initializer
+    ? initializer.interface.encodeFunctionData("init", initializerArgs)
+    : [];
+
+  tx = await diamond
+    .connect(signer)
+    .diamondCut(
+      cut,
+      initializer?.address ?? hre.ethers.constants.AddressZero,
+      functionCall
+    );
+
+  return tx;
 }
 
 async function deployDiamond(FacetNames, signer, initializer, initializerArgs) {
@@ -183,6 +224,7 @@ async function deployDiamond(FacetNames, signer, initializer, initializerArgs) {
 }
 
 exports.deployDiamond = deployDiamond;
+exports.replaceFacet = replaceFacet;
 exports.cutFacets = cutFacets;
 exports.getSelectors = getSelectors;
 exports.getSelector = getSelector;

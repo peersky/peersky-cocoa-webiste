@@ -30,6 +30,7 @@ const path = require("path");
 import { BigNumber, BigNumberish } from "ethers";
 import { assert } from "console";
 const scriptName = path.basename(__filename);
+import hre from "hardhat";
 
 let votes: MockVotes;
 let proposalsStruct: ProposalSubmittion[];
@@ -330,6 +331,7 @@ const fillParty = async (
     await env.bestOfGame.connect(gameMaster.wallet).startGame(gameId);
   }
 };
+
 describe(scriptName, () => {
   const requirement: LibCoinVending.ConfigPositionStruct = {
     ethValues: {
