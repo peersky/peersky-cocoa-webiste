@@ -68,6 +68,9 @@ const _StateItem = ({
   const [isEnabled, setIsEnabled] = React.useState(
     abiItem?.inputs?.length === 0 ? true : false
   );
+  React.useEffect(() => {
+    setIsEnabled(abiItem?.inputs?.length === 0 ? true : false);
+  }, [address]);
 
   const response = useQuery(
     ["abiItemState", address, abiItem.name],
