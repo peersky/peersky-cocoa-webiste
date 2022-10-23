@@ -26,4 +26,8 @@ contract EIP712InspectorFacet {
             ss._TYPE_HASH
         );
     }
+
+    function currentChainId() public view returns (uint256) {
+        return block.chainid;
+    }
 }
