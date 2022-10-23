@@ -70,8 +70,8 @@ export class MultipassJs {
     let chainId = this.chainId;
 
     const domain = {
-      name: process.env.MULTIPASS_CONTRACT_NAME,
-      version: process.env.MULTIPASS_CONTRACT_VERSION,
+      name: this.name,
+      version: this.version,
       chainId,
       verifyingContract: verifierAddress,
     };
