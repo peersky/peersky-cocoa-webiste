@@ -49,7 +49,7 @@ Privacy: Votes are hidden until `Round` is present. GameMaster holds a secret th
 4. Now winner of game can create his own new tornament of increased level ( has token of needed gameRank)
 5. Become part of comunity who plays this game! It results a ladder: higher rank games are only avalible to very good players... or ones who can afford to buy rank token from such good player. (There is no other way to receive rank tokens)
 
-### MultipassDNS
+### DNSFacet
 
 Is a simple idea of having your own multiverse passport in crypto world.
 
