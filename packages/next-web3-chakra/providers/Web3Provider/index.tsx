@@ -73,6 +73,11 @@ export const chains: { [key in supportedChains]: ChainInterface } = {
     name: "ethereum",
     rpcs: ["https://mainnet.infura.io/v3/"],
   },
+  gorli: {
+    chainId: 5,
+    name: "gorli",
+    rpcs: ["https://gorli.infura.io/v3/"],
+  },
   localhost: {
     chainId: 1337,
     name: "localhost",
