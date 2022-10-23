@@ -13,7 +13,7 @@ import "../vendor/facets/OwnershipFacet.sol";
 
 // Consider upgrade for https://eips.ethereum.org/EIPS/eip-4834
 
-contract MultipassDNS is EIP712, IMultipass {
+contract DNSFacet is EIP712, IMultipass {
     using ECDSA for bytes32;
     using LibMultipass for bytes32;
 
@@ -105,8 +105,9 @@ contract MultipassDNS is EIP712, IMultipass {
         emit InitializedDomain(registrar, freeRegistrationsNumber, fee, domainName, referrerReward, referralDiscount);
     }
 
-    function _enforseDomainNameIsValid(bytes32 domainName) private pure {
+    function _enforseDomainNameIsValid(bytes32 domainName) private view {
         require(domainName._checkNotEmpty(), "activateDomain->Please specify LibMultipass.Domain name");
+        require(domainName.resolveDomainIndex() != 0, "Domain does not exist");
     }
 
     function activateDomain(bytes32 domainName) public override onlyOwner {
@@ -199,6 +200,7 @@ contract MultipassDNS is EIP712, IMultipass {
         LibMultipass.NameQuery memory referrer,
         bytes memory referralCode
     ) public payable override {
+        _enforseDomainNameIsValid(domainName);
         _validateRegistration(newRecord, domainName, registrarSignature, signatureDeadline);
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
         (bool hasValidReferrer, LibMultipass.Record memory referrerRecord) = LibMultipass.resolveRecord(referrer);
@@ -241,6 +243,7 @@ contract MultipassDNS is EIP712, IMultipass {
         bytes memory registrarSignature,
         uint256 signatureDeadline
     ) public payable override {
+        _enforseDomainNameIsValid(domainName);
         query.targetDomain = domainName;
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
         require(_domain.properties.isActive, "Multipass->modifyUserName: LibMultipass.Domain is not active");
