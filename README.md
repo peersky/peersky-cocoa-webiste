@@ -71,8 +71,10 @@ Once all proposals are submitted, or timeout was reached - second phase becomes 
 In order to vote, players contact `Game Master` with their vote (three proposals they like). `Game Master` verifies that vote is legit and returns to player signed message containing information about player's vote.
 Now `Participant` can submit his vote by submitting this signed message to the contract.
 
-3. Calculation
-   Once all votes are submitted, or if turn timeout has reached, `Game Master` can now end the turn. Ending turn involves publishing turnSalt - a secret value unique per turn. By doing that, `Game Master` makes it possible for anyone to check who proposed which proposal, and that votes are indeed correctly submitted. Smart contract at this stage will verify that votes indeed where correct.
+3.
+
+Calculation
+Once all votes are submitted, or if turn timeout has reached, `Game Master` can now end the turn. Ending turn involves publishing turnSalt - a secret value unique per turn. By doing that, `Game Master` makes it possible for anyone to check who proposed which proposal, and that votes are indeed correctly submitted. Smart contract at this stage will verify that votes indeed where correct.
 
 If validation is OK, smart contract further will update scoreboard with each `Participant`'s score
 
