@@ -14,16 +14,15 @@ Author is deeply inspired by fact that tribes of Mesoamerica [used cocoa beans a
 
 ## Projects
 
-### Best Of 
+### Best Of
 
 Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated democracy.
 
-Create your own party. Vote for best proposal for a set number of rounds. Each round a new proposal from each participant is accepted and each participant can vote for three proposals in order of their preference: 3/2/1 points (for now thats hardcoded number, as well as minimum players must be above three).
+Create your own party. Vote for best proposal for a set number of rounds. Winner gets an NFT that allows to play with cool kids in higher ranked league.
 
-Proposals are submitted privately, as well as votes are. Results are public though. Hence unique offering of this project is:
-
-- Voting and proposing stages are fully anonymous
+- Voting and proposing stages are anonymous
 - Results and player actions after score calculations are verifiable and public
+
 
 #### Implementation
 
