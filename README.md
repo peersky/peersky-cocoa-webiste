@@ -1,6 +1,6 @@
 # DAO COCOA
 
-### DISCLAIMER
+## DISCLAIMER
 
 This is Work in progress, bugs may reside.
 
@@ -8,34 +8,41 @@ This is Work in progress, bugs may reside.
 
 This repository holds various ideas and their implementation made with solo purpose of make world around us better, safer. Author trully belives that decentralization is a key aspect to solving many today social and socio-economical problems so even though some of the projects might seem as silly game, they hold larger vision and values.
 
-### Why COCOA?
+## Why COCOA?
 
-I love it.
-
-Also it represents what happens inside - hot chocolate on every corner.
+Author is deeply inspired by fact that tribes of Mesoamerica [used cocoa beans as trading currency](https://books.google.com/books?id=urs9QCMKOw4C&q=ripe%20colour&pg=PA25). In a way it makes sense - what else you need in a bad day but a cup of hot cocoa?
 
 ## Projects
 
-### BestOf
+### Best Of Propooses
 
 Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated democracy.
 
-Idea is simple - vote for best ideas with small group of your fellows for many rounds to decide who has most support. Winner can represent your group on higher rank votings.
+Create your own party. Vote for best proposal for a set number of rounds. Each round a new proposal from each participant is accepted and each participant can vote for three proposals in order of their preference: 3/2/1 points (for now thats hardcoded number, as well as minimum players must be above three).
 
-Terminology:
+Proposals are submitted privately, as well as votes are. Results are public though. Hence unique offering of this project is:
+
+- Voting and proposing stages are fully anonymous
+- Results and player actions after score calculations are verifiable and public
+
+#### Implementation
+
+For this game an intermediate - `Game Master`, is required. For each game, `Game Master` holds secret. `Game Master` uses it to calculate individual round salt for each round and based on that - individual secret per each round per each participant.
+
+#### Terminology:
 
 - `RankToken` - Token used to estimate how many games bearer has won;
 - `Game` - the contract
 - `Tournament` instance of game (can be many of those)
 - `Proposal` string text (link, idea, etc) that player submits
-- `vote` - array of three proposals that player selects as his favorites
+- `vote` - array of three proposals that player selects as his favorites [3points, 2points, 1point]
 - `Round, Turn` - One set of giving `proposals` and `votes`. First round only `proposals` exist, last round only `votes` exist.
-  `GameMaster` - Trusted wallet that executes some of transactions for sake of player privacy and fun. It can be a player, but for sake of automation - API server is being developed.
+  `GameMaster` - Trusted 3rd party (and a signing key) that executes some of transactions for sake of player privacy and fun. It can be a player, but for sake of automation - API server is provided.
 
-Privacy: Votes are hidden until `Round` is present. GameMaster holds a secret that together with tournament id and turn - hashes all votes, and proposals that way that noone can know who votes for whom until round is over.
+#### Rules quick summary:
 
 0. Initialize game contract with number of rounds
-1. Create a tornament with fixed number of rounds
+1. Create a game with fixed number of rounds
 2. Start playing game with your friends - vote for best playlist, for best picture on instagram, whatever.
    - Send your links to game master and he will post them on to the contract on your behalf
    - Once there is enough links - start voting. Each player can give 6 points in a round divided as 3/2/1 and cannot vote for himself
@@ -49,22 +56,87 @@ Privacy: Votes are hidden until `Round` is present. GameMaster holds a secret th
 4. Now winner of game can create his own new tornament of increased level ( has token of needed gameRank)
 5. Become part of comunity who plays this game! It results a ladder: higher rank games are only avalible to very good players... or ones who can afford to buy rank token from such good player. (There is no other way to receive rank tokens)
 
-### DNSFacet
+#### Turn processing logic
+
+There is three stages for each turn.
+
+1. Proposals
+
+In order to propose, a game `Participant` must: Send `Game Master` a message containing his `Proposal`, and his signature that lets `Game Master` later to prove that `Participant` indeed proposed this `Proposal`.
+
+If `Game Master` accepts proposal, it must immediately submit it on chain on behalf of a participant which stays at this point anonymous. It also submits a signature received from `Participant` which is obfuscated with a secret. That way once turn salt is published - it later can be proven that `Game Master` submitted `Participants` proposal.
+
+2. Voting
+
+Once all proposals are submitted, or timeout was reached - second phase becomes active: no proposals can be submitted, votes are accepted.
+
+In order to vote, players contact `Game Master` with their vote (three proposals they like). `Game Master` verifies that vote is legit and returns to player signed message containing information about player's vote.
+Now `Participant` can submit his vote by submitting this signed message to the contract.
+
+3. Calculation
+   Once all votes are submitted, or if turn timeout has reached, `Game Master` can now end the turn. Ending turn involves publishing turnSalt - a secret value unique per turn. By doing that, `Game Master` makes it possible for anyone to check who proposed which proposal, and that votes are indeed correctly submitted. Smart contract at this stage will verify that votes indeed where correct.
+
+If validation is OK, smart contract further will update scoreboard with each `Participant`'s score
+
+Game ends after preset number of rounds has been reached and top three player scores are distributed in ranking (1/2/3). If top player scores are equal game keeps on in boolites until distribution is acheived.
+
+Last and First turns are unique in a way: In First turn there yet no proposals to vote on, hence no votes can be submitted. Vice versa in the last turn - only votes are submitted, no proposals are expected.
+
+#### Privacy
+
+Votes are hidden until `Round` is present. `Game Master` holds a secret that together with tournament id and turn - hashes all votes, and proposals that way that noone can know who votes for whom until round is over.
+
+The big challange is to decentralise `Game Master` so that we can be sure that nobody can access secret. This part is under research.
+
+### Multipassport
 
 Is a simple idea of having your own multiverse passport in crypto world.
+On chain records holds openly and publically availible mapping that connects user address to his username and user id on some kind of domain.
 
-On chain records holds openly and publically availible mapping that connects user address to his username and user id on some kind of domain (can be any string).
+#### Motivation
 
-example recored on chain:
+This allows usecase scenarios where one can get Crypto by a command directly in his Slack/Telegram/Discord.
+Imagine you can type in your messenger such conversation
 
 ```
-Domain: Discord
+You: Hey @MultipassportBot, what's @vitalik address?
+MultipassportBot: 0x....
+```
+
+```
+You: Hey @MultipassportBot, whois <address>
+MultipassportBot: is @vitalik.
+```
+
+```
+You: Hey @MultipassportBot, whois <address> @ <another_platform>
+MultipassportBot: is @vitalik.
+```
+
+or even
+
+```
+You: Hey @MultipassportBot send @vitalik 1ETH
+MultipassportBot: Here is the link to proceed: <LINK>
+```
+
+#### Terminology
+
+- `domain`: A domain under which lookup is happening. Can be for example `Discord` or `Telegram` or `<YouNameItForum>`
+- `registrar`: A private key holder who can be accessed only by `domain` owner
+
+#### Implementation
+
+Record on chain is structured as
+
+```
+Domain: <domain>
 username: <user_name>
 id: <user_uuid>
 address: <verified_user_wallet_address>
 ```
 
-Initial implementation is working trough discord bot, however you can have other implementations upon request
+All strings limited to 32 bytes and are stored as `bytes32` on chain.
 
 #### `username` vs `user_id`
 
@@ -103,82 +175,72 @@ Once you registered - you can generate referral code and once someone pays for r
 
 ## Libraries
 
+### NPM packages
+
+NPM packages are provided to ease work with the projects:
+
+#### Multipass-js
+
+    Library with common helper functions for interacting with multipass smart contract
+
+#### next-web3-chakra
+
+    React library that depends on chakra-ui and Next-js.
+
 ### LibTurnBasedGame
 
 Implements generic methods to manage a turn based game.
 
 Supports TURNS, ROUNDS, GAMES, and unique storage space for individual games.
 
-Structure of data:
+### LibCoinVending
 
-```solidity
-struct GameInstance {
-  address gameMaster;
-  uint256 currentRound;
-  uint256 currentTurn;
-  uint256 turnStartedAt;
-  uint256 roundEndedAt;
-  uint256 registrationOpenAt;
-  bool hasStarted;
-  EnumerableMap.UintToAddressMap players;
-  mapping(address => bool) madeMove;
-  uint256 numPlayersMadeMove;
-  mapping(address => uint256) score;
-  bool isRoundOver;
-  bytes32 implemenationStoragePointer;
-}
+This library is used to simulate the vending machine coin acceptor state machine that: - Supports large number of positions; Each represents requirements to acess different goods of the virtual vending machine. - Accepts multiple assets of following types: Native (Eth), ERC20, ERC721, and ERC1155 tokens that can be stacked together. - Allows for each individual asset action promise can be one of following: - Lock: The asset is locked in the acceptor with promise that asset will be returned to the sender at release funds time. - Bet: The asset is locked in the acceptor with promise that asset will be awarded to benificiary at release funds time. - Pay: The asset is locked in the acceptor with promise that asset will be paid to payee at release funds time. - Burn: The asset is locked in the acceptor with promise that asset will be destroyed at release funds time. - Maintains each position balance, hence allowing multiple participants to line up for the same position. - Allows three actions: - Fund position with assets - Refund assets to user - Consume assets and provide goods to user - Consuming asset might take a form of - Transferring assets to payee - Burning assets - Awarding beneficiary with assets - Returning locked assets back to sender
 
-struct TBGStorageStruct {
-  GameSettings settings;
-  mapping(uint256 => GameInstance) games;
-  // mapping(string => uint256) gameIdToNum;
-  uint256 gameNum;
-  mapping(address => uint256) playerInGame;
-  uint256 totalGamesCreated;
-}
+        This library DOES enforces that any position can only be refunded or processed only within amount funded boundaries.
+        This library DOES NOT store the addresses of senders, nor benificiaries, nor payees.
+        This is to be stored within implementation contract.
 
-```
+
+        !!!!! IMPORTANT !!!!!
+        This library does NOT invocates reentrancy guards. It is implementation contract's responsibility to enforce reentrancy guards.
+        Reentrancy guards MUST be implemented in an implementing contract.
+
+        Usage:
+            0. Configure position via configure(...)
+            1. fund position with assets via fund(...)
+            2. release or refund assets via release(...) or refund(...)
+            3. repeat steps 1 and 2 as needed.
+                Position can be recofigured at any time when it's effective balance is zero: `timesFunded - timesRefuned - timesReleased = 0`
+
+
+        Test state:
+            This library most functionality has been tested: see ../tests/LibCoinVending.ts and ../tests/report.md for details.
+            ERC721 token is checked only for "HAVE" condition since putting requirements on non fungable token id yet to be resolved
+                (see ERC721 section in the code below)
+            This library has not been yet audited
 
 ### LibMultipass
 
-Implements generic methods of managing records and querying them. Data model:
+Implements generic methods to manage and query lookups for a multipass
 
-```solidity
-struct Domain {
-  bytes32 name; //32bytes
-  uint256 fee; //32bytes
-  uint256 freeRegistrationsNumber; //32bytes
-  uint256 referrerReward; //32bytes
-  uint256 referralDiscount; //32bytes
-  bool isActive; //1byte
-  address registrar; //20 bytes
-  uint24 ttl; //3 bytes (not being used for now)
-  uint256 registerSize; //32bytes
-}
-struct Record {
-  address wallet;
-  bytes32 name;
-  bytes32 id;
-  uint96 nonce;
-  bytes32 domainName;
-}
-struct DomainNameService {
-  Domain properties; //128 bytes
-  mapping(bytes32 => address) idToAddress; //N*20bytes
-  mapping(bytes32 => uint96) nonce; //N*12bytes
-  mapping(address => bytes32) addressToId; //N*32 bytes
-  mapping(bytes32 => bytes32) nameToId; //N*32 bytes
-  mapping(bytes32 => bytes32) idToName; //N*32 bytes
-  //Total: 128+N*160 Bytes
-}
+### LibReentrancyGuard
 
-```
+Reentrancy guard for diamond proxy pattern
 
-### Why there is no <you_name_it>
+### LibBestOf
+
+Implements generic methods for Best Of Proposals project:
+
+## Why there is no <you_name_it>
 
 Author works on this package for pure enthusiasm. If you want to contribute or request a feature: please contact on github:
 https://github.com/peersky/daococoa/issues
 
-### Fund
+## Collaborate
+
+Collaboration is super-duper welcome. You can hop in just by starting a discussion in issues or creating your PR. If you have any questions feel free to reach out to me.
+
+## Fund
 
 You can fund this project @ `0x60D5fe6238bBd887632d90C480B013C32cA29804`. All funding trough this will receive dao tokens distributed on initial token mint for Daocoacoa
