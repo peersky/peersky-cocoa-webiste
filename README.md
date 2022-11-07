@@ -23,7 +23,6 @@ Create your own party. Vote for best proposal for a set number of rounds. Winner
 - Voting and proposing stages are anonymous
 - Results and player actions after score calculations are verifiable and public
 
-
 #### Implementation
 
 For this game an intermediate - `Game Master`, is required. For each game, `Game Master` holds secret. `Game Master` uses it to calculate individual round salt for each round and based on that - individual secret per each round per each participant.
@@ -45,7 +44,7 @@ For this game an intermediate - `Game Master`, is required. For each game, `Game
 2. Start playing game with your friends - vote for best playlist, for best picture on instagram, whatever.
    - Send your links to game master and he will post them on to the contract on your behalf
    - Once there is enough links - start voting. Each player can give 6 points in a round divided as 3/2/1 and cannot vote for himself
-   - Once turn is over - scores is updated
+   - Once turn is over - scores are updated
 3. At the end of all rounds
    - Game will continue in overtime if and until winner scores are equal
    - Once game and overtime finishes:
