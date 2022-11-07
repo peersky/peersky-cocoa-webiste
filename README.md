@@ -78,7 +78,7 @@ Once all votes are submitted, or if turn timeout has reached, `Game Master` can 
 
 If validation is OK, smart contract further will update scoreboard with each `Participant`'s score
 
-Game ends after preset number of rounds has been reached and top three player scores are distributed in ranking (1/2/3). If top player scores are equal game keeps on in boolites until distribution is acheived.
+Game ends after preset number of rounds has been reached and top three player scores are distributed in ranking (1/2/3). If top player scores are equal game keeps on in overtime until distribution is acheived.
 
 Last and First turns are unique in a way: In First turn there yet no proposals to vote on, hence no votes can be submitted. Vice versa in the last turn - only votes are submitted, no proposals are expected.
 
