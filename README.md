@@ -14,7 +14,7 @@ Author is deeply inspired by fact that tribes of Mesoamerica [used cocoa beans a
 
 ## Projects
 
-### Best Of Propooses
+### Best Of 
 
 Best of Games. Best of Playlists. Best of <YOU_NAME_IT> is a game of delegated democracy.
 
