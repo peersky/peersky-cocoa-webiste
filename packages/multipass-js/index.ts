@@ -1,7 +1,12 @@
 import { ethers, BigNumber, Wallet, BytesLike } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Network } from "hardhat/types";
-
+import { LibMultipass } from "../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
+export enum SearchCriteria {
+  id,
+  username,
+  address,
+}
 export interface SignerIdentity {
   name: string;
   id: string;
@@ -125,5 +130,110 @@ export class MultipassJs {
     };
 
     return registrarMessage;
+  };
+
+  public formQueryByAddress = ({
+    address,
+    domainName,
+    targetDomain,
+  }: {
+    address: string;
+    targetDomain?: string;
+    domainName: string;
+  }) => {
+    if (!ethers.utils.isAddress(address))
+      throw new Error("formQueryByAddress: is not a valid address");
+    const query: LibMultipass.NameQueryStruct = {
+      name: ethers.utils.formatBytes32String(""),
+      id: ethers.utils.formatBytes32String(""),
+      wallet: address,
+      domainName: ethers.utils.formatBytes32String(domainName),
+      targetDomain: targetDomain ?? ethers.utils.formatBytes32String(""),
+    };
+    return query;
+  };
+
+  public formQueryById = ({
+    id,
+    domainName,
+    targetDomain,
+  }: {
+    id: string;
+    targetDomain?: string;
+    domainName: string;
+  }) => {
+    const query: LibMultipass.NameQueryStruct = {
+      name: ethers.utils.formatBytes32String(""),
+      id: ethers.utils.formatBytes32String(id),
+      wallet: ethers.constants.AddressZero,
+      domainName: ethers.utils.formatBytes32String(domainName),
+      targetDomain: targetDomain ?? ethers.utils.formatBytes32String(""),
+    };
+    return query;
+  };
+
+  public formQueryByUsername = ({
+    username,
+    domainName,
+    targetDomain,
+  }: {
+    username: string;
+    targetDomain?: string;
+    domainName: string;
+  }) => {
+    const query: LibMultipass.NameQueryStruct = {
+      name: ethers.utils.formatBytes32String(username),
+      id: ethers.utils.formatBytes32String(""),
+      wallet: ethers.constants.AddressZero,
+      domainName: ethers.utils.formatBytes32String(domainName),
+      targetDomain: targetDomain ?? ethers.utils.formatBytes32String(""),
+    };
+    return query;
+  };
+
+  public formQueryByUsernameAndId = ({
+    username,
+    domainName,
+    targetDomain,
+    id,
+  }: {
+    username: string;
+    targetDomain?: string;
+    domainName: string;
+    id: string;
+  }) => {
+    const query: LibMultipass.NameQueryStruct = {
+      name: ethers.utils.formatBytes32String(username),
+      id: ethers.utils.formatBytes32String(id),
+      wallet: ethers.constants.AddressZero,
+      domainName: ethers.utils.formatBytes32String(domainName),
+      targetDomain: targetDomain ?? ethers.utils.formatBytes32String(""),
+    };
+    return query;
+  };
+
+  public formQueryByFullDetails = ({
+    username,
+    domainName,
+    targetDomain,
+    id,
+    address,
+  }: {
+    username: string;
+    targetDomain?: string;
+    domainName: string;
+    id: string;
+    address: string;
+  }) => {
+    if (!ethers.utils.isAddress(address))
+      throw new Error("formQueryByAddress: is not a valid address");
+    const query: LibMultipass.NameQueryStruct = {
+      name: ethers.utils.formatBytes32String(username),
+      id: ethers.utils.formatBytes32String(id),
+      wallet: address,
+      domainName: ethers.utils.formatBytes32String(domainName),
+      targetDomain: targetDomain ?? ethers.utils.formatBytes32String(""),
+    };
+    return query;
   };
 }
