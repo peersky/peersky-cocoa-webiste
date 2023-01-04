@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Text,
   Link,
@@ -14,6 +14,7 @@ import {
 import RouterLink from "next/link";
 import { FaGithub, FaTwitter, FaDiscord } from "react-icons/fa";
 import moment from "moment";
+import UIContext from "../providers/UIProvider/context";
 
 const LINKS_SIZES = {
   fontWeight: "300",
@@ -60,6 +61,7 @@ const SocialButton = ({ children, label, href }: any) => {
 };
 
 const Footer = () => {
+  const ui = useContext(UIContext);
   return (
     <Box
       bg={useColorModeValue("blue.900", "gray.900")}
@@ -100,35 +102,40 @@ const Footer = () => {
               >
                 <FaGithub />
               </SocialButton>
-              <SocialButton label={"Discord"} href={"https://discord.gg/hkXgaqwr"}>
+              <SocialButton
+                label={"Discord"}
+                href={"https://discord.gg/hkXgaqwr"}
+              >
                 <FaDiscord />
               </SocialButton>
             </Stack>
           </Stack>
-          {/* {SITEMAP.length > 0 &&
-            Object.values(SITEMAP).map((category, colIndex) => {
-              return (
-                <Stack
-                  align={"flex-start"}
-                  key={`footer-list-column-${colIndex}`}
-                >
-                  <>
-                    <ListHeader>{category.title}</ListHeader>
-                    {category.children?.map((linkItem, linkItemIndex) => {
-                      return (
-                        <RouterLink
-                          passHref
-                          href={linkItem.path}
-                          key={`footer-list-link-item-${linkItemIndex}-col-${colIndex}`}
-                        >
-                          <Link {...LINKS_SIZES}>{linkItem.title}</Link>
-                        </RouterLink>
-                      );
-                    })}
-                  </>
-                </Stack>
-              );
-            })} */}
+          {ui.webSiteConfig.SITEMAP.length > 0 &&
+            Object.values(ui.webSiteConfig.SITEMAP).map(
+              (category, colIndex) => {
+                return (
+                  <Stack
+                    align={"flex-start"}
+                    key={`footer-list-column-${colIndex}`}
+                  >
+                    <>
+                      <ListHeader>{category.title}</ListHeader>
+                      {category.children?.map((linkItem, linkItemIndex) => {
+                        return (
+                          <RouterLink
+                            passHref
+                            href={linkItem.path}
+                            key={`footer-list-link-item-${linkItemIndex}-col-${colIndex}`}
+                          >
+                            <Link {...LINKS_SIZES}>{linkItem.title}</Link>
+                          </RouterLink>
+                        );
+                      })}
+                    </>
+                  </Stack>
+                );
+              }
+            )}
         </SimpleGrid>
       </Container>
     </Box>

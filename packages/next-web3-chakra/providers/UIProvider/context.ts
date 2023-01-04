@@ -13,6 +13,7 @@ const UIContext = createContext<UIProviderInterface>({
   setSearchTerm: () => console.error("not intied"),
   setSidebarToggled: () => console.error("not intied"),
   setSidebarVisible: () => console.error("not intied"),
+  webSiteConfig: { SITEMAP: [] },
 });
 
 export default UIContext;

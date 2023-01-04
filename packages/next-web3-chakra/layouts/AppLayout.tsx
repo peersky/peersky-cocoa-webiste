@@ -9,6 +9,7 @@ import { ChevronRightIcon } from "@chakra-ui/icons";
 import { getLayout as getSiteLayout } from "./RootLayout";
 import useRouter from "../hooks/useRouter";
 import NextLink from "next/link";
+import Footer from "../components/Footer";
 const AppLayout = (props: any) => {
   const [path, setPath] = useState<String[]>([]);
   const router = useRouter();
@@ -67,6 +68,7 @@ const AppLayout = (props: any) => {
         })}
       </Breadcrumb>
       {props.children}
+      <Footer />
     </Flex>
   );
 };

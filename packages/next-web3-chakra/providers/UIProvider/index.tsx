@@ -4,19 +4,33 @@ import useStorage from "../../hooks/useStorage";
 import UIContext from "./context";
 import { v4 as uuid4 } from "uuid";
 import { useBreakpointValue } from "@chakra-ui/react";
+import { WebSiteConfig } from "../../types";
 
-const UIProvider = ({ children }: { children: JSX.Element }) => {
-  const isMobileView = useBreakpointValue<boolean>({
-    base: true,
-    sm: true,
-    md: false,
-    lg: false,
-    xl: false,
-    "2xl": false,
-  }, "md");
+const UIProvider = ({
+  children,
+  config,
+}: {
+  children: JSX.Element;
+  config: WebSiteConfig;
+}) => {
+  const isMobileView = useBreakpointValue<boolean>(
+    {
+      base: true,
+      sm: true,
+      md: false,
+      lg: false,
+      xl: false,
+      "2xl": false,
+    },
+    "md"
+  );
   // const isMobileView = true;
 
-  const [searchTerm, setSearchTerm] = useStorage(window.sessionStorage, "q", "");
+  const [searchTerm, setSearchTerm] = useStorage(
+    window.sessionStorage,
+    "q",
+    ""
+  );
 
   const [searchBarActive, setSearchBarActive] = useState(false);
 
@@ -67,10 +81,10 @@ const UIProvider = ({ children }: { children: JSX.Element }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobileView]);
 
-
   return (
     <UIContext.Provider
       value={{
+        webSiteConfig: config,
         sidebarVisible,
         setSidebarVisible,
         searchBarActive,

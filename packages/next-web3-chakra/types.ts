@@ -1,6 +1,24 @@
 import Web3 from "web3/types";
 import { AbiItem, AbiInput } from "web3-utils";
 
+export enum SiteMapItemType {
+  EMPTY = 0,
+  CONTENT,
+  EXTERNAL,
+  FOOTER_CATEGORY,
+}
+export interface SiteMapItem {
+  title: string;
+  path: string;
+  type: SiteMapItemType;
+  children?: SiteMapItem[];
+}
+
+export type SiteMap = SiteMapItem[];
+export interface WebSiteConfig {
+  SITEMAP: SiteMap;
+}
+
 export interface WalletStatesInterface {
   ONBOARD: String;
   CONNECT: String;
@@ -62,6 +80,7 @@ export interface UIProviderInterface {
   setSidebarToggled: Function;
   setSidebarVisible: Function;
   sessionId: string | undefined;
+  webSiteConfig: WebSiteConfig;
 }
 
 export interface ArgumentField {
