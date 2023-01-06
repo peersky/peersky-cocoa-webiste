@@ -1,15 +1,15 @@
 import { transparentize } from "@chakra-ui/theme-tools";
-
+import { mode } from "@chakra-ui/theme-tools";
 const flushedVariant = (props) => {
   const { colorScheme: c } = props;
   return {
     field: {
-      bg: `${c}.700`,
+      bg: mode(`${c}.300`, `${c}.700`)(props),
       borderBottom: "0px solid",
       borderColor: `none`,
       outline: 0,
       borderRadius: "md",
-      color: `${c}.50`,
+      color: mode(`${c}.200`, `${c}.800`)(props),
       _hover: {
         // borderColor: `${c}.50`,
         bg: `${c}.500`,
@@ -27,12 +27,19 @@ const outlineVariant = (props) => {
   const bgColorHover = transparentize(`${c}.50`, 0.7)(theme);
   return {
     field: {
-      bg: bgColor,
-      borderColor: `${c}.50`,
+      // bg: bgColor,
+      borderColor: mode(`${c}.900`, `${c}.50`)(props),
+      borderWidth: "1px",
+      _placeholder: { color: mode(`${c}.900`, `${c}.500`)(props) },
+      _focus: {
+        // textDecoration: "underline",
+        // outline: "none",
+        // color: `white.100`,
+      },
       _hover: {
-        borderColor: `${c}.100`,
-        bg: bgColorHover,
-        borderWidth: 0,
+        // borderColor: `${c}.100`,
+        // bg: bgColorHover,
+        // borderWidth: 0,
       },
     },
   };
@@ -48,11 +55,12 @@ const newTagVariant = () => {
 };
 
 const filledVariant = () => {
+  const { colorScheme: c, theme } = props;
   return {
     field: {
-      bg: `white.200`,
+      bg: mode(`${c}.200`, `${c}.800`)(props),
       _hover: {
-        bg: `white.300`,
+        bg: mode(`${c}.200`, `${c}.800`)(props),
       },
     },
   };
@@ -70,7 +78,7 @@ const Input = {
         // bg: `${c}.100`,
       },
       field: {
-        _placeholder: { textColor: "gray.1100" },
+        _placeholder: { textColor: "grey.1100" },
       },
     };
   },
@@ -84,7 +92,7 @@ const Input = {
   defaultProps: {
     colorScheme: "blue",
     size: "md",
-    variant: "filled",
+    variant: "outline",
   },
 };
 

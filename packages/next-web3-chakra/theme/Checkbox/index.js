@@ -14,7 +14,7 @@ const baseStyleControl = (props) => {
     _checked: {
       bg: mode(`${c}.500`, `${c}.200`)(props),
       borderColor: mode(`${c}.500`, `${c}.200`)(props),
-      color: mode("white", "gray.1200")(props),
+      color: mode("white", "grey.1200")(props),
 
       _hover: {
         bg: mode(`${c}.600`, `${c}.300`)(props),
@@ -22,21 +22,21 @@ const baseStyleControl = (props) => {
       },
 
       _disabled: {
-        borderColor: mode("gray.50", "transparent")(props),
-        bg: mode("gray.50", "whiteAlpha.300")(props),
-        color: mode("gray.1200", "whiteAlpha.500")(props),
+        borderColor: mode("grey.50", "transparent")(props),
+        bg: mode("grey.50", "whiteAlpha.300")(props),
+        color: mode("grey.1200", "whiteAlpha.500")(props),
       },
     },
 
     _indeterminate: {
       bg: mode(`${c}.500`, `${c}.200`)(props),
       borderColor: mode(`${c}.500`, `${c}.200`)(props),
-      color: mode("white", "gray.1200")(props),
+      color: mode("white", "grey.1200")(props),
     },
 
     _disabled: {
-      bg: mode("gray.100", "whiteAlpha.100")(props),
-      borderColor: mode("gray.100", "transparent")(props),
+      bg: mode("grey.100", "whiteAlpha.100")(props),
+      borderColor: mode("grey.100", "transparent")(props),
     },
 
     _focus: {

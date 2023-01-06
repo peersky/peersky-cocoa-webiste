@@ -11,7 +11,22 @@ import {
   As,
 } from "@chakra-ui/react";
 import Web3 from "web3";
-const PixelsCard = ({ text, heading, link, textColor, level, disabled, ...props } : { text:string, heading: string, link: string, textColor: string, level: As, disabled: boolean }) => {
+const PixelsCard = ({
+  text,
+  heading,
+  link,
+  textColor,
+  level,
+  disabled,
+  ...props
+}: {
+  text: string;
+  heading: string;
+  link: string;
+  textColor: string;
+  level: As;
+  disabled: boolean;
+}) => {
   const Wrapper = (wrapperProps: any) => {
     if (disabled) return wrapperProps.children;
     return (
@@ -27,14 +42,14 @@ const PixelsCard = ({ text, heading, link, textColor, level, disabled, ...props 
   return (
     <Wrapper>
       <Stack
-        bgColor={disabled ? "gray.1600" : undefined}
+        bgColor={disabled ? "grey.1600" : undefined}
         {...props}
         transition={"1s"}
         spacing={1}
         px={1}
         alignItems="center"
         borderRadius="12px"
-        borderColor="gray.100"
+        borderColor="grey.100"
         borderWidth={"1px"}
         _hover={{ transform: "scale(1.05)", transition: "0.42s" }}
         m={2}

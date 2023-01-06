@@ -16,6 +16,8 @@ import {
   MenuList,
   MenuItem,
   Portal,
+  useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 import UIContext from "../providers/UIProvider/context";
@@ -23,11 +25,22 @@ import RouteButton from "./RouteButton";
 import router from "next/router";
 import Web3Context from "../providers/Web3Provider/context";
 import ChainSelector from "./ChainSelector";
+import { MdDarkMode, MdLightMode } from "react-icons/md";
 
-
-const _Navbar = ({ sitemap, defaultLogo, selectorSchema, metamaskSchema, ...props}: {sitemap?: any, defaultLogo?: string, selectorSchema?: string, metamaskSchema?: string}) => {
-    const ui = useContext(UIContext);
-    const web3Provider = useContext(Web3Context);
+const _Navbar = ({
+  defaultLogo,
+  selectorSchema,
+  metamaskSchema,
+  ...props
+}: {
+  defaultLogo?: string;
+  selectorSchema?: string;
+  metamaskSchema?: string;
+}) => {
+  const { colorMode, toggleColorMode } = useColorMode();
+  const ui = useContext(UIContext);
+  const sitemap = ui.webSiteConfig.SITEMAP;
+  const web3Provider = useContext(Web3Context);
   return (
     <Flex
       {...props}
@@ -36,9 +49,9 @@ const _Navbar = ({ sitemap, defaultLogo, selectorSchema, metamaskSchema, ...prop
       shadow={"outline"}
       alignItems="center"
       id="Navbar"
+      bgColor={useColorModeValue("blue.200", "grey.900")}
       minH="3rem"
       maxH="3rem"
-      // bgColor="#0fad"
       direction="row"
       w="100%"
       overflow="hidden"
@@ -89,38 +102,39 @@ const _Navbar = ({ sitemap, defaultLogo, selectorSchema, metamaskSchema, ...prop
                       key={`${idx}-${item.title}-landing-all-links`}
                       variant="link"
                       href={item.path}
-                      color="white"
                       isActive={!!(router.pathname === item.path)}
                     >
                       {item.title}
                     </RouteButton>
                   )}
                   {item.children && (
-                    <Menu>
+                    <Menu colorScheme={"blue"} matchWidth={true} gutter={0}>
                       <MenuButton
+                        h="32px"
                         as={Button}
+                        colorScheme={"blue"}
+                        w="180px"
                         rightIcon={<ChevronDownIcon />}
-                        color="white"
-                        variant="link"
+                        variant="menu"
                       >
                         {item.title}
                       </MenuButton>
-                      <Portal>
-                        <MenuList zIndex={100}>
-                          {item.children.map((child: any, idx: number) => (
-                            <RouterLink
-                              shallow={true}
-                              key={`${idx}-${item.title}-menu-links`}
-                              href={child.path}
-                              passHref
-                            >
-                              <MenuItem key={`menu-${idx}`} as={"a"} m={0}>
-                                {child.title}
-                              </MenuItem>
-                            </RouterLink>
-                          ))}
-                        </MenuList>
-                      </Portal>
+                      {/* <Portal> */}
+                      <MenuList zIndex={100} minW="0px" mt={0} pt={0}>
+                        {item.children.map((child: any, idx: number) => (
+                          <RouterLink
+                            shallow={true}
+                            key={`${idx}-${item.title}-menu-links`}
+                            href={child.path}
+                            passHref
+                          >
+                            <MenuItem key={`menu-${idx}`} as={"a"} m={0}>
+                              {child.title}
+                            </MenuItem>
+                          </RouterLink>
+                        ))}
+                      </MenuList>
+                      {/* </Portal> */}
                     </Menu>
                   )}
                 </React.Fragment>
@@ -182,7 +196,16 @@ const _Navbar = ({ sitemap, defaultLogo, selectorSchema, metamaskSchema, ...prop
               </code>
             </Flex>
           )}
-          <ChainSelector selectorScheme={selectorSchema}/>
+          <ChainSelector selectorScheme={selectorSchema} />
+          <IconButton
+            alignSelf="flex-start"
+            aria-label="Menu"
+            colorScheme="blue"
+            size="sm"
+            variant="solid"
+            onClick={toggleColorMode}
+            icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
+          />
         </Flex>
       )}
     </Flex>

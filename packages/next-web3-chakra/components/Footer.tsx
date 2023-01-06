@@ -28,8 +28,8 @@ const ListHeader = ({ children }: any) => {
       fontSize={"lg"}
       mb={2}
       borderBottom="1px"
-      borderColor="blue.700"
-      textColor="blue.500"
+      // borderColor="blue.700"
+      // textColor="blue.500"
     >
       {children}
     </Text>
@@ -64,8 +64,12 @@ const Footer = () => {
   const ui = useContext(UIContext);
   return (
     <Box
-      bg={useColorModeValue("blue.900", "gray.900")}
-      color={useColorModeValue("gray.700", "gray.200")}
+      bg={useColorModeValue("blue.500", "grey.900")}
+      color={useColorModeValue("grey.900", "grey.200")}
+      // position={"absolute"}
+      // bottom={0}
+      // left={0}
+      // right={0}
     >
       <Container as={Stack} maxW={"8xl"} py={10}>
         <SimpleGrid

@@ -9,6 +9,7 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { AbiItem } from "web3-utils";
@@ -37,10 +38,10 @@ const _ContractInterface = ({
   return (
     <Flex direction={"column"}>
       <_Editable
-        bgColor={"blue.200"}
+        bgColor={useColorModeValue("blue.200", "whiteAlpha.700")}
         size="sm"
         fontSize={"sm"}
-        textColor="gray.900"
+        textColor="grey.900"
         w="100%"
         minW={["300px", "300px", "360px", "420px", null]}
         variant={"outline"}
@@ -84,7 +85,7 @@ const _ContractInterface = ({
                       m={5}
                       p={5}
                       // maxW="420px"
-                      bgColor={"green.50"}
+                      // bgColor={"green.50"}
                       boxShadow="md"
                       abiItem={element}
                       flexDirection="column"
@@ -122,7 +123,7 @@ const _ContractInterface = ({
                           m={5}
                           p={5}
                           // maxW="420px"
-                          bgColor={"green.50"}
+                          // bgColor={"green.50"}
                           boxShadow="md"
                           method={element}
                           rendered={true}

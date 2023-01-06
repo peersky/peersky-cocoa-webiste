@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
-import theme from "./theme/theme";
+import theme from "./theme";
 import { UIProvider, Web3Provider } from "@peersky/next-web3-chakra/providers";
 // import Fonts from "./Theme/Fonts";
 import { SITEMAP } from "./config";

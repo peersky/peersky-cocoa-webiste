@@ -10,6 +10,7 @@ import { getLayout as getSiteLayout } from "./RootLayout";
 import useRouter from "../hooks/useRouter";
 import NextLink from "next/link";
 import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 const AppLayout = (props: any) => {
   const [path, setPath] = useState<String[]>([]);
   const router = useRouter();
@@ -19,17 +20,16 @@ const AppLayout = (props: any) => {
 
   return (
     <Flex
-      textColor={"gray.700"}
+      // textColor={"grey.700"}
       direction={"column"}
       w="100%"
       minH="100vh"
-      bgColor={"blue.1200"}
       px="7%"
     >
       <Breadcrumb
         spacing="8px"
         pt={2}
-        separator={<ChevronRightIcon color="gray.500" />}
+        separator={<ChevronRightIcon color="grey.500" />}
       >
         {path.length !== 0 && (
           <BreadcrumbItem>
@@ -68,7 +68,6 @@ const AppLayout = (props: any) => {
         })}
       </Breadcrumb>
       {props.children}
-      <Footer />
     </Flex>
   );
 };

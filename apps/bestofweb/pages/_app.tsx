@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/styles.css";
 import "../styles/nprogress.css";
 import "../styles/sidebar.css";
@@ -52,7 +52,16 @@ export default function CachingApp({ Component, pageProps }: any) {
     };
   }, [router]);
   const getLayout =
-    Component.getLayout || ((page: React.ReactNode) => <DefaultLayout selectorSchema="gray" metamaskSchema="gray" navbarBG="gray.900">{page}</DefaultLayout>);
+    Component.getLayout ||
+    ((page: React.ReactNode) => (
+      <DefaultLayout
+        selectorSchema="grey"
+        metamaskSchema="grey"
+        navbarBG="grey.900"
+      >
+        {page}
+      </DefaultLayout>
+    ));
 
   const headLinks = [
     // { rel: "preload", as: "image", href: WHITE_LOGO_W_TEXT_URL },

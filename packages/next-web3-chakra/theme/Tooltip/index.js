@@ -1,14 +1,14 @@
 import { mode } from "@chakra-ui/theme-tools";
 
 const baseStyle = (props) => {
-  const bg = mode("gray.700", "gray.300")(props);
+  const bg = mode("grey.700", "grey.300")(props);
   return {
     "--tooltip-bg": `colors.${bg}`,
     px: "8px",
     py: "2px",
     bg: "var(--tooltip-bg)",
     "--popper-arrow-bg": "var(--tooltip-bg)",
-    color: mode("whiteAlpha.900", "gray.900")(props),
+    color: mode("whiteAlpha.900", "grey.900")(props),
     borderRadius: "sm",
     fontWeight: "medium",
     fontSize: "sm",
@@ -26,7 +26,7 @@ const variantSuggestion = (props) => {
     py: "2px",
     bg: "var(--tooltip-bg)",
     "--popper-arrow-bg": "var(--tooltip-bg)",
-    color: mode("whiteAlpha.900", "gray.900")(props),
+    color: mode("whiteAlpha.900", "grey.900")(props),
     borderRadius: "md",
     fontWeight: "medium",
     fontSize: "sm",
@@ -44,7 +44,7 @@ const variantOnboarding = (props) => {
     py: "2px",
     bg: "var(--tooltip-bg)",
     "--popper-arrow-bg": "var(--tooltip-bg)",
-    color: mode("whiteAlpha.900", "gray.900")(props),
+    color: mode("whiteAlpha.900", "grey.900")(props),
     borderRadius: "md",
     fontWeight: "medium",
     fontSize: "sm",

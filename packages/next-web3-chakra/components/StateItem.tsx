@@ -14,6 +14,7 @@ import {
   Button,
   Switch,
   Spacer,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { AbiItem } from "web3-utils";
@@ -95,7 +96,12 @@ const _StateItem = ({
   const [allBytesAreStrings, setAllBytesAreStrings] = React.useState(false);
 
   return (
-    <Flex direction={"column"} p={4} bgColor="blue.50" my={4}>
+    <Flex
+      direction={"column"}
+      p={4}
+      bgColor={useColorModeValue("blue.200", "blue.800")}
+      my={4}
+    >
       <Flex direction={"row"}>
         <Flex>{abiItem.name}</Flex> <Spacer />
         {abiItem.inputs?.length !== 0 && (

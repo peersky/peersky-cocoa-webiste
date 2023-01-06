@@ -11,6 +11,7 @@ import Table from "./Table";
 import Tooltip from "./Tooltip";
 import Spinner from "./Spinner";
 import Heading from "./Heading";
+import { mode } from "@chakra-ui/theme-tools";
 // import { createBreakpoints } from "@chakra-ui/theme-tools";
 
 // const breakpointsCustom = createBreakpoints();
@@ -39,12 +40,19 @@ const theme = extendTheme({
   config: {
     initialColorMode: "light",
   },
+  defaultProps: {
+    size: "lg", // default is md
+    variant: "sm", // default is solid
+    colorScheme: "grey", // default is grey
+    // color: "grey.900",
+  },
   styles: {
-    global: {
+    global: (props) => ({
       body: {
-        color: "blue.1200",
+        color: mode("grey.800", "whiteAlpha.700")(props),
+        backgroundColor: mode("blue.100", "blue.900")(props),
       },
-    },
+    }),
   },
 
   components: {
@@ -142,7 +150,7 @@ const theme = extendTheme({
       800: "#614A05",
       900: "#312502",
     },
-    gray: {
+    grey: {
       50: "#F0F2F4",
       100: "#D6DAE1",
       200: "#BCC2CD",

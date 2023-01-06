@@ -12,7 +12,6 @@ const Solihash = () => {
       className="ContractsList"
       w="100%"
       minH="100vh"
-      bgColor={"blue.1200"}
       direction={"column"}
       px="7%"
       mt="100px"
@@ -21,8 +20,7 @@ const Solihash = () => {
         <Flex direction={"column"} w="100%" placeContent={"center"}>
           <Heading py={4}>Convert string to solidity hash </Heading>
           <Input
-            variant={"outline"}
-            colorScheme="green"
+            // variant={"outline"}
             placeholder="type in string"
             value={state}
             onChange={(e) => setState(e.target.value)}
