@@ -29,9 +29,6 @@ function wait(ms: any) {
   }
 }
 
-// wait(7000);
-// console.log("provider", provider);
-// if (!provider.network) throw new Error("WTF?");
 if (!process.env.MULTIPASS_CONTRACT_NAME)
   throw new Error("process.env.MULTIPASS_CONTRACT_NAME not set");
 
@@ -77,6 +74,8 @@ const signUp = async (msg: any) => {
     domainName: DOMAIN_NAME,
   });
   const response = await multipass["resolveRecord"](query);
+  const readGas = await multipass.estimateGas.resolveRecord(query);
+  console.log("Gas estimation: ", readGas.toString());
   if (response[1]) {
     channel.send(
       "you seem already to be registered: `" + response[1].wallet + "`"
