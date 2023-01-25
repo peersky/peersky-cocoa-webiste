@@ -26,6 +26,7 @@ import router from "next/router";
 import Web3Context from "../providers/Web3Provider/context";
 import ChainSelector from "./ChainSelector";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
+import { SiteMapItem, SiteMapItemType } from "../types";
 
 const _Navbar = ({
   defaultLogo,
@@ -94,52 +95,57 @@ const _Navbar = ({
         <Flex pr={14} justifyItems="flex-end" flexGrow={1} alignItems="center">
           <Spacer />
           <ButtonGroup variant="solid" spacing={4} pr={16}>
-            {sitemap?.map((item: any, idx: number) => {
-              return (
-                <React.Fragment key={`Fragment-${idx}`}>
-                  {!item.children && (
-                    <RouteButton
-                      key={`${idx}-${item.title}-landing-all-links`}
-                      variant="link"
-                      href={item.path}
-                      isActive={!!(router.pathname === item.path)}
-                    >
-                      {item.title}
-                    </RouteButton>
-                  )}
-                  {item.children && (
-                    <Menu colorScheme={"blue"} matchWidth={true} gutter={0}>
-                      <MenuButton
-                        h="32px"
-                        as={Button}
-                        colorScheme={"blue"}
-                        w="180px"
-                        rightIcon={<ChevronDownIcon />}
-                        variant="menu"
+            {sitemap
+              ?.filter(
+                (item: SiteMapItem) =>
+                  item.type != SiteMapItemType.FOOTER_CATEGORY
+              )
+              ?.map((item: any, idx: number) => {
+                return (
+                  <React.Fragment key={`Fragment-${idx}`}>
+                    {!item.children && (
+                      <RouteButton
+                        key={`${idx}-${item.title}-landing-all-links`}
+                        variant="link"
+                        href={item.path}
+                        isActive={!!(router.pathname === item.path)}
                       >
                         {item.title}
-                      </MenuButton>
-                      {/* <Portal> */}
-                      <MenuList zIndex={100} minW="0px" mt={0} pt={0}>
-                        {item.children.map((child: any, idx: number) => (
-                          <RouterLink
-                            shallow={true}
-                            key={`${idx}-${item.title}-menu-links`}
-                            href={child.path}
-                            passHref
-                          >
-                            <MenuItem key={`menu-${idx}`} as={"a"} m={0}>
-                              {child.title}
-                            </MenuItem>
-                          </RouterLink>
-                        ))}
-                      </MenuList>
-                      {/* </Portal> */}
-                    </Menu>
-                  )}
-                </React.Fragment>
-              );
-            })}
+                      </RouteButton>
+                    )}
+                    {item.children && (
+                      <Menu colorScheme={"blue"} matchWidth={true} gutter={0}>
+                        <MenuButton
+                          h="32px"
+                          as={Button}
+                          colorScheme={"blue"}
+                          w="180px"
+                          rightIcon={<ChevronDownIcon />}
+                          variant="menu"
+                        >
+                          {item.title}
+                        </MenuButton>
+                        {/* <Portal> */}
+                        <MenuList zIndex={100} minW="0px" mt={0} pt={0}>
+                          {item.children.map((child: any, idx: number) => (
+                            <RouterLink
+                              shallow={true}
+                              key={`${idx}-${item.title}-menu-links`}
+                              href={child.path}
+                              passHref
+                            >
+                              <MenuItem key={`menu-${idx}`} as={"a"} m={0}>
+                                {child.title}
+                              </MenuItem>
+                            </RouterLink>
+                          ))}
+                        </MenuList>
+                        {/* </Portal> */}
+                      </Menu>
+                    )}
+                  </React.Fragment>
+                );
+              })}
           </ButtonGroup>
           {web3Provider.buttonText !== web3Provider.WALLET_STATES.CONNECTED && (
             <Button

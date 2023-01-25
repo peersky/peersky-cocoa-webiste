@@ -7,7 +7,7 @@ export const SITEMAP: SiteMap = [
     type: SiteMapItemType.EMPTY,
     children: [
       {
-        title: "Contracts",
+        title: "Contract R/W",
         path: "/contracts",
         type: SiteMapItemType.CONTENT,
       },
@@ -19,36 +19,28 @@ export const SITEMAP: SiteMap = [
     ],
   },
   {
-    title: "Developers",
-    path: "/developers",
-    type: SiteMapItemType.EMPTY,
-
-    children: [
-      {
-        title: "Docs",
-        path: "/docs",
-        type: SiteMapItemType.CONTENT,
-      },
-      {
-        title: "Status",
-        path: "/status",
-        type: SiteMapItemType.CONTENT,
-      },
-    ],
+    title: "Multipass",
+    path: "/multipass",
+    type: SiteMapItemType.CONTENT,
   },
-
   {
-    title: "About",
-    path: "/about",
-    type: SiteMapItemType.EMPTY,
-    children: [
-      {
-        title: "Team",
-        path: "/team",
-        type: SiteMapItemType.CONTENT,
-      },
-    ],
+    title: "Game of best",
+    path: "/multipass",
+    type: SiteMapItemType.CONTENT,
   },
+
+  // {
+  //   title: "About",
+  //   path: "/about",
+  //   type: SiteMapItemType.EMPTY,
+  //   children: [
+  //     {
+  //       title: "Team",
+  //       path: "/team",
+  //       type: SiteMapItemType.CONTENT,
+  //     },
+  //   ],
+  // },
   {
     title: "Legal",
     path: "/legal",
