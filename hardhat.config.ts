@@ -6,11 +6,12 @@ import "@nomiclabs/hardhat-ethers";
 import "hardhat-diamond-abi";
 import "@typechain/hardhat";
 import "hardhat-abi-exporter";
-import * as diamondUtils from "./utils/diamond";
+import { toSignature, isIncluded } from "./utils/diamond";
+import { cutFacets, replaceFacet } from "./scripts/libraries/diamond";
 import * as ipfsUtils from "./utils/ipfs";
 import fs from "fs";
 import "hardhat-gas-reporter";
-
+import "hardhat-contract-sizer";
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
 
@@ -32,6 +33,36 @@ task("uploadDir2IPFS", "Uploads directory to ipfs")
     await ipfsUtils.uploadDir2IPFS(taskArgs.path);
   });
 
+task("replaceFacet", "Upgrades facet")
+  .addParam("facet", "facet")
+  .addParam("address", "contract address")
+  .setAction(async (taskArgs, hre) => {
+    const accounts = await hre.ethers.getSigners();
+    const response = await replaceFacet(
+      taskArgs.address,
+      taskArgs.facet,
+      accounts[0]
+    );
+  });
+
+task("addFacet", "adds a facet")
+  .addParam("facet", "facet")
+  .addParam("address", "contract address")
+  .setAction(async (taskArgs, hre) => {
+    const Facet = await hre.ethers.getContractFactory(taskArgs.facet);
+    const accounts = await hre.ethers.getSigners();
+    const facet = await Facet.deploy();
+    await facet.deployed();
+
+    const response = await cutFacets({
+      facets: [facet],
+      diamondAddress: taskArgs.address,
+      signer: accounts[0],
+    });
+
+    console.log(response.hash);
+  });
+
 export default {
   gasReporter: {
     currency: "EUR",
@@ -41,14 +72,23 @@ export default {
   },
   defaultNetwork: "hardhat",
   networks: {
-    hardhat: {},
     mumbai: {
       url: "https://matic-mumbai.chainstacklabs.com",
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
     },
     matic: {
-      url: process.env.MATIC_MAINNET_URL ?? "",
+      url: process.env.RPC_URL ?? "",
       accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
+    },
+    ganache: {
+      url: process.env.GANACHE_RPC_URL ?? "",
+      accounts: [process.env.PRIVATE_KEY && process.env.PRIVATE_KEY],
+    },
+    gorli: {
+      url: process.env.GORLI_RPC_URL ?? "",
+      accounts: [
+        process.env.GORLI_PRIVATE_KEY && process.env.GORLI_PRIVATE_KEY,
+      ],
     },
   },
   paths: {
@@ -80,7 +120,12 @@ export default {
     {
       // (required) The name of your Diamond ABI
       name: "MultipassDiamond",
-      include: ["DNSFacet", "OwnershipFacet", "DiamondLoupeFacet"],
+      include: [
+        "DNSFacet",
+        "OwnershipFacet",
+        "DiamondLoupeFacet",
+        "EIP712InspectorFacet",
+      ],
       // We explicitly set `strict` to `true` because we want to validate our facets don't accidentally provide overlapping functions
       strict: true,
       // We use our diamond utils to filter some functions we ignore from the combined ABI
@@ -91,13 +136,20 @@ export default {
         fullyQualifiedName: string
       ) {
         // const changes = new diamondUtils.DiamondChanges();
-        const signature = diamondUtils.toSignature(abiElement);
-        return diamondUtils.isIncluded(fullyQualifiedName, signature);
+        const signature = toSignature(abiElement);
+        return isIncluded(fullyQualifiedName, signature);
       },
     },
     {
       name: "BestOfDiamond",
-      include: ["BestOfFacet", "OwnershipFacet", "DiamondLoupeFacet"],
+      include: [
+        "BestOfFacet",
+        "OwnershipFacet",
+        "DiamondLoupeFacet",
+        "RequirementsFacet",
+        "GameMastersFacet",
+        "EIP712InspectorFacet",
+      ],
       strict: true,
       filter(
         abiElement: unknown,
@@ -105,8 +157,8 @@ export default {
         abi: unknown[],
         fullyQualifiedName: string
       ) {
-        const signature = diamondUtils.toSignature(abiElement);
-        return diamondUtils.isIncluded(fullyQualifiedName, signature);
+        const signature = toSignature(abiElement);
+        return isIncluded(fullyQualifiedName, signature);
       },
     },
   ],

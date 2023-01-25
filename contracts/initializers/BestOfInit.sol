@@ -49,6 +49,7 @@ contract BestOfInit {
         uint256 gamePrice;
         uint256 joinGamePrice;
         uint256 maxTurns;
+        uint256 numWinners;
     }
 
     // You can add parameters to this function in order to pass in
@@ -85,9 +86,7 @@ contract BestOfInit {
             ERC1155Contract.supportsInterface(type(IERC1155).interfaceId),
             "BestOfGame->init: rank token address does not support IERC1155 interface"
         );
-        _BOG.rankToken.tokenAddress = initializer.rankTokenAddress;
-        _BOG.rankToken.tokenType = IBestOf.TokenTypes.ERC1155;
-        _BOG.rankToken.tokenId = 0;
+        _BOG.rankTokenAddress = initializer.rankTokenAddress;
         _BOG.contractInitialized = true;
 
         LibTBG.GameSettings memory settings;
@@ -95,7 +94,8 @@ contract BestOfInit {
         settings.maxPlayersSize = initializer.maxPlayersSize;
         settings.minPlayersSize = initializer.minPlayersSize;
         settings.blocksToJoin = initializer.blocksToJoin;
-        settings.maxTurns =  initializer.maxTurns;
+        settings.maxTurns = initializer.maxTurns;
+        settings.numWinners = initializer.numWinners;
         LibTBG.init(settings);
 
         // add your own state variables

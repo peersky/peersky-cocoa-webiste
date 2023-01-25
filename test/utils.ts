@@ -2,6 +2,7 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-await-in-loop */
 // import { time } from "@openzeppelin/test-helpers";
+import hre from "hardhat";
 import { contract, ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
@@ -25,6 +26,8 @@ import { deploy as deployBestOfGame } from "../scripts/deployBestOfGame";
 import { LibMultipass } from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 import { RankToken } from "../types/typechain/contracts/tokens/RankToken";
 import { BestOfInit } from "../types/typechain/contracts/initializers/BestOfInit";
+import { assert } from "console";
+import { MultipassJs } from "@daocoacoa/multipass-js";
 
 export interface SignerIdentity {
   name: string;
@@ -273,14 +276,14 @@ const MULTIPASS_CONTRACT_NAME = "MultipassDNS";
 export const MULTIPASS_CONTRACT_VERSION = "0.0.1";
 const BESTOF_CONTRACT_NAME = "BESTOFNAME";
 export const BESTOF_CONTRACT_VERSION = "0.0.1";
-export const BOG_BLOCKS_PER_TURN = "14";
-export const BOG_MAX_PLAYERS = 6;
-export const BOG_MIN_PLAYERS = "3";
-export const BOG_MAX_TURNS = "18";
+export const BOG_BLOCKS_PER_TURN = "25";
+export const BOG_MAX_PLAYERS = 5;
+export const BOG_MIN_PLAYERS = 4;
+export const BOG_MAX_TURNS = 3;
 export const BOG_BLOCKS_TO_JOIN = "200";
 export const BOG_GAME_PRICE = ethers.utils.parseEther("0.001");
 export const BOG_JOIN_GAME_PRICE = ethers.utils.parseEther("0.001");
-export const BOG_JOIN_POLICY = 0;
+export const BOG_NUM_WINNERS = 3;
 export const BOGSettings = {
   BOG_BLOCKS_PER_TURN,
   BOG_MAX_PLAYERS,
@@ -289,7 +292,7 @@ export const BOGSettings = {
   BOG_BLOCKS_TO_JOIN,
   BOG_GAME_PRICE,
   BOG_JOIN_GAME_PRICE,
-  BOG_JOIN_POLICY,
+  BOG_NUM_WINNERS,
   // BOG_NUM_ACTIONS_TO_TAKE,
 };
 export const setupEnvironment = async ({
@@ -312,12 +315,12 @@ export const setupEnvironment = async ({
     multipassAddress
   )) as MultipassDiamond;
 
-  if (!process.env.INFURA_URL || !process.env.RANK_TOKEN_PATH)
+  if (!process.env.IPFS_GATEWAY_URL || !process.env.RANK_TOKEN_PATH)
     throw new Error("Rank token IPFS route not exported");
   const rankTokenAddress = await deployRankToken({
     owner: contractDeployer.wallet.address,
     signer: contractDeployer.wallet,
-    URI: process.env.INFURA_URL + process.env.RANK_TOKEN_PATH,
+    URI: process.env.IPFS_GATEWAY_URL + process.env.RANK_TOKEN_PATH,
   });
   const rankToken = (await ethers.getContractAt(
     "RankToken",
@@ -333,6 +336,7 @@ export const setupEnvironment = async ({
     gamePrice: BOG_GAME_PRICE,
     joinGamePrice: BOG_JOIN_GAME_PRICE,
     maxTurns: BOG_MAX_TURNS,
+    numWinners: BOG_NUM_WINNERS,
   };
 
   const bestOfGameAddress = await deployBestOfGame({
@@ -449,41 +453,21 @@ export const signRegistrarMessage = async (
   signer: SignerIdentity
 ) => {
   let { chainId } = await ethers.provider.getNetwork();
-
-  const domain = {
-    name: process.env.MULTIPASS_CONTRACT_NAME,
+  if (!process.env.MULTIPASS_CONTRACT_NAME)
+    throw new Error("MULTIPASS_CONTRACT_NAME not exported");
+  if (!process.env.MULTIPASS_CONTRACT_VERSION)
+    throw new Error("MULTIPASS_CONTRACT_VERSION not exported");
+  const multipassJs = new MultipassJs({
+    chainId: chainId,
+    contractName: process.env.MULTIPASS_CONTRACT_NAME,
     version: process.env.MULTIPASS_CONTRACT_VERSION,
-    chainId,
-    verifyingContract: verifierAddress,
-  };
-
-  const types = {
-    registerName: [
-      {
-        type: "bytes32",
-        name: "name",
-      },
-      {
-        type: "bytes32",
-        name: "id",
-      },
-      {
-        type: "bytes32",
-        name: "domainName",
-      },
-      {
-        type: "uint256",
-        name: "deadline",
-      },
-      {
-        type: "uint96",
-        name: "nonce",
-      },
-    ],
-  };
-
-  const s = await signer.wallet._signTypedData(domain, types, { ...message });
-  return s;
+    ...hre.network,
+  });
+  return await multipassJs.signRegistrarMessage(
+    message,
+    verifierAddress,
+    signer.wallet
+  );
 };
 
 export default {
@@ -641,7 +625,14 @@ interface VoteMessage {
   vote3: string;
   gameId: BigNumberish;
   turn: BigNumberish;
-  playerSalt: BytesLike;
+  salt: BytesLike;
+}
+interface PublicVoteMessage {
+  vote1: BytesLike;
+  vote2: BytesLike;
+  vote3: BytesLike;
+  gameId: BigNumberish;
+  turn: BigNumberish;
 }
 const VoteTypes = {
   signVote: [
@@ -667,7 +658,32 @@ const VoteTypes = {
     },
     {
       type: "bytes32",
-      name: "playerSalt",
+      name: "salt",
+    },
+  ],
+};
+
+const publicVoteTypes = {
+  publicSignVote: [
+    {
+      type: "uint256",
+      name: "gameId",
+    },
+    {
+      type: "uint256",
+      name: "turn",
+    },
+    {
+      type: "bytes32",
+      name: "vote1",
+    },
+    {
+      type: "bytes32",
+      name: "vote2",
+    },
+    {
+      type: "bytes32",
+      name: "vote3",
     },
   ],
 };
@@ -686,6 +702,25 @@ export const signVoteMessage = async (
     verifyingContract: verifierAddress,
   };
   const s = await signer.wallet._signTypedData(domain, VoteTypes, {
+    ...message,
+  });
+  return s;
+};
+
+export const signPublicVoteMessage = async (
+  message: PublicVoteMessage,
+  verifierAddress: string,
+  signer: SignerIdentity
+) => {
+  let { chainId } = await ethers.provider.getNetwork();
+
+  const domain = {
+    name: BESTOF_CONTRACT_NAME,
+    version: BESTOF_CONTRACT_VERSION,
+    chainId,
+    verifyingContract: verifierAddress,
+  };
+  const s = await signer.wallet._signTypedData(domain, publicVoteTypes, {
     ...message,
   });
   return s;
@@ -720,7 +755,6 @@ export const getTurnPlayersSalt = ({
     [player, getTurnSalt({ gameId, turn })]
   );
 };
-interface VoteSubmition {}
 
 export const mockVote = async ({
   voter,
@@ -740,6 +774,7 @@ export const mockVote = async ({
   proof: string;
   vote: [string, string, string];
   voteHidden: [BytesLike, BytesLike, BytesLike];
+  publicSignature: string;
 }> => {
   const playerSalt = getTurnPlayersSalt({
     gameId,
@@ -753,8 +788,9 @@ export const mockVote = async ({
     vote3: vote[2],
     gameId,
     turn,
-    playerSalt,
+    salt: playerSalt,
   };
+
   const voteHidden: [BytesLike, BytesLike, BytesLike] = [
     ethers.utils.solidityKeccak256(
       ["string", "bytes32"],
@@ -769,16 +805,31 @@ export const mockVote = async ({
       [vote[2], playerSalt]
     ),
   ];
+  const publicMessage = {
+    vote1: voteHidden[0],
+    vote2: voteHidden[1],
+    vote3: voteHidden[2],
+    gameId,
+    turn,
+  };
   const proof = await signVoteMessage(message, verifierAddress, gm);
-  return { proof, vote, voteHidden };
+  const publicSignature = await signPublicVoteMessage(
+    publicMessage,
+    verifierAddress,
+    gm
+  );
+  return { proof, vote, voteHidden, publicSignature };
 };
 export const getPlayers = (
   adr: AdrSetupResult,
-  numPlayers: number
+  numPlayers: number,
+  offset?: number
 ): [SignerIdentity, SignerIdentity, ...SignerIdentity[]] => {
+  const _offset = offset ?? 0;
   let players: SignerIdentity[] = [];
   for (let i = 1; i < numPlayers + 1; i++) {
-    let name = `player${i}` as any as keyof AdrSetupResult;
+    assert(i + _offset < 19, "Such player does not exist in adr generation");
+    let name = `player${i + _offset}` as any as keyof AdrSetupResult;
     players.push(adr[`${name}`]);
   }
   return players as any as [
@@ -792,6 +843,7 @@ export type MockVotes = Array<{
   proof: string;
   vote: [string, string, string];
   voteHidden: [BytesLike, BytesLike, BytesLike];
+  publicSignature: string;
 }>;
 
 export const mockVotes = async ({
@@ -801,6 +853,7 @@ export const mockVotes = async ({
   proposals,
   verifierAddress,
   players,
+  distribution,
 }: {
   gameId: BigNumberish;
   turn: BigNumberish;
@@ -808,28 +861,87 @@ export const mockVotes = async ({
   proposals: [...string[]];
   verifierAddress: string;
   players: [SignerIdentity, SignerIdentity, ...SignerIdentity[]];
+  distribution: "ftw" | "semiUniform" | "equal";
 }): Promise<MockVotes> => {
   const votes: Array<{
     proof: string;
     vote: [string, string, string];
     voteHidden: [BytesLike, BytesLike, BytesLike];
+    publicSignature: string;
   }> = [];
   for (let k = 0; k < players.length; k++) {
-    const selectedProposal =
-      (Number(gameId) + Number(turn) + k) % players.length;
-    const { vote, voteHidden, proof } = await mockVote({
+    let firstSelected = 0;
+    let secondSelected = 0;
+    let thirdSelected = 0;
+    if (distribution == "ftw") {
+      if (k == 0) {
+        firstSelected = 1;
+        secondSelected = 2;
+        thirdSelected = 3;
+      } else if (k == 1) {
+        firstSelected = 0;
+        secondSelected = 2;
+        thirdSelected = 3;
+      } else if (k == 2) {
+        firstSelected = 0;
+        secondSelected = 1;
+        thirdSelected = 3;
+      } else {
+        firstSelected = 0;
+        secondSelected = 1;
+        thirdSelected = 2;
+      }
+    } else if (distribution == "semiUniform") {
+      firstSelected = (Number(gameId) + Number(turn) + k) % players.length;
+      firstSelected =
+        firstSelected == k
+          ? (firstSelected + 1) % players.length
+          : firstSelected;
+
+      secondSelected = (firstSelected + 1 * k) % players.length;
+      while (secondSelected == k || firstSelected == secondSelected) {
+        secondSelected = (secondSelected + 1) % players.length;
+      }
+
+      thirdSelected = (secondSelected + 1 * k) % players.length;
+      while (
+        thirdSelected == k ||
+        thirdSelected == secondSelected ||
+        thirdSelected == firstSelected
+      ) {
+        thirdSelected = (thirdSelected + 1) % players.length;
+      }
+    } else {
+      firstSelected = k;
+      firstSelected =
+        firstSelected == k
+          ? (firstSelected + 1) % players.length
+          : firstSelected;
+      secondSelected = (firstSelected + 1) % players.length;
+      secondSelected =
+        secondSelected == k
+          ? (secondSelected + 1) % players.length
+          : secondSelected;
+      thirdSelected = (secondSelected + 2) % players.length;
+      thirdSelected =
+        thirdSelected == k
+          ? (thirdSelected + 1) % players.length
+          : thirdSelected;
+    }
+
+    const { vote, voteHidden, proof, publicSignature } = await mockVote({
       voter: players[k],
       gameId,
       turn,
       gm,
       verifierAddress,
       vote: [
-        proposals[selectedProposal],
-        proposals[(selectedProposal + 1) % players.length],
-        proposals[(selectedProposal + 2) % players.length],
+        proposals[firstSelected],
+        proposals[secondSelected],
+        proposals[thirdSelected],
       ],
     });
-    votes[k] = { vote, voteHidden, proof };
+    votes[k] = { vote, voteHidden, proof, publicSignature };
   }
   return votes;
 };
@@ -850,7 +962,6 @@ export const mockProposalSecrets = async ({
     turn,
     player: proposer.wallet.address,
   });
-
   const proposerHidden = ethers.utils.solidityKeccak256(
     ["address", "bytes32"],
     [proposer.wallet.address, playerSalt]
@@ -883,7 +994,7 @@ export const mockProposals = async ({
   turn: BigNumberish;
   verifierAddress: string;
 }) => {
-  let proposals = [];
+  let proposals = [] as any as ProposalSubmittion[];
   for (let i = 0; i < players.length; i++) {
     let proposal = await mockProposalSecrets({
       proposer: players[i],

@@ -221,7 +221,7 @@ describe("DiamondTest", async function () {
   });
 
   it("remove all functions and facets except 'diamondCut' and 'facets'", async () => {
-    let selectors = [];
+    let selectors: any = [];
     let facets = await diamondLoupeFacet.facets();
     for (let i = 0; i < facets.length; i++) {
       selectors.push(...facets[i].functionSelectors);

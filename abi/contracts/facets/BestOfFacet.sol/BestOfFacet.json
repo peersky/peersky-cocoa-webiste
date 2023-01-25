@@ -7,15 +7,9 @@
         "internalType": "uint256",
         "name": "gameId",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "scores",
-        "type": "uint256[]"
       }
     ],
-    "name": "GameOver",
+    "name": "GameClosed",
     "type": "event"
   },
   {
@@ -60,25 +54,13 @@
         "type": "uint256"
       },
       {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "hashedProposer",
-        "type": "bytes32"
-      },
-      {
         "indexed": true,
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
-      },
-      {
-        "indexed": true,
-        "internalType": "string",
-        "name": "proposal",
-        "type": "string"
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
       }
     ],
-    "name": "ProposalSubmitted",
+    "name": "PlayerLeft",
     "type": "event"
   },
   {
@@ -98,116 +80,27 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "uint256",
         "name": "gameId",
         "type": "uint256"
       },
-      {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "enum IBestOf.TokenTypes",
-                "name": "tokenType",
-                "type": "uint8"
-              },
-              {
-                "internalType": "address",
-                "name": "tokenAddress",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct IBestOf.Token",
-            "name": "token",
-            "type": "tuple"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "requireParticularERC721",
-            "type": "bool"
-          },
-          {
-            "internalType": "enum IBestOf.TokenMust",
-            "name": "must",
-            "type": "uint8"
-          }
-        ],
-        "indexed": true,
-        "internalType": "struct IBestOf.TokenAction",
-        "name": "requirement",
-        "type": "tuple"
-      }
-    ],
-    "name": "RequirementAdded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "turn",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address[]",
-        "name": "players",
-        "type": "address[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "scores",
-        "type": "uint256[]"
-      },
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "turnSalt",
-        "type": "bytes32"
-      }
-    ],
-    "name": "TurnEnded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "gameMaster",
+        "name": "gm",
         "type": "address"
       },
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "uint256",
-        "name": "gameRank",
+        "name": "rank",
         "type": "uint256"
       }
     ],
@@ -220,79 +113,11 @@
         "internalType": "uint256",
         "name": "gameId",
         "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "enum IBestOf.TokenTypes",
-                "name": "tokenType",
-                "type": "uint8"
-              },
-              {
-                "internalType": "address",
-                "name": "tokenAddress",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct IBestOf.Token",
-            "name": "token",
-            "type": "tuple"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "requireParticularERC721",
-            "type": "bool"
-          },
-          {
-            "internalType": "enum IBestOf.TokenMust",
-            "name": "must",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct IBestOf.TokenAction",
-        "name": "requirement",
-        "type": "tuple"
       }
     ],
-    "name": "addJoinRequirements",
+    "name": "cancelGame",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "a",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "b",
-        "type": "string"
-      }
-    ],
-    "name": "compareStrings",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -334,34 +159,6 @@
     "name": "createGame",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "turnSalt",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address[]",
-        "name": "voters",
-        "type": "address[]"
-      },
-      {
-        "internalType": "string[3][]",
-        "name": "votesRevealed",
-        "type": "string[3][]"
-      }
-    ],
-    "name": "endTurn",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -383,75 +180,14 @@
                 "type": "uint256"
               },
               {
-                "components": [
-                  {
-                    "components": [
-                      {
-                        "internalType": "enum IBestOf.TokenTypes",
-                        "name": "tokenType",
-                        "type": "uint8"
-                      },
-                      {
-                        "internalType": "address",
-                        "name": "tokenAddress",
-                        "type": "address"
-                      },
-                      {
-                        "internalType": "uint256",
-                        "name": "tokenId",
-                        "type": "uint256"
-                      }
-                    ],
-                    "internalType": "struct IBestOf.Token",
-                    "name": "token",
-                    "type": "tuple"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "bool",
-                    "name": "requireParticularERC721",
-                    "type": "bool"
-                  },
-                  {
-                    "internalType": "enum IBestOf.TokenMust",
-                    "name": "must",
-                    "type": "uint8"
-                  }
-                ],
-                "internalType": "struct IBestOf.TokenAction",
-                "name": "newGameReq",
-                "type": "tuple"
-              },
-              {
                 "internalType": "uint256",
                 "name": "numGames",
                 "type": "uint256"
               },
               {
-                "components": [
-                  {
-                    "internalType": "enum IBestOf.TokenTypes",
-                    "name": "tokenType",
-                    "type": "uint8"
-                  },
-                  {
-                    "internalType": "address",
-                    "name": "tokenAddress",
-                    "type": "address"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "tokenId",
-                    "type": "uint256"
-                  }
-                ],
-                "internalType": "struct IBestOf.Token",
-                "name": "rankToken",
-                "type": "tuple"
+                "internalType": "address",
+                "name": "rankTokenAddress",
+                "type": "address"
               },
               {
                 "internalType": "bool",
@@ -489,6 +225,11 @@
                 "internalType": "uint256",
                 "name": "maxTurns",
                 "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "numWinners",
+                "type": "uint256"
               }
             ],
             "internalType": "struct LibTBG.GameSettings",
@@ -497,58 +238,6 @@
           }
         ],
         "internalType": "struct IBestOf.ContractState",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getCreateGameRequirements",
-    "outputs": [
-      {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "enum IBestOf.TokenTypes",
-                "name": "tokenType",
-                "type": "uint8"
-              },
-              {
-                "internalType": "address",
-                "name": "tokenAddress",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct IBestOf.Token",
-            "name": "token",
-            "type": "tuple"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "requireParticularERC721",
-            "type": "bool"
-          },
-          {
-            "internalType": "enum IBestOf.TokenMust",
-            "name": "must",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct IBestOf.TokenAction",
         "name": "",
         "type": "tuple"
       }
@@ -578,56 +267,41 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "player",
+        "type": "address"
+      }
+    ],
+    "name": "getPlayersGame",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "gameId",
         "type": "uint256"
       }
     ],
-    "name": "getJoinRequirements",
+    "name": "getScores",
     "outputs": [
       {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "enum IBestOf.TokenTypes",
-                "name": "tokenType",
-                "type": "uint8"
-              },
-              {
-                "internalType": "address",
-                "name": "tokenAddress",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct IBestOf.Token",
-            "name": "token",
-            "type": "tuple"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "requireParticularERC721",
-            "type": "bool"
-          },
-          {
-            "internalType": "enum IBestOf.TokenMust",
-            "name": "must",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct IBestOf.TokenAction[]",
+        "internalType": "address[]",
         "name": "",
-        "type": "tuple[]"
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -660,6 +334,63 @@
         "type": "uint256"
       }
     ],
+    "name": "isGameOver",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isLastTurn",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isOvertime",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      }
+    ],
     "name": "joinGame",
     "outputs": [],
     "stateMutability": "payable",
@@ -668,8 +399,21 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "gameId",
+        "type": "uint256"
+      }
+    ],
+    "name": "leaveGame",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
-        "name": "",
+        "name": "operator",
         "type": "address"
       },
       {
@@ -746,67 +490,46 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "onERC721Received",
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "gameId",
         "type": "uint256"
       }
     ],
     "name": "openRegistration",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "player",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "turnSalt",
-        "type": "bytes32"
-      }
-    ],
-    "name": "playerSalt",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      }
-    ],
-    "name": "popJoinRequirements",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "removeJoinRequirement",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -832,34 +555,6 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes32",
-        "name": "proposerHidden",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
-      },
-      {
-        "internalType": "string",
-        "name": "proposal",
-        "type": "string"
-      }
-    ],
-    "name": "submitProposal",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
         "internalType": "bytes32[3]",
         "name": "votesHidden",
         "type": "bytes32[3]"
@@ -868,39 +563,16 @@
         "internalType": "bytes",
         "name": "proof",
         "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "submitSignature",
+        "type": "bytes"
       }
     ],
     "name": "submitVote",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "gameId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "voter",
-        "type": "address"
-      },
-      {
-        "internalType": "string[3]",
-        "name": "vote",
-        "type": "string[3]"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "turnSalt",
-        "type": "bytes32"
-      }
-    ],
-    "name": "validateVote",
-    "outputs": [],
-    "stateMutability": "view",
     "type": "function"
   }
 ]

@@ -13,17 +13,25 @@ export const deploy = async ({
   gameInitializer,
 }: {
   ownerAddress: string;
-  signer: Wallet | SignerWithAddress;
+  signer?: Wallet | SignerWithAddress;
   version: string;
   name: string;
   gameInitializer: BestOfInit.ContractInitializerStruct;
 }) => {
-  if (!ownerAddress || !signer || !version || !name)
+  const _signer = signer ?? (await ethers.getSigners().then((s) => s[0]));
+  if (!_signer || !ownerAddress || !signer || !version || !name)
     throw new Error("Missing properties");
 
   const diamondAddress = await deployDiamond(
-    ["DiamondLoupeFacet", "OwnershipFacet", "BestOfFacet"],
-    signer,
+    [
+      "DiamondLoupeFacet",
+      "OwnershipFacet",
+      "BestOfFacet",
+      "GameMastersFacet",
+      "RequirementsFacet",
+      "EIP712InspectorFacet",
+    ],
+    _signer,
     "BestOfInit",
     [name, version, gameInitializer]
   );
@@ -32,9 +40,9 @@ export const deploy = async ({
     "RankToken",
     gameInitializer.rankTokenAddress
   );
-  await rankToken.connect(signer).functions.transferOwnership(diamondAddress);
+  await rankToken.connect(_signer).functions.transferOwnership(diamondAddress);
 
-  await transferOwnership(signer, ownerAddress, diamondAddress);
+  await transferOwnership(_signer, ownerAddress, diamondAddress);
 
   return diamondAddress;
 };
@@ -57,14 +65,11 @@ if (require.main === module) {
     !process.env.BLOCKS_TO_JOIN ||
     !process.env.GAME_PRICE_ETH ||
     !process.env.JOIN_GAME_PRICE_ETH ||
-    !process.env.MAX_TURNS
+    !process.env.MAX_TURNS ||
+    !process.env.NUM_WINNERS
   )
     throw new Error("Best of initializer variables not set");
-  const joinPolicy = Number(process.env.JOIN_POLICY);
-  if (isNaN(joinPolicy))
-    throw new Error(
-      "Join policy must be enum number defined in LibTBG.JoinPolicy"
-    );
+
   const settings: BestOfInit.ContractInitializerStruct = {
     blocksPerTurn: process.env.BLOCKS_PER_TURN,
     maxTurns: process.env.MAX_TURNS,
@@ -74,18 +79,19 @@ if (require.main === module) {
     blocksToJoin: process.env.BLOCKS_TO_JOIN,
     gamePrice: ethers.utils.parseEther(process.env.GAME_PRICE_ETH),
     joinGamePrice: ethers.utils.parseEther(process.env.JOIN_GAME_PRICE_ETH),
+    numWinners: process.env.NUM_WINNERS,
   };
 
-  const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
+  // const signer = new ethers.Wallet(process.env.PRIVATE_KEY);
   deploy({
     ownerAddress: process.env.CONTRACTS_OWNER,
-    signer,
+    // signer,
     version: process.env.MULTIPASS_CONTRACT_VERSION,
     name: process.env.MULTIPASS_CONTRACT_NAME,
     gameInitializer: settings,
   })
     .then((resp: any) => {
-      console.log("Multipass deployed:", resp);
+      console.log("Best of game deployed:", resp);
       process.exit(0);
     })
     .catch((error) => {
