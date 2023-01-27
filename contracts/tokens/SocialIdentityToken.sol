@@ -5,11 +5,14 @@ import "../interfaces/ISocialIdentityToken.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+// import "hardhat/console.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 
 contract SocialIdentityToken is ERC20Slot, ISocialIdentityToken, EIP712 {
+    using EnumerableMap for EnumerableMap.AddressToUintMap;
+
     mapping(address => uint256) totalDelegated;
-    mapping(address => mapping(address => uint256)) individualDelegation;
-    mapping(address => address[]) delegatesOf;
+    mapping(address => EnumerableMap.AddressToUintMap) individualDelegation;
 
     constructor(
         string memory name,
@@ -31,7 +34,7 @@ contract SocialIdentityToken is ERC20Slot, ISocialIdentityToken, EIP712 {
     }
 
     function purge(address destination, uint256 amount) public {
-        require(balanceOf(msg.sender) >= amount, "Not enough tokens");
+        require(balanceOf(msg.sender) >= amount, "purge: Not enough tokens");
         uint256 targetBalance = balanceOf(destination);
         uint256 amountToPurge = targetBalance < amount ? targetBalance : amount;
 
@@ -41,16 +44,29 @@ contract SocialIdentityToken is ERC20Slot, ISocialIdentityToken, EIP712 {
         emit Purged(destination, msg.sender, amountToPurge);
     }
 
-    function delegateTo(address to, uint256 amount) public {
-        uint256 senderBalance = balanceOf(msg.sender);
-        require(senderBalance >= amount, "Not enough tokens in your balance");
-        uint256 wasDelegated = individualDelegation[msg.sender][to];
-        individualDelegation[msg.sender][to] = amount;
-        totalDelegated[to] = wasDelegated > amount
-            ? totalDelegated[to] - wasDelegated + amount
-            : totalDelegated[to] + (amount - wasDelegated);
-        emit DelegateUpdated(msg.sender, to, amount);
+    function getIdx(EnumerableMap.UintToAddressMap storage map, address key) private view returns (uint256) {
+        return map._inner._keys._inner._indexes[bytes32(uint256(uint160(key)))];
+    }
+
+    function _delegateTo(
+        address from,
+        address to,
+        uint256 amount
+    ) internal {
+        uint256 senderBalance = balanceOf(from);
+        require(senderBalance >= amount, "delegateTo: Not enough tokens");
+        (bool isFound, uint256 value) = individualDelegation[from].tryGet(to);
+        uint256 wasDelegated = isFound ? value : 0;
+        individualDelegation[from].set(to, amount);
+        totalDelegated[to] = totalDelegated[to] - wasDelegated + amount;
+
+        if (amount == 0) individualDelegation[from].remove(to);
+        emit DelegateUpdated(from, to, amount);
         emit TotalDelegated(to, totalDelegated[to]);
+    }
+
+    function delegateTo(address to, uint256 amount) public {
+        _delegateTo(msg.sender, to, amount);
     }
 
     function absoluteTrustLevel(address wallet) public view returns (uint256) {
@@ -74,11 +90,12 @@ contract SocialIdentityToken is ERC20Slot, ISocialIdentityToken, EIP712 {
     }
 
     function amountDelegatedTo(address from, address to) public view returns (uint256) {
-        return individualDelegation[from][to];
+        (bool success, uint256 value) = individualDelegation[from].tryGet(to);
+        return success ? value : 0;
     }
 
     function numberOfDelegatesOf(address from) public view returns (uint256) {
-        return delegatesOf[from].length;
+        return individualDelegation[from].length();
     }
 
     /**
@@ -100,18 +117,20 @@ contract SocialIdentityToken is ERC20Slot, ISocialIdentityToken, EIP712 {
         uint256 pageSize,
         uint256 page
     ) public view returns (address[] memory) {
-        uint256 delegatesNum = delegatesOf[from].length;
+        uint256 delegatesNum = individualDelegation[from].length();
         uint256 firstPageIdx = pageSize * page;
         address[] memory delegatesPage = new address[](pageSize);
         if (firstPageIdx > delegatesNum) return new address[](0);
-        if (firstPageIdx + pageSize > delegatesOf[from].length) {
+        if (firstPageIdx + pageSize > individualDelegation[from].length()) {
             for (uint256 i = 0; i < delegatesNum - firstPageIdx; i++) {
-                delegatesPage[i] = delegatesOf[from][firstPageIdx + i];
+                (address delegate, ) = individualDelegation[from].at(firstPageIdx + i);
+                delegatesPage[i] = delegate;
             }
             return delegatesPage;
         } else {
             for (uint256 i = 0; i < pageSize; i++) {
-                delegatesPage[i] = delegatesOf[from][firstPageIdx + i];
+                (address delegate, ) = individualDelegation[from].at(firstPageIdx + i);
+                delegatesPage[i] = delegate;
             }
             return delegatesPage;
         }
@@ -169,16 +188,20 @@ contract SocialIdentityToken is ERC20Slot, ISocialIdentityToken, EIP712 {
 
     function _afterTokenTransfer(
         address from,
-        address to,
+        address,
         uint256
     ) internal override {
-        address[] storage delegations = delegatesOf[from];
+        // address[] storage delegations = delegatesOf[from];
         uint256 fromNewBalance = balanceOf(from);
-        for (uint256 i = 0; i < delegations.length; i++) {
-            if (individualDelegation[from][delegations[i]] > fromNewBalance) {
+        for (uint256 i = 0; i < individualDelegation[from].length(); i++) {
+            (address asignee, uint256 value) = individualDelegation[from].at(i);
+
+            // (bool isFound, uint256 value) = individualDelegation[from].tryGet(to);
+
+            if (value > fromNewBalance) {
                 //Amount delegated now is larger than balance of delegator
                 //Hence we reduce delegated amount to new balance value
-                delegateTo(to, fromNewBalance);
+                _delegateTo(from, asignee, fromNewBalance);
             }
         }
     }
