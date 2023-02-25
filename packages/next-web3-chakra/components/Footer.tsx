@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
+import { Link } from "@chakra-ui/next-js";
 import {
   Text,
-  Link,
   Box,
   Container,
   SimpleGrid,
@@ -11,11 +11,9 @@ import {
   VisuallyHidden,
   chakra,
 } from "@chakra-ui/react";
-import RouterLink from "next/link";
 import { FaGithub, FaTwitter, FaDiscord } from "react-icons/fa";
 import moment from "moment";
 import UIContext from "../providers/UIProvider/context";
-
 const LINKS_SIZES = {
   fontWeight: "300",
   fontSize: "lg",
@@ -126,13 +124,13 @@ const Footer = () => {
                       <ListHeader>{category.title}</ListHeader>
                       {category.children?.map((linkItem, linkItemIndex) => {
                         return (
-                          <RouterLink
-                            passHref
+                          <Link
+                            {...LINKS_SIZES}
                             href={linkItem.path}
                             key={`footer-list-link-item-${linkItemIndex}-col-${colIndex}`}
                           >
-                            <Link {...LINKS_SIZES}>{linkItem.title}</Link>
-                          </RouterLink>
+                            {linkItem.title}
+                          </Link>
                         );
                       })}
                     </>

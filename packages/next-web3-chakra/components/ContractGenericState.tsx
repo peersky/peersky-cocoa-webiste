@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { AbiItem } from "web3-utils";
-import useRouter from "../hooks/useRouter";
+import useAppRouter from "../hooks/useRouter";
 import useToast from "../hooks/useToast";
 import Web3Context from "../providers/Web3Provider/context";
 import Web3MethodForm from "./Web3MethodForm";
@@ -26,7 +26,6 @@ const _ContractGenericState = ({
   abi: AbiItem[];
   initalContractAddress?: string;
 }) => {
-
   return <></>;
 };
 

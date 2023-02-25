@@ -113,7 +113,7 @@ const isKnownChain = (_chainId: number) => {
   });
 };
 
-const Web3Provider = ({ children }: { children: JSX.Element }) => {
+const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   const [web3] = React.useState<Web3>(new Web3(null));
 
   const [targetChain, _setChain] = React.useState<ChainInterface | undefined>();

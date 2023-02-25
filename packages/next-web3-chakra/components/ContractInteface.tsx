@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { AbiItem } from "web3-utils";
-import useRouter from "../hooks/useRouter";
+import useAppRouter from "../hooks/useRouter";
 import useToast from "../hooks/useToast";
 import Web3Context from "../providers/Web3Provider/context";
 import StateItem from "./StateItem";
@@ -33,7 +33,7 @@ const _ContractInterface = ({
     initalContractAddress
   );
   const { web3 } = useContext(Web3Context);
-  const router = useRouter();
+  const router = useAppRouter();
 
   return (
     <Flex direction={"column"}>

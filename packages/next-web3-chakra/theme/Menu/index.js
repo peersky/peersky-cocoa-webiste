@@ -3,7 +3,6 @@ import { mode, transparentize } from "@chakra-ui/theme-tools";
 const Menu = {
   parts: ["list", "item"],
   baseStyle: (props) => {
-    const bgColor = transparentize(`${c}.500`, 0.5)(props);
     const { colorScheme: c } = props;
     return {
       item: {

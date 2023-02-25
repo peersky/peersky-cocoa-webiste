@@ -10,7 +10,7 @@ const UIProvider = ({
   children,
   config,
 }: {
-  children: JSX.Element;
+  children: React.ReactNode;
   config: WebSiteConfig;
 }) => {
   const isMobileView = useBreakpointValue<boolean>(

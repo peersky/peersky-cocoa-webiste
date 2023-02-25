@@ -1,15 +1,15 @@
 import { Flex, Box, chakra } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
-import useRouter from "../hooks/useRouter";
+import useAppRouter from "../hooks/useRouter";
 // import mixpanel from "mixpanel-browser";
 const _Scrollable = (props: any) => {
   const scrollerRef = useRef<any>();
-  const router = useRouter();
+  const router = useAppRouter();
   const [path, setPath] = useState<string>();
 
   const [scrollDepth, setScrollDepth] = useState(0);
 
-  const getScrollPrecent = ({ currentTarget }: {currentTarget: any}) => {
+  const getScrollPrecent = ({ currentTarget }: { currentTarget: any }) => {
     const scroll_level =
       (100 * (currentTarget.scrollTop + currentTarget.clientHeight)) /
       currentTarget.scrollHeight;
@@ -50,16 +50,16 @@ const _Scrollable = (props: any) => {
       maxH="100%"
     >
       {/* <Xwrapper> */}
-        <Box
-          className="Scrollable"
-          // direction="column"
-          ref={scrollerRef}
-          overflowY="scroll"
-          onScroll={(e) => handleScroll(e)}
-          {...props}
-        >
-          {props.children}
-        </Box>
+      <Box
+        className="Scrollable"
+        // direction="column"
+        ref={scrollerRef}
+        overflowY="scroll"
+        onScroll={(e) => handleScroll(e)}
+        {...props}
+      >
+        {props.children}
+      </Box>
       {/* </Xwrapper> */}
     </Flex>
   );

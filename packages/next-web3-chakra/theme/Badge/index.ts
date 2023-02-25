@@ -1,3 +1,5 @@
+import { ComponentStyleConfig } from "@chakra-ui/react";
+
 const variantOutline = () => {
   return {
     container: {
@@ -7,7 +9,7 @@ const variantOutline = () => {
   };
 };
 
-const Badge = {
+const Badge: ComponentStyleConfig = {
   parts: ["container", "label", "closeButton"],
   variants: {
     outline: variantOutline,
