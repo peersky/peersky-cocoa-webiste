@@ -31,11 +31,7 @@ const H3 = (props: any) => (
     {props.children}
   </Heading>
 );
-const P = (props: any) => (
-  <Text py={2} textAlign="justify">
-    {props.children}
-  </Text>
-);
+const P = (props: any) => <chakra.span py={2}>{props.children}</chakra.span>;
 const ResponsiveImage = (props: any) => (
   <Center>
     <Image

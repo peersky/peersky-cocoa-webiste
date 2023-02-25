@@ -1,13 +1,13 @@
 /* @import "~slick-carousel/slick/slick.css";
 @import "~slick-carousel/slick/slick-theme.css"; */
 
-@font-face {
+/* @font-face {
   font-family: "Virgil";
-  src: url("/fonts/Virgil.ttf");
+  src: url("/Virgil.woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-}
+} */
 
 .Resizer {
   background: #000;
