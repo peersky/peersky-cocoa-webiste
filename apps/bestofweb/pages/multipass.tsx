@@ -1,7 +1,7 @@
 import React, { useContext, useDebugValue, useEffect } from "react";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import useRouter from "@peersky/next-web3-chakra//hooks/useRouter";
+import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
 import {
   Button,

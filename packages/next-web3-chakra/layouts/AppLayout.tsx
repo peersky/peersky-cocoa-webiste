@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import { getLayout as getSiteLayout } from ".";
 import useRouter from "../hooks/useRouter";
-import NextLink from "next/link";
+import { Link } from "@chakra-ui/next-js";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 const AppLayout = (props: any) => {
@@ -51,11 +51,7 @@ const AppLayout = (props: any) => {
               : undefined;
           return (
             <BreadcrumbItem key={`bcl-${element}-${idx}`}>
-              <NextLink
-                passHref
-                shallow
-                href={{ pathname: linkPath, query: { ...query } }}
-              >
+              <Link shallow href={{ pathname: linkPath, query: { ...query } }}>
                 <BreadcrumbLink
                   isCurrentPage={idx === path.length ? true : false}
                   fontWeight={idx === path.length - 1 ? "semibold" : "normal"}
@@ -63,7 +59,7 @@ const AppLayout = (props: any) => {
                 >
                   {element}
                 </BreadcrumbLink>
-              </NextLink>
+              </Link>
             </BreadcrumbItem>
           );
         })}

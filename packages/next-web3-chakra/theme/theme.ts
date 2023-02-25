@@ -1,4 +1,8 @@
-import { extendTheme, useColorModeValue } from "@chakra-ui/react";
+import {
+  extendTheme,
+  useColorModeValue,
+  withDefaultColorScheme,
+} from "@chakra-ui/react";
 import Button from "./Button";
 import Tag from "./Tag";
 import Menu from "./Menu";
@@ -11,7 +15,7 @@ import Table from "./Table";
 import Tooltip from "./Tooltip";
 import Spinner from "./Spinner";
 import Heading from "./Heading";
-import { mode } from "@chakra-ui/theme-tools";
+import { mode, StyleFunctionProps } from "@chakra-ui/theme-tools";
 // import { createBreakpoints } from "@chakra-ui/theme-tools";
 
 // const breakpointsCustom = createBreakpoints();
@@ -28,7 +32,7 @@ const Accordion = {
   // },
 };
 
-const theme = extendTheme({
+const theme = extendTheme(withDefaultColorScheme({ colorScheme: "blue" }), {
   breakpoints: {
     base: "24em",
     sm: "24em", //Mobile phone
@@ -48,7 +52,7 @@ const theme = extendTheme({
     // color: "grey.900",
   },
   styles: {
-    global: (props) => ({
+    global: (props: StyleFunctionProps) => ({
       body: {
         color: mode("grey.800", "whiteAlpha.700")(props),
         backgroundColor: mode("white.100", "grey.900")(props),
@@ -70,7 +74,7 @@ const theme = extendTheme({
     Tooltip,
     Heading,
     Link: {
-      baseStyle: (props) => {
+      baseStyle: (props: StyleFunctionProps) => {
         return { textColor: mode("grey.600", "grey.200")(props) };
       },
     },

@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import {
   Stack,
   Heading,
@@ -10,6 +9,7 @@ import {
   ChakraProps,
   As,
 } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/next-js";
 import Web3 from "web3";
 const PixelsCard = ({
   text,
@@ -27,20 +27,12 @@ const PixelsCard = ({
   level: As;
   disabled: boolean;
 }) => {
-  const Wrapper = (wrapperProps: any) => {
-    if (disabled) return wrapperProps.children;
-    return (
-      <Link href={link} shallow scroll passHref>
-        <ChakraLink>{wrapperProps.children}</ChakraLink>
-      </Link>
-    );
-  };
   const web3 = new Web3();
   const pixelseed = web3.utils.keccak256(heading);
   const dimensions = Math.floor(pixelseed.length / 4);
   const boxSize = 20;
   return (
-    <Wrapper>
+    <Link href={link} shallow scroll>
       <Stack
         bgColor={disabled ? "grey.1600" : undefined}
         {...props}
@@ -89,7 +81,7 @@ const PixelsCard = ({
           {text}
         </chakra.span>
       </Stack>
-    </Wrapper>
+    </Link>
   );
 };
 

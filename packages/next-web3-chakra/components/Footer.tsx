@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
+import { Link } from "@chakra-ui/next-js";
 import {
   Text,
-  Link,
   Box,
   Container,
   SimpleGrid,
@@ -14,11 +14,9 @@ import {
   Image,
   Flex,
 } from "@chakra-ui/react";
-import RouterLink from "next/link";
 import { FaGithub, FaTwitter, FaDiscord } from "react-icons/fa";
 import moment from "moment";
 import UIContext from "../providers/UIProvider/context";
-
 const LINKS_SIZES = {
   fontWeight: "300",
   fontSize: "lg",
@@ -107,19 +105,18 @@ const Footer = ({
               flexGrow={1}
               id="Logo Container"
             >
-              <RouterLink href="/" passHref>
-                <Link
-                  as={Image}
-                  w="fit-content"
-                  h="auto"
-                  justifyContent="left"
-                  src={useColorModeValue(
-                    `/${initialLogo ?? themeLogo}`,
-                    `/inverted-${initialLogo ?? themeLogo}`
-                  )}
-                  alt="Logo"
-                />
-              </RouterLink>
+              <Image
+                as={Link}
+                href="/"
+                w="fit-content"
+                h="auto"
+                justifyContent="left"
+                src={useColorModeValue(
+                  `/${initialLogo ?? themeLogo}`,
+                  `/inverted-${initialLogo ?? themeLogo}`
+                )}
+                alt="Logo"
+              />
             </Flex>
             <Text fontSize={"sm"}>
               © {moment().year()} Peersky.xyz All rights reserved
@@ -157,13 +154,13 @@ const Footer = ({
                       <ListHeader>{category.title}</ListHeader>
                       {category.children?.map((linkItem, linkItemIndex) => {
                         return (
-                          <RouterLink
-                            passHref
+                          <Link
+                            {...LINKS_SIZES}
                             href={linkItem.path}
                             key={`footer-list-link-item-${linkItemIndex}-col-${colIndex}`}
                           >
-                            <Link {...LINKS_SIZES}>{linkItem.title}</Link>
-                          </RouterLink>
+                            {linkItem.title}
+                          </Link>
                         );
                       })}
                     </>
