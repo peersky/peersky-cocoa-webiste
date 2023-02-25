@@ -7,13 +7,15 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 const AppContext = dynamic(() => import("../AppContext"), {
   ssr: false,
-});
+}) as any;
 const DefaultLayout = dynamic(
   () => import("@peersky/next-web3-chakra/layouts"),
   {
     ssr: false,
+    loading: () => <div>loading...</div>,
   }
-);
+) as any;
+// import DefaultLayout from "@peersky/next-web3-chakra/layouts";
 import { useRouter } from "next/router";
 import NProgress from "nprogress";
 // import { WHITE_LOGO_W_TEXT_URL } from "../src/constants";
@@ -51,6 +53,7 @@ export default function CachingApp({ Component, pageProps }: any) {
       router.events.off("routeChangeError", handleStop);
     };
   }, [router]);
+
   const getLayout =
     Component.getLayout ||
     ((page: React.ReactNode) => (
@@ -67,6 +70,7 @@ export default function CachingApp({ Component, pageProps }: any) {
     // { rel: "preload", as: "image", href: WHITE_LOGO_W_TEXT_URL },
   ];
   pageProps.preloads && headLinks.push(...pageProps.preloads);
+
   return (
     <>
       <style global jsx>{`
