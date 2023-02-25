@@ -26,7 +26,6 @@ const _Scrollable = ({
   };
 
   const handleScroll = (e: any) => {
-    console.log("dir", dir);
     // updateXarrow();
     const currentScroll = Math.ceil(getScrollPrecent(e) / 10);
     if (currentScroll) {

@@ -52,7 +52,6 @@ const _Navbar = ({
     `${colorScheme ?? components.Navbar.colorScheme}.0`,
     `${colorScheme ?? components.Navbar.colorScheme}.800`
   );
-  console.log("bgC", bgC);
   return (
     <Flex
       {...props}

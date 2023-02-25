@@ -37,7 +37,6 @@ const ContractLayout = ({
       toast("Not an address", "error", "Not an address");
     }
   };
-  console.log("children", children);
   if (!contractAddress || !web3ctx.web3.utils.isAddress(contractAddress))
     return (
       <Modal isOpen={true} onClose={() => {}}>
