@@ -121,6 +121,7 @@
   ::-webkit-scrollbar {
     width: 0.5rem;
     height: 1px;
+    z-index: 5;
   }
 
   .Main *:hover::-webkit-scrollbar-thumb {
@@ -130,6 +131,7 @@
   .Main *:hover::-webkit-scrollbar-thumb {
     background-color: #7a7fbc;
     border-radius: 0.25rem;
+    z-index: 5;
   }
 }
 
@@ -137,6 +139,7 @@
 .ScrollableWrapper .Scrollable:hover {
   scrollbar-width: thin;
   scrollbar-color: #53b9d1 #eaebf7;
+  z-index: 5;
 }
 
 .ScrollableWrapper .Scrollable {
@@ -147,6 +150,7 @@
   overflow-x: hidden;
   overflow-y: overlay !important;
   scroll-behavior: smooth;
+  z-index: 5;
 }
 
 /*  ----- react-mde specific ------- */
