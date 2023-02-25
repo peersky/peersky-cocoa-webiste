@@ -1,30 +1,34 @@
 /** @type {import('next').NextConfig} */
 const withTM = require("next-transpile-modules")(["@peersky/next-web3-chakra"]);
-module.exports = withTM(
-  {
-    reactStrictMode: true,
-    trailingSlash: true,
-    presets: [require.resolve("next/babel")],
-    // output: "standalone",
-    // target: "serverless",
-    webpack: (config, { isServer, webpack }) => {
-      // Fixes npm packages that depend on `fs` module
-      if (!isServer) {
-        // config.node = { fs: 'empty' };
-        config.resolve.fallback.fs = false;
-        config.resolve.fallback.electron = false;
-      }
-      config.plugins.push(
-        new webpack.IgnorePlugin({
-          resourceRegExp: /^electron$/,
-        })
-      );
+const withMDX = require("@next/mdx")();
+module.exports = withMDX(
+  withTM(
+    {
+      pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
+      reactStrictMode: true,
+      trailingSlash: true,
+      presets: [require.resolve("next/babel")],
+      // output: "standalone",
+      // target: "serverless",
+      webpack: (config, { isServer, webpack }) => {
+        // Fixes npm packages that depend on `fs` module
+        if (!isServer) {
+          // config.node = { fs: 'empty' };
+          config.resolve.fallback.fs = false;
+          config.resolve.fallback.electron = false;
+        }
+        config.plugins.push(
+          new webpack.IgnorePlugin({
+            resourceRegExp: /^electron$/,
+          })
+        );
 
-      return config;
+        return config;
+      },
+      experimental: {
+        externalDir: true,
+      },
     },
-    experimental: {
-      externalDir: true,
-    },
-  },
-  [, { resolveSymlinks: false }]
+    [, { resolveSymlinks: false }]
+  )
 );
