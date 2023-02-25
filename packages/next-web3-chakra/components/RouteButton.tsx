@@ -1,17 +1,15 @@
 import React from "react";
-import { chakra, Button, Link } from "@chakra-ui/react";
-import NextLink from "next/link";
+import { chakra, Button } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/next-js";
 
 const _RouteButton = (props: any) => {
   return (
-    <NextLink href={props.href} passHref>
-      <Button as={Link} {...props}>
-        {props.children}
-      </Button>
-    </NextLink>
+    <Button as={Link} {...props}>
+      {props.children}
+    </Button>
   );
 };
 
-const RouteButton = chakra(_RouteButton, {label:"button"});
+const RouteButton = chakra(_RouteButton, { label: "button" });
 
 export default RouteButton;

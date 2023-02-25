@@ -1,4 +1,4 @@
-import { useRouter as useNextRouter } from "next/router";
+import * as nextRouter from "next/router";
 
 /**
  * Given a string such as:
@@ -90,8 +90,8 @@ const extractPathParams = (router: any, query: any) => {
  * NextJS router unmodified object is lcoated in .NextRouter
  */
 
-const useRouter = () => {
-  const router = useNextRouter();
+const useAppRouter = () => {
+  const router = nextRouter.useRouter() as any;
   const query = queryFromUrl(router.asPath) as any;
 
   const params = extractPathParams(router, query);
@@ -152,4 +152,4 @@ const useRouter = () => {
   };
 };
 
-export default useRouter;
+export default useAppRouter;

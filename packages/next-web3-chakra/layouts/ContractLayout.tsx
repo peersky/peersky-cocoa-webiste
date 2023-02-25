@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
-import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
+import useAppRouter from "@peersky/next-web3-chakra/hooks/useRouter";
 import { getLayout as getSiteLayout } from "./AppLayout";
 import {
   Modal,
@@ -17,9 +17,14 @@ import {
 } from "@chakra-ui/react";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
 import useToast from "@peersky/next-web3-chakra/hooks/useToast";
-const ContractLayout = ({ children, ...props }: { children: any }) => {
+const ContractLayout = ({
+  children,
+  ...props
+}: {
+  children: React.ReactNode;
+}) => {
   const web3ctx = useContext(Web3Context);
-  const router = useRouter();
+  const router = useAppRouter();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [value, setValue] = React.useState("");

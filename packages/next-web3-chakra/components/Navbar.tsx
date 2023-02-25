@@ -1,12 +1,11 @@
 import React, { useContext } from "react";
-import RouterLink from "next/link";
+import { Link } from "@chakra-ui/next-js";
 import {
   chakra,
   Button,
   Image,
   ButtonGroup,
   Spacer,
-  Link,
   IconButton,
   Flex,
   Badge,
@@ -79,16 +78,15 @@ const _Navbar = ({
         // flexGrow={1}
         id="Logo Container"
       >
-        <RouterLink href="/" passHref>
-          <Link
-            as={Image}
-            w="fit-content"
-            h="auto"
-            justifyContent="left"
-            src={defaultLogo}
-            alt="Logo"
-          />
-        </RouterLink>
+        <Image
+          as={Link}
+          w="fit-content"
+          h="auto"
+          justifyContent="left"
+          src={defaultLogo}
+          href="/"
+          alt="Logo"
+        />
       </Flex>
 
       {!ui.isMobileView && (
@@ -128,16 +126,15 @@ const _Navbar = ({
                         {/* <Portal> */}
                         <MenuList zIndex={100} minW="0px" mt={0} pt={0}>
                           {item.children.map((child: any, idx: number) => (
-                            <RouterLink
+                            <Link
                               shallow={true}
                               key={`${idx}-${item.title}-menu-links`}
                               href={child.path}
-                              passHref
                             >
-                              <MenuItem key={`menu-${idx}`} as={"a"} m={0}>
+                              <MenuItem key={`menu-${idx}`} m={0}>
                                 {child.title}
                               </MenuItem>
-                            </RouterLink>
+                            </Link>
                           ))}
                         </MenuList>
                         {/* </Portal> */}
