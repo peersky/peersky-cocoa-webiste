@@ -32,7 +32,7 @@ export default class MyDocument extends Document {
           <link rel="manifest" href="/manifest.json" />
 
           <link rel="preconnect" href="https://s3.amazonaws.com" />
-          <link rel="preload" as="font" href="/Virgil.woff2" crossOrigin="" />
+          {/* <link rel="preload" as="font" href="/Virgil.woff2" crossOrigin="" /> */}
           {/* <link
             rel="preload"
             as="font"
