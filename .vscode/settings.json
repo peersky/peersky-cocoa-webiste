@@ -4,5 +4,14 @@
     // for .tsx files
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
-  }
+  },
+  "[mdx]": {
+    "editor.wordWrap": "on"
+  },
+  "eslint.workingDirectories": [
+    "packages/multipass-js",
+    "packages/next-web3-chakra",
+    "apps/bestofweb",
+    "/"
+  ]
 }
