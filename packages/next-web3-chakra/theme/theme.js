@@ -1,4 +1,4 @@
-import { extendTheme } from "@chakra-ui/react";
+import { extendTheme, useColorModeValue } from "@chakra-ui/react";
 import Button from "./Button";
 import Tag from "./Tag";
 import Menu from "./Menu";
@@ -38,7 +38,8 @@ const theme = extendTheme({
     "2xl": "192em", // Mac Book 16" and above
   },
   config: {
-    initialColorMode: "light",
+    initialColorMode: "system",
+    useSystemColorMode: true,
   },
   defaultProps: {
     size: "lg", // default is md
@@ -50,7 +51,7 @@ const theme = extendTheme({
     global: (props) => ({
       body: {
         color: mode("grey.800", "whiteAlpha.700")(props),
-        backgroundColor: mode("blue.100", "blue.900")(props),
+        backgroundColor: mode("white.100", "grey.900")(props),
       },
     }),
   },
@@ -68,7 +69,20 @@ const theme = extendTheme({
     Spinner,
     Tooltip,
     Heading,
+    Link: {
+      baseStyle: (props) => {
+        return { textColor: mode("grey.600", "grey.200")(props) };
+      },
+    },
+    Navbar: {
+      colorScheme: "grey",
+    },
+    Footer: {
+      colorScheme: "grey",
+    },
   },
+
+  logo: "daocoacoa.png",
 
   fonts: {
     heading: '"Work Sans", sans-serif',
@@ -91,6 +105,7 @@ const theme = extendTheme({
 
   colors: {
     blue: {
+      0: "#FAFFFF",
       50: "#E5F8FF",
       100: "#B8EBFF",
       200: "#8ADDFF",
@@ -103,6 +118,7 @@ const theme = extendTheme({
       900: "#002433",
     },
     red: {
+      0: "#FFFFF1",
       50: "#FDEDE8",
       100: "#F8CCBE",
       200: "#F4AB94",
@@ -115,6 +131,7 @@ const theme = extendTheme({
       900: "#2E0E05",
     },
     orange: {
+      0: "#FFFFF1",
       50: "#FEECE7",
       100: "#FCCABB",
       200: "#FAA88F",
@@ -127,6 +144,7 @@ const theme = extendTheme({
       900: "#310D02",
     },
     yellow: {
+      0: "#FFFFF0",
       50: "#FDF7E8",
       100: "#F8EABE",
       200: "#F4DC94",
@@ -139,6 +157,7 @@ const theme = extendTheme({
       900: "#2E2405",
     },
     pink: {
+      0: "#FFFFF1",
       50: "#FEF8E7",
       100: "#FCEBBB",
       200: "#FADF8F",
@@ -151,6 +170,7 @@ const theme = extendTheme({
       900: "#312502",
     },
     grey: {
+      0: "#FFFFFF",
       50: "#F0F2F4",
       100: "#D6DAE1",
       200: "#BCC2CD",

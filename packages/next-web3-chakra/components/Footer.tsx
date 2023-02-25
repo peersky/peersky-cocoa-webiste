@@ -10,6 +10,9 @@ import {
   useColorModeValue,
   VisuallyHidden,
   chakra,
+  useTheme,
+  Image,
+  Flex,
 } from "@chakra-ui/react";
 import RouterLink from "next/link";
 import { FaGithub, FaTwitter, FaDiscord } from "react-icons/fa";
@@ -60,11 +63,27 @@ const SocialButton = ({ children, label, href }: any) => {
   );
 };
 
-const Footer = () => {
+const Footer = ({
+  colorScheme,
+  initialLogo,
+  ...props
+}: {
+  colorScheme?: string;
+  initialLogo?: string;
+}) => {
   const ui = useContext(UIContext);
+  const theme = useTheme();
+  const { components } = theme;
+  const themeLogo = theme.logo;
+  const bgC = useColorModeValue(
+    `${colorScheme ?? components.Navbar.colorScheme}.0`,
+    `${colorScheme ?? components.Navbar.colorScheme}.800`
+  );
   return (
     <Box
-      bg={useColorModeValue("blue.500", "grey.900")}
+      className="Footer"
+      {...props}
+      bgColor={bgC}
       color={useColorModeValue("grey.900", "grey.200")}
       // position={"absolute"}
       // bottom={0}
@@ -77,19 +96,31 @@ const Footer = () => {
           spacing={8}
         >
           <Stack spacing={6}>
-            <Box>
-              <Link href="/" alignSelf="center">
-                {/* <ChakraImage
-                  alignSelf="center"
-                  // as={Link}
-                  // to="/"
-                  h="2.5rem"
-                  minW="2.5rem"
-                  // src={WHITE_LOGO_W_TEXT_URL}
-                  alt="Go to app root"
-                /> */}
-              </Link>
-            </Box>
+            <Flex
+              pl={ui.isMobileView ? 2 : 8}
+              justifySelf="flex-start"
+              // h="50px"
+              // w="50px"
+              py={1}
+              w="200px"
+              // minW="200px"
+              flexGrow={1}
+              id="Logo Container"
+            >
+              <RouterLink href="/" passHref>
+                <Link
+                  as={Image}
+                  w="fit-content"
+                  h="auto"
+                  justifyContent="left"
+                  src={useColorModeValue(
+                    `/${initialLogo ?? themeLogo}`,
+                    `/inverted-${initialLogo ?? themeLogo}`
+                  )}
+                  alt="Logo"
+                />
+              </RouterLink>
+            </Flex>
             <Text fontSize={"sm"}>
               © {moment().year()} Peersky.xyz All rights reserved
             </Text>

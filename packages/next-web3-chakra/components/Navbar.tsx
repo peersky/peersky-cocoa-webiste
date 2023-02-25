@@ -18,6 +18,7 @@ import {
   Portal,
   useColorMode,
   useColorModeValue,
+  useTheme,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 import UIContext from "../providers/UIProvider/context";
@@ -29,69 +30,89 @@ import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { SiteMapItem, SiteMapItemType } from "../types";
 
 const _Navbar = ({
-  defaultLogo,
+  initialLogo,
   selectorSchema,
   metamaskSchema,
+  colorScheme,
   ...props
 }: {
-  defaultLogo?: string;
+  colorScheme?: string;
+  initialLogo?: string;
   selectorSchema?: string;
   metamaskSchema?: string;
 }) => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const ui = useContext(UIContext);
-  const sitemap = ui.webSiteConfig.SITEMAP;
+  const { isMobileView, webSiteConfig, setSidebarToggled, sidebarToggled } =
+    useContext(UIContext);
+  const sitemap = webSiteConfig.SITEMAP;
   const web3Provider = useContext(Web3Context);
+  const theme = useTheme();
+  const { components } = theme;
+  const themeLogo = theme.logo;
+  const bgC = useColorModeValue(
+    `${colorScheme ?? components.Navbar.colorScheme}.0`,
+    `${colorScheme ?? components.Navbar.colorScheme}.800`
+  );
+  console.log("bgC", bgC);
   return (
     <Flex
       {...props}
+      // transpar
+      bgColor={bgC}
       boxShadow={["md", "lg"]}
-      zIndex={100}
+      zIndex={1}
       shadow={"outline"}
       alignItems="center"
       id="Navbar"
-      bgColor={useColorModeValue("blue.200", "grey.900")}
-      minH="3rem"
-      maxH="3rem"
+      // bgColor={useColorModeValue("blue.200", "grey.900")}
+      minH={isMobileView ? "89px" : "62px"}
+      maxH={isMobileView ? "89px" : "62px"}
       direction="row"
       w="100%"
       overflow="hidden"
+      position={"fixed"}
+      transition={"0.3s"}
+      top={"0"}
     >
-      {ui.isMobileView && (
+      {isMobileView && (
         <>
           <IconButton
             alignSelf="flex-start"
             aria-label="Menu"
             colorScheme="blue"
             variant="solid"
-            onClick={() => ui.setSidebarToggled(!ui.sidebarToggled)}
+            onClick={() => setSidebarToggled(!sidebarToggled)}
             icon={<HamburgerIcon />}
           />
         </>
       )}
       <Flex
-        pl={ui.isMobileView ? 2 : 8}
+        pl={isMobileView ? 2 : 8}
         justifySelf="flex-start"
-        h="100%"
+        h="50px"
+        w="50px"
         py={1}
-        w="200px"
-        minW="200px"
-        // flexGrow={1}
+        // w="200px"
+        // minW="200px"
+        flexGrow={1}
         id="Logo Container"
       >
         <RouterLink href="/" passHref>
           <Link
             as={Image}
-            w="fit-content"
+            w="auto"
             h="auto"
             justifyContent="left"
-            src={defaultLogo}
+            src={useColorModeValue(
+              `/${initialLogo ?? themeLogo}`,
+              `/inverted-${initialLogo ?? themeLogo}`
+            )}
             alt="Logo"
           />
         </RouterLink>
       </Flex>
 
-      {!ui.isMobileView && (
+      {!isMobileView && (
         <Flex pr={14} justifyItems="flex-end" flexGrow={1} alignItems="center">
           <Spacer />
           <ButtonGroup variant="solid" spacing={4} pr={16}>

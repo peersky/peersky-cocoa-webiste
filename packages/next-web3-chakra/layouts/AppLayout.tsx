@@ -6,7 +6,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { ChevronRightIcon } from "@chakra-ui/icons";
-import { getLayout as getSiteLayout } from "./RootLayout";
+import { getLayout as getSiteLayout } from ".";
 import useRouter from "../hooks/useRouter";
 import NextLink from "next/link";
 import Footer from "../components/Footer";
@@ -20,6 +20,7 @@ const AppLayout = (props: any) => {
 
   return (
     <Flex
+      id="AppContainer"
       // textColor={"grey.700"}
       direction={"column"}
       w="100%"

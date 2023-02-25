@@ -2,14 +2,23 @@ import { Flex, Box, chakra } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import useRouter from "../hooks/useRouter";
 // import mixpanel from "mixpanel-browser";
-const _Scrollable = (props: any) => {
+const _Scrollable = ({
+  className,
+  children,
+  ...props
+}: {
+  children: any;
+  className: string;
+}) => {
   const scrollerRef = useRef<any>();
   const router = useRouter();
   const [path, setPath] = useState<string>();
+  const [y, setY] = useState(0);
+  const [dir, setDir] = useState(0);
 
   const [scrollDepth, setScrollDepth] = useState(0);
 
-  const getScrollPrecent = ({ currentTarget }: {currentTarget: any}) => {
+  const getScrollPrecent = ({ currentTarget }: { currentTarget: any }) => {
     const scroll_level =
       (100 * (currentTarget.scrollTop + currentTarget.clientHeight)) /
       currentTarget.scrollHeight;
@@ -17,8 +26,27 @@ const _Scrollable = (props: any) => {
   };
 
   const handleScroll = (e: any) => {
+    console.log("dir", dir);
     // updateXarrow();
     const currentScroll = Math.ceil(getScrollPrecent(e) / 10);
+    if (currentScroll) {
+      if (currentScroll != y) {
+        setDir(y - currentScroll);
+        setY(currentScroll);
+      }
+    }
+
+    const navbar = document.getElementById("Navbar");
+
+    if (!!navbar) {
+      if (dir === -1 && e.target.scrollTop > 0) {
+        navbar.style.top = `${-navbar.offsetHeight}px`;
+      } else {
+        navbar.style.top = "-0";
+      }
+    }
+    setY(currentScroll);
+
     if (currentScroll > scrollDepth) {
       setScrollDepth(currentScroll);
       // Object.prototype.hasOwnProperty.call(mixpanel, "get_distinct_id") &&
@@ -27,6 +55,8 @@ const _Scrollable = (props: any) => {
       //   });
     }
   };
+
+  const navbar = document.getElementById("Navbar");
 
   useEffect(() => {
     setPath(router.nextRouter.pathname);
@@ -43,23 +73,23 @@ const _Scrollable = (props: any) => {
 
   return (
     <Flex
-      className="ScrollableWrapper"
+      className={className + " " + "ScrollableWrapper"}
       direction="column"
       w="100%"
       overflowY="hidden"
       maxH="100%"
     >
       {/* <Xwrapper> */}
-        <Box
-          className="Scrollable"
-          // direction="column"
-          ref={scrollerRef}
-          overflowY="scroll"
-          onScroll={(e) => handleScroll(e)}
-          {...props}
-        >
-          {props.children}
-        </Box>
+      <Box
+        className="Scrollable"
+        // direction="column"
+        ref={scrollerRef}
+        overflowY="scroll"
+        onScroll={(e) => handleScroll(e)}
+        {...props}
+      >
+        {children}
+      </Box>
       {/* </Xwrapper> */}
     </Flex>
   );
