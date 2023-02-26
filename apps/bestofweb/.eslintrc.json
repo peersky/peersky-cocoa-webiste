@@ -37,37 +37,22 @@
     "node": true
   },
   "extends": [
+    "next/core-web-vitals",
     "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "plugin:@next/next/recommended"
   ],
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
   },
-  // "parser": "@babel/eslint-parser",
-  "parserOptions": {
-    "allowImportExportEverywhere": true,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "ecmaVersion": 2021
-  },
-  "plugins": ["react", "unused-imports", "@babel", "react-hooks", "prettier"],
+
+  "plugins": ["unused-imports", "@babel", "prettier"],
   "rules": {
     "react/display-name": 0,
     "max-len": 0,
     "consistent-return": 0,
     "no-console": 0,
-    "import/prefer-default-export": 0,
-    "import/no-cycle": 0,
-    "react/prop-types": 0,
-    "react/jsx-filename-extension": 0,
-    "react/jsx-props-no-spreading": 0,
-    "react/jsx-fragments": 0,
-    "react/no-danger": 0,
     "no-unused-vars": "warn",
     "unused-imports/no-unused-imports": "error",
     "unused-imports/no-unused-vars": [

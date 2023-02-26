@@ -11,7 +11,6 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  useDisclosure,
   Input,
 } from "@chakra-ui/react";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
@@ -20,7 +19,6 @@ const Contract = () => {
   const web3ctx = useContext(Web3Context);
   const router = useRouter();
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [value, setValue] = React.useState("");
   const handleChange = (event) => setValue(event.target.value);
   const { contractAddress } = router.query;

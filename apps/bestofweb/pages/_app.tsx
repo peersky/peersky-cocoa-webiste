@@ -7,14 +7,14 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 const AppContext = dynamic(() => import("../AppContext"), {
   ssr: false,
-}) as any;
+});
 const DefaultLayout = dynamic(
   () => import("@peersky/next-web3-chakra/layouts"),
   {
     ssr: false,
     loading: () => <div>loading...</div>,
   }
-) as any;
+);
 // import DefaultLayout from "@peersky/next-web3-chakra/layouts";
 import { useRouter } from "next/router";
 import NProgress from "nprogress";

@@ -1,27 +1,14 @@
-import React, { useContext, useDebugValue, useEffect } from "react";
-import Head from "next/head";
-import styles from "../styles/Home.module.css";
+import React, { useContext, useEffect } from "react";
 import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
-import {
-  Button,
-  Image,
-  useBreakpointValue,
-  Box,
-  Center,
-  Text,
-  Flex,
-  Stack,
-} from "@chakra-ui/react";
+import { Button, Box, Center, Text, Flex, Stack } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
 import { LibMultipass } from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
-import { MultipassJs } from "@daocoacoa/multipass-js";
 const multipassABI = require("../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
 const Home = () => {
-  const bp = useBreakpointValue({ base: "md" });
   const [hydrated, setHydrated] = React.useState(false);
-  const [domainState, setDomainState] = React.useState({
+  const [, setDomainState] = React.useState({
     exists: false,
     active: false,
   });
@@ -30,7 +17,6 @@ const Home = () => {
   const domain = query?.domain;
   const domainBytes32 = domain ? ethers.utils.formatBytes32String(domain) : "";
   const web3ctx = useContext(Web3Context);
-  const action = query?.action;
   const message = query?.message && {
     wallet: web3ctx.account,
     ...JSON.parse(`${Buffer.from(query?.message, "base64").toString("ascii")}`),
@@ -51,7 +37,13 @@ const Home = () => {
     if (domain && web3ctx.account) {
       getDomainState();
     }
-  }, [domain, web3ctx.account]);
+  }, [
+    domain,
+    web3ctx.account,
+    web3ctx.web3.eth.Contract,
+    query.contractAddress,
+    domainBytes32,
+  ]);
 
   useEffect(() => {
     if (chainId && web3ctx.chainId != chainId) {

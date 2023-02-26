@@ -9,8 +9,6 @@ import { ChevronRightIcon } from "@chakra-ui/icons";
 import { getLayout as getSiteLayout } from ".";
 import useRouter from "../hooks/useRouter";
 import Link from "next/link";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
 const AppLayout = (props: any) => {
   const [path, setPath] = useState<String[]>([]);
   const router = useRouter();
@@ -51,16 +49,19 @@ const AppLayout = (props: any) => {
               : undefined;
           return (
             <BreadcrumbItem key={`bcl-${element}-${idx}`}>
-              <BreadcrumbLink
-                as={Link}
+              <Link
+                passHref={true}
                 shallow
                 href={{ pathname: linkPath, query: { ...query } }}
-                isCurrentPage={idx === path.length ? true : false}
-                fontWeight={idx === path.length - 1 ? "semibold" : "normal"}
-                textTransform={"capitalize"}
               >
-                {element}
-              </BreadcrumbLink>
+                <BreadcrumbLink
+                  isCurrentPage={idx === path.length ? true : false}
+                  fontWeight={idx === path.length - 1 ? "semibold" : "normal"}
+                  textTransform={"capitalize"}
+                >
+                  {element}
+                </BreadcrumbLink>
+              </Link>
             </BreadcrumbItem>
           );
         })}

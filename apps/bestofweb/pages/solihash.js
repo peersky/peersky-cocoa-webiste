@@ -1,12 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Flex, Center, Input, Text, Heading } from "@chakra-ui/react";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
-import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
 import { ethers } from "ethers";
 
 const Solihash = () => {
   const [state, setState] = React.useState();
-  const web3ctx = useContext(Web3Context);
   return (
     <Flex
       className="ContractsList"
