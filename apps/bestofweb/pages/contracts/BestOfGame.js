@@ -12,7 +12,6 @@ import {
   ModalFooter,
   ModalBody,
   useDisclosure,
-  ModalCloseButton,
   Input,
 } from "@chakra-ui/react";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";

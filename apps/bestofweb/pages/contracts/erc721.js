@@ -1,10 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 const _abi = require("../../../../abi/contracts/mocks/MockERC721.sol/MockERC721.json");
 import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
 import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
-import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
-import { useQuery } from "react-query";
 
 const Contract = () => {
   const router = useRouter();

@@ -1,5 +1,5 @@
 import { getLayout } from "@peersky/next-web3-chakra/layouts/BlogLayout";
-import { List, Flex, ListItem, Spacer, Stack, Text } from "@chakra-ui/react";
+import { Flex, Spacer, Text } from "@chakra-ui/react";
 import RouteButton from "@peersky/next-web3-chakra/components/RouteButton";
 // import Content from "../../content/test.mdx";
 
