@@ -6,10 +6,8 @@ import UIContext from "@peersky/next-web3-chakra/providers/UIProvider/context";
 
 const Blog = (props: any) => {
   const ui = useContext(UIContext);
-  console.dir(props.posts);
   return (
     <Flex w="100%" py={8}>
-
       {props.posts.map((post: any) => {
         return (
           <Flex

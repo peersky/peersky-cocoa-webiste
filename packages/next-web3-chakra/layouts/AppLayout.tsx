@@ -32,9 +32,9 @@ const AppLayout = (props: any) => {
       >
         {path.length !== 0 && (
           <BreadcrumbItem>
-            <BreadcrumbLink textTransform={"capitalize"} href={`/`}>
-              Home
-            </BreadcrumbLink>
+            <Link href="/" passHref shallow>
+              <BreadcrumbLink textTransform={"capitalize"}>Home</BreadcrumbLink>
+            </Link>
           </BreadcrumbItem>
         )}
         {path?.map((element, idx) => {
