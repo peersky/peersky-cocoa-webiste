@@ -31,6 +31,7 @@ const _LayoutWrapper = ({
         <Sidebar />
       </Suspense> */}
       <Flex
+        mt="84px"
         direction="column"
         flexGrow={1}
         flexBasis="100px"

@@ -22,7 +22,7 @@ const UIProvider = ({
       xl: false,
       "2xl": false,
     },
-    "md"
+    { fallback: "md", ssr: false }
   );
   // const isMobileView = true;
 

@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { getLayout as getSiteLayout } from "./AppLayout";
 import {
   Flex,
@@ -11,6 +11,8 @@ import {
   OrderedList,
   Link,
   Center,
+  Tag,
+  Spacer,
 } from "@chakra-ui/react";
 import { MDXProvider } from "@mdx-js/react";
 
@@ -69,17 +71,36 @@ const components = {
   a: A,
 };
 
-const BlogLayout = ({ children, ...props }: { children: any }) => {
+const BlogLayout = ({
+  children,
+  tags,
+  date,
+  ...props
+}: {
+  tags?: string[];
+  date?: string;
+  children: any;
+}) => {
   return (
     <Flex
       id="Blog"
       px={["0px", "0%", "20%"]}
-      py={8}
+      my={8}
       direction="column"
       maxW={"2048px"}
       flexBasis="200px"
       flexGrow={1}
     >
+      <Flex direction={"row"} flexWrap="wrap">
+        {tags &&
+          tags.map((tag) => (
+            <Tag colorScheme={"blue"} variant={"outline"} key={`${tag}`}>
+              {tag}
+            </Tag>
+          ))}
+        <Spacer />
+        {date && date}
+      </Flex>
       <MDXProvider components={components} disableParentContext={true}>
         {children}
       </MDXProvider>
@@ -88,6 +109,11 @@ const BlogLayout = ({ children, ...props }: { children: any }) => {
 };
 
 const BL = chakra(BlogLayout);
-export const getLayout = (page: any) => getSiteLayout(<BL>{page}</BL>);
+export const getLayout = (date?: string, tags?: string[]) => (page: any) =>
+  getSiteLayout(
+    <BL date={date} tags={tags}>
+      {page}
+    </BL>
+  );
 
 export default BlogLayout;

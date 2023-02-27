@@ -58,7 +58,7 @@ const _Navbar = ({
       // transpar
       bgColor={bgC}
       boxShadow={["md", "lg"]}
-      zIndex={1}
+      zIndex={100}
       shadow={"outline"}
       alignItems="center"
       id="Navbar"
