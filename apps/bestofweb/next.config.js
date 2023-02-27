@@ -6,7 +6,7 @@ module.exports = withMDX({
   transpilePackages: ["@peersky/next-web3-chakra"],
   reactStrictMode: true,
   trailingSlash: true,
-  basePath: isProd ? "https://peersky.github.io/daococoa" : undefined,
+  basePath: isProd ? "/daococoa" : undefined,
   // output: "standalone",
   // target: "serverless",
   webpack: (config, { isServer, webpack }) => {
