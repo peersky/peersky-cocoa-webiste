@@ -73,7 +73,7 @@ jobs:
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Prepare typechain
-        run: ${{ steps.detect-package-manager.outputs.manager }} yarn hardhat compile
+        run: ${{ steps.detect-package-manager.outputs.manager }} hardhat compile
       - name: Build & Export
         run: ${{ steps.detect-package-manager.outputs.runner }} workspace bestofweb run build
       - name: Upload artifact
