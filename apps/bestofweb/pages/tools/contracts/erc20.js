@@ -1,5 +1,5 @@
 import React from "react";
-const abi = require("../../../../abi/contracts/mocks/MockERC20.sol/MockERC20.json");
+const abi = require("../../../../../abi/contracts/mocks/MockERC20.sol/MockERC20.json");
 import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
 import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";

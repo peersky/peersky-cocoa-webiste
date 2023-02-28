@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-const abi = require("../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond.json");
+const abi = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
 import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
 import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";

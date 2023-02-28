@@ -1,11 +1,23 @@
 import React, { useContext, useEffect } from "react";
 import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
-import { Button, Box, Center, Text, Flex, Stack } from "@chakra-ui/react";
+import {
+  Button,
+  Box,
+  Center,
+  Text,
+  Flex,
+  Stack,
+  Grid,
+  GridItem,
+  Heading,
+} from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
 import { LibMultipass } from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
+import UIContext from "@peersky/next-web3-chakra/providers/UIProvider/context";
 const multipassABI = require("../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
+import { Link } from "@chakra-ui/next-js";
 const Home = () => {
   const [hydrated, setHydrated] = React.useState(false);
   const [, setDomainState] = React.useState({
@@ -17,6 +29,7 @@ const Home = () => {
   const domain = query?.domain;
   const domainBytes32 = domain ? ethers.utils.formatBytes32String(domain) : "";
   const web3ctx = useContext(Web3Context);
+  const ui = useContext(UIContext);
   const message = query?.message && {
     wallet: web3ctx.account,
     ...JSON.parse(`${Buffer.from(query?.message, "base64").toString("ascii")}`),
@@ -168,6 +181,69 @@ const Home = () => {
           </Flex>
         </Center>
       )}
+      <Grid
+        templateRows={ui.isMobileView ? "repeat(2, 1fr)" : "repeat(4, 1fr)"}
+        templateColumns={ui.isMobileView ? "repeat(1, 1fr)" : "repeat(2, 1fr)"}
+        minH="100vh"
+        textAlign={"center"}
+      >
+        <GridItem
+          as={Link}
+          bgColor="gray.100"
+          href="/blog"
+          w="100%"
+          h="45vh"
+          minH="250px"
+          borderColor={"gray.100"}
+          borderWidth="4px"
+          _hover={{ bgColor: "red.100" }}
+          p={12}
+        >
+          <Heading>Blog</Heading>
+        </GridItem>
+        <GridItem
+          as={Link}
+          href="/dapps"
+          bgColor="gray.100"
+          w="100%"
+          h="45vh"
+          minH="250px"
+          borderColor={"gray.100"}
+          borderWidth="4px"
+          _hover={{ bgColor: "red.100" }}
+          p={12}
+        >
+          <Heading>dApps</Heading>
+        </GridItem>
+        <GridItem
+          as={Link}
+          href="/Utils"
+          bgColor="gray.100"
+          w="100%"
+          h="45vh"
+          minH="250px"
+          borderColor={"gray.100"}
+          borderWidth="4px"
+          _hover={{ bgColor: "red.100" }}
+          p={12}
+        >
+          <Heading>Utils</Heading>
+        </GridItem>
+        <GridItem
+          as={Link}
+          href="/about"
+          bgColor="gray.100"
+          w="100%"
+          h="45vh"
+          minH="250px"
+          borderColor={"gray.100"}
+          borderWidth="4px"
+          _hover={{ bgColor: "red.100" }}
+          p={12}
+        >
+          <Heading>About</Heading>
+        </GridItem>
+      </Grid>
       {/* <Navbar h="50px" maxH={"50px"} bgColor="red" /> */}
       {/* {web3ctx.account ?? "No account"}
       {web3ctx.buttonText !== web3ctx.WALLET_STATES.CONNECTED && (

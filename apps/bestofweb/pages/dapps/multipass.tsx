@@ -4,8 +4,8 @@ import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/contex
 import { Button, Box, Center, Text, Flex, Stack } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
-import { LibMultipass } from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
-const multipassABI = require("../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
+import { LibMultipass } from "../../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
+const multipassABI = require("../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
 const Home = () => {
   const [hydrated, setHydrated] = React.useState(false);
   const [, setDomainState] = React.useState({

@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-const abi = require("../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
+const abi = require("../../../../../abi/contracts/mocks/MockERC1155.sol/MockERC1155.json");
 import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
 import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
 import {
-  Modal,
   Button,
+  Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
