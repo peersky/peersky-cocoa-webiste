@@ -6,6 +6,11 @@ This is a website building bricks package such as navbar, footer, cards, layouts
 
 It is intended to be used for Web3 specific projects - grants you a web3 provider interface, chain selector drop down, and allows to build generic smart contract interface by just pointing address and ABI. How cool is that?
 
+
+### Use case
+
+https://peersky.github.io/daococoa/
+
 ### How to use
 
 #### Getting started
