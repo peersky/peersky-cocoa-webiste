@@ -1,21 +1,116 @@
 ## Web3 react components for Chakra on Next
 
+React(18) components for chakra(2) using next(13).
 
-React(v17) components for chakra(v1) using next(v11).
+This is a website building bricks package such as navbar, footer, cards, layouts etc.
 
-At this point this package simply can add you a navbar to the website that can select chain and keep track on it.
-
-It will improve incrementally with focus around providing web3 functionality.
-
-### Why not use ready wallet connect solutions
-Because it tracks your activity in to 3rd party service. Not the way decentaliation wants to go.
+It is intended to be used for Web3 specific projects - grants you a web3 provider interface, chain selector drop down, and allows to build generic smart contract interface by just pointing address and ABI. How cool is that?
 
 ### How to use
 
+#### Getting started
 
-Either use Navbar from /components or inject a layout as following example: [\_app.tsx](https://github.com/peersky/daococoa/blob/2cd18132025772f1b8eaeff8a27e17e3c280982d/apps/bestofweb/pages/_app.tsx#L57)
+Install `yarn add @peersky/next-web3-chakra`
 
+Create `config.ts` that has exports SITEMAP:
 
+```
+import { SiteMap, SiteMapItemType } from "@peersky/next-web3-chakra/types";
+export const SITEMAP: SiteMap = [
+  {
+    title: "Blog",
+    path: "/blog",
+    type: SiteMapItemType.CONTENT,
+  }]
+```
+
+create your theme. Here is how you start with default theme:
+
+```jsx
+import { default as defaultTheme } from "@peersky/next-web3-chakra/theme/";
+
+import { extendTheme } from "@chakra-ui/react";
+
+const theme = extendTheme({
+  ...defaultTheme,
+  //Here can override library theme items
+});
+
+export default theme;
+```
+
+Wrap your application:
+
+```jsx
+import { UIProvider, Web3Provider } from "@peersky/next-web3-chakra/providers";
+import { SITEMAP } from "./config";
+import theme from "./theme";
+....
+ <ChakraProvider theme={theme}>
+      {/* <Fonts /> */}
+      <Web3Provider>
+        <UIProvider config={{ SITEMAP: SITEMAP }}>{props.children}</UIProvider>
+      </Web3Provider>
+</ChakraProvider>
+```
+
+#### Layouts
+
+This package does not use next13 layouts. Instead old fashioned way is preserved. Use as follows to ensure items defined in layouts do not rerender when you switch between pages:
+
+```js
+import { getLayout } from "@peersky/next-web3-chakra/layouts/BlogLayout";
+const Blog = <div>lorem<div>
+Blog.getLayout = getLayout();
+export default Blog;
+```
+
+#### Components
+
+Import from `@peersky/next-web3-chakra/components` see inside repository for more details
+
+#### Providers
+
+Import from `@peersky/next-web3-chakra/providers`
+
+UI Provider gives you general information about state of UI:
+
+```ts
+export interface UIProviderInterface {
+  sidebarVisible: boolean | undefined;
+  searchBarActive: boolean | undefined;
+  isMobileView: boolean | undefined;
+  sidebarCollapsed: boolean | undefined;
+  sidebarToggled: boolean | undefined;
+  searchTerm: string | undefined;
+  setSearchBarActive: Function;
+  setSidebarCollapsed: Function;
+  setSearchTerm: Function;
+  setSidebarToggled: Function;
+  setSidebarVisible: Function;
+  sessionId: string | undefined;
+  webSiteConfig: WebSiteConfig;
+}
+```
+
+Web3 Provider gives a convinient access to blockchain related operations:
+
+```ts
+export interface Web3ProviderInterface {
+  web3: Web3; //web3js
+  onConnectWalletClick: Function;
+  buttonText: String;
+  WALLET_STATES: WalletStatesInterface; //onboard/conect/connected/unknown-chain
+  account: string; //address
+  chainId: number;
+  defaultTxConfig: Object;
+  // signAccessToken: Function;
+  getMethodsABI: typeof GetMethodsAbiType; //Takes contract ABI and returns method with given name
+  changeChain: typeof ChangeChain; //Request wallet to switch chain
+  targetChain: ChainInterface | undefined; //Desired chain
+  getChainFromId: typeof getChainFromId; //Read chain name from chain id
+}
+```
 
 ### Why there is no <you_name_it>
 
@@ -23,5 +118,5 @@ Author works on this package for pure enthusiasm. If you want to contribute or r
 https://github.com/peersky/daococoa/issues
 
 ### Fund
-You can fund this project @ `0x60D5fe6238bBd887632d90C480B013C32cA29804`. All funding trough this will receive dao tokens distributed on initial token mint for Daocoacoa
 
+You can fund this project to make it more fun.
