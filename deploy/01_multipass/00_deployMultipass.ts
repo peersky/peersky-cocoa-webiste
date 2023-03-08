@@ -1,8 +1,3 @@
-import { Wallet } from "ethers";
-import { ethers } from "hardhat";
-import { deployDiamond } from "../../scripts/libraries/diamond";
-import { transferOwnership } from "../../scripts/libraries/utils";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import {
