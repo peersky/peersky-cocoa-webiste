@@ -225,11 +225,10 @@ library LibMultipass {
         domain.nonce[record.id] += 1;
     }
 
-    function _resolveFromAddress(address _address, DomainNameService storage _domain)
-        private
-        view
-        returns (bool, Record memory)
-    {
+    function _resolveFromAddress(
+        address _address,
+        DomainNameService storage _domain
+    ) private view returns (bool, Record memory) {
         Record memory resolved;
 
         resolved.id = _domain.addressToId[_address];
@@ -265,6 +264,12 @@ library LibMultipass {
     function _getContractState() internal view returns (uint256) {
         LibMultipass.MultipassStorageStruct storage ms = LibMultipass.MultipassStorage();
         return ms.numDomains;
+    }
+
+    function _getDomainStorageByIdx(uint256 index) internal view returns (DomainNameService storage) {
+        MultipassStorageStruct storage s = MultipassStorage();
+
+        return s.domains[index];
     }
 
     using LibMultipass for NameQuery;

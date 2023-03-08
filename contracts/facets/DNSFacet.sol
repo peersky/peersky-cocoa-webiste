@@ -183,12 +183,9 @@ contract DNSFacet is EIP712, IMultipass {
 
     /**
     @dev resolves LibMultipass.Record of name query in to status and identity */
-    function resolveRecord(LibMultipass.NameQuery memory query)
-        public
-        view
-        override
-        returns (bool, LibMultipass.Record memory)
-    {
+    function resolveRecord(
+        LibMultipass.NameQuery memory query
+    ) public view override returns (bool, LibMultipass.Record memory) {
         return LibMultipass.resolveRecord(query);
     }
 
@@ -289,6 +286,11 @@ contract DNSFacet is EIP712, IMultipass {
 
     function getDomainState(bytes32 domainName) external view override returns (LibMultipass.Domain memory) {
         LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorage(domainName);
+        return _domain.properties;
+    }
+
+    function getDomainStateByIdx(uint256 index) external view returns (LibMultipass.Domain memory) {
+        LibMultipass.DomainNameService storage _domain = LibMultipass._getDomainStorageByIdx(index);
         return _domain.properties;
     }
 
