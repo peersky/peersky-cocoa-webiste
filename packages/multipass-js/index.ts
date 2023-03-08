@@ -25,7 +25,7 @@ interface RegisterMessage {
 
 type signatureMessage = ReferrerMesage | RegisterMessage;
 
-export class MultipassJs {
+export default class MultipassJs {
   // private JsonRpcProvider;
   private chainId;
   private name;
