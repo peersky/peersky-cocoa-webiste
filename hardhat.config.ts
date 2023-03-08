@@ -75,6 +75,9 @@ export default {
     deployer: {
       default: "0xCA618ea6Adb914B694E2acF1d77fe92894fbfA30",
     },
+    owner: {
+      default: "0xCA618ea6Adb914B694E2acF1d77fe92894fbfA30",
+    },
   },
   defaultNetwork: "hardhat",
   networks: {
