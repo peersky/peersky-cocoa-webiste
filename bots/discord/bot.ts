@@ -7,13 +7,13 @@ import { MultipassJs } from "@daocoacoa/multipass-js";
 // const ethers = _ethers.ethers;
 import { ethers } from "ethers";
 import { MultipassDiamond } from "../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
-const multipassAbi = require("../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
+// const multipassAbi = require("../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
+const multipassArtifactMumbai = require("../../deployments/mumbai/Multipass.json");
+const { abi: multipassAbi, address: multipassAddress } =
+  multipassArtifactMumbai;
 if (!process.env.DISCORD_REGISTRAR_PRIVATE_KEY)
   throw new Error("no DISCORD_REGISTRAR_PRIVATE_KEY provided");
 if (!process.env.RPC_URL) throw new Error("no RPC_URL provided");
-if (!process.env.MULTIPASS_ADDRESS)
-  throw new Error("no MULTIPASS_ADDRESS provided");
-const multipassAddress = process.env.MULTIPASS_ADDRESS;
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const signer = new ethers.Wallet(
   process.env.DISCORD_REGISTRAR_PRIVATE_KEY,
@@ -49,6 +49,7 @@ const client = new Discord.Client({
 
 client.on("ready", () => {
   console.log(`Logged in as ${client?.user?.tag}!`);
+  console.log(`Running provider as ${signer.address}`);
 });
 const multipass = new ethers.Contract(
   multipassAddress,
@@ -74,9 +75,10 @@ const signUp = async (msg: any) => {
     domainName: DOMAIN_NAME,
   });
   const response = await multipass["resolveRecord"](query);
+  console.log(JSON.stringify(response, null, 2));
   const readGas = await multipass.estimateGas.resolveRecord(query);
   console.log("Gas estimation: ", readGas.toString());
-  if (response[1]) {
+  if (response[0]) {
     channel.send(
       "you seem already to be registered: `" + response[1].wallet + "`"
     );
@@ -95,16 +97,21 @@ const signUp = async (msg: any) => {
         if (!process.env.MULTIPASS_ADDRESS) {
           channel.send("Please specify address: authenticate <address>");
         } else {
-          channel.send(
-            "authentication link: " +
-              multipassJs.getDappURL(
-                registrarMessage,
-                signature,
-                process.env.WEBURL,
-                process.env.MULTIPASS_ADDRESS,
-                DOMAIN_NAME
-              )
+          const embed = new Discord.EmbedBuilder();
+          embed.setURL(
+            multipassJs.getDappURL(
+              registrarMessage,
+              signature,
+              process.env.WEBURL + `/dapps/multipass/signup`,
+              process.env.MULTIPASS_ADDRESS,
+              DOMAIN_NAME
+            )
           );
+          embed
+            .setDescription("This will take you to multipass registry website")
+            .setTitle("Click to register");
+
+          channel.send({ embeds: [embed] });
         }
       });
   }
@@ -149,6 +156,9 @@ client.on("messageCreate", async (msg: any) => {
   }
   if (msg.content.startsWith(`<@${client?.user?.id}> get`)) {
     getRecord(msg);
+  }
+  if (msg.content.startsWith(`registrar address`)) {
+    msg.reply(`${signer.address}`);
   }
 });
 
