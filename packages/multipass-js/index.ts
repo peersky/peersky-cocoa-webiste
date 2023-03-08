@@ -59,8 +59,6 @@ export class MultipassJs {
       Buffer.from(JSON.stringify(message)).toString("base64") +
       "&contractAddress=" +
       contractAddress +
-      "&domain=" +
-      domain +
       "&signature=" +
       signature +
       "&chainId=" +
