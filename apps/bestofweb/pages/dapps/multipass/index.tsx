@@ -18,9 +18,9 @@ import SplitWithImage from "@peersky/next-web3-chakra/components/SplitWithImage"
 // import { FaPassport } from "react-icons/fa";
 import { chains } from "@peersky/next-web3-chakra/providers/Web3Provider";
 import { supportedChains } from "@peersky/next-web3-chakra/types";
-const multipassDeploymentMumbai = require("../../../../deployments/mumbai/Multipass.json");
+const multipassDeploymentMumbai = require("../../../../../deployments/mumbai/Multipass.json");
 const mumbaiAddress = multipassDeploymentMumbai.address;
-const multipassABI = require("../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
+const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
 const multipassChainAddresses: Partial<Record<supportedChains, string>> = {
   mumbai: mumbaiAddress,
 };

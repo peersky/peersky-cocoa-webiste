@@ -15,7 +15,8 @@
     "@next/mdx": "^13.2.1",
     "@peersky/next-web3-chakra": "^0.1.0",
     "@types/mdx": "^2.0.3",
-    "@types/node": "^18.14.1"
+    "@types/node": "^18.14.1",
+    "react-query": "^3.18.1"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.2.1",

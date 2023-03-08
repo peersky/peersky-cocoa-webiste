@@ -8,11 +8,13 @@ import {
   Flex,
   Stack,
   Text,
-  //   useColorModeValue,
+  useColorModeValue,
   Heading,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
+import { useMutation } from "react-query";
+// import MultipassClient from "@daocoacoa/multipass-js";
 import {
   LibMultipass,
   MultipassDiamond,
@@ -22,34 +24,121 @@ import {
 // import { FaPassport } from "react-icons/fa";
 // import { chains } from "@peersky/next-web3-chakra/providers/Web3Provider";
 import { supportedChains } from "@peersky/next-web3-chakra/types";
-import { ReactiveContract } from "@peersky/next-web3-chakra/providers/Web3Provider";
-const multipassDeploymentMumbai = require("../../../../../deployments/mumbai/Multipass.json");
-const mumbaiAddress = multipassDeploymentMumbai.address;
-const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
-const multipassChainAddresses: Partial<Record<supportedChains, string>> = {
-  mumbai: mumbaiAddress,
+import multipassDeploymentMumbai from "../../../../../deployments/mumbai/Multipass.json";
+import useToast from "@peersky/next-web3-chakra/hooks/useToast";
+// const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
+const multipassArtifacts: Partial<
+  Record<supportedChains, { contractAddress: string; abi: any[] }>
+> = {
+  mumbai: {
+    contractAddress: multipassDeploymentMumbai.address,
+    abi: multipassDeploymentMumbai.abi,
+  },
 };
 
 const Home = () => {
-  const [hydrated, setHydrated] = React.useState(false);
+  const [isRegistred, setIsRegistred] = React.useState(false);
   const [, setDomainState] = React.useState({
     exists: false,
     active: false,
   });
-  // const [appScreen, setAppScreen]
-  // const [changeChainRequested, setChainChangeRequested] = React.useState(false);
-  const { query, appendQueries, appendQuery } = useRouter();
   const web3ctx = useContext(Web3Context);
-  const tx = web3ctx.tx({contractAddress: multipassChainAddresses.mumbai, method: })
-  const message = query?.message && {
-    wallet: web3ctx.account,
-    ...JSON.parse(`${Buffer.from(query?.message, "base64").toString("ascii")}`),
-  };
+  const { query, appendQueries, appendQuery } = useRouter();
+  const multipassABI =
+    multipassArtifacts[web3ctx.getChainFromId(query.chainId)]?.abi;
+  const contractAddress =
+    multipassArtifacts[web3ctx.getChainFromId(query.chainId)]?.contractAddress;
+  if (!multipassABI || !contractAddress)
+    throw new Error("no multipass abi or address found");
+  // const [appScreen, setAppScreen]
+  const toast = useToast();
+  // const [changeChainRequested, setChainChangeRequested] = React.useState(false);
+  const signupTx = useMutation(
+    async (args: Parameters<MultipassDiamond["functions"]["register"]>) => {
+      if (!contractAddress) throw new Error("no contract address specified");
+      const contract = new ethers.Contract(
+        contractAddress,
+        multipassABI,
+        web3ctx.provider.getSigner()
+      ) as MultipassDiamond;
+
+      let response;
+      console.log("sending tx");
+      response = await contract.register(...args);
+
+      return response;
+    },
+    {
+      onSuccess: () => {},
+      onError: (error) => {
+        console.dir(error);
+        toast(error?.title, "error", "Error");
+      },
+      onSettled: async () => {
+        const _multipass = new ethers.Contract(
+          contractAddress,
+          multipassABI,
+          web3ctx.provider
+        ) as MultipassDiamond;
+        const query: LibMultipass.NameQueryStruct = {
+          name: ethers.utils.formatBytes32String(""),
+          id: message.id,
+          wallet: ethers.constants.AddressZero,
+          domainName: message.domainName,
+          targetDomain: ethers.utils.formatBytes32String(""),
+        };
+        const response = await _multipass.resolveRecord(query);
+        console.log("response", response);
+        setIsRegistred(response[0]);
+      },
+    }
+  );
+  //   const tx = web3ctx.tx({contractAddress: multipassChainAddresses.mumbai, method: })
+  const message = React.useMemo(
+    () =>
+      query?.message && {
+        wallet: web3ctx.account,
+        ...JSON.parse(
+          `${Buffer.from(query?.message, "base64").toString("ascii")}`
+        ),
+      },
+    [query.message, web3ctx.account]
+  );
   const domain = message?.domain;
   const domainBytes32 = domain ? ethers.utils.formatBytes32String(domain) : "";
   const chainId = query?.chainId;
-  console.log("domain", domainBytes32);
 
+  console.log("domain", domainBytes32);
+  useEffect(() => {
+    const queryUserById = async () => {
+      console.log("sdf2", message, contractAddress);
+      const _multipass = new ethers.Contract(
+        contractAddress,
+        multipassABI,
+        web3ctx.provider
+      ) as MultipassDiamond;
+      const query: LibMultipass.NameQueryStruct = {
+        name: ethers.utils.formatBytes32String(""),
+        id: message.id,
+        wallet: ethers.constants.AddressZero,
+        domainName: message.domainName,
+        targetDomain: ethers.utils.formatBytes32String(""),
+      };
+      const response = await _multipass.resolveRecord(query);
+      console.log("response", response);
+      setIsRegistred(response[0]);
+    };
+
+    if (
+      message &&
+      chainId &&
+      web3ctx.provider &&
+      contractAddress &&
+      multipassABI
+    ) {
+      queryUserById();
+    }
+  }, [message, chainId, web3ctx.provider, multipassABI, contractAddress]);
   useEffect(() => {
     const getDomainState = async () => {
       const _multipass = new ethers.Contract(
@@ -70,9 +159,10 @@ const Home = () => {
     domainBytes32,
     query.contractAddress,
     web3ctx.provider,
+    multipassABI,
   ]);
 
-  //   const cardBackgroundColor = useColorModeValue("gray.100", "gray.900");
+  const cardBackgroundColor = useColorModeValue("gray.100", "gray.900");
   //   useEffect(() => {
   //     if (chainId && web3ctx.chainId != chainId) {
   //       // console.log("request change chain id", web3ctx.chainId, chainId);
@@ -90,37 +180,28 @@ const Home = () => {
       targetDomain: ethers.utils.formatBytes32String(""),
     };
 
-    const multipass = new ReactiveContract(
-      query.contractAddress,
-      multipassABI,
-      web3ctx.provider.getSigner()
-    );
-
-    multipass["test"].mutate()
-
     const applicantData: LibMultipass.RecordStruct = {
       id: message.id,
       name: message.name,
-      wallet: message.wallet,
+      wallet: web3ctx.account,
       nonce: message.nonce,
       domainName: message.domainName,
     };
 
-    await multipass.functions.register(
+    signupTx.mutate([
       applicantData,
       message.domainName,
       query.signature,
       message.deadline,
       emptyUserQuery,
-      "0x0000000000000000000000000000000000000000000000000000000000000000"
-    );
+      "0x0000000000000000000000000000000000000000000000000000000000000000",
+    ]);
   };
-
-  console.log("dbg:", web3ctx.chainId);
 
   return (
     <Box h="100vh">
-      {message && chainId && (
+      {isRegistred && <Heading>Congrats, you are registered!</Heading>}
+      {message && chainId && !isRegistred && (
         <Center>
           <Flex
             direction={"column"}
@@ -140,7 +221,7 @@ const Home = () => {
               //   m={4}
               borderRadius="md"
               spacing={2}
-              bgColor={"yellow.400"}
+              bgColor={cardBackgroundColor}
               w="100%"
             >
               <Box>
@@ -163,7 +244,7 @@ const Home = () => {
               mt={4}
               borderRadius="md"
               spacing={2}
-              bgColor={"yellow.400"}
+              bgColor={cardBackgroundColor}
               w="100%"
             >
               <Box>Will be associated with </Box>
@@ -172,7 +253,7 @@ const Home = () => {
             {chainId && web3ctx.chainId == chainId && (
               <Button
                 onClick={() => submitRegistrationTx()}
-                // isLoading={}
+                isLoading={signupTx.isLoading}
                 colorScheme={"blue"}
                 placeSelf="center"
               >
