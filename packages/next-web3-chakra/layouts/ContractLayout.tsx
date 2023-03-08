@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
 import useToast from "@peersky/next-web3-chakra/hooks/useToast";
+import { ethers } from "ethers";
 const ContractLayout = ({
   children,
   ...props
@@ -31,13 +32,13 @@ const ContractLayout = ({
   const handleChange = (event: any) => setValue(event.target.value);
   const { contractAddress } = router.query;
   const handleSubmit = () => {
-    if (value && web3ctx.web3.utils.isAddress(value)) {
+    if (value && ethers.utils.isAddress(value)) {
       router.appendQuery("contractAddress", value, true, false);
     } else {
       toast("Not an address", "error", "Not an address");
     }
   };
-  if (!contractAddress || !web3ctx.web3.utils.isAddress(contractAddress))
+  if (!contractAddress || !ethers.utils.isAddress(contractAddress))
     return (
       <Modal isOpen={true} onClose={() => {}}>
         <ModalOverlay />

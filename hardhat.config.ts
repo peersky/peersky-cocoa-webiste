@@ -12,6 +12,7 @@ import * as ipfsUtils from "./utils/ipfs";
 import fs from "fs";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
+import "hardhat-deploy";
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
 
@@ -69,6 +70,11 @@ export default {
     gasPrice: 21,
     enabled: false,
     coinmarketcap: process.env.COINMARKETCAP_KEY,
+  },
+  namedAccounts: {
+    deployer: {
+      default: "0xCA618ea6Adb914B694E2acF1d77fe92894fbfA30",
+    },
   },
   defaultNetwork: "hardhat",
   networks: {
