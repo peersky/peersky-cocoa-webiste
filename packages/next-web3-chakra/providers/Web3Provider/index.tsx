@@ -395,7 +395,7 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   //       },
   //     }}
   //   );
-  
+
   return (
     <Web3Context.Provider
       value={{
