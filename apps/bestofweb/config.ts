@@ -8,7 +8,7 @@ export const SITEMAP: SiteMap = [
   },
   {
     title: "dApp",
-    path: "/dapp",
+    path: "/dapps",
     type: SiteMapItemType.CONTENT,
   },
   {

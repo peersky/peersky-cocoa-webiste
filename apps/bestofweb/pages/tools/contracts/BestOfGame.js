@@ -23,13 +23,13 @@ const Contract = () => {
   const handleChange = (event) => setValue(event.target.value);
   const { contractAddress } = router.query;
   const handleSubmit = () => {
-    if (value && web3ctx.web3.utils.isAddress(value)) {
+    if (value && web3ctx.provider.utils.isAddress(value)) {
       router.appendQuery("contractAddress", value);
     } else {
       toast("Not an address", "error", "Not an address");
     }
   };
-  if (!contractAddress || !web3ctx.web3.utils.isAddress(contractAddress))
+  if (!contractAddress || !web3ctx.provider.utils.isAddress(contractAddress))
     return (
       <>
         <Modal isOpen={true}>

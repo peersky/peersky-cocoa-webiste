@@ -4,7 +4,7 @@ import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
 import { ethers } from "ethers";
 
 const Solihash = () => {
-  const [state, setState] = React.useState();
+  const [state, setState] = React.useState("");
   return (
     <Flex
       className="ContractsList"

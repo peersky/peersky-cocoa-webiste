@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from "react";
-import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
+import React, { useContext } from "react";
+import useAppRouter from "@peersky/next-web3-chakra/hooks/useRouter";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
 import {
   Button,
@@ -11,6 +11,7 @@ import {
   Grid,
   GridItem,
   Heading,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
@@ -19,13 +20,16 @@ import UIContext from "@peersky/next-web3-chakra/providers/UIProvider/context";
 const multipassABI = require("../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
 import { Link } from "@chakra-ui/next-js";
 const Home = () => {
+  const cardBgColor = useColorModeValue("gray.100", "gray.700");
+  const cardHoverBgColor = useColorModeValue("red.100", "red.700");
+  const cardBorderColor = useColorModeValue("gray.300", "gray.700");
   const [hydrated, setHydrated] = React.useState(false);
   const [, setDomainState] = React.useState({
     exists: false,
     active: false,
   });
   const [changeChainRequested, setChainChangeRequested] = React.useState(false);
-  const { query } = useRouter();
+  const { query } = useAppRouter();
   const domain = query?.domain;
   const domainBytes32 = domain ? ethers.utils.formatBytes32String(domain) : "";
   const web3ctx = useContext(Web3Context);
@@ -36,41 +40,41 @@ const Home = () => {
   };
   const chainId = query?.chainId;
 
-  useEffect(() => {
-    const getDomainState = async () => {
-      const _multipass = new web3ctx.web3.eth.Contract(
-        multipassABI,
-        query.contractAddress
-      );
-      const state = await _multipass.methods
-        .getDomainState(domainBytes32)
-        .call();
-      setDomainState({ exists: !!state.name, active: state.isActive });
-    };
-    if (domain && web3ctx.account) {
-      getDomainState();
-    }
-  }, [
-    domain,
-    web3ctx.account,
-    web3ctx.web3.eth.Contract,
-    query.contractAddress,
-    domainBytes32,
-  ]);
+  // useEffect(() => {
+  //   const getDomainState = async () => {
+  //     const _multipass = new web3ctx.provider.eth.Contract(
+  //       multipassABI,
+  //       query.contractAddress
+  //     );
+  //     const state = await _multipass.methods
+  //       .getDomainState(domainBytes32)
+  //       .call();
+  //     setDomainState({ exists: !!state.name, active: state.isActive });
+  //   };
+  //   if (domain && web3ctx.account) {
+  //     getDomainState();
+  //   }
+  // }, [
+  //   domain,
+  //   web3ctx.account,
+  //   web3ctx.provider.eth.Contract,
+  //   query.contractAddress,
+  //   domainBytes32,
+  // ]);
 
-  useEffect(() => {
-    if (chainId && web3ctx.chainId != chainId) {
-      // console.log("request change chain id", web3ctx.chainId, chainId);
-      // web3ctx.changeChain(web3ctx.getChainFromId(chainId));
-    }
-  }, [chainId, web3ctx.chainId, web3ctx.getChainFromId]);
-  React.useEffect(() => {
-    setHydrated(true);
-  }, []);
-  if (!hydrated) {
-    // Returns null on first render, so the client and server match
-    return null;
-  }
+  // useEffect(() => {
+  //   if (chainId && web3ctx.chainId != chainId) {
+  //     // console.log("request change chain id", web3ctx.chainId, chainId);
+  //     // web3ctx.changeChain(web3ctx.getChainFromId(chainId));
+  //   }
+  // }, [chainId, web3ctx.chainId, web3ctx.getChainFromId]);
+  // React.useEffect(() => {
+  //   setHydrated(true);
+  // }, []);
+  // if (!hydrated) {
+  //   // Returns null on first render, so the client and server match
+  //   return null;
+  // }
 
   const submitRegistrationTx = async () => {
     const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -82,9 +86,10 @@ const Home = () => {
       targetDomain: ethers.utils.formatBytes32String(""),
     };
 
-    const multipass = new web3ctx.web3.eth.Contract(
+    const multipass = new ethers.Contract(
+      query.contractAddress,
       multipassABI,
-      query.contractAddress
+      web3ctx.provider
     );
 
     const applicantData: LibMultipass.RecordStruct = {
@@ -108,7 +113,7 @@ const Home = () => {
   };
 
   return (
-    <Box h="100vh">
+    <Box minH="100vh">
       {chainId && web3ctx.chainId != chainId && (
         <Center>
           <Box
@@ -185,18 +190,24 @@ const Home = () => {
         templateRows={ui.isMobileView ? "repeat(2, 1fr)" : "repeat(4, 1fr)"}
         templateColumns={ui.isMobileView ? "repeat(1, 1fr)" : "repeat(2, 1fr)"}
         minH="100vh"
+        gridGap={12}
         textAlign={"center"}
       >
         <GridItem
           as={Link}
-          bgColor="gray.100"
+          bgColor={cardBgColor}
           href="/blog"
           w="100%"
           h="45vh"
           minH="250px"
-          borderColor={"gray.100"}
+          borderColor={cardBorderColor}
           borderWidth="4px"
-          _hover={{ bgColor: "red.100" }}
+          transition={"0.5s"}
+          _hover={{
+            bgColor: cardHoverBgColor,
+            borderRadius: "50%",
+            transition: "0.5s",
+          }}
           p={12}
         >
           <Heading>Blog</Heading>
@@ -204,13 +215,17 @@ const Home = () => {
         <GridItem
           as={Link}
           href="/dapps"
-          bgColor="gray.100"
+          bgColor={cardBgColor}
           w="100%"
           h="45vh"
           minH="250px"
-          borderColor={"gray.100"}
+          borderColor={cardBorderColor}
           borderWidth="4px"
-          _hover={{ bgColor: "red.100" }}
+          _hover={{
+            bgColor: cardHoverBgColor,
+            borderRadius: "50%",
+            transition: "0.5s",
+          }}
           p={12}
         >
           <Heading>dApps</Heading>
@@ -218,13 +233,17 @@ const Home = () => {
         <GridItem
           as={Link}
           href="/Utils"
-          bgColor="gray.100"
+          bgColor={cardBgColor}
           w="100%"
           h="45vh"
           minH="250px"
-          borderColor={"gray.100"}
+          borderColor={cardBorderColor}
           borderWidth="4px"
-          _hover={{ bgColor: "red.100" }}
+          _hover={{
+            bgColor: cardHoverBgColor,
+            borderRadius: "50%",
+            transition: "0.5s",
+          }}
           p={12}
         >
           <Heading>Utils</Heading>
@@ -232,13 +251,17 @@ const Home = () => {
         <GridItem
           as={Link}
           href="/about"
-          bgColor="gray.100"
+          bgColor={cardBgColor}
           w="100%"
           h="45vh"
           minH="250px"
-          borderColor={"gray.100"}
+          borderColor={cardBorderColor}
           borderWidth="4px"
-          _hover={{ bgColor: "red.100" }}
+          _hover={{
+            bgColor: cardHoverBgColor,
+            borderRadius: "50%",
+            transition: "0.5s",
+          }}
           p={12}
         >
           <Heading>About</Heading>
