@@ -33,7 +33,9 @@ const AppLayout = (props: any) => {
         {path.length !== 0 && (
           <BreadcrumbItem>
             <Link href="/" passHref shallow>
-              <BreadcrumbLink textTransform={"capitalize"}>Home</BreadcrumbLink>
+              <BreadcrumbLink as={"div"} textTransform={"capitalize"}>
+                Home
+              </BreadcrumbLink>
             </Link>
           </BreadcrumbItem>
         )}
@@ -55,6 +57,7 @@ const AppLayout = (props: any) => {
                 href={{ pathname: linkPath, query: { ...query } }}
               >
                 <BreadcrumbLink
+                  as={"div"}
                   isCurrentPage={idx === path.length ? true : false}
                   fontWeight={idx === path.length - 1 ? "semibold" : "normal"}
                   textTransform={"capitalize"}

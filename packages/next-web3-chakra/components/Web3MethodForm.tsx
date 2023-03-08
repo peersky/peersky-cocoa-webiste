@@ -32,6 +32,7 @@ import Web3MethodField from "./We3MethodField";
 
 import { ArgumentFields, StateInterface, ExtendedInputs } from "../types";
 import useABIItemForm from "../hooks/useAbiItemForm";
+import { ethers } from "ethers";
 // interface
 
 const Web3MethodForm = ({
@@ -87,19 +88,21 @@ const Web3MethodForm = ({
     }
   }, [state, argumentFields, onCancel]);
 
-  const [queryEnabled, setQueryEnabled] = React.useState(false);
-
   const web3call = async ({ args }: { args: any }) => {
-    const contract = new web3ctx.web3.eth.Contract([method]);
+    const contract = new ethers.Contract(
+      contractAddress,
+      [method] as any as string,
+      web3ctx.provider.getSigner()
+    );
 
-    contract.options.address = contractAddress;
-    const response =
-      method.name &&
-      (await contract.methods[method.name](...args).send({
-        from: web3ctx.account,
-        // gasPrice:
-        //   process.env.NODE_ENV !== "production" ? "100000000000" : undefined,
-      }));
+    let response;
+    if (method.name) {
+      console.log("sending tx");
+      response = await contract.functions[method.name](...args);
+    } else {
+      // console.error("method.name not provided");
+      throw new Error("no method name");
+    }
     return response;
   };
 
@@ -113,7 +116,6 @@ const Web3MethodForm = ({
     },
   });
 
-  console.log("state", state);
   const handleSubmit = () => {
     if (
       method.stateMutability === "view" ||

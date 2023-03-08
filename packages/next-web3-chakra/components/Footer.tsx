@@ -105,18 +105,20 @@ const Footer = ({
               flexGrow={1}
               id="Logo Container"
             >
-              <Image
-                as={Link}
-                href="/"
-                w="fit-content"
-                h="auto"
-                justifyContent="left"
-                src={useColorModeValue(
-                  `/${initialLogo ?? themeLogo}`,
-                  `/inverted-${initialLogo ?? themeLogo}`
-                )}
-                alt="Logo"
-              />
+              <Link href="/">
+                <Image
+                  // as={Link}
+                  // href="/"
+                  w="fit-content"
+                  h="auto"
+                  justifyContent="left"
+                  src={useColorModeValue(
+                    `/${initialLogo ?? themeLogo}`,
+                    `/inverted-${initialLogo ?? themeLogo}`
+                  )}
+                  alt="Logo"
+                />
+              </Link>
             </Flex>
             <Text fontSize={"sm"}>
               © {moment().year()} Peersky.xyz All rights reserved

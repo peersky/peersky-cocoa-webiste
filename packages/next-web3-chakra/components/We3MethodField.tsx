@@ -109,7 +109,7 @@ const Bytes32InputItem = ({
           onChange={(event) =>
             dispatchArguments({
               value: inputItem.meta.convertToBytes
-                ? //  web3ctx.web3.utils.padLeft(
+                ? //  web3ctx.provider.utils.padLeft(
                   ethers.utils.formatBytes32String(event.target.value)
                 : // 32
                   // )
@@ -132,14 +132,13 @@ const NumberInputItem = ({
   onKeyPress: any;
   inputItem: any;
   dispatchArguments: React.Dispatch<{
-    value: any;
+    value?: any;
     index: number;
+    valueIsEther?: boolean;
   }>;
   index: number;
 }) => {
   const [multiplier, setMultiplier] = React.useState("1");
-
-  console.log("inputItem", inputItem);
 
   return (
     <>
@@ -162,7 +161,7 @@ const NumberInputItem = ({
             value={inputItem.meta.value}
             onChange={(event) =>
               dispatchArguments({
-                value: new BN(event.target.value).mul(new BN(multiplier)),
+                value: event.target.value,
                 index,
               })
             }
@@ -175,7 +174,12 @@ const NumberInputItem = ({
           </NumberInputStepper>
         </NumberInput>
         <Select
-          onChange={(e) => setMultiplier(e.target.value)}
+          onChange={(e) =>
+            dispatchArguments({
+              index,
+              valueIsEther: e.target.value === "1" ? false : true,
+            })
+          }
           flexBasis="25px"
           flexGrow={1}
           maxW="200px"

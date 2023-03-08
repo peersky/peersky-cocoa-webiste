@@ -1,5 +1,6 @@
 import Web3 from "web3/types";
 import { AbiItem, AbiInput } from "web3-utils";
+import { ethers } from "ethers";
 
 export enum SiteMapItemType {
   EMPTY = 0,
@@ -53,14 +54,12 @@ export interface TokenInterface {
 declare function ChangeChain(chainName: supportedChains): void;
 declare function getChainFromId(chainId: number): supportedChains;
 export interface Web3ProviderInterface {
-  web3: Web3;
+  provider: ethers.providers.Web3Provider;
   onConnectWalletClick: Function;
   buttonText: String;
   WALLET_STATES: WalletStatesInterface;
   account: string;
   chainId: number;
-  defaultTxConfig: Object;
-  // signAccessToken: Function;
   getMethodsABI: typeof GetMethodsAbiType;
   changeChain: typeof ChangeChain;
   targetChain: ChainInterface | undefined;

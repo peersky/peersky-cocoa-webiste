@@ -1,14 +1,7 @@
 import React from "react";
-import {
-  ArgumentFields,
-  StateInterface,
-  ExtendedInputs,
-  Web3InpuUIField,
-  Web3ProviderInterface,
-} from "../types";
+import { StateInterface, ExtendedInputs, Web3InpuUIField } from "../types";
 import { ethers } from "ethers";
 import { AbiItem } from "web3-utils";
-import Web3 from "web3";
 
 const extendInputs = (
   element: ExtendedInputs,
@@ -16,7 +9,6 @@ const extendInputs = (
   hide?: string[]
 ): any => {
   if (element.type === "tuple" || element.type === "tuple[]") {
-    console.log("tuple meta setup", element);
     return {
       ...element,
       components: element.components?.map((comp) => {
@@ -75,14 +67,21 @@ const setArguments = (
     value,
     index,
     type,
-  }: { value: any; index: any; type?: "bytesFormat" | undefined }
+    valueIsEther,
+  }: {
+    value: any;
+    index: any;
+    type?: "bytesFormat" | undefined;
+    valueIsEther?: boolean;
+  }
 ) => {
   const newState = { ...state };
   if (type !== "bytesFormat") {
-    if (newState.inputs[index].type === "tuple") {
+    if (newState.inputs[index]?.type === "tuple") {
       newState.inputs[index].components = [...value];
     } else {
-      newState.inputs[index].meta.value = value;
+      value && (newState.inputs[index].meta.value = value);
+      newState.inputs[index].meta.valueIsEther = valueIsEther;
     }
   } else {
     newState.inputs.forEach((inputElement, idx) => {
@@ -109,7 +108,6 @@ const setArguments = (
 };
 
 const useABIItemForm = (method: AbiItem) => {
-  const web3 = new Web3();
   const initialState = React.useMemo(() => {
     const newState: StateInterface = { ...(method as any) };
     newState.inputs?.forEach((element: ExtendedInputs, index: number) => {
@@ -136,10 +134,10 @@ const useABIItemForm = (method: AbiItem) => {
     state.inputs.forEach((inputElement: any, index: number) => {
       returnedObject[index] =
         inputElement.type === "address"
-          ? web3.utils.isAddress(
-              web3.utils.toChecksumAddress(inputElement.meta.value)
+          ? ethers.utils.isAddress(
+              ethers.utils.getAddress(inputElement.meta.value)
             )
-            ? web3.utils.toChecksumAddress(inputElement.meta.value)
+            ? ethers.utils.getAddress(inputElement.meta.value)
             : console.error("not an address", returnedObject[index])
           : inputElement.type === "tuple"
           ? extractTupleParams(inputElement)
@@ -148,17 +146,22 @@ const useABIItemForm = (method: AbiItem) => {
         returnedObject[index] = JSON.parse(returnedObject[index]);
       }
       if (
-        inputElement.type.includes("uint") &&
-        inputElement.meta?.valueIsEther
+        inputElement.type.includes("uint")
+        // &&
+        // inputElement.meta?.valueIsEther
       ) {
         if (inputElement.type.includes("[]")) {
           returnedObject[index] = returnedObject.map((value: string) =>
-            web3.utils.toWei(value, "ether")
+            ethers.utils.parseUnits(
+              value,
+              inputElement.meta.valueIsEther ? "ether" : "wei"
+            )
           );
         } else {
-          returnedObject[index] = web3.utils.toWei(
-            returnedObject[index],
-            "ether"
+          console.log("returned uint", inputElement.meta);
+          returnedObject[index] = ethers.utils.parseUnits(
+            inputElement.meta.value,
+            inputElement.meta.valueIsEther ? "ether" : "wei"
           );
         }
       }

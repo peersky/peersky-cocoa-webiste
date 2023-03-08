@@ -54,7 +54,7 @@ const newTagVariant = () => {
   };
 };
 
-const filledVariant = () => {
+const filledVariant = (props) => {
   const { colorScheme: c, theme } = props;
   return {
     field: {

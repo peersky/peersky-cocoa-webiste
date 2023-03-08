@@ -35,6 +35,7 @@
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/next-js": "^2.0.1",
     "@chakra-ui/react": "^2.5.1",
+    "@choc-ui/chakra-autocomplete": "^5.1.4",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@stripe/stripe-js": "^1.16.0",

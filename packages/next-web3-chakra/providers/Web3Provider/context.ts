@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { createContext } from "react";
 import Web3 from "web3";
 import { WalletStatesInterface, Web3ProviderInterface } from "../../types";
@@ -17,19 +18,18 @@ export interface web3MethodCall {
 
 export const WALLET_STATES: WalletStatesInterface = {
   ONBOARD: "Install MetaMask!",
-  CONNECT: "Connect with Metamask",
+  CONNECT: "Connect with Web3",
   CONNECTED: "Connected",
   UNKNOWN_CHAIN: "Unsupported chain",
 };
 
 const Web3Context = createContext<Web3ProviderInterface>({
-  web3: new Web3(null),
+  provider: {} as any as ethers.providers.Web3Provider,
   onConnectWalletClick: () => console.error("not intied"),
   buttonText: "",
   WALLET_STATES: WALLET_STATES,
   account: "",
   chainId: 0,
-  defaultTxConfig: {},
   getMethodsABI: (abi, name) => {
     const index = abi.findIndex(
       (item) => item.name === name && item.type == "function"

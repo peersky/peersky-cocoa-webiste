@@ -95,18 +95,20 @@ const _Navbar = ({
         flexGrow={1}
         id="Logo Container"
       >
-        <Image
-          as={Link}
-          w="fit-content"
-          h="auto"
-          justifyContent="left"
-          src={useColorModeValue(
-            `/${initialLogo ?? themeLogo}`,
-            `/inverted-${initialLogo ?? themeLogo}`
-          )}
-          href="/"
-          alt="Logo"
-        />
+        <Link href="/">
+          <Image
+            // as={Link}
+            // w="fit-content"
+            h="100%"
+            justifyContent="left"
+            src={useColorModeValue(
+              `/${initialLogo ?? themeLogo}`,
+              `/inverted-${initialLogo ?? themeLogo}`
+            )}
+            // href="/"
+            alt="Logo"
+          />
+        </Link>
       </Flex>
 
       {!isMobileView && (

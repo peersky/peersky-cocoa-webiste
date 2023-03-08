@@ -30,6 +30,7 @@ const ReactJson = dynamic(() => import("react-json-view"), {
 });
 import { ArgumentFields, StateInterface, ExtendedInputs } from "../types";
 import useABIItemForm from "../hooks/useAbiItemForm";
+import { ethers } from "ethers";
 
 const _StateItem = ({
   abiItem,
@@ -47,20 +48,23 @@ const _StateItem = ({
 
   const getItemState = async () => {
     setIsEnabled(false);
-    const contract = new web3ctx.web3.eth.Contract([abiItem]);
-    contract.options.address = address;
+    const contract = new ethers.Contract(
+      address,
+      [abiItem] as any as string,
+      web3ctx.provider
+    );
+
     let response;
     if (abiItem?.inputs?.length !== 0) {
       const _args = getArgs();
 
       response =
         abiItem.name &&
-        (await contract.methods[abiItem.name](
+        (await contract.functions[abiItem.name](
           abiItem.inputs?.length == 1 ? _args[0] : _args
-        ).call());
+        ));
     } else {
-      response =
-        abiItem.name && (await contract.methods[abiItem.name]().call());
+      response = abiItem.name && (await contract.functions[abiItem.name]());
     }
 
     return response;

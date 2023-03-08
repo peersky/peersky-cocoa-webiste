@@ -33,7 +33,7 @@ const ChainSelector = ({ selectorScheme }: { selectorScheme?: string }) => {
               mr={4}
               src={
                 web3Provider.targetChain?.name === "ethereum" ||
-                web3Provider.targetChain?.name === "gorli"
+                web3Provider.targetChain?.name === "goerli"
                   ? "https://s3.amazonaws.com/static.simiotics.com/moonstream/assets/ethereum/eth-diamond-rainbow.png"
                   : web3Provider.targetChain?.name === "localhost"
                   ? ""
@@ -63,10 +63,10 @@ const ChainSelector = ({ selectorScheme }: { selectorScheme?: string }) => {
           </MenuItem>
           <MenuItem
             // fontSize={"24px"}
-            isDisabled={web3Provider.targetChain?.name === "gorli"}
+            isDisabled={web3Provider.targetChain?.name === "goerli"}
             // _hover={{ backgroundColor: "grey.100" }}
             onClick={() => {
-              web3Provider.changeChain("gorli");
+              web3Provider.changeChain("goerli");
             }}
           >
             <Image
@@ -75,7 +75,7 @@ const ChainSelector = ({ selectorScheme }: { selectorScheme?: string }) => {
               mr={6}
               src="https://s3.amazonaws.com/static.simiotics.com/moonstream/assets/eth-diamond-black.png"
             ></Image>
-            Gorli
+            goerli
             <Box w="24px"></Box>
           </MenuItem>
           <MenuItem
