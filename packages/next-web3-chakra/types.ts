@@ -31,7 +31,7 @@ export type supportedChains =
   | "mumbai"
   | "polygon"
   | "ethereum"
-  | "gorli";
+  | "goerli";
 
 export interface ChainInterface {
   chainId: number;
