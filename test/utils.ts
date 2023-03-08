@@ -272,9 +272,9 @@ export const setupAddresses = async (): Promise<AdrSetupResult> => {
 };
 
 const baseFee = 1 * 10 ** 18;
-const MULTIPASS_CONTRACT_NAME = "MultipassDNS";
+export const MULTIPASS_CONTRACT_NAME = "MultipassDNS";
 export const MULTIPASS_CONTRACT_VERSION = "0.0.1";
-const BESTOF_CONTRACT_NAME = "BESTOFNAME";
+export const BESTOF_CONTRACT_NAME = "BESTOFNAME";
 export const BESTOF_CONTRACT_VERSION = "0.0.1";
 export const BOG_BLOCKS_PER_TURN = "25";
 export const BOG_MAX_PLAYERS = 5;
