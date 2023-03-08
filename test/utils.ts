@@ -27,7 +27,7 @@ import { LibMultipass } from "../types/typechain/hardhat-diamond-abi/HardhatDiam
 import { RankToken } from "../types/typechain/contracts/tokens/RankToken";
 import { BestOfInit } from "../types/typechain/contracts/initializers/BestOfInit";
 import { assert } from "console";
-import { MultipassJs } from "@daocoacoa/multipass-js";
+import MultipassJs from "@daocoacoa/multipass-js";
 
 export interface SignerIdentity {
   name: string;
