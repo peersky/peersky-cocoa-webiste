@@ -16,6 +16,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   await deploy("RankToken", {
     from: deployer,
     args: [URI, owner],
+    skipIfAlreadyDeployed: true,
   });
 };
 

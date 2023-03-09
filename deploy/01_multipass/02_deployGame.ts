@@ -6,9 +6,10 @@ import {
 } from "../../test/utils";
 import { ethers } from "hardhat";
 import { BestOfInit } from "../../types/typechain/contracts/initializers/BestOfInit";
+import { RankToken } from "../../types/typechain/contracts/tokens/RankToken";
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployments, getNamedAccounts } = hre;
-  const { deploy, diamond } = deployments;
+  const { deploy, diamond, getOrNull } = deployments;
 
   const { deployer } = await getNamedAccounts();
 
@@ -26,8 +27,13 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   if (!process.env.BESTOF_CONTRACT_VERSION || !process.env.BESTOF_CONTRACT_NAME)
     throw new Error("EIP712 intializer args not set");
-  const rankToken = await deployments.getOrNull("RankToken");
+  const rankTokenDeployment = await deployments.getOrNull("RankToken");
 
+  const rankToken = new ethers.Contract(
+    rankTokenDeployment.address,
+    rankTokenDeployment.abi,
+    hre.ethers.provider
+  ) as RankToken;
   if (!rankToken) throw new Error("rank token not deployed");
 
   const settings: BestOfInit.ContractInitializerStruct = {
@@ -42,9 +48,11 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     numWinners: process.env.NUM_WINNERS,
   };
 
-  await diamond.deploy("BestOfGame", {
+  const deployment = await diamond.deploy("BestOfGame", {
+    log: true,
     from: deployer,
     owner: deployer,
+
     facets: [
       "BestOfFacet",
       "GameMastersFacet",
@@ -57,10 +65,24 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
       args: [
         process.env.BESTOF_CONTRACT_NAME,
         process.env.BESTOF_CONTRACT_VERSION,
-        settings,
+        [
+          settings.blocksPerTurn,
+          settings.maxPlayersSize,
+          settings.minPlayersSize,
+          settings.rankTokenAddress,
+          settings.blocksToJoin,
+          settings.gamePrice,
+          settings.joinGamePrice,
+          settings.maxTurns,
+          settings.numWinners,
+        ],
       ],
     },
   });
+  const rOwner = await rankToken.owner();
+  if (rOwner !== deployment.address) {
+    await rankToken.transferOwnership(deployment.address);
+  }
 };
 
 export default func;
