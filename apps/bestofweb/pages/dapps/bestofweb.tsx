@@ -9,7 +9,12 @@ import {
   Stack,
   useColorModeValue,
   Heading,
+  Text,
 } from "@chakra-ui/react";
+import {
+  BestOfDiamond,
+  IBestOf,
+} from "../../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
 import { ethers } from "ethers";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
 import { LibMultipass } from "../../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
@@ -17,292 +22,60 @@ import { LibMultipass } from "../../../../types/typechain/hardhat-diamond-abi/Ha
 import SplitWithImage from "@peersky/next-web3-chakra/components/SplitWithImage";
 // import { FaPassport } from "react-icons/fa";
 import { chains } from "@peersky/next-web3-chakra/providers/Web3Provider";
-import { supportedChains } from "@peersky/next-web3-chakra/types";
+import { SupportedChains } from "@peersky/next-web3-chakra/types";
 // const multipassDeploymentMumbai = require("../../../../deployments/mumbai/Multipass.json");
-import bestOfWebDeploymentMumbai from "../../../../deployments/mumbai/"
-const mumbaiAddress = multipassDeploymentMumbai.address;
-const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
-const multipassChainAddresses: Partial<Record<supportedChains, string>> = {
-  mumbai: mumbaiAddress,
+import bestOfWebDeploymentMumbai from "../../../../deployments/mumbai/BestOfGame.json";
+import useReadContract from "@peersky/next-web3-chakra/hooks/useReadContract";
+import useBestOfWebContract from "@peersky/next-web3-chakra/hooks/useBestOfWebContract";
+const artifacts: Partial<
+  Record<SupportedChains, { contractAddress: string; abi: any[] }>
+> = {
+  mumbai: {
+    contractAddress: bestOfWebDeploymentMumbai.address,
+    abi: bestOfWebDeploymentMumbai.abi,
+  },
 };
 
 const Home = () => {
-  const [hydrated, setHydrated] = React.useState(false);
-  const [, setDomainState] = React.useState({
-    exists: false,
-    active: false,
-  });
   // const [appScreen, setAppScreen]
   // const [changeChainRequested, setChainChangeRequested] = React.useState(false);
   const { query, appendQueries, appendQuery } = useRouter();
-  const domain = query?.domain;
-  const domainBytes32 = domain ? ethers.utils.formatBytes32String(domain) : "";
   const web3ctx = useContext(Web3Context);
-  const message = query?.message && {
-    wallet: web3ctx.account,
-    ...JSON.parse(`${Buffer.from(query?.message, "base64").toString("ascii")}`),
-  };
-  const chainId = query?.chainId;
+  const abi = artifacts[web3ctx.getChainFromId(query.chainId)]?.abi;
+  const contractAddress =
+    artifacts[web3ctx.getChainFromId(query.chainId)]?.contractAddress;
+  if (!abi || !contractAddress) throw new Error("no abi or address found");
 
-  useEffect(() => {
-    const getDomainState = async () => {
-      const _multipass = new ethers.Contract(
-        query.contractAddress,
-        multipassABI,
-        web3ctx.provider
-      );
-      const state = await _multipass.methods
-        .getDomainState(domainBytes32)
-        .call();
-      setDomainState({ exists: !!state.name, active: state.isActive });
-    };
-    if (domain && web3ctx.account) {
-      getDomainState();
-    }
-  }, [
-    domain,
-    web3ctx.account,
-    domainBytes32,
-    query.contractAddress,
-    web3ctx.provider,
-  ]);
+  // const contract = new ethers.Contract(
+  //   contractAddress,
+  //   abi,
+  //   web3ctx.provider
+  // ) as BestOf;
 
-  const cardBackgroundColor = useColorModeValue("gray.100", "gray.900");
-  useEffect(() => {
-    if (chainId && web3ctx.chainId != chainId) {
-      // console.log("request change chain id", web3ctx.chainId, chainId);
-      // web3ctx.changeChain(web3ctx.getChainFromId(chainId));
-    }
-  }, [chainId, web3ctx.chainId, web3ctx.getChainFromId]);
-  React.useEffect(() => {
-    setHydrated(true);
-  }, []);
-  if (!hydrated) {
-    // Returns null on first render, so the client and server match
-    return null;
+  const bestOfContract = useBestOfWebContract({ web3ctx: web3ctx });
+  console.dir(bestOfContract);
+  const { data, isSuccess } = useReadContract<
+    Awaited<[BestOfDiamond["getContractState"]]>
+  >({
+    abiItem: web3ctx.getMethodsABI<BestOfDiamond>(abi, "getContractState"),
+    address: contractAddress,
+  });
+  if (!data) {
+    return "";
   }
 
-  const submitRegistrationTx = async () => {
-    const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-    const emptyUserQuery = {
-      name: ethers.utils.formatBytes32String(""),
-      id: ethers.utils.formatBytes32String(""),
-      domainName: ethers.utils.formatBytes32String(""),
-      wallet: ZERO_ADDRESS,
-      targetDomain: ethers.utils.formatBytes32String(""),
-    };
-
-    const multipass = new ethers.Contract(
-      query.contractAddress,
-      multipassABI,
-      web3ctx.provider.getSigner()
-    );
-
-    const applicantData: LibMultipass.RecordStruct = {
-      id: message.id,
-      name: message.name,
-      wallet: message.wallet,
-      nonce: message.nonce,
-      domainName: message.domainName,
-    };
-
-    await multipass.functions.register(
-      applicantData,
-      message.domainName,
-      query.signature,
-      message.deadline,
-      emptyUserQuery,
-      "0x0000000000000000000000000000000000000000000000000000000000000000"
-    );
-  };
-
-  console.log("dbg:", web3ctx.chainId);
+  const _data = data[0] as any as IBestOf.ContractStateStructOutput;
+  console.log(_data.BestOfState);
 
   return (
     <Box h="100vh">
-      {(!query?.appPage || query?.appPage == "onboarding") && (
-        <SplitWithImage
-          body={`Multpass is a public open source registry enabling generic way of linking an addess
-            in to another domains such as another chains or social media or chat platform.
+      <Flex>
+        <Button>Create new game</Button>
+        <Box>Join Price: 0.01 ETH</Box>
+        <Box>Rank Token</Box>
 
-            Utilizing Multipass alows to:`}
-          colorScheme="gray.100"
-          imgURL="/lilu.png"
-          mirror
-          title="Multpass"
-          bullets={[
-            {
-              text: `Lookup address from an app by username in the app`,
-              // icon: FaPassport,
-              color: "gray.200",
-              bgColor: "transparent",
-            },
-            {
-              text: `Lookup user name and Id in some other application`,
-              // icon: FaPassport,
-              color: "gray.200",
-              bgColor: "transparent",
-            },
-            {
-              text: `Lookup user name and id from an address`,
-              // icon: FaPassport,
-              color: "gray.200",
-              bgColor: "transparent",
-            },
-          ]}
-          cta={{
-            label: web3ctx.account ? "start" : "connect wallet to start",
-            onClick: () => {
-              !web3ctx.account && web3ctx.onConnectWalletClick();
-              web3ctx.account &&
-                appendQuery("appPage", "chainSelector", true, true);
-            },
-          }}
-        />
-      )}
-      {/* <Box wrap="wrap"> */}
-      {query?.appPage == "chainSelector" && (
-        <Center>
-          <Flex my={4} direction={"column"} w="100%" alignItems={"center"}>
-            <Heading> Multipass is deployed on following chains:</Heading>
-            <Flex
-              wrap="wrap"
-              direction={"row"}
-              w="100%"
-              justifyContent="space-evenly"
-              py={4}
-            >
-              <Button
-                onClick={() => {
-                  appendQueries({
-                    chainId: chains["mumbai"].chainId,
-                    contractAddress: mumbaiAddress,
-                    appPage: "overview",
-                  });
-                  if (chains["mumbai"].chainId !== web3ctx.chainId) {
-                    web3ctx.changeChain("mumbai");
-                  }
-                }}
-              >
-                Mumbai
-              </Button>
-              <Button
-                onClick={() => {
-                  appendQueries({
-                    chainId: chains["mumbai"].chainId,
-                    contractAddress: mumbaiAddress,
-                  });
-                  if (chains["mumbai"].chainId !== web3ctx.chainId) {
-                    web3ctx.changeChain("mumbai");
-                  }
-                }}
-              >
-                Goerli
-              </Button>
-              <Button
-                onClick={() => {
-                  appendQueries({
-                    chainId: chains["mumbai"].chainId,
-                    contractAddress: mumbaiAddress,
-                  });
-                  if (chains["mumbai"].chainId !== web3ctx.chainId) {
-                    web3ctx.changeChain("mumbai");
-                  }
-                }}
-              >
-                Ethereum
-              </Button>
-            </Flex>
-          </Flex>
-        </Center>
-      )}
-      {chainId && web3ctx.chainId == chainId && !!query.contractAddress && (
-        <>
-          {multipassChainAddresses[web3ctx.getChainFromId(chainId)] ===
-            query.contractAddress && (
-            <>
-              {query.appPage === "overview" && (
-                <Flex>
-                  <Button
-                    onClick={() =>
-                      appendQuery("appPage", "newDomainRequest", true, false)
-                    }
-                  >
-                    Add new domain
-                  </Button>
-                </Flex>
-              )}
-            </>
-          )}
-          {multipassChainAddresses[web3ctx.getChainFromId(chainId)] !==
-            ethers.utils.getAddress(query.contractAddress) && (
-            <Flex>Unsupported</Flex>
-          )}
-        </>
-      )}
-      {query?.appPage == "newDomainRequest" && "Input"}
-
-      {chainId &&
-        web3ctx.chainId == chainId &&
-        message &&
-        query.appPage === "register" && (
-          <Center>
-            <Flex direction={"column"} maxW="500px" w="100%">
-              <Stack
-                dir="column"
-                p={4}
-                m={4}
-                borderRadius="md"
-                spacing={2}
-                bgColor={"yellow.400"}
-                w="100%"
-              >
-                <Box>
-                  Username: {ethers.utils.parseBytes32String(message.name)}
-                </Box>
-                <Box>
-                  User Id: {ethers.utils.parseBytes32String(message.id)}
-                </Box>
-                <Box>
-                  @: {ethers.utils.parseBytes32String(message.domainName)}
-                </Box>
-                {/* <Box>nonce: {ethers.BigNumber.from(message.nonce).toString()}</Box>
-                          <Box>
-                          valid until block #:{" "}
-                          {ethers.BigNumber.from(message.deadline).toString()}
-                        </Box> */}
-              </Stack>
-              <Stack
-                dir="column"
-                p={4}
-                m={4}
-                borderRadius="md"
-                spacing={2}
-                bgColor={"yellow.400"}
-                w="100%"
-              >
-                <Box>Will be associated with </Box>
-                <Box>{web3ctx.account}</Box>
-              </Stack>
-              <Button
-                onClick={() => submitRegistrationTx()}
-                // isLoading={}
-                colorScheme={"blue"}
-                placeSelf="center"
-              >
-                Submit
-              </Button>
-            </Flex>
-          </Center>
-        )}
-      {/* <Navbar h="50px" maxH={"50px"} bgColor="red" /> */}
-      {/* {web3ctx.account ?? "No account"} */}
-      {/* <br />
-                        {action}
-                        <br />
-                        {gmSignature}
-                        <br />
-                      {message} */}
+        <Text>Existing games</Text>
+      </Flex>
     </Box>
   );
 };

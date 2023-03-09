@@ -17,11 +17,11 @@ import { LibMultipass } from "../../../../../types/typechain/hardhat-diamond-abi
 import SplitWithImage from "@peersky/next-web3-chakra/components/SplitWithImage";
 // import { FaPassport } from "react-icons/fa";
 import { chains } from "@peersky/next-web3-chakra/providers/Web3Provider";
-import { supportedChains } from "@peersky/next-web3-chakra/types";
+import { SupportedChains } from "@peersky/next-web3-chakra/types";
 const multipassDeploymentMumbai = require("../../../../../deployments/mumbai/Multipass.json");
 const mumbaiAddress = multipassDeploymentMumbai.address;
 const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
-const multipassChainAddresses: Partial<Record<supportedChains, string>> = {
+const multipassChainAddresses: Partial<Record<SupportedChains, string>> = {
   mumbai: mumbaiAddress,
 };
 

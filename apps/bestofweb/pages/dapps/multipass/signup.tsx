@@ -23,12 +23,12 @@ import {
 // import { Link } from "@chakra-ui/next-js";
 // import { FaPassport } from "react-icons/fa";
 // import { chains } from "@peersky/next-web3-chakra/providers/Web3Provider";
-import { supportedChains } from "@peersky/next-web3-chakra/types";
+import { SupportedChains } from "@peersky/next-web3-chakra/types";
 import multipassDeploymentMumbai from "../../../../../deployments/mumbai/Multipass.json";
 import useToast from "@peersky/next-web3-chakra/hooks/useToast";
 // const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
 const multipassArtifacts: Partial<
-  Record<supportedChains, { contractAddress: string; abi: any[] }>
+  Record<SupportedChains, { contractAddress: string; abi: any[] }>
 > = {
   mumbai: {
     contractAddress: multipassDeploymentMumbai.address,

@@ -54,13 +54,13 @@ const Contract = () => {
   //   );
   return (
     <ContractInterface
-      abi={require("../../../../../deployments/mumbai/BestOfGame.json").abi}
+      abi={require("../../../../../deployments/mumbai/RankToken.json").abi}
       initalContractAddress={contractAddress ?? ""}
       initialChainId={chainId}
       autoCompleteList={[
         {
           address: ethers.utils.getAddress(
-            require("../../../../../deployments/mumbai/BestOfGame.json").address
+            require("../../../../../deployments/mumbai/RankToken.json").address
           ),
           network: "mumbai",
         },
