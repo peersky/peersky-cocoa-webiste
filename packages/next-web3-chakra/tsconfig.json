@@ -18,6 +18,6 @@
     "downlevelIteration": true,
     "outDir": "dist"
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts", "hooks/hookCommon.js"],
   "exclude": ["node_modules", "./dist/*/**"]
 }

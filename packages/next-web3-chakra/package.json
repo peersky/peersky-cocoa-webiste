@@ -29,9 +29,10 @@
     "eslint-plugin-unused-imports": "^2.0.0",
     "prettier": "^2.8.4",
     "typechain": "^7.0.0",
-    "typescript": "4.9.5"
+    "typescript": "^4.9.5"
   },
   "dependencies": {
+    "@daocoacoa/bestofgame-js": "^0.0.1",
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/next-js": "^2.0.1",
     "@chakra-ui/react": "^2.5.1",
