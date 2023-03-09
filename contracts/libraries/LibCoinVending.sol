@@ -105,6 +105,7 @@ library LibCoinVending {
         uint256 timesFunded;
         address[] conctractAddresses;
         uint256[] contractIds;
+        ContractTypes[] contractTypes;
         bool _isConfigured;
     }
 
@@ -144,12 +145,7 @@ library LibCoinVending {
         }
     }
 
-    function trasferFromAny(
-        address erc20Addr,
-        address from,
-        address to,
-        uint256 value
-    ) private {
+    function trasferFromAny(address erc20Addr, address from, address to, uint256 value) private {
         MockERC20 token = MockERC20(erc20Addr);
         if (value != 0) {
             if (from == address(this)) {
@@ -337,23 +333,13 @@ library LibCoinVending {
         }
     }
 
-    function _release(
-        Condition storage reqPos,
-        address payee,
-        address beneficiary,
-        address returnAddress
-    ) private {
+    function _release(Condition storage reqPos, address payee, address beneficiary, address returnAddress) private {
         require((reqPos.timesRefunded + reqPos.timesReleased) < reqPos.timesFunded, "Not enough balance to release");
         fulfill(reqPos, address(this), payee, beneficiary, address(0), returnAddress);
         reqPos.timesReleased += 1;
     }
 
-    function release(
-        bytes32 position,
-        address payee,
-        address beneficiary,
-        address returnAddress
-    ) internal {
+    function release(bytes32 position, address payee, address beneficiary, address returnAddress) internal {
         Condition storage reqPos = coinVendingPosition(position);
         _release(reqPos, payee, beneficiary, returnAddress);
     }
@@ -398,8 +384,8 @@ library LibCoinVending {
             mustDo.contractIds.push(configuration.contracts[i].contractId);
             mustDo.contractTypes.push(configuration.contracts[i].contractType);
             mustDo.contracts[configuration.contracts[i].contractType][configuration.contracts[i].contractAddress][
-                    configuration.contracts[i].contractId
-                ] = configuration.contracts[i].contractRequirement;
+                configuration.contracts[i].contractId
+            ] = configuration.contracts[i].contractRequirement;
         }
         mustDo._isConfigured = true;
     }
@@ -414,6 +400,7 @@ library LibCoinVending {
         ret._isConfigured = pos._isConfigured;
         ret.conctractAddresses = pos.contractAddresses;
         ret.contractIds = pos.contractIds;
+        ret.contractTypes = pos.contractTypes;
         return ret;
     }
 
