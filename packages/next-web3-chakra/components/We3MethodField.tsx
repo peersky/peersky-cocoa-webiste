@@ -572,6 +572,7 @@ const Web3MethodField = ({
             return "Batch bytes are not implemented yet";
           else
             return (
+              
               <Bytes32InputItem
                 dispatchArguments={dispatchArguments}
                 inputItem={inputItem}

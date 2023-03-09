@@ -4,7 +4,7 @@ import Web3 from "web3";
 import {
   ChainInterface,
   GetMethodsAbiType,
-  supportedChains,
+  SupportedChains,
   TokenInterface,
 } from "../../types";
 import router from "next/router";
@@ -75,7 +75,7 @@ export const getMethodsABI: typeof GetMethodsAbiType = (abi, name) => {
   } else throw "accesing wrong abi element";
 };
 
-export const chains: { [key in supportedChains]: ChainInterface } = {
+export const chains: { [key in SupportedChains]: ChainInterface } = {
   ethereum: {
     chainId: 1,
     name: "ethereum",
@@ -121,11 +121,11 @@ const getChainFromId = (chainId: string | number) => {
       if (chain.chainId == chainId) return true;
     }) ?? [];
   if (!chainName) throw new Error("chain id is not found");
-  return chainName as any as supportedChains;
+  return chainName as any as SupportedChains;
 };
 const isKnownChain = (_chainId: number) => {
   return Object.keys(chains).some((key) => {
-    return chains[key as any as supportedChains].chainId == _chainId;
+    return chains[key as any as SupportedChains].chainId == _chainId;
   });
 };
 
@@ -173,9 +173,9 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   const changeChainFromWalletProvider = (_chainId: number) => {
     console.log("changeChainFromWalletProvider");
     const chainKey = Object.keys(chains).find((_key) => {
-      const key: supportedChains = _key as any as supportedChains;
+      const key: SupportedChains = _key as any as SupportedChains;
       return chains[key].chainId == _chainId;
-    }) as any as supportedChains | undefined;
+    }) as any as SupportedChains | undefined;
     if (chainKey) {
       _setChain(chains[chainKey]);
       setButtonText(WALLET_STATES.CONNECTED);
@@ -185,7 +185,7 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const changeChainFromUI = (chainName: supportedChains) => {
+  const changeChainFromUI = (chainName: SupportedChains) => {
     if (window?.ethereum) {
       _askWalletProviderToChangeChain(
         chains[chainName],

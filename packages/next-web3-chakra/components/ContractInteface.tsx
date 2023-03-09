@@ -29,7 +29,7 @@ import {
   AutoCompleteList,
   AutoCompleteTag,
 } from "@choc-ui/chakra-autocomplete";
-import { supportedChains } from "../types";
+import { SupportedChains } from "../types";
 import { chains } from "../providers/Web3Provider";
 import { ethers } from "ethers";
 
@@ -41,7 +41,7 @@ const _ContractInterface = ({
   ...props
 }: {
   abi: AbiItem[];
-  autoCompleteList?: { address: string; network: supportedChains }[];
+  autoCompleteList?: { address: string; network: SupportedChains }[];
   initalContractAddress?: string;
   initialChainId?: number;
 }) => {
@@ -52,7 +52,7 @@ const _ContractInterface = ({
   const web3ctx = useContext(Web3Context);
   const router = useAppRouter();
 
-  const colorSchemesPerNetwork: { [key in supportedChains]?: string } = {
+  const colorSchemesPerNetwork: { [key in SupportedChains]?: string } = {
     mumbai: "blue",
     polygon: "yellow",
     ethereum: "red",
@@ -65,11 +65,11 @@ const _ContractInterface = ({
         onSelectOption={(nextValue) => {
           let item = nextValue.item as any as {
             address: string;
-            network: supportedChains;
+            network: SupportedChains;
           };
           item = nextValue.item.originalValue as any as {
             address: string;
-            network: supportedChains;
+            network: SupportedChains;
           };
           if (web3ctx.chainId !== chains[item.network].chainId) {
             web3ctx.changeChain(item.network);

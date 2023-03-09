@@ -1,4 +1,9 @@
-import React, { Fragment, KeyboardEventHandler, useContext } from "react";
+import React, {
+  Fragment,
+  KeyboardEventHandler,
+  useContext,
+  useState,
+} from "react";
 import {
   Flex,
   Button,
@@ -22,6 +27,12 @@ import {
   ModalCloseButton,
   useDisclosure,
   Spacer,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Select,
 } from "@chakra-ui/react";
 import { AbiInput, AbiItem } from "web3-utils";
 import { useMutation } from "react-query";
@@ -69,7 +80,8 @@ const Web3MethodForm = ({
 }) => {
   const toast = useToast();
   const _BatchInputs = BatchInputs ?? [];
-
+  const [value, setValue] = useState("0");
+  const [valueIsEther, setValueIsEther] = useState(false);
   const [allBytesAreStrings, setAllBytesAreStrings] = React.useState(false);
   const [wasSent, setWasSent] = React.useState(false);
   const { state, dispatchArguments, getArgs } = useABIItemForm(method);
@@ -98,7 +110,10 @@ const Web3MethodForm = ({
     let response;
     if (method.name) {
       console.log("sending tx");
-      response = await contract.functions[method.name](...args);
+      const options = {
+        value: ethers.utils.parseUnits(value, valueIsEther ? "ether" : "wei"),
+      };
+      response = await contract.functions[method.name](...args, options);
     } else {
       // console.error("method.name not provided");
       throw new Error("no method name");
@@ -232,6 +247,35 @@ const Web3MethodForm = ({
             );
           }
         })}
+        <Flex direction={"row"} w="100%">
+          <NumberInput variant={"outline"} flexBasis="75px" flexGrow={1}>
+            <NumberInputField
+              placeholder={"value to send ETH"}
+              textColor={"blue.800"}
+              onKeyPress={handleKeypress}
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+              fontSize={"sm"}
+              w="100%"
+            />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+          <Select
+            onChange={(e) =>
+              setValueIsEther(e.target.value === "1" ? false : true)
+            }
+            flexBasis="25px"
+            flexGrow={1}
+            maxW="200px"
+            ml={4}
+          >
+            <option value="1">wei (**1)</option>
+            <option value="18">Eth (**18)</option>
+          </Select>
+        </Flex>
         <Flex direction={"row"} flexWrap="wrap">
           <Button
             variant={"solid"}

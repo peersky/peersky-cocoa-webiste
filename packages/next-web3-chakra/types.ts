@@ -1,6 +1,8 @@
 import Web3 from "web3/types";
 import { AbiItem, AbiInput } from "web3-utils";
 import { ethers } from "ethers";
+export type { SupportedChains } from "../../types";
+import { SupportedChains } from "./types";
 
 export enum SiteMapItemType {
   EMPTY = 0,
@@ -27,16 +29,9 @@ export interface WalletStatesInterface {
   UNKNOWN_CHAIN: String;
 }
 
-export type supportedChains =
-  | "localhost"
-  | "mumbai"
-  | "polygon"
-  | "ethereum"
-  | "goerli";
-
 export interface ChainInterface {
   chainId: number;
-  name: supportedChains;
+  name: SupportedChains;
   rpcs: Array<string>;
 }
 
@@ -51,8 +46,8 @@ export interface TokenInterface {
   signed_message: string;
 }
 
-declare function ChangeChain(chainName: supportedChains): void;
-declare function getChainFromId(chainId: number): supportedChains;
+declare function ChangeChain(chainName: SupportedChains): void;
+declare function getChainFromId(chainId: number): SupportedChains;
 export interface Web3ProviderInterface {
   provider: ethers.providers.Web3Provider;
   onConnectWalletClick: Function;
