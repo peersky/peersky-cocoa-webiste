@@ -2,7 +2,7 @@ import Discord from "discord.js";
 // const Discord = require("discord.js");
 // const _MultipassJs = require("@daocoacoa/multipass-js");
 // const MultipassJs = _MultipassJs.MultipassJs;
-import { MultipassJs } from "@daocoacoa/multipass-js";
+import MultipassJs from "@daocoacoa/multipass-js";
 // const _ethers = require("ethers");
 // const ethers = _ethers.ethers;
 import { ethers } from "ethers";
