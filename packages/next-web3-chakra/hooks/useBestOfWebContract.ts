@@ -3,20 +3,20 @@ import {
   getContractState,
   getGameState,
   getPlayersGame,
-  getRankTokenBalance,
   getRankTokenURI,
 } from "@daocoacoa/bestofgame-js";
 import * as BestMethods from "@daocoacoa/bestofgame-js";
 import useToast from "./useToast";
-// import useURI from "./useLink";
 import queryCacheProps from "./hookCommon";
 import { Web3ProviderInterface } from "../types";
 import { BytesLike, ethers } from "ethers";
+import { LibCoinVending } from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
 export interface BestOfWebContractArguments {
   tokenId?: string;
   gameId?: string;
   web3ctx: Web3ProviderInterface;
 }
+
 export const useBestOfWebContract = ({
   tokenId,
   gameId,
@@ -25,26 +25,38 @@ export const useBestOfWebContract = ({
   const chainName = web3ctx.getChainFromId(web3ctx.chainId);
   const toast = useToast();
   const contractState = useQuery(
-    [["BestOfWebContract", "state"], { chainId: web3ctx.chainId }],
+    ["BestOfWebContract", "state", { chainId: web3ctx.chainId }],
     () => getContractState(chainName, web3ctx.provider),
     {
       ...queryCacheProps,
-      onSuccess: () => {},
+      retry: (failureCount, error: any) => {
+        if (error.message) return false;
+        return true;
+      },
+      onSuccess: (e) => {
+        console.log("eeee", e);
+      },
       enabled: !!web3ctx.account && !!web3ctx.chainId,
+      onError: (e: any) => {
+        if (!e.message.includes("underlying network changed"))
+          toast(e.message, "error", ":(");
+      },
+      // useErrorBoundary: true,
     }
   );
 
-  const rankTokenURI = useQuery([
+  const rankTokenURI = useQuery(
     ["BestOfWebContract", "rankToken", "uri", { chainId: web3ctx.chainId }],
     () => getRankTokenURI(chainName, web3ctx.provider),
     {
       ...queryCacheProps,
       enabled:
         !!web3ctx.account && !!web3ctx.chainId && contractState.isSuccess,
-    },
-  ]);
+      onError: (e) => console.error(e),
+    }
+  );
 
-  const rankTokenBalance = useQuery([
+  const rankTokenBalance = useQuery(
     [
       "BestOfWebContract",
       "rankToken",
@@ -59,10 +71,11 @@ export const useBestOfWebContract = ({
         !!web3ctx.chainId &&
         !!tokenId &&
         contractState.isSuccess,
-    },
-  ]);
+      onError: (e) => console.error(e),
+    }
+  );
 
-  const gameState = useQuery([
+  const gameState = useQuery(
     [
       "BestOfWebContract",
       "gameState",
@@ -76,10 +89,11 @@ export const useBestOfWebContract = ({
         !!web3ctx.chainId &&
         !!gameId &&
         contractState.isSuccess,
-    },
-  ]);
+      onError: (e) => console.error(e),
+    }
+  );
 
-  const playersGame = useQuery([
+  const playersGame = useQuery(
     [
       "BestOfWebContract",
       "playersGame",
@@ -93,8 +107,9 @@ export const useBestOfWebContract = ({
         !!web3ctx.chainId &&
         !!gameId &&
         contractState.isSuccess,
-    },
-  ]);
+      onError: (e) => console.error(e),
+    }
+  );
 
   const commonProps = {
     onSuccess: () => {
@@ -223,6 +238,21 @@ export const useBestOfWebContract = ({
     { ...commonProps }
   );
 
+  const setJoinRequirements = useMutation(
+    ({
+      gameMaster,
+      config,
+    }: {
+      gameMaster: string;
+      config: LibCoinVending.ConfigPositionStruct;
+    }) =>
+      BestMethods.setJoinRequirements(chainName, web3ctx.provider)(
+        gameMaster,
+        config
+      ),
+    { ...commonProps }
+  );
+
   // const poolURI = useURI({ link: poolState.data?.uri });
   // const contractJSON = useURI({ link: contractState.data?.contractURI });
 
@@ -241,6 +271,8 @@ export const useBestOfWebContract = ({
     submitProposal,
     submitVote,
     createGame,
+    setJoinRequirements,
+    getContract: BestMethods.getContract,
   };
 };
 

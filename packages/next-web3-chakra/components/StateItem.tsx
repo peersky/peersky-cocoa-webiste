@@ -17,35 +17,32 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
-import { AbiItem } from "web3-utils";
-import useAppRouter from "../hooks/useRouter";
-import useToast from "../hooks/useToast";
 import Web3Context from "../providers/Web3Provider/context";
-import Web3MethodForm from "./Web3MethodForm";
 import { useQuery } from "react-query";
 import dynamic from "next/dynamic";
 import Web3MethodField from "./We3MethodField";
 const ReactJson = dynamic(() => import("react-json-view"), {
   ssr: false,
 });
-import { ArgumentFields, StateInterface, ExtendedInputs } from "../types";
 import useABIItemForm from "../hooks/useAbiItemForm";
 import { ethers } from "ethers";
+import { FunctionFragment } from "@ethersproject/abi";
 
 const _StateItem = ({
   abiItem,
   address,
   args,
-  ...props
 }: {
-  abiItem: AbiItem;
+  abiItem: FunctionFragment;
   address: string;
   args?: any;
 }) => {
   const web3ctx = useContext(Web3Context);
 
+  console.log("state item ", abiItem);
   const { state, dispatchArguments, getArgs } = useABIItemForm(abiItem);
 
+  console.dir(state);
   const getItemState = async () => {
     setIsEnabled(false);
     const contract = new ethers.Contract(
@@ -117,9 +114,7 @@ const _StateItem = ({
             onChange={() => {
               setAllBytesAreStrings((old) => {
                 dispatchArguments({
-                  value: !old,
-                  index: 0,
-                  type: "bytesFormat",
+                  allBytesAsStrings: !old,
                 });
                 return !old;
               });
@@ -129,32 +124,39 @@ const _StateItem = ({
           </Switch>
         )}
       </Flex>
-      {state.inputs?.length !== 0 &&
-        state?.inputs?.map((item, idx: number) => {
-          return (
-            <Box key={`state-${idx}`}>
-              <Web3MethodField
-                inputItem={item}
-                index={idx}
-                dispatchArguments={dispatchArguments}
-                onKeyPress={handleKeypress}
-              />
-              <Button
-                onClick={() => {
-                  response.remove();
-                  setIsEnabled(true);
-                }}
-                isLoading={response.isLoading}
-                alignSelf={"center"}
-                variant={"solid"}
-                size="sm"
-                colorScheme={"orange"}
-              >
-                Submit
-              </Button>
-            </Box>
-          );
-        })}
+      {state.inputs?.length !== 0 && (
+        <Box>
+          {state?.inputs?.map((item, idx) => {
+            return (
+              <Box key={`state-${idx}`}>
+                <Web3MethodField
+                  abiItem={item}
+                  uiFragment={state.ui[idx]}
+                  index={idx}
+                  dispatchArguments={dispatchArguments}
+                  onKeyPress={handleKeypress}
+                />
+              </Box>
+            );
+          })}
+          <Button
+            onClick={() => {
+              console.log("click!", state.ui);
+
+              response.remove();
+              setIsEnabled(true);
+            }}
+            isLoading={response.isLoading}
+            alignSelf={"center"}
+            variant={"solid"}
+            size="sm"
+            colorScheme={"orange"}
+          >
+            Submit
+          </Button>
+        </Box>
+      )}
+
       <Skeleton isLoaded={!response.isLoading}>
         {response?.data && (
           <Box cursor="crosshair" overflowWrap={"break-word"}>

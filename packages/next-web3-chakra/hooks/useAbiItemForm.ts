@@ -1,117 +1,203 @@
 import React from "react";
-import { StateInterface, ExtendedInputs, Web3InpuUIField } from "../types";
+import {
+  UIFragment,
+  UIFragmentField,
+  UITupleFragmentField,
+  UINumberFragmentField,
+  UIStringFragmentField,
+  UINUmberFragmentFieldArray,
+  UIStringFragmentFieldArray,
+} from "../types";
 import { ethers } from "ethers";
-import { AbiItem } from "web3-utils";
+import {
+  FunctionFragment,
+  JsonFragment,
+  JsonFragmentType,
+} from "@ethersproject/abi";
 
-const extendInputs = (
-  element: ExtendedInputs,
-  argumentFields?: { [key: string]: Web3InpuUIField },
+const makeTupleField = (element: JsonFragmentType): UITupleFragmentField => {
+  let tupleUI: UITupleFragmentField = {
+    components: [],
+    hide: false,
+    label: element.name ?? "",
+  };
+  if (!element.components) throw new Error("tuple has no components");
+  if (!element.type) throw new Error("not defined");
+  if (!element.name) throw new Error("Element has no name");
+
+  tupleUI = {
+    hide: false,
+    label: element.name ?? "",
+    components: element.components.map((comp) => {
+      switch (element.type) {
+        case "tuple":
+          return makeUIFields<UITupleFragmentField>(comp);
+        case "tuple[]":
+          return makeUIFields<UITupleFragmentField>(comp);
+        case "uint256":
+          return makeUIFields<UINumberFragmentField>(comp);
+        case "uint256[]":
+          return makeUIFields<UINUmberFragmentFieldArray>(comp);
+        default:
+          if (element.type && element.type.includes("int")) {
+            if (element.type.includes("[]")) {
+              return makeUIFields<UINUmberFragmentFieldArray>(comp);
+            } else {
+              return makeUIFields<UINumberFragmentField>(comp);
+            }
+          } else {
+            if (!element.type) throw new Error("element has no type");
+            if (element.type.includes("[]")) {
+              return makeUIFields<UIStringFragmentFieldArray>(comp);
+            } else {
+              return makeUIFields<UIStringFragmentField>(comp);
+            }
+          }
+      }
+    }),
+  };
+  return tupleUI;
+};
+
+export interface ArgumentFields {
+  value: string;
+  placeholder: string;
+  hide: boolean;
+  label: string;
+  valueIsEther?: boolean;
+  convertToBytes: boolean;
+  initialValue: string;
+}
+
+const isNumeric = (fragment: JsonFragmentType) => {
+  return (fragment as UINumberFragmentField).valueIsEther !== undefined;
+};
+const makeUIFields = <T extends UIFragmentField>(
+  element: JsonFragmentType,
+  argumentFields?: { [key: string]: ArgumentFields },
   hide?: string[]
-): any => {
+): T => {
+  if (!element.name) console.log("cauthg", element);
+  if (!element.type) throw new Error("not defined");
   if (element.type === "tuple" || element.type === "tuple[]") {
-    return {
-      ...element,
-      components: element.components?.map((comp) => {
-        if (element.type === "tuple" || element.type === "tuple[]") {
-          return extendInputs(comp);
-        } else
-          return {
-            ...comp,
-            meta: {
-              placeholder: comp.name,
-              value: "",
-              hide: false,
-              label: ` ${comp.name}  [${comp.type}]`,
-              valueIsEther: false,
-              convertToBytes: false,
-            },
-          };
-      }),
+    if (!element.components) throw new Error("tuple has no components");
+    const retval = makeTupleField(element);
+    hide &&
+      element?.name &&
+      hide.includes(element?.name) &&
+      (retval.hide = true);
+    return retval as any;
+  } else {
+    const retval = {
+      convertToBytes:
+        !isNumeric(element) &&
+        !!element?.name &&
+        !!argumentFields &&
+        argumentFields[element?.name]?.convertToBytes,
+      valueIsEther:
+        isNumeric(element) &&
+        !!element?.name &&
+        !!argumentFields &&
+        !!argumentFields[element.name]?.valueIsEther,
+      placeholder:
+        (element?.name &&
+          argumentFields &&
+          argumentFields[element.name]?.placeholder) ??
+        element.name,
+      hide: (!!element?.name && hide?.includes(element.name)) ?? false,
+      value:
+        (element.name &&
+          argumentFields &&
+          argumentFields[element.name]?.initialValue) ??
+        "",
+
+      label:
+        (element.name &&
+          argumentFields &&
+          argumentFields[element.name]?.label) ??
+        ` ${element.name}  [${element.type}]`,
     };
-  } else
-    return {
-      ...element,
-      meta: {
-        placeholder:
-          (argumentFields && argumentFields[element.name]?.placeholder) ??
-          element.name,
-        value:
-          (argumentFields && argumentFields[element.name]?.initialValue) ?? "",
-        hide: hide?.includes(element.name) ?? false,
-        label:
-          (argumentFields && argumentFields[element.name]?.label) ??
-          ` ${element.name}  [${element.type}]`,
-        valueIsEther:
-          (argumentFields && argumentFields[element.name]?.valueIsEther) ??
-          false,
-        convertToBytes:
-          (argumentFields && argumentFields[element.name]?.convertToBytes) ??
-          false,
-      },
-    };
+
+    return retval as any as T;
+  }
 };
 
-const setTupleBytesFormat = (tuple: ExtendedInputs, value: boolean) => {
-  tuple.components?.forEach((internalElement, idx) => {
-    if (internalElement.type === "tuple") {
-      setTupleBytesFormat(internalElement, value);
-    } else {
-      internalElement.meta.convertToBytes = value;
-    }
-  });
-};
+// const setTupleBytesFormat = (tuple: ExtendedInputs, value: boolean) => {
+//   tuple.components?.forEach((internalElement, idx) => {
+//     if (internalElement.type === "tuple") {
+//       setTupleBytesFormat(internalElement, value);
+//     } else {
+//       internalElement.meta.convertToBytes = value;
+//     }
+//   });
+// };
 
+// function isNumberish(
+//   input: UIFragmentField,
+//   fragment: UIFragment
+// ): input is UINumberFragmentField {
+//   return !!(input as UINumberFragmentField) && fragment !== undefined;
+// }
 const setArguments = (
-  state: StateInterface,
+  state: UIFragment,
   {
     value,
     index,
-    type,
     valueIsEther,
+    convertToBytes,
+    allBytesAsStrings,
+    allValuesAsEther,
   }: {
-    value: any;
-    index: any;
-    type?: "bytesFormat" | undefined;
+    value?: string | [] | UIFragmentField;
+    index?: any;
     valueIsEther?: boolean;
+    convertToBytes?: boolean;
+    allBytesAsStrings?: boolean;
+    allValuesAsEther?: boolean;
   }
 ) => {
   const newState = { ...state };
-  if (type !== "bytesFormat") {
-    if (newState.inputs[index]?.type === "tuple") {
-      newState.inputs[index].components = [...value];
+  newState.allBytesAsStrings = allBytesAsStrings;
+  newState.allValuesAsEther = allValuesAsEther;
+
+  if (value && index !== undefined) {
+    if (!newState.inputs) throw new Error("no input fields found");
+    if (
+      newState.inputs[index]?.type === "tuple" ||
+      newState.inputs[index]?.type === "tuple[]"
+    ) {
+      newState.ui[index] = value as UITupleFragmentField;
+      return newState;
     } else {
-      value && (newState.inputs[index].meta.value = value);
-      newState.inputs[index].meta.valueIsEther = valueIsEther;
-    }
-  } else {
-    newState.inputs.forEach((inputElement, idx) => {
-      if (inputElement.type === "tuple") {
-        setTupleBytesFormat(inputElement, value);
+      if (newState.inputs[index]?.type?.includes("int")) {
+        let ui = newState.ui[index] as
+          | UINumberFragmentField
+          | UINUmberFragmentFieldArray;
+        ui.value = (value as string | []) ?? "";
+        ui.valueIsEther = valueIsEther;
       } else {
-        newState.inputs[idx] = { ...inputElement };
-        newState.inputs[idx].meta.convertToBytes = !!value;
-        if (
-          !!value &&
-          !ethers.utils.isBytesLike(newState.inputs[idx].meta.value) &&
-          (newState.inputs[idx].type == "bytes" ||
-            newState.inputs[idx].type == "bytes32")
-        ) {
-          newState.inputs[idx].meta.value = ethers.utils.formatBytes32String(
-            newState.inputs[idx].meta.value
-          );
+        let ui = newState.ui[index] as
+          | UIStringFragmentField
+          | UIStringFragmentFieldArray;
+        ui.value = (value as string | []) ?? "";
+        if (newState.inputs[index].type != "string") {
+          ui.convertToBytes = convertToBytes;
         }
       }
-    });
+    }
   }
 
   return { ...newState };
 };
 
-const useABIItemForm = (method: AbiItem) => {
+const useABIItemForm = (fragment: FunctionFragment) => {
+  const method: JsonFragment = fragment as JsonFragment;
   const initialState = React.useMemo(() => {
-    const newState: StateInterface = { ...(method as any) };
-    newState.inputs?.forEach((element: ExtendedInputs, index: number) => {
-      newState.inputs[index] = extendInputs(element);
+    const newState: UIFragment = { ...method, ui: [] };
+    newState.inputs?.forEach((element: JsonFragmentType, index: number) => {
+      if (newState.inputs && newState.inputs[index]) {
+        newState.ui[index] = makeUIFields<UIFragmentField>(element);
+      }
     });
     return newState;
     //eslint-disable-next-line
@@ -123,45 +209,48 @@ const useABIItemForm = (method: AbiItem) => {
   );
 
   const getArgs = () => {
-    const extractTupleParams = (tuple: ExtendedInputs) => {
-      return tuple?.components?.map((internalElement: any): any[] =>
-        internalElement.type === "tuple"
-          ? extractTupleParams(internalElement)
-          : internalElement.meta.value
+    const extractTupleParams = (tuple: UITupleFragmentField) => {
+      return tuple?.components?.map((internalElement: any): any =>
+        !!internalElement["components"]
+          ? extractTupleParams(internalElement as UITupleFragmentField)
+          : internalElement
       );
     };
     const returnedObject: any = [];
-    state.inputs.forEach((inputElement: any, index: number) => {
+    state?.inputs?.forEach((inputElement, index) => {
       returnedObject[index] =
         inputElement.type === "address"
           ? ethers.utils.isAddress(
-              ethers.utils.getAddress(inputElement.meta.value)
+              ethers.utils.getAddress(
+                (state.ui[index] as any as UIStringFragmentField).value
+              )
             )
-            ? ethers.utils.getAddress(inputElement.meta.value)
+            ? ethers.utils.getAddress(
+                (state.ui[index] as any as UIStringFragmentField).value
+              )
             : console.error("not an address", returnedObject[index])
           : inputElement.type === "tuple"
-          ? extractTupleParams(inputElement)
-          : inputElement.meta.value;
-      if (inputElement.type.includes("[]")) {
+          ? extractTupleParams(state.ui[index] as any as UITupleFragmentField)
+          : state.ui[index].value;
+      if (inputElement.type && inputElement.type.includes("[]")) {
         returnedObject[index] = JSON.parse(returnedObject[index]);
       }
-      if (
-        inputElement.type.includes("uint")
-        // &&
-        // inputElement.meta?.valueIsEther
-      ) {
+      if (inputElement.type && inputElement.type.includes("int")) {
         if (inputElement.type.includes("[]")) {
           returnedObject[index] = returnedObject.map((value: string) =>
             ethers.utils.parseUnits(
               value,
-              inputElement.meta.valueIsEther ? "ether" : "wei"
+              (state.ui[index] as UINumberFragmentField).valueIsEther
+                ? "ether"
+                : "wei"
             )
           );
         } else {
-          console.log("returned uint", inputElement.meta);
           returnedObject[index] = ethers.utils.parseUnits(
-            inputElement.meta.value,
-            inputElement.meta.valueIsEther ? "ether" : "wei"
+            (state.ui[index] as UINumberFragmentField).value,
+            (state.ui[index] as UINumberFragmentField).valueIsEther
+              ? "ether"
+              : "wei"
           );
         }
       }

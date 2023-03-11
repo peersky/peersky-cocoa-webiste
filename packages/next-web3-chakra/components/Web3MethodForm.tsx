@@ -8,24 +8,9 @@ import {
   Flex,
   Button,
   chakra,
-  // Fade,
-  Input,
   Stack,
-  // Text,
   Heading,
-  Box,
   Switch,
-  FormLabel,
-  ThemingProps,
-  InputGroup,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
   Spacer,
   NumberInput,
   NumberInputField,
@@ -34,17 +19,15 @@ import {
   NumberDecrementStepper,
   Select,
 } from "@chakra-ui/react";
-import { AbiInput, AbiItem } from "web3-utils";
 import { useMutation } from "react-query";
 import Web3Context from "../providers/Web3Provider/context";
 import useToast from "../hooks/useToast";
-import FileUpload from "./FileUpload";
 import Web3MethodField from "./We3MethodField";
 
-import { ArgumentFields, StateInterface, ExtendedInputs } from "../types";
+import { ArgumentFields, UIFragment } from "../types";
 import useABIItemForm from "../hooks/useAbiItemForm";
 import { ethers } from "ethers";
-// interface
+import { FunctionFragment } from "ethers/lib/utils";
 
 const Web3MethodForm = ({
   method,
@@ -53,7 +36,6 @@ const Web3MethodForm = ({
   key,
   rendered,
   title,
-  // onClose,
   onCancel,
   onSuccess,
   beforeSubmit,
@@ -64,7 +46,7 @@ const Web3MethodForm = ({
 }: {
   title?: string;
   key: string;
-  method: AbiItem;
+  method: FunctionFragment;
   className?: string;
   argumentFields?: ArgumentFields;
   hide?: string[];
@@ -73,21 +55,20 @@ const Web3MethodForm = ({
   onClose?: () => void;
   onCancel?: () => void;
   onSuccess?: (resp: any) => void;
-  beforeSubmit?: (state: StateInterface) => any;
+  beforeSubmit?: (state: UIFragment) => any;
   contractAddress: string;
-  // inputsProps?: ThemingProps<"Input">;
   props?: any;
 }) => {
   const toast = useToast();
   const _BatchInputs = BatchInputs ?? [];
   const [value, setValue] = useState("0");
   const [valueIsEther, setValueIsEther] = useState(false);
-  const [allBytesAreStrings, setAllBytesAreStrings] = React.useState(false);
+  const [, setAllBytesAreStrings] = React.useState(false);
   const [wasSent, setWasSent] = React.useState(false);
   const { state, dispatchArguments, getArgs } = useABIItemForm(method);
   const handleClose = React.useCallback(() => {
     if (onCancel) {
-      state.inputs.forEach((inputElement: any, index: any) => {
+      state?.inputs?.forEach((inputElement: any, index: any) => {
         dispatchArguments({
           value:
             (argumentFields &&
@@ -115,7 +96,6 @@ const Web3MethodForm = ({
       };
       response = await contract.functions[method.name](...args, options);
     } else {
-      // console.error("method.name not provided");
       throw new Error("no method name");
     }
     return response;
@@ -219,9 +199,7 @@ const Web3MethodForm = ({
             onChange={() => {
               setAllBytesAreStrings((old) => {
                 dispatchArguments({
-                  value: !old,
-                  index: 0,
-                  type: "bytesFormat",
+                  allBytesAsStrings: !old,
                 });
                 return !old;
               });
@@ -230,16 +208,19 @@ const Web3MethodForm = ({
             All Bytes as strings
           </Switch>
         </Flex>
-        {state.inputs.map((inputItem: any, index: any) => {
+        {state?.inputs?.map((inputItem, index) => {
           if (
-            !inputItem?.meta?.hide &&
-            !_BatchInputs?.includes(inputItem.name)
+            !state.ui[index]?.hide &&
+            !(inputItem.name && _BatchInputs?.includes(inputItem.name)) &&
+            inputItem.name &&
+            inputItem.name.length > 0
           ) {
             return (
               <Web3MethodField
                 key={`${inputItem.name}-${index}-abiitems`}
                 dispatchArguments={dispatchArguments}
-                inputItem={inputItem}
+                abiItem={inputItem}
+                uiFragment={state.ui[index]}
                 index={index}
                 onKeyPress={handleKeypress}
                 // inputsProps={inputsProps}
