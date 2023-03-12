@@ -4,6 +4,7 @@ import {
   getGameState,
   getPlayersGame,
   getRankTokenURI,
+  getArtifact,
 } from "@daocoacoa/bestofgame-js";
 import * as BestMethods from "@daocoacoa/bestofgame-js";
 import useToast from "./useToast";
@@ -273,6 +274,7 @@ export const useBestOfWebContract = ({
     createGame,
     setJoinRequirements,
     getContract: BestMethods.getContract,
+    getArtifact,
   };
 };
 

@@ -92,6 +92,7 @@ const extractPathParams = (router: any, query: any) => {
 
 const useAppRouter = () => {
   const router = nextRouter.useRouter() as any;
+
   const query = queryFromUrl(router.asPath) as any;
 
   const params = extractPathParams(router, query);

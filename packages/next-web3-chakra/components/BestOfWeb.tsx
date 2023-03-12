@@ -11,19 +11,22 @@ import {
   Heading,
   SlideFade,
   Skeleton,
+  Box,
 } from "@chakra-ui/react";
-
-import useBestOfWebContract from "../core/hooks/useBestOfWebContract";
+import ControlPanel from "./ConrolPanel";
+import useBestOfWebContract from "../hooks/useBestOfWebContract";
 import Web3Context from "../providers/Web3Provider/context";
-import { useRouter } from "../core/hooks";
-import TerminusPool from "./TerminusPool";
-import TerminusControllerPanel from "./TerminusControllerPanel";
 import Paginator from "./Paginator";
 import Web3MethodForm from "./Web3MethodForm";
-import { MockTerminus } from "../../../../types/contracts/MockTerminus";
 import Metadata from "./Metadata";
-import useLink from "../core/hooks/useLink";
-const terminusABI = require("../../../../abi/MockTerminus.json");
+import useLink from "../hooks/useLink";
+import { BestOfDiamond } from "../../../types/typechain";
+import { ethers } from "ethers";
+import { FunctionFragment } from "ethers/lib/utils";
+import { BestOfDiamondInterface } from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
+import useAppRouter from "../hooks/useRouter";
+import ContractPool from "./ContractPool";
+import GamePreview from "./GamePreview";
 const STATES = {
   mint: 1,
   batchMint: 2,
@@ -34,39 +37,46 @@ const Terminus = () => {
   const [poolToCheck, setPoolToCheck] = useState<number>();
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(0);
-  const router = useRouter();
+  const router = useAppRouter();
 
-  const { contractAddress } = router.query;
+  // const { contractAddress } = router.query;
   const web3ctx = useContext(Web3Context);
 
-  const terminus = useTerminusContract({
-    address: contractAddress,
-    ctx: web3ctx,
+  // const terminus = useTerminusContract({
+  //   address: contractAddress,
+  //   ctx: web3ctx,
+  // });
+
+  const bestContract = useBestOfWebContract({
+    web3ctx: web3ctx,
   });
 
-  const uri = useLink({ link: terminus.contractState.data?.contractURI });
+  const uri = useLink({ link: bestContract.rankTokenURI.data });
   const handleKeypress = (e: any) => {
     //it triggers by pressing the enter key
     if (e.charCode === 13) {
-      handleSubmit();
+      // handleSubmit();
     }
   };
 
-  const handleSubmit = () => {
-    router.push({
-      pathname: "/terminus/details",
-      query: {
-        contractAddress: contractAddress,
-        poolId: poolToCheck,
-      },
-    });
-  };
+  // const handleSubmit = () => {
+  //   router.push({
+  //     pathname: "/terminus/details",
+  //     query: {
+  //       contractAddress: contractAddress,
+  //       poolId: poolToCheck,
+  //     },
+  //   });
+  // };
 
+  const { abi, contractAddress } = bestContract.getArtifact(
+    web3ctx.getChainFromId(web3ctx.chainId)
+  );
   if (!contractAddress)
     return <Text>{"Please specify terminus address "}</Text>;
-  if (terminus.contractState.isLoading || !terminus.contractState.data)
-    return <Spinner />;
-
+  // if (terminus.contractState.isLoading || !terminus.contractState.data)
+  //   return <Spinner />;
+  console.log(`uri`, uri.data);
   return (
     <Flex
       w="100%"
@@ -93,7 +103,7 @@ const Terminus = () => {
               metadata={uri?.data}
             />
           )}
-          <TerminusControllerPanel
+          <ControlPanel
             flexGrow={1}
             minW={["280px", "320px", "420px", null]}
             w="50%"
@@ -103,11 +113,7 @@ const Terminus = () => {
             py={4}
             direction={["column", "row"]}
             address={contractAddress}
-            isController={
-              terminus.contractState.data.controller === web3ctx.account
-                ? true
-                : false
-            }
+            isController={true}
           />
           {/* )} */}
         </Flex>
@@ -142,7 +148,7 @@ const Terminus = () => {
           </NumberInput>
           <Button
             mx={4}
-            onClick={() => handleSubmit()}
+            // onClick={() => handleSubmit()}
             size="sm"
             variant={"solid"}
             colorScheme="orange"
@@ -151,11 +157,7 @@ const Terminus = () => {
           </Button>
           <Spacer />
           <Button
-            hidden={
-              terminus.contractState.data.controller === web3ctx.account
-                ? false
-                : true
-            }
+            hidden={false}
             isActive={state === STATES.batchMint && isOpen}
             key={`batchmint`}
             colorScheme={"orange"}
@@ -181,19 +183,19 @@ const Terminus = () => {
               display={isOpen ? "flex" : "none"}
               key={`cp-Web3MethodForm-batchMint`}
               maxW="660px"
-              onSuccess={() => terminus.contractState.refetch()}
-              argumentFields={{
-                data: {
-                  placeholder: "",
-                  initialValue: web3ctx.web3.utils.utf8ToHex(""),
-                },
-              }}
+              onSuccess={() => bestContract.contractState.refetch()}
+              // argumentFields={{
+              //   data: {
+              //     placeholder: "",
+              //     initialValue: ethers.utils.hexlify(""),
+              //   },
+              // }}
               rendered={true}
               BatchInputs={["poolIDs", "amounts"]}
               hide={["data"]}
-              method={getMethodsABI<MockTerminus["methods"]>(
-                terminusABI,
-                "mintBatch"
+              method={web3ctx.getMethodsABI<BestOfDiamond>(
+                abi,
+                "createGame(address,uint256)"
               )}
               contractAddress={contractAddress}
             />
@@ -204,30 +206,40 @@ const Terminus = () => {
         setPage={setPage}
         setLimit={setLimit}
         paginatorKey={`pools`}
-        hasMore={page * limit < Number(terminus.contractState.data.totalPools)}
+        hasMore={
+          page * limit <
+          Number(bestContract.contractState.data?.BestOfState.numGames)
+        }
         page={page}
         pageSize={limit}
         pageOptions={["5", "10", "25", "50"]}
         my={2}
       >
-        {Array.from(
-          Array(
-            (page + 1) * limit < Number(terminus.contractState.data.totalPools)
-              ? limit
-              : limit -
-                  ((page + 1) * limit -
-                    Number(terminus.contractState.data.totalPools))
-          ),
-          (e, i) => {
-            return (
-              <TerminusPool
-                key={limit * page + i + 1}
-                address={contractAddress}
-                poolId={(limit * page + i + 1).toString()}
-              />
-            );
-          }
-        )}
+        {bestContract.contractState.data?.BestOfState.numGames > 0 &&
+          Array.from(
+            Array(
+              (page + 1) * limit <
+                Number(bestContract.contractState.data?.BestOfState.numGames)
+                ? limit
+                : limit -
+                    ((page + 1) * limit -
+                      Number(
+                        bestContract.contractState.data?.BestOfState.numGames
+                      ))
+            ),
+            (e, i) => {
+              return (
+                <Flex w="100%">
+                  <GamePreview gameId={(i + 1).toString()} />
+                </Flex>
+                // <ContractPool
+                //   key={limit * page + i + 1}
+                //   address={contractAddress}
+                //   poolId={(limit * page + i + 1).toString()}
+                // />
+              );
+            }
+          )}
       </Paginator>
     </Flex>
   );

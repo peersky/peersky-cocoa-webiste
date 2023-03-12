@@ -1,9 +1,9 @@
-import enableMockupRequests from "./mockupRequests";
+// import enableMockupRequests from "./mockupRequests";
 let axios = require("axios");
 const API =
   process.env.NEXT_PUBLIC_ENGINE_API_URL ??
   process.env.NEXT_PUBLIC_PLAY_API_URL;
-process.env.NODE_ENV !== "production" && enableMockupRequests(axios);
+// process.env.NODE_ENV !== "production" && enableMockupRequests(axios);
 
 const http = (config, noAuth = false) => {
   const token = localStorage.getItem("APP_ACCESS_TOKEN");

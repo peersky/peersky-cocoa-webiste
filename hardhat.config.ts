@@ -182,7 +182,7 @@ export default {
     path: "./abi",
     runOnCompile: true,
     clear: true,
-    format: "fullName",
+    format: "json",
     // flat: true,
     // only: [":ERC20$"],
     spacing: 2,

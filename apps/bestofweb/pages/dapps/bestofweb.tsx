@@ -27,6 +27,8 @@ import { SupportedChains } from "@peersky/next-web3-chakra/types";
 import bestOfWebDeploymentMumbai from "../../../../deployments/mumbai/BestOfGame.json";
 import useReadContract from "@peersky/next-web3-chakra/hooks/useReadContract";
 import useBestOfWebContract from "@peersky/next-web3-chakra/hooks/useBestOfWebContract";
+import ControlPanel from "@peersky/next-web3-chakra/components/ConrolPanel";
+import BestOfWeb from "@peersky/next-web3-chakra/components/BestOfWeb";
 const artifacts: Partial<
   Record<SupportedChains, { contractAddress: string; abi: any[] }>
 > = {
@@ -39,42 +41,41 @@ const artifacts: Partial<
 const Home = () => {
   // const [appScreen, setAppScreen]
   // const [changeChainRequested, setChainChangeRequested] = React.useState(false);
-  const { query, appendQueries, appendQuery } = useRouter();
+  const { query, appendQueries, appendQuery, nextRouter } = useRouter();
   const web3ctx = useContext(Web3Context);
-  const abi = artifacts[web3ctx.getChainFromId(query.chainId)]?.abi;
+  useEffect(() => {
+    console.log("use effect", web3ctx.chainId);
+    if (query?.chainId && query?.chainId !== web3ctx.chainId) {
+      web3ctx.changeChain(web3ctx.getChainFromId(query.chainId));
+    }
+    if (query.chainId == web3ctx.chainId) {
+      const params = new URLSearchParams(nextRouter.query);
+      params.delete("chainId");
+      const queryString = params.toString();
+      const path = `/dapps/bestofweb/${queryString ? `?${queryString}` : ""}`;
+
+      nextRouter.push(path, "", { scroll: false });
+    }
+  }, [query.chainId, web3ctx.chainId, web3ctx, nextRouter]);
+
+  const abi = artifacts[web3ctx.getChainFromId(web3ctx.chainId)]?.abi;
   const contractAddress =
-    artifacts[web3ctx.getChainFromId(query.chainId)]?.contractAddress;
-  if (!abi || !contractAddress) throw new Error("no abi or address found");
-
-  // const contract = new ethers.Contract(
-  //   contractAddress,
-  //   abi,
-  //   web3ctx.provider
-  // ) as BestOf;
-
+    artifacts[web3ctx.getChainFromId(web3ctx.chainId)]?.contractAddress;
   const bestOfContract = useBestOfWebContract({ web3ctx: web3ctx });
-  console.dir(bestOfContract);
-  const { data, isSuccess } = useReadContract<
-    Awaited<[BestOfDiamond["getContractState"]]>
-  >({
-    abiItem: web3ctx.getMethodsABI<BestOfDiamond>(abi, "getContractState"),
-    address: contractAddress,
-  });
-  if (!data) {
-    return "";
-  }
+  if (!abi || !contractAddress) return "No contracts deployed on this chain";
 
-  const _data = data[0] as any as IBestOf.ContractStateStructOutput;
-  console.log(_data.BestOfState);
+  console.log(bestOfContract.rankTokenURI.data);
 
   return (
     <Box h="100vh">
       <Flex>
-        <Button>Create new game</Button>
+        {/* <Button>Create new game</Button>
         <Box>Join Price: 0.01 ETH</Box>
         <Box>Rank Token</Box>
+        <ControlPanel />
 
-        <Text>Existing games</Text>
+        <Text>Existing games</Text> */}
+        <BestOfWeb />
       </Flex>
     </Box>
   );

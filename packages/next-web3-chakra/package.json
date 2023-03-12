@@ -32,11 +32,11 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@daocoacoa/bestofgame-js": "^0.0.1",
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/next-js": "^2.0.1",
     "@chakra-ui/react": "^2.5.1",
     "@choc-ui/chakra-autocomplete": "^5.1.4",
+    "@daocoacoa/bestofgame-js": "^0.0.1",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@stripe/stripe-js": "^1.16.0",
@@ -53,6 +53,7 @@
     "react-dropzone": "^14.2.3",
     "react-icons": "^4.3.1",
     "react-json-view": "^1.21.3",
+    "react-markdown": "^8.0.5",
     "react-pro-sidebar": "^1.0.0",
     "react-query": "^3.18.1",
     "remark-gfm": "^3.0.1",

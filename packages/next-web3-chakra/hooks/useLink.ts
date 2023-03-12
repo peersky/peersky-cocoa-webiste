@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import { queryPublic } from "../utils/http";
-import { hookCommon } from ".";
+import hookCommon from "./hookCommon";
 
 const useURI = ({ link }: { link: string | undefined }) => {
   const contents = useQuery(

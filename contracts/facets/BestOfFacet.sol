@@ -21,11 +21,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
     using LibTBG for LibTBG.GameSettings;
     using LibBestOf for uint256;
 
-    function checkSignature(
-        bytes memory message,
-        bytes memory signature,
-        address account
-    ) private view returns (bool) {
+    function checkSignature(bytes memory message, bytes memory signature, address account) private view returns (bool) {
         bytes32 typedHash = _hashTypedDataV4(keccak256(message));
         return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
     }
@@ -45,11 +41,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         }
     }
 
-    function createGame(
-        address gameMaster,
-        uint256 gameId,
-        uint256 gameRank
-    ) public payable nonReentrant {
+    function createGame(address gameMaster, uint256 gameId, uint256 gameRank) public payable nonReentrant {
         LibBestOf.enforceIsInitialized();
         BOGSettings storage settings = BOGStorage();
         gameId.createGame(gameMaster);
@@ -252,5 +244,13 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
 
     function isLastTurn(uint256 gameId) public view returns (bool) {
         return gameId.isLastTurn();
+    }
+
+    function isRegistrationOpen(uint256 gameId) public view returns (bool) {
+        return gameId.isRegistrationOpen();
+    }
+
+    function gameCreator(uint256 gameId) public view returns (address) {
+        return gameId.getGameStorage().createdBy;
     }
 }

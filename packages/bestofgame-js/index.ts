@@ -1,4 +1,7 @@
-import { BestOfDiamond } from "../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
+import {
+  BestOfDiamond,
+  LibCoinVending,
+} from "../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
 import { RankToken } from "../../types/typechain";
 import { Bytes, BytesLike, ethers } from "ethers";
 import deploymentMumbai from "../../deployments/mumbai/BestOfGame.json";
@@ -21,7 +24,7 @@ const RankTokenArtifacts: Partial<
   },
 };
 
-const getArtifact = (chain: SupportedChains) => {
+export const getArtifact = (chain: SupportedChains) => {
   const artifact = artifacts[chain];
   if (!artifact) throw new Error("Contract deployment not found");
   return artifact;
@@ -33,7 +36,7 @@ const getRankArtifact = (chain: SupportedChains) => {
   return artifact;
 };
 
-const getContract = (
+export const getContract = (
   chain: SupportedChains,
   signerOrProvider: ethers.Signer | ethers.providers.Provider
 ) => {
@@ -71,7 +74,10 @@ export const getRankTokenURI = async (
     artifact.abi,
     signerOrProvider
   ) as RankToken;
-  return await contract.uri("0");
+  console.log("rta", artifact.contractAddress);
+  const retval = await contract.uri("0");
+  console.log("retval", retval.toString());
+  return retval;
 };
 
 export const getRankTokenBalance =
@@ -112,6 +118,8 @@ export const getGameState = async (
   const isFinished = await contract.isGameOver(gameId);
   const isOvetime = await contract.isOvertime(gameId);
   const isLastTurn = await contract.isLastTurn(gameId);
+  const isOpen = await contract.isRegistrationOpen(gameId);
+  const createdBy = await contract.gameCreator(gameId);
 
   return {
     gameMaster,
@@ -122,6 +130,8 @@ export const getGameState = async (
     isFinished,
     isOvetime,
     isLastTurn,
+    isOpen,
+    createdBy,
   };
 };
 
@@ -254,5 +264,16 @@ export const submitVote =
     signature: BytesLike
   ) => {
     const contract = getContract(chain, signerOrProvider);
+
     return await contract.submitVote(gameId, votesHidden, proof, signature);
+  };
+
+export const setJoinRequirements =
+  (
+    chain: SupportedChains,
+    signerOrProvider: ethers.Signer | ethers.providers.Provider
+  ) =>
+  async (gameId: string, config: LibCoinVending.ConfigPositionStruct) => {
+    const contract = getContract(chain, signerOrProvider);
+    contract.setJoinRequirements(gameId, config);
   };

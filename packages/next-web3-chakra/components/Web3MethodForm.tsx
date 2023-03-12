@@ -27,7 +27,7 @@ import Web3MethodField from "./We3MethodField";
 import { ArgumentFields, UIFragment } from "../types";
 import useABIItemForm from "../hooks/useAbiItemForm";
 import { ethers } from "ethers";
-import { FunctionFragment } from "ethers/lib/utils";
+import { FunctionFragment } from "@ethersproject/abi";
 
 const Web3MethodForm = ({
   method,

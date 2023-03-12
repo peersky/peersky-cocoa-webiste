@@ -1,5 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import { BestOfDiamond } from "../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol";
+import { ethers } from "hardhat";
 // import {
 //   MULTIPASS_CONTRACT_VERSION,
 //   MULTIPASS_CONTRACT_NAME,
@@ -18,6 +20,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     args: [URI, owner],
     skipIfAlreadyDeployed: true,
   });
+  const BestOfGameDeployment = await deployments.getOrNull("BestOfGame");
+  if (BestOfGameDeployment.address) {
+    const gameContract = new ethers.Contract(
+      BestOfGameDeployment.address,
+      BestOfGameDeployment.abi,
+      hre.ethers.provider
+    ) as BestOfDiamond;
+  }
 };
 
 export default func;

@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { StateInterface, ExtendedInputs, Web3InpuUIField } from "../types";
 import { ethers } from "ethers";
 import { AbiItem } from "web3-utils";
 import Web3Context from "../providers/Web3Provider/context";
