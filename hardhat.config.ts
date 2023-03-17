@@ -93,11 +93,9 @@ export default {
       url: process.env.GANACHE_RPC_URL ?? "",
       accounts: process.env.PRIVATE_KEY && [process.env.PRIVATE_KEY],
     },
-    gorli: {
-      url: process.env.GORLI_RPC_URL ?? "",
-      accounts: process.env.GORLI_PRIVATE_KEY && [
-        process.env.GORLI_PRIVATE_KEY,
-      ],
+    goerli: {
+      url: process.env.RPC_URL ?? "",
+      accounts: process.env.PRIVATE_KEY && [process.env.PRIVATE_KEY],
     },
   },
   paths: {

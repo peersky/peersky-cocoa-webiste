@@ -7,12 +7,12 @@ import {
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployments, getNamedAccounts } = hre;
   const { deploy, diamond } = deployments;
-
   const { deployer } = await getNamedAccounts();
 
   await diamond.deploy("Multipass", {
     from: deployer,
     owner: deployer,
+    log: true,
     facets: ["DNSFacet", "EIP712InspectorFacet", "MultipassInit"],
     execute: {
       methodName: "init",
