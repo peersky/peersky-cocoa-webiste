@@ -1,0 +1,19 @@
+{
+  "name": "Banana in cream and chocolate",
+  "description": "Sweetest combination ever to bring your enorfiness high",
+  "image": "ipfs://Qmb1pjVxE1oNBTFEroR2UMvjKunCzptBj46RSPa2gW4HPG",
+  "attributes": [
+    {
+      "trait_type": "Fresh Banana",
+      "vaue": "1 piece"
+    },
+    {
+      "trait_type": "Cream",
+      "vaue": "1 cup"
+    },
+    {
+      "trait_type": "chocolate salsa",
+      "vaue": "1 tablespoon"
+    }
+  ]
+}
