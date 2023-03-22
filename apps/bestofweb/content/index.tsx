@@ -1,3 +1,2 @@
-// import * as WhyBlockchain from "./why-blockchain.mdx";
-// export { WhyBlockchain };
-export {};
+import * as OpenEconomyManifest from "./open-economy.mdx";
+export { OpenEconomyManifest };
