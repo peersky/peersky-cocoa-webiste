@@ -6,12 +6,13 @@ import {
   Heading,
   Text,
   Image,
-  List,
+  UnorderedList,
   ListItem,
   OrderedList,
   Link,
   Center,
   Tag,
+  useColorModeValue,
   Spacer,
 } from "@chakra-ui/react";
 import { MDXProvider } from "@mdx-js/react";
@@ -30,6 +31,12 @@ const H2 = (props: any) => (
 );
 const H3 = (props: any) => (
   <Heading as="h3" size="md" my={4}>
+    {props.children}
+  </Heading>
+);
+
+const H4 = (props: any) => (
+  <Heading as="h4" size="sm" my={2} fontWeight="bold">
     {props.children}
   </Heading>
 );
@@ -53,7 +60,7 @@ const ResponsiveImage = (props: any) => (
 const A = (props: any) => (
   <Link
     href={props.href}
-    // textColor={useColorModeValue("blue.400", "blue.200")}
+    textColor={useColorModeValue("blue.600", "blue.300")}
   >
     {props.children}
   </Link>
@@ -63,9 +70,10 @@ const components = {
   h1: H1,
   h2: H2,
   h3: H3,
+  h4: H4,
   p: P,
   img: ResponsiveImage,
-  ul: List,
+  ul: UnorderedList,
   ol: OrderedList,
   li: ListItem,
   a: A,
