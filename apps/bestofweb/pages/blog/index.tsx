@@ -7,7 +7,7 @@ import UIContext from "@peersky/next-web3-chakra/providers/UIProvider/context";
 const Blog = (props: any) => {
   const ui = useContext(UIContext);
   return (
-    <Flex w="100%" py={8}>
+    <Flex w="100%" py={8} direction="column">
       {props.posts.map((post: any) => {
         return (
           <Flex
@@ -21,19 +21,39 @@ const Blog = (props: any) => {
             px={2}
             py={2}
             flexWrap="wrap"
+            mb={2}
           >
-            <Text>{post?.title}</Text>
-            <Spacer />
-            <Text>{post.date} </Text>
-            <Spacer />
-            {post?.tags?.map((tagName: string) => (
-              <Tag variant={"solid"} colorScheme={"blue"} key={tagName}>
-                {tagName}
-              </Tag>
-            ))}
-            <RouteButton variant="outline" href={`blog/${post.path}`}>
-              Open
-            </RouteButton>
+            <Flex
+              w="100%"
+              alignItems={"center"}
+              borderBottomWidth="2px"
+              borderBottomColor={"gray.500"}
+            >
+              <Text>{post?.title}</Text>
+              <Spacer />
+              <Spacer />
+              <Text>{post.date} </Text>
+              <Spacer />
+              {post?.tags?.map((tagName: string) => (
+                <Tag
+                  variant={"solid"}
+                  colorScheme={"blue"}
+                  key={tagName}
+                  h="24px"
+                >
+                  {tagName}
+                </Tag>
+              ))}
+              <RouteButton
+                variant="outline"
+                href={`blog/${post.path}`}
+                h="24px"
+                // size="sm"
+              >
+                Open
+              </RouteButton>
+            </Flex>
+            <Text fontSize={"sm"}>{post?.descripton}</Text>
           </Flex>
         );
       })}

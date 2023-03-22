@@ -70,8 +70,8 @@ const Home = () => {
     },
     {
       onSuccess: () => {},
-      onError: (error) => {
-        console.dir(error);
+      onError: (error: any) => {
+        console.error(error);
         toast(error?.title, "error", "Error");
       },
       onSettled: async () => {

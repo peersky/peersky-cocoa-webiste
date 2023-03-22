@@ -32,5 +32,10 @@ export const uploadDir2IPFS = async (path: string) => {
     console.log(file);
   }
 };
+export const publish = async (value: string) => {
+  const res = await client.name.publish(value);
+  console.log(res);
+  return res;
+};
 
 export default upload2IPFS;
