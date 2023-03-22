@@ -5,7 +5,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "frontend:dev": "source .secrets/dev.env && yarn workspace bestofweb run dev",
+    "frontend:build": "yarn workspace bestofweb run build",
+    "discord:dev": "source .secrets/bot_mumbai.env && yarn workspace discord-bot run dev"
   },
   "keywords": [],
   "author": "Tim Pechersky (@Peersky)",
