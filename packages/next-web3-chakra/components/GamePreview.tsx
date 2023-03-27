@@ -1,16 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
-  Box,
-  chakra,
-  Flex,
-  Skeleton,
-  useColorModeValue,
-  Button,
+  chakra, Button,
+  Tooltip,
+  Badge,
+  Td, useDisclosure
 } from "@chakra-ui/react";
 import useBestOfWebContract from "../hooks/useBestOfWebContract";
 import Web3Context from "../providers/Web3Provider/context";
 const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
   const web3ctx = useContext(Web3Context);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const game = useBestOfWebContract({ gameId, web3ctx });
   enum gameStatusEnum {
     created = "created",
@@ -23,13 +22,22 @@ const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
   }
 
   const [isGameCreator, setIsGameCreator] = useState(false);
+  const [isInGame, setIsInGame] = useState(false);
 
+  const bestContract = useBestOfWebContract({
+    web3ctx: web3ctx,
+  });
   const _gsd = game.gameState.data;
   useEffect(() => {
     if (_gsd?.createdBy === web3ctx.account) {
       setIsGameCreator(true);
     } else {
       setIsGameCreator(false);
+    }
+    if (game.playersGame.data?.eq(gameId)) {
+      setIsInGame(true);
+    } else {
+      setIsInGame(false);
     }
   }, [web3ctx.account, _gsd?.createdBy]);
   const gameStatus = _gsd?.isFinished
@@ -43,26 +51,48 @@ const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
     : _gsd?.gameMaster
     ? gameStatusEnum["created"]
     : gameStatusEnum["notFound"];
-  console.log("gameStatus", gameStatus);
   return (
-    <Skeleton isLoaded={!game.gameState.isLoading} w="100%" {...props}>
-      <Flex
-        borderWidth={"1px"}
-        borderColor={useColorModeValue("blue.10", "blue.300")}
-        py={4}
-        justifyContent={"space-evenly"}
-        bgColor={useColorModeValue("blue.50", "blue.500")}
-        {...props}
-      >
-        Game #{gameId}
-        <Box>Status: {gameStatus}</Box>
+    <>
+      <Td>{gameId}</Td>
+      <Td>
+        <Badge>{_gsd?.gameRank.toString()}</Badge>
+      </Td>
+      <Td>
+        <Badge>{_gsd?.gameMaster}</Badge>
+      </Td>
+      <Td>
+        <Badge>{_gsd?.createdBy}</Badge>
+      </Td>
+      <Td>
+        <Badge>{gameStatus}</Badge>
+      </Td>
+      <Td textAlign="right">
         {isGameCreator && gameStatus == "created" && (
-          <Button>set requirements</Button>
+          <Button onClick={onOpen}>set requirements</Button>
         )}
-        {!isGameCreator && <Button>Join</Button>}
-        <Button>Participants</Button>
-      </Flex>
-    </Skeleton>
+        {!isGameCreator && (
+          <>
+            {isInGame && gameStatus === gameStatusEnum.open && (
+              <Button>Leave game</Button>
+            )}
+            {!isInGame && (
+              <Tooltip
+                label="Game can be joined only when registration is open by game creator"
+                hasArrow
+                isDisabled={gameStatus === gameStatusEnum.open}
+              >
+                <Button isDisabled={gameStatus !== gameStatusEnum.open}>
+                  Join
+                </Button>
+              </Tooltip>
+            )}
+          </>
+        )}
+        <Button isDisabled={!_gsd?.players.length || _gsd?.players.length < 0}>
+          Participants
+        </Button>
+      </Td>
+    </>
   );
 };
 

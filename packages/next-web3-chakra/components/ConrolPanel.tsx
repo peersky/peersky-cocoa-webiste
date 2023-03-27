@@ -19,13 +19,24 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
 } from "@chakra-ui/react";
 import Web3Context from "../providers/Web3Provider/context";
 import useBestOfWebContract from "../hooks/useBestOfWebContract";
 import { ethers } from "ethers";
+import Web3MethodForm from "./Web3MethodForm";
+import { getArtifact } from "@daocoacoa/bestofgame-js";
+import { BestOfDiamond } from "../../../types/typechain";
 const STATES = {
-  withdraw: 1,
-  createPool: 2,
+  newGame: 1,
+  setRequirements: 2,
 };
 const ControllerPanel = ({
   address,
@@ -36,9 +47,9 @@ const ControllerPanel = ({
   address: string;
 }) => {
   const web3ctx = useContext(Web3Context);
-
-  const [isOpen, onOpen] = React.useState(false);
-  const [state, setState] = React.useState(STATES.createPool);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  // const [isOpen, onOpen] = React.useState(false);
+  const [state, setState] = React.useState(STATES.newGame);
 
   const bestContract = useBestOfWebContract({
     web3ctx: web3ctx,
@@ -49,8 +60,57 @@ const ControllerPanel = ({
     bestContract.rankTokenBalance.isLoading
   )
     return <Spinner />;
+
+  const test = web3ctx.getMethodsABI<BestOfDiamond>(
+    getArtifact(web3ctx.getChainFromId(web3ctx.chainId)).abi,
+    "createGame(address,uint256)"
+  );
   return (
     <>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            {state === STATES.newGame && "Create new game"}
+            {state === STATES.setRequirements && "Set game requirements"}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {/* {state === STATES.newGame && ( */}
+            <Web3MethodForm
+              hide={["gameMaster", "msg.value"]}
+              showSwitch={false}
+              title=""
+              argumentFields={{
+                gameMaster: {
+                  initialValue: "0x6ecF5fcf5b2F9b6D507DeB8Da4eAe1cec450E45f",
+                  convertToBytes: false,
+                },
+              }}
+              initialValue={
+                bestContract.contractState.data?.BestOfState.gamePrice
+              }
+              method={web3ctx.getMethodsABI<BestOfDiamond>(
+                getArtifact(web3ctx.getChainFromId(web3ctx.chainId)).abi,
+                "createGame(address,uint256)"
+              )}
+              contractAddress={
+                getArtifact(web3ctx.getChainFromId(web3ctx.chainId))
+                  .contractAddress
+              }
+              rendered={true}
+              key={`creategame`}
+            />
+          </ModalBody>
+
+          {/* <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button variant="ghost">Secondary Action</Button>
+          </ModalFooter> */}
+        </ModalContent>
+      </Modal>
       <Flex {...props}>
         <Stack direction={"column"} w="100%">
           <Flex
@@ -168,6 +228,7 @@ const ControllerPanel = ({
                       size="sm"
                       disabled={true}
                       mx={4}
+                      onClick={onOpen}
                       // variant={"ghost"}
                       //   onClick={() => {
                       //     if (state === STATES.createPool) {
@@ -203,62 +264,10 @@ const ControllerPanel = ({
                     justifyContent="center"
                     flexGrow={1}
                     key={state}
-                  >
-                    {state === STATES.withdraw && (
-                      <></>
-                      //   <Web3MethodForm
-                      //     w="100%"
-                      //     key={`cp-Web3MethodForm-with`}
-                      //     maxW="660px"
-                      //     // onSuccess={() => terminus.contractState.refetch()}
-                      //     rendered={true}
-                      //     hide={["data"]}
-                      //     method={getMethodsABI<MockTerminus["methods"]>(
-                      //       terminusABI,
-                      //       "withdrawPayments"
-                      //     )}
-                      //     contractAddress={address}
-                      //   />
-                    )}
-                    {state === STATES.createPool && (
-                      <></>
-                      //   <Web3MethodForm
-                      //     w="100%"
-                      //     key={`cp-Web3MethodForm-with`}
-                      //     maxW="660px"
-                      //     onSuccess={() => terminus.contractState.refetch()}
-                      //     rendered={true}
-                      //     hide={["data"]}
-                      //     method={getMethodsABI<MockTerminus["methods"]>(
-                      //       terminusABI,
-                      //       "createPoolV1"
-                      //     )}
-                      //     contractAddress={address}
-                      //   />
-                    )}
-                  </Flex>
+                  ></Flex>
                 </SlideFade>
               )}
-              <Skeleton isLoaded={true}>
-                {true && (
-                  <></>
-                  //   <Box cursor="crosshair" overflowWrap={"break-word"}>
-                  //     <ReactJson
-                  //       name="metadata"
-                  //       collapsed
-                  //       style={{
-                  //         cursor: "text",
-                  //         lineBreak: "anywhere",
-                  //       }}
-                  //       src={terminus.contractJSON.data}
-                  //       theme="harmonic"
-                  //       displayDataTypes={false}
-                  //       displayObjectSize={false}
-                  //       collapseStringsAfterLength={128}
-                  //     />
-                  //   </Box>
-                )}
-              </Skeleton>
+              <Skeleton isLoaded={true}></Skeleton>
               <Accordion allowToggle>
                 <AccordionItem>
                   <h2>
@@ -270,7 +279,7 @@ const ControllerPanel = ({
                     </AccordionButton>
                   </h2>
                   <AccordionPanel pb={4}>
-                    <code key={"URI"}>
+                    <code key={"Blocks per turn"}>
                       Blocks per turn:
                       <Editable
                         submitOnBlur={false}
@@ -293,7 +302,7 @@ const ControllerPanel = ({
                         </Skeleton>
                       </Editable>
                     </code>
-                    <code key={"URI"}>
+                    <code key={"Maximum participants"}>
                       Maximum participants:
                       <Editable
                         submitOnBlur={false}
@@ -316,7 +325,7 @@ const ControllerPanel = ({
                         </Skeleton>
                       </Editable>
                     </code>
-                    <code key={"URI"}>
+                    <code key={"Minimum participants"}>
                       Minimum participants:
                       <Editable
                         submitOnBlur={false}
@@ -339,7 +348,7 @@ const ControllerPanel = ({
                         </Skeleton>
                       </Editable>
                     </code>
-                    <code key={"URI"}>
+                    <code key={"Blocks to join"}>
                       Blocks to join:
                       <Editable
                         submitOnBlur={false}

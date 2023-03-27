@@ -66,13 +66,33 @@ const _askWalletProviderToChangeChain = async (
   }
 };
 export const getMethodsABI: typeof GetMethodsAbiType = (abi, name) => {
-  const index = abi.findIndex(
-    (item) => item.name === name && item.type == "function"
-  );
+  const split = name.toString().split("(");
+  const index = abi.findIndex((item) => {
+    if (item.name === split[0] && item.type == "function") {
+      if (split.length == 1) {
+        return item.name === split[0] ? true : false;
+      } else {
+        const itemArguments = item.inputs;
+        const NameArgs = split[1].slice(0, -1);
+        const types = NameArgs.split(",");
+        let isAMatch = false;
+        if (itemArguments?.length == types.length) {
+          isAMatch = true;
+          itemArguments.forEach((itemArg, idx) => {
+            if (itemArg.type !== types[idx]) {
+              isAMatch = false;
+            }
+          });
+        }
+        return isAMatch;
+      }
+    } else return false;
+  });
   if (index !== -1) {
     const item = abi[index];
     return item;
-  } else throw "accesing wrong abi element";
+  }
+  else throw "accesing wrong abi element";
 };
 
 export const chains: { [key in SupportedChains]: ChainInterface } = {
@@ -155,7 +175,6 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
       ? WALLET_STATES.CONNECTED
       : WALLET_STATES.ONBOARD
   );
-  console.log("buttonText", buttonText);
   const [account, setAccount] = React.useState<string>(
     Object.assign({}, window?.ethereum) &&
       Object.assign({}, window?.ethereum)?.selectedAddress

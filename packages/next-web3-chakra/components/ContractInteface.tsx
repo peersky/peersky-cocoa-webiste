@@ -55,7 +55,6 @@ const _ContractInterface = ({
   const router = useAppRouter();
 
   const handleKeyPress = (e: any) => {
-    console.log("handleKeyPress!!!!", typeof _input);
     const _ci =
       _input?.toLowerCase() &&
       ethers.utils.isAddress(_input?.toLowerCase()) &&
@@ -68,8 +67,6 @@ const _ContractInterface = ({
       } else {
         toast("not an address", "info", "Wrong input");
       }
-      console.log("13!!!!", contractAddress);
-      // handleSubmit();
     }
   };
 
@@ -78,7 +75,6 @@ const _ContractInterface = ({
     polygon: "yellow",
     ethereum: "red",
   };
-  console.log("_input", _input);
   return (
     <Flex direction={"column"}>
       <AutoComplete
@@ -118,7 +114,6 @@ const _ContractInterface = ({
             setInput(e.target.value);
           }}
           onSubmit={(nextValue: any) => {
-            console.log("onsubmit");
             // if (web3.utils.isAddress(nextValue)) {
             //   setContractAddress(nextValue);
             //   router.appendQuery("contractAddress", nextValue, false, true);
@@ -241,7 +236,6 @@ const _ContractInterface = ({
                     element.inputs?.length !== 0
                 )
                 .map((element: any, idx: any) => {
-                  console.log("elment", element.name);
                   return (
                     <StateItem
                       w="100%"

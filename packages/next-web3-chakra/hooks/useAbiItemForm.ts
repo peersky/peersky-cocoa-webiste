@@ -7,13 +7,10 @@ import {
   UIStringFragmentField,
   UINUmberFragmentFieldArray,
   UIStringFragmentFieldArray,
+  ArgumentFields,
 } from "../types";
 import { ethers } from "ethers";
-import {
-  FunctionFragment,
-  JsonFragment,
-  JsonFragmentType,
-} from "@ethersproject/abi";
+import { JsonFragment, JsonFragmentType } from "@ethersproject/abi";
 
 const makeTupleField = (element: JsonFragmentType): UITupleFragmentField => {
   let tupleUI: UITupleFragmentField = {
@@ -59,22 +56,22 @@ const makeTupleField = (element: JsonFragmentType): UITupleFragmentField => {
   return tupleUI;
 };
 
-export interface ArgumentFields {
-  value: string;
-  placeholder: string;
-  hide: boolean;
-  label: string;
-  valueIsEther?: boolean;
-  convertToBytes: boolean;
-  initialValue: string;
-}
+// export interface ArgumentFields {
+//   value: string;
+//   placeholder: string;
+//   hide: boolean;
+//   label: string;
+//   valueIsEther?: boolean;
+//   convertToBytes: boolean;
+//   initialValue: string;
+// }
 
 const isNumeric = (fragment: JsonFragmentType) => {
   return (fragment as UINumberFragmentField).valueIsEther !== undefined;
 };
 const makeUIFields = <T extends UIFragmentField>(
   element: JsonFragmentType,
-  argumentFields?: { [key: string]: ArgumentFields },
+  argumentFields?: ArgumentFields,
   hide?: string[]
 ): T => {
   if (!element.name) console.log("cauthg", element);
@@ -160,7 +157,7 @@ const setArguments = (
   newState.allBytesAsStrings = allBytesAsStrings;
   newState.allValuesAsEther = allValuesAsEther;
 
-  if (value && index !== undefined) {
+  if (index !== undefined) {
     if (!newState.inputs) throw new Error("no input fields found");
     if (
       newState.inputs[index]?.type === "tuple" ||
@@ -190,13 +187,21 @@ const setArguments = (
   return { ...newState };
 };
 
-const useABIItemForm = (fragment: FunctionFragment) => {
+const useABIItemForm = (
+  fragment: JsonFragment,
+  argumentFields?: ArgumentFields,
+  hideFields?: string[]
+) => {
   const method: JsonFragment = fragment as JsonFragment;
   const initialState = React.useMemo(() => {
     const newState: UIFragment = { ...method, ui: [] };
     newState.inputs?.forEach((element: JsonFragmentType, index: number) => {
       if (newState.inputs && newState.inputs[index]) {
-        newState.ui[index] = makeUIFields<UIFragmentField>(element);
+        newState.ui[index] = makeUIFields<UIFragmentField>(
+          element,
+          argumentFields,
+          hideFields
+        );
       }
     });
     return newState;

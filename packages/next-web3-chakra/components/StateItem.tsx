@@ -26,20 +26,19 @@ const ReactJson = dynamic(() => import("react-json-view"), {
 });
 import useABIItemForm from "../hooks/useAbiItemForm";
 import { ethers } from "ethers";
-import { FunctionFragment } from "@ethersproject/abi";
+import { JsonFragment } from "@ethersproject/abi";
 
 const _StateItem = ({
   abiItem,
   address,
   args,
 }: {
-  abiItem: FunctionFragment;
+  abiItem: JsonFragment;
   address: string;
   args?: any;
 }) => {
   const web3ctx = useContext(Web3Context);
 
-  console.log("state item ", abiItem);
   const { state, dispatchArguments, getArgs } = useABIItemForm(abiItem);
 
   console.dir(state);
@@ -141,8 +140,6 @@ const _StateItem = ({
           })}
           <Button
             onClick={() => {
-              console.log("click!", state.ui);
-
               response.remove();
               setIsEnabled(true);
             }}

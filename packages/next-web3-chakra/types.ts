@@ -3,7 +3,7 @@ import { AbiItem, AbiInput } from "web3-utils";
 import { ethers } from "ethers";
 export type { SupportedChains } from "../../types";
 import { SupportedChains } from "./types";
-import { FunctionFragment, JsonFragment } from "@ethersproject/abi";
+import { JsonFragment } from "@ethersproject/abi";
 export enum SiteMapItemType {
   EMPTY = 0,
   CONTENT,
@@ -38,7 +38,7 @@ export interface ChainInterface {
 export declare function GetMethodsAbiType<T>(
   abi: JsonFragment[],
   name: keyof T
-): FunctionFragment;
+): JsonFragment;
 
 export interface TokenInterface {
   address: string;
@@ -76,7 +76,15 @@ export interface UIProviderInterface {
   sessionId: string | undefined;
   webSiteConfig: WebSiteConfig;
 }
-
+// export interface ArgumentFields {
+//   value: string;
+//   placeholder: string;
+//   hide: boolean;
+//   label: string;
+//   valueIsEther?: boolean;
+//   convertToBytes: boolean;
+//   initialValue: string;
+// }
 export interface ArgumentField {
   placeholder?: string;
   initialValue?: string;

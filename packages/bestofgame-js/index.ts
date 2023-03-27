@@ -3,7 +3,7 @@ import {
   LibCoinVending,
 } from "../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
 import { RankToken } from "../../types/typechain";
-import { Bytes, BytesLike, ethers } from "ethers";
+import { BigNumberish, BytesLike, ethers } from "ethers";
 import deploymentMumbai from "../../deployments/mumbai/BestOfGame.json";
 import rankDeploymentMumbai from "../../deployments/mumbai/RankToken.json";
 import { SupportedChains } from "../../types";
@@ -74,9 +74,7 @@ export const getRankTokenURI = async (
     artifact.abi,
     signerOrProvider
   ) as RankToken;
-  console.log("rta", artifact.contractAddress);
   const retval = await contract.uri("0");
-  console.log("retval", retval.toString());
   return retval;
 };
 
@@ -120,6 +118,8 @@ export const getGameState = async (
   const isLastTurn = await contract.isLastTurn(gameId);
   const isOpen = await contract.isRegistrationOpen(gameId);
   const createdBy = await contract.gameCreator(gameId);
+  const gameRank = await contract.getGameRank(gameId);
+  const players = await contract.getPlayers(gameId);
 
   return {
     gameMaster,
@@ -132,23 +132,37 @@ export const getGameState = async (
     isLastTurn,
     isOpen,
     createdBy,
+    gameRank,
+    players,
   };
 };
 
 export const createGame =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
-  async (gameMaster: string, gameRank: string) => {
-    const contract = getContract(chain, signerOrProvider);
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  async (gameMaster: string, gameRank: string, gameId?: BigNumberish) => {
+    console.log("createGame", gameMaster, gameRank.toString());
+    const contract = getContract(chain, provider.getSigner());
     const reqs = await contract.getContractState();
 
-    const value = await reqs.BestOfState.gamePrice;
-
-    return await contract["createGame(address,uint256)"](gameMaster, gameRank, {
-      value: value,
-    });
+    const value = reqs.BestOfState.gamePrice;
+    if (gameId) {
+      return await contract["createGame(address,uint256,uint256)"](
+        gameMaster,
+        gameId,
+        gameRank,
+        {
+          value: value,
+        }
+      );
+    } else {
+      return await contract["createGame(address,uint256)"](
+        gameMaster,
+        gameRank,
+        {
+          value: value,
+        }
+      );
+    }
   };
 
 export const joinGame =
@@ -269,11 +283,9 @@ export const submitVote =
   };
 
 export const setJoinRequirements =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, signerOrProvider: ethers.providers.Web3Provider) =>
   async (gameId: string, config: LibCoinVending.ConfigPositionStruct) => {
-    const contract = getContract(chain, signerOrProvider);
-    contract.setJoinRequirements(gameId, config);
+    console.log("config", config, gameId);
+    const contract = getContract(chain, signerOrProvider.getSigner());
+    return await contract.setJoinRequirements(gameId, config);
   };

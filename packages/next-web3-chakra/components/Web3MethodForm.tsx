@@ -26,8 +26,8 @@ import Web3MethodField from "./We3MethodField";
 
 import { ArgumentFields, UIFragment } from "../types";
 import useABIItemForm from "../hooks/useAbiItemForm";
-import { ethers } from "ethers";
-import { FunctionFragment } from "@ethersproject/abi";
+import { BigNumberish, ethers } from "ethers";
+import { JsonFragment } from "@ethersproject/abi";
 
 const Web3MethodForm = ({
   method,
@@ -41,12 +41,14 @@ const Web3MethodForm = ({
   beforeSubmit,
   contractAddress,
   BatchInputs,
+  initialValue,
+  showSwitch = true,
   className,
   ...props
 }: {
   title?: string;
   key: string;
-  method: FunctionFragment;
+  method: JsonFragment;
   className?: string;
   argumentFields?: ArgumentFields;
   hide?: string[];
@@ -57,15 +59,21 @@ const Web3MethodForm = ({
   onSuccess?: (resp: any) => void;
   beforeSubmit?: (state: UIFragment) => any;
   contractAddress: string;
+  initialValue?: BigNumberish;
+  showSwitch?: boolean;
   props?: any;
 }) => {
   const toast = useToast();
   const _BatchInputs = BatchInputs ?? [];
-  const [value, setValue] = useState("0");
+  const [value, setValue] = useState(initialValue?.toString() ?? "0");
   const [valueIsEther, setValueIsEther] = useState(false);
   const [, setAllBytesAreStrings] = React.useState(false);
   const [wasSent, setWasSent] = React.useState(false);
-  const { state, dispatchArguments, getArgs } = useABIItemForm(method);
+  const { state, dispatchArguments, getArgs } = useABIItemForm(
+    method,
+    argumentFields,
+    hide
+  );
   const handleClose = React.useCallback(() => {
     if (onCancel) {
       state?.inputs?.forEach((inputElement: any, index: any) => {
@@ -90,7 +98,6 @@ const Web3MethodForm = ({
 
     let response;
     if (method.name) {
-      console.log("sending tx");
       const options = {
         value: ethers.utils.parseUnits(value, valueIsEther ? "ether" : "wei"),
       };
@@ -191,22 +198,24 @@ const Web3MethodForm = ({
             {title ?? method.name}
           </Heading>
           <Spacer />
-          <Switch
-            size="sm"
-            ml={4}
-            justifySelf={"flex-end"}
-            aria-label="as string"
-            onChange={() => {
-              setAllBytesAreStrings((old) => {
-                dispatchArguments({
-                  allBytesAsStrings: !old,
+          {showSwitch && (
+            <Switch
+              size="sm"
+              ml={4}
+              justifySelf={"flex-end"}
+              aria-label="as string"
+              onChange={() => {
+                setAllBytesAreStrings((old) => {
+                  dispatchArguments({
+                    allBytesAsStrings: !old,
+                  });
+                  return !old;
                 });
-                return !old;
-              });
-            }}
-          >
-            All Bytes as strings
-          </Switch>
+              }}
+            >
+              All Bytes as strings
+            </Switch>
+          )}
         </Flex>
         {state?.inputs?.map((inputItem, index) => {
           if (
@@ -229,33 +238,37 @@ const Web3MethodForm = ({
           }
         })}
         <Flex direction={"row"} w="100%">
-          <NumberInput variant={"outline"} flexBasis="75px" flexGrow={1}>
-            <NumberInputField
-              placeholder={"value to send ETH"}
-              textColor={"blue.800"}
-              onKeyPress={handleKeypress}
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
-              fontSize={"sm"}
-              w="100%"
-            />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-          <Select
-            onChange={(e) =>
-              setValueIsEther(e.target.value === "1" ? false : true)
-            }
-            flexBasis="25px"
-            flexGrow={1}
-            maxW="200px"
-            ml={4}
-          >
-            <option value="1">wei (**1)</option>
-            <option value="18">Eth (**18)</option>
-          </Select>
+          {!hide?.includes("msg.value") && (
+            <>
+              <NumberInput variant={"outline"} flexBasis="75px" flexGrow={1}>
+                <NumberInputField
+                  placeholder={"value to send ETH"}
+                  textColor={"blue.800"}
+                  onKeyPress={handleKeypress}
+                  value={value}
+                  onChange={(event) => setValue(event.target.value)}
+                  fontSize={"sm"}
+                  w="100%"
+                />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+              <Select
+                onChange={(e) =>
+                  setValueIsEther(e.target.value === "1" ? false : true)
+                }
+                flexBasis="25px"
+                flexGrow={1}
+                maxW="200px"
+                ml={4}
+              >
+                <option value="1">wei (**1)</option>
+                <option value="18">Eth (**18)</option>
+              </Select>
+            </>
+          )}
         </Flex>
         <Flex direction={"row"} flexWrap="wrap">
           <Button

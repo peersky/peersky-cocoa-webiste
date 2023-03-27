@@ -231,7 +231,7 @@ const AddressInputItem = ({
         {uiFragment.label}
       </FormLabel>{" "}
       <Input
-        textColor={"blue.800"}
+        textColor={"blue.500"}
         onKeyPress={onKeyPress}
         type="search"
         key={`argument-address-${abiItem.name}`}
@@ -500,7 +500,6 @@ const Web3MethodField = ({
   //   inputsProps: any;
 }) => {
   const item = (type: string) => {
-    console.log("type", type);
     if (!item) return "";
     switch (type) {
       case "bool":
@@ -587,7 +586,11 @@ const Web3MethodField = ({
             colorScheme={colorScheme}
           />
         );
+      //ToDo: This should have some kind of interactive button to add fields in it
+      // case "tuple[]":
+      //   return (
 
+      //   )
       default:
         if (type && type.startsWith("uint")) {
           if (type.endsWith("[]"))

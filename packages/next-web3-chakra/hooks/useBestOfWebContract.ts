@@ -10,7 +10,7 @@ import * as BestMethods from "@daocoacoa/bestofgame-js";
 import useToast from "./useToast";
 import queryCacheProps from "./hookCommon";
 import { Web3ProviderInterface } from "../types";
-import { BytesLike, ethers } from "ethers";
+import { BigNumberish, BytesLike } from "ethers";
 import { LibCoinVending } from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
 export interface BestOfWebContractArguments {
   tokenId?: string;
@@ -34,9 +34,7 @@ export const useBestOfWebContract = ({
         if (error.message) return false;
         return true;
       },
-      onSuccess: (e) => {
-        console.log("eeee", e);
-      },
+      onSuccess: (e) => {},
       enabled: !!web3ctx.account && !!web3ctx.chainId,
       onError: (e: any) => {
         if (!e.message.includes("underlying network changed"))
@@ -234,21 +232,33 @@ export const useBestOfWebContract = ({
   );
 
   const createGame = useMutation(
-    ({ gameMaster, gameRank }: { gameMaster: string; gameRank: string }) =>
-      BestMethods.createGame(chainName, web3ctx.provider)(gameMaster, gameRank),
+    ({
+      gameMaster,
+      gameRank,
+      gameId,
+    }: {
+      gameMaster: string;
+      gameRank: string;
+      gameId?: BigNumberish;
+    }) =>
+      BestMethods.createGame(chainName, web3ctx.provider)(
+        gameMaster,
+        gameRank,
+        gameId
+      ),
     { ...commonProps }
   );
 
   const setJoinRequirements = useMutation(
     ({
-      gameMaster,
+      gameId,
       config,
     }: {
-      gameMaster: string;
+      gameId: string;
       config: LibCoinVending.ConfigPositionStruct;
     }) =>
       BestMethods.setJoinRequirements(chainName, web3ctx.provider)(
-        gameMaster,
+        gameId,
         config
       ),
     { ...commonProps }

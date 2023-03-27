@@ -22,7 +22,6 @@ const Metadata = ({
       setExpanded(false);
     }
   }, [ref.current?.scrollHeight]);
-  console.log("metadata metdata", metadata);
   return (
     <Flex
       boxShadow={"md"}
