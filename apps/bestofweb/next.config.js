@@ -4,7 +4,7 @@ const withMDX = require("@next/mdx")();
 module.exports = withMDX({
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   transpilePackages: ["@peersky/next-web3-chakra"],
-  reactStrictMode: true,
+  reactStrictMode: false,
   trailingSlash: true,
   // output: "standalone",
   // target: "serverless",
