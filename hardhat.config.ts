@@ -63,6 +63,8 @@ task("addFacet", "adds a facet")
     });
 
     console.log(response.hash);
+  });
+  
 task("PublishIPNS", "Publishes IPNS with new pointer")
   .addParam("value")
   .setAction(async (taskArgs) => {
