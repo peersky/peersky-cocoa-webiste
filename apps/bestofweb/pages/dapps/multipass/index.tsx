@@ -115,7 +115,6 @@ const Home = () => {
     );
   };
 
-  console.log("dbg:", web3ctx.chainId);
 
   return (
     <Box h="100vh">

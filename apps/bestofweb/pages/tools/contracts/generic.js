@@ -14,7 +14,6 @@ const Contract = () => {
   const [abi, setAbi] = React.useState();
   const router = useRouter();
   const { contractAddress } = router.query;
-  console.log("Contract cmp", contractAddress, abi);
   if (!abi) {
     return (
       <Flex direction={"column"}>

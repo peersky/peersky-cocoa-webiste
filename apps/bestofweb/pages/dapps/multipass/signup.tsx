@@ -63,7 +63,6 @@ const Home = () => {
       ) as MultipassDiamond;
 
       let response;
-      console.log("sending tx");
       response = await contract.register(...args);
 
       return response;
@@ -88,7 +87,6 @@ const Home = () => {
           targetDomain: ethers.utils.formatBytes32String(""),
         };
         const response = await _multipass.resolveRecord(query);
-        console.log("response", response);
         setIsRegistred(response[0]);
       },
     }
@@ -108,10 +106,8 @@ const Home = () => {
   const domainBytes32 = domain ? ethers.utils.formatBytes32String(domain) : "";
   const chainId = query?.chainId;
 
-  console.log("domain", domainBytes32);
   useEffect(() => {
     const queryUserById = async () => {
-      console.log("sdf2", message, contractAddress);
       const _multipass = new ethers.Contract(
         contractAddress,
         multipassABI,
@@ -125,7 +121,6 @@ const Home = () => {
         targetDomain: ethers.utils.formatBytes32String(""),
       };
       const response = await _multipass.resolveRecord(query);
-      console.log("response", response);
       setIsRegistred(response[0]);
     };
 

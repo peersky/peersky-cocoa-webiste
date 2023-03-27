@@ -7,7 +7,6 @@ const Contract = () => {
   const router = useRouter();
 
   const { contractAddress } = router.query;
-  console.log("contractAddress", contractAddress);
   return (
     <ContractInterface
       abi={abi}
