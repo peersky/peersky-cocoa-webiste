@@ -1,2 +1,3 @@
 import * as OpenEconomyManifest from "./open-economy.mdx";
-export { OpenEconomyManifest };
+import * as HowAccountsRu from "./how-wallets-made-ru.mdx";
+export { OpenEconomyManifest, HowAccountsRu };
