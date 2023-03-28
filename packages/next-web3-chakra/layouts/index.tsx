@@ -4,6 +4,7 @@ import React from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import Scrollable from "../components/Scrollable";
+import _Sidebar from "../components/Sidebar";
 // import RootLayout from "./RootLayout";
 
 const _LayoutWrapper = ({
@@ -14,22 +15,23 @@ const _LayoutWrapper = ({
 }) => {
   return (
     // <RootLayout {...props}>
+
     <Scrollable className="Main">
       <Navbar
 
       // colorScheme={components.Navbar.colorScheme}
       />
       {/* <Flex
-        direction="row"
-        id="PeerApp"
-        className="Main"
-        w="100%"
-        h="100%"
-        maxH="100%"
-      > */}
+         direction="row"
+         id="PeerApp"
+         className="Main"
+         w="100%"
+         h="100%"
+         maxH="100%"
+       > */}
       {/* <Suspense fallback="">
-        <Sidebar />
-      </Suspense> */}
+       </Suspense> */}
+      <_Sidebar />
       <Flex
         mt="84px"
         direction="column"

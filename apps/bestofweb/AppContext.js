@@ -4,7 +4,7 @@ import theme from "./theme";
 import { UIProvider, Web3Provider } from "@peersky/next-web3-chakra/providers";
 // import Fonts from "./Theme/Fonts";
 import { SITEMAP } from "./config";
-
+import { ProSidebarProvider } from "react-pro-sidebar";
 const AppContext = (props) => {
   useEffect(() => {
     const version = "0.35";
@@ -16,7 +16,11 @@ const AppContext = (props) => {
     <ChakraProvider theme={theme}>
       {/* <Fonts /> */}
       <Web3Provider>
-        <UIProvider config={{ SITEMAP: SITEMAP }}>{props.children}</UIProvider>
+        <ProSidebarProvider>
+          <UIProvider config={{ SITEMAP: SITEMAP }}>
+            {props.children}
+          </UIProvider>
+        </ProSidebarProvider>
       </Web3Provider>
     </ChakraProvider>
   );
