@@ -36,7 +36,7 @@ const multipassArtifacts: Partial<
   },
 };
 
-const Home = () => {
+const Signup = () => {
   const [isRegistred, setIsRegistred] = React.useState(false);
   const [, setDomainState] = React.useState({
     exists: false,
@@ -59,7 +59,7 @@ const Home = () => {
       const contract = new ethers.Contract(
         contractAddress,
         multipassABI,
-        web3ctx.provider.getSigner()
+        web3ctx?.provider?.getSigner()
       ) as MultipassDiamond;
 
       let response;
@@ -284,5 +284,5 @@ const Home = () => {
     </Box>
   );
 };
-Home.getLayout = getLayout;
-export default Home;
+Signup.getLayout = getLayout;
+export default Signup;

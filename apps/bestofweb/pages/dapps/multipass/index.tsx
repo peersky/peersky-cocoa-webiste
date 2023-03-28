@@ -91,6 +91,7 @@ const Home = () => {
       targetDomain: ethers.utils.formatBytes32String(""),
     };
 
+    if (!web3ctx.provider) return "";
     const multipass = new ethers.Contract(
       query.contractAddress,
       multipassABI,
