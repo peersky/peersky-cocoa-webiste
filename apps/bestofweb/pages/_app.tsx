@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/styles.css";
 import "../styles/nprogress.css";
-import "../styles/sidebar.css";
+// import "../styles/sidebar.css";
 import dynamic from "next/dynamic";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
