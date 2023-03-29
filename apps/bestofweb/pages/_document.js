@@ -52,6 +52,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           /> */}
           <link rel="preconnect" href="https://s3.amazonaws.com" />
           {/* <!-- Global site tag (gtag.js) - Google Analytics --> */}
+
+          {/* <!-- Global site tag (gtag.js) - Google Analytics --> */}
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${GTAG}`}
+          ></script>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag() {
+                dataLayer.push(arguments);
+              }
+              gtag("js", new Date());
+              gtag("config", "${GTAG}");`,
+            }}
+          />
         </Head>
         <body>
           <script
