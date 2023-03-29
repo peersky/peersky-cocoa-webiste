@@ -1,6 +1,7 @@
 import React from "react";
 import Document, { Html, Head, Main, NextScript } from "next/document";
-const GTAG = process.env.NEXT_PUBLIC_ENGINE_GTAG;
+// const GTAG = process.env.NEXT_PUBLIC_ENGINE_GTAG;
+const GTAG = "G-7M9KTD2D9E";
 
 export default class MyDocument extends Document {
   render() {
