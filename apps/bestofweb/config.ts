@@ -44,21 +44,21 @@ export const SITEMAP: SiteMap = [
     path: "/about",
     type: SiteMapItemType.CONTENT,
   },
-  {
-    title: "Legal",
-    path: "/legal",
-    type: SiteMapItemType.FOOTER_CATEGORY,
-    children: [
-      {
-        title: "Privacy Policy",
-        path: "/privacy-policy",
-        type: SiteMapItemType.CONTENT,
-      },
-      {
-        title: "Terms of Service",
-        path: "/tos",
-        type: SiteMapItemType.CONTENT,
-      },
-    ],
-  },
+  // {
+  //   title: "Legal",
+  //   path: "/legal",
+  //   type: SiteMapItemType.FOOTER_CATEGORY,
+  //   children: [
+  //     {
+  //       title: "Privacy Policy",
+  //       path: "/privacy-policy",
+  //       type: SiteMapItemType.CONTENT,
+  //     },
+  //     {
+  //       title: "Terms of Service",
+  //       path: "/tos",
+  //       type: SiteMapItemType.CONTENT,
+  //     },
+  //   ],
+  // },
 ];

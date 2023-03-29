@@ -132,7 +132,7 @@ const Footer = ({
               </SocialButton>
               <SocialButton
                 label={"Github"}
-                href={"https://github.com/peersky/daococoa"}
+                href={"https://github.com/peersky/"}
               >
                 <FaGithub />
               </SocialButton>
@@ -153,7 +153,13 @@ const Footer = ({
                     key={`footer-list-column-${colIndex}`}
                   >
                     <>
-                      <ListHeader>{category.title}</ListHeader>
+                      <Link
+                        {...LINKS_SIZES}
+                        href={category.path}
+                        key={`footer-list-link-item-${colIndex}-col-${colIndex}`}
+                      >
+                        {category.title}
+                      </Link>
                       {category.children?.map((linkItem, linkItemIndex) => {
                         return (
                           <Link
