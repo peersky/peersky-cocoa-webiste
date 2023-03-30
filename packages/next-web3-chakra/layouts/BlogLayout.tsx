@@ -20,23 +20,23 @@ import { MDXProvider } from "@mdx-js/react";
 // import {MDXCom}
 
 const H1 = (props: any) => (
-  <Heading as="h1" size="xl" borderBottomWidth={"3px"} my={8}>
+  <Heading as="h1" size="2xl" borderBottomWidth={"3px"} my={8}>
     {props.children}
   </Heading>
 );
 const H2 = (props: any) => (
-  <Heading as="h2" size="lg" borderBottomWidth={"2px"} my={6}>
+  <Heading as="h2" size="xl" borderBottomWidth={"2px"} my={6}>
     {props.children}
   </Heading>
 );
 const H3 = (props: any) => (
-  <Heading as="h3" size="md" my={4}>
+  <Heading as="h3" size="lg" my={4}>
     {props.children}
   </Heading>
 );
 
 const H4 = (props: any) => (
-  <Heading as="h4" size="sm" my={2} fontWeight="bold">
+  <Heading as="h4" size="md" my={2} fontWeight="bold">
     {props.children}
   </Heading>
 );
@@ -51,6 +51,10 @@ const ResponsiveImage = (props: any) => (
       w={
         props.alt.endsWith("fullwidth")
           ? "100%"
+          : props.alt.endsWith("small")
+          ? "220px"
+          : props.alt.endsWith("medium")
+          ? "480px"
           : ["100%", "75%", "50", null, "50%"]
       }
     />
@@ -58,13 +62,16 @@ const ResponsiveImage = (props: any) => (
 );
 
 const A = (props: any) => (
-  <Link
-    href={props.href}
-    textColor={useColorModeValue("blue.600", "blue.300")}
-  >
+  <Link href={props.href} textColor={useColorModeValue("blue.600", "blue.300")}>
     {props.children}
   </Link>
 );
+
+const UL = (props: any) => (
+  <UnorderedList my={4}>{props.children}</UnorderedList>
+);
+
+const OL = (props: any) => <OrderedList my={4}>{props.children}</OrderedList>;
 
 const components = {
   h1: H1,
@@ -73,8 +80,8 @@ const components = {
   h4: H4,
   p: P,
   img: ResponsiveImage,
-  ul: UnorderedList,
-  ol: OrderedList,
+  ul: UL,
+  ol: OL,
   li: ListItem,
   a: A,
 };
@@ -93,7 +100,8 @@ const BlogLayout = ({
     <Flex
       id="Blog"
       px={["0px", "0%", "20%"]}
-      my={8}
+      mt={8}
+      mb="220px"
       direction="column"
       maxW={"2048px"}
       flexBasis="200px"

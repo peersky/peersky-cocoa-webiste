@@ -9,7 +9,6 @@ export async function getStaticPaths() {
       return {
         params: {
           id: post.meta.path,
-          meta: { ...post.meta },
           Children: post.default,
         },
       };
@@ -19,15 +18,27 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: { params: any }) {
+  const blogPosts = await require("../../content/");
+  const postsArray = Object.values(blogPosts).map((post) => post);
+  const post: any = postsArray.find(
+    (_post: any) => _post.meta.path === params.id
+  );
+  const metaTags = {
+    title: post.meta.title,
+    description: post.meta.description,
+    keywords: post.meta.tags.toLocaleString(),
+    url: `peersky.xyz/bog/${post.meta.path}}`,
+  };
   return {
     props: {
       ...params,
+      meta: { ...post.meta },
+      metaTags: { ...metaTags },
     },
   };
 }
 var meta: any;
 const Post = (props: any) => {
-  meta = { ...props.meta };
   const Component = lazy(() => import(`../../content/${props.id}.mdx`));
 
   return <Suspense fallback={<div>Loading...</div>}>{<Component />}</Suspense>;

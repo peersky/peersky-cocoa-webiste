@@ -49,7 +49,7 @@ export interface TokenInterface {
 declare function ChangeChain(chainName: SupportedChains): void;
 declare function getChainFromId(chainId: number): SupportedChains;
 export interface Web3ProviderInterface {
-  provider: ethers.providers.Web3Provider;
+  provider: ethers.providers.Web3Provider | undefined;
   onConnectWalletClick: Function;
   buttonText: String;
   WALLET_STATES: WalletStatesInterface;

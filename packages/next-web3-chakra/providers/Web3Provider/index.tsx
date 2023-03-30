@@ -152,9 +152,9 @@ const isKnownChain = (_chainId: number) => {
 const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   // const [provider, setProvider] =
 
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider>(
-    new ethers.providers.Web3Provider(window?.ethereum)
-  );
+  const [provider, setProvider] = useState<
+    ethers.providers.Web3Provider | undefined
+  >(window?.ethereum && new ethers.providers.Web3Provider(window?.ethereum));
 
   const [targetChain, _setChain] = React.useState<ChainInterface | undefined>(
     Object.assign({}, window?.ethereum) &&
@@ -171,7 +171,7 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   // web3.eth.handleRevert = true;
 
   const [buttonText, setButtonText] = React.useState(
-    window?.ethereum.selectedAddress
+    window?.ethereum?.selectedAddress
       ? WALLET_STATES.CONNECTED
       : WALLET_STATES.ONBOARD
   );
@@ -271,9 +271,10 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
     if (
       targetChain?.chainId &&
       chainId === targetChain?.chainId &&
+      window?.ethereum &&
       window?.ethereum?.selectedAddress
     ) {
-      setAccount(window.ethereum.selectedAddress);
+      setAccount(window?.ethereum?.selectedAddress);
     }
     // eslint-disable-next-line
   }, [chainId, targetChain?.chainId]);

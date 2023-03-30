@@ -61,10 +61,8 @@ task("addFacet", "adds a facet")
       diamondAddress: taskArgs.address,
       signer: accounts[0],
     });
-
-    console.log(response.hash);
   });
-  
+
 task("PublishIPNS", "Publishes IPNS with new pointer")
   .addParam("value")
   .setAction(async (taskArgs) => {

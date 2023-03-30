@@ -5,6 +5,7 @@ import UIContext from "./context";
 import { v4 as uuid4 } from "uuid";
 import { useBreakpointValue } from "@chakra-ui/react";
 import { WebSiteConfig } from "../../types";
+import { useProSidebar } from "react-pro-sidebar";
 
 const UIProvider = ({
   children,
@@ -39,8 +40,8 @@ const UIProvider = ({
   const [sessionId] = useStorage(window.sessionStorage, "sessionID", uuid4());
 
   // *********** Sidebar states **********************
-
-  // Whether sidebar should be visible at all or hidden
+  const { collapseSidebar, toggleSidebar, collapsed, toggled, broken, rtl } =
+    useProSidebar(); // Whether sidebar should be visible at all or hidden
   const [sidebarVisible, setSidebarVisible] = useStorage<boolean>(
     window.sessionStorage,
     "sidebarVisible",
@@ -59,6 +60,22 @@ const UIProvider = ({
     "sidebarToggled",
     false
   );
+
+  useEffect(() => {
+    collapseSidebar(sidebarCollapsed);
+  }, [sidebarCollapsed, collapseSidebar]);
+
+  useEffect(() => {
+    toggleSidebar(sidebarToggled);
+  }, [sidebarToggled, toggleSidebar]);
+
+  // useEffect(() => {
+  //   setSidebarCollapsed(collapsed);
+  // }, [collapseSidebar, collapsed]);
+
+  // useEffect(() => {
+  //   setSidebarToggled(toggled);
+  // }, [setSidebarToggled, toggled]);
 
   //Sidebar is visible at all times in mobile view
   useEffect(() => {
