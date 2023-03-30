@@ -3,6 +3,7 @@ import "../styles/styles.css";
 import "../styles/nprogress.css";
 // import "../styles/sidebar.css";
 import dynamic from "next/dynamic";
+import HeadSEO from "@peersky/next-web3-chakra/components/HeadSEO";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 const AppContext = dynamic(() => import("../AppContext"), {
@@ -84,8 +85,7 @@ export default function CachingApp({ Component, pageProps }: any) {
           overflow: hidden;
         }
       `}</style>
-      {/* {pageProps.metaTags && <HeadSEO {...pageProps.metaTags} />}
-      <HeadLinks links={headLinks} /> */}
+      {pageProps.metaTags && <HeadSEO {...pageProps.metaTags} />}
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
         <AppContext>{getLayout(<Component {...pageProps} />)}</AppContext>
