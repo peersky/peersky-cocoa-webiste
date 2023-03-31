@@ -150,14 +150,14 @@ const Home = () => {
               bgColor: "transparent",
             },
           ]}
-          cta={{
-            label: web3ctx.account ? "start" : "connect wallet to start",
-            onClick: () => {
-              !web3ctx.account && web3ctx.onConnectWalletClick();
-              web3ctx.account &&
-                appendQuery("appPage", "chainSelector", true, true);
-            },
-          }}
+          // cta={{
+          //   label: web3ctx.account ? "start" : "connect wallet to start",
+          //   onClick: () => {
+          //     !web3ctx.account && web3ctx.onConnectWalletClick();
+          //     web3ctx.account &&
+          //       appendQuery("appPage", "chainSelector", true, true);
+          //   },
+          // }}
         />
       )}
       {/* <Box wrap="wrap"> */}
