@@ -55,7 +55,7 @@ const ResponsiveImage = (props: any) => {
         mb={1}
         // {...props}
         alt={props.alt}
-        src={'/lilu.png'}
+        src={imgSrc}
         w={
           props.alt.endsWith("fullwidth")
             ? "100%"
