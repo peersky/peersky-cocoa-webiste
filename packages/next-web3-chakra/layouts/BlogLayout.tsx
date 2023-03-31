@@ -41,25 +41,34 @@ const H4 = (props: any) => (
   </Heading>
 );
 const P = (props: any) => <chakra.span py={2}>{props.children}</chakra.span>;
-const ResponsiveImage = (props: any) => (
-  <Center>
-    <Image
-      mt={4}
-      mb={1}
-      alt={props.alt}
-      {...props}
-      w={
-        props.alt.endsWith("fullwidth")
-          ? "100%"
-          : props.alt.endsWith("small")
-          ? "220px"
-          : props.alt.endsWith("medium")
-          ? "480px"
-          : ["100%", "75%", "50", null, "50%"]
-      }
-    />
-  </Center>
-);
+const ResponsiveImage = (props: any) => {
+  const docsImportPath = "../apps/bestofweb/public";
+  const imgSrc = !props.src.startsWith(docsImportPath)
+    ? props.src
+    : props.src.slice(docsImportPath.length);
+  console.log(props.src, imgSrc, props.src.startsWith(docsImportPath));
+
+  return (
+    <Center>
+      <Image
+        mt={4}
+        mb={1}
+        // {...props}
+        alt={props.alt}
+        src={'/lilu.png'}
+        w={
+          props.alt.endsWith("fullwidth")
+            ? "100%"
+            : props.alt.endsWith("small")
+            ? "220px"
+            : props.alt.endsWith("medium")
+            ? "480px"
+            : ["100%", "75%", "50", null, "50%"]
+        }
+      />
+    </Center>
+  );
+};
 
 const A = (props: any) => (
   <Link href={props.href} textColor={useColorModeValue("blue.600", "blue.300")}>

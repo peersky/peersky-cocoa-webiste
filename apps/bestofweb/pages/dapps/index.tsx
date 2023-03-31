@@ -22,19 +22,16 @@ const Projects = () => {
         py={2}
         flexWrap="wrap"
       >
-        <Text>Multipass</Text>
+        <Text>Multipass Protocol</Text>
         <Spacer />
         <Text>- simple blockchain id</Text>
         <Spacer />
         <RouteButton variant="outline" href={`dapps/multipass`}>
-          go!
+          Learn more
         </RouteButton>
-        <RouteButton
-          variant="outline"
-          href={`https://github.com/peersky/repositories/daococoa/multipass.md`}
-        >
+        {/* <RouteButton variant="outline" href={`/dapps/multipass/WTF`}>
           wtf?
-        </RouteButton>
+        </RouteButton> */}
       </Flex>
       <Flex
         dir={ui.isMobileView ? "column" : "row"}
@@ -45,21 +42,27 @@ const Projects = () => {
         alignItems={"center"}
         px={2}
         py={2}
-        flexWrap="wrap"
+        flexWrap="nowrap"
         mt={4}
       >
-        <Text>Best of web</Text>
+        <Text display={"inline-block"} minW="180px">
+          Game master Protocol
+        </Text>
         <Spacer />
-        <Text>- Playful process of delegated voting</Text>
+        <Text>
+          Verifiable way of submitting non-zk yet anonymous votes and proposals
+          trough a trusted third party relay
+        </Text>
         <Spacer />
-        <RouteButton variant="outline" href={`dapps/bestofweb`}>
-          go!
-        </RouteButton>
-        <RouteButton
+        {/* <RouteButton
           variant="outline"
-          href={`https://github.com/peersky/repositories/daococoa/bestofweb.md`}
+          href={`dapps/bestofweb`}
+          isDisabled={true}
         >
-          wtf?
+          go!
+        </RouteButton> */}
+        <RouteButton variant="outline" href={`dapps/gm/wtf`}>
+          Learn more
         </RouteButton>
       </Flex>
     </Flex>
