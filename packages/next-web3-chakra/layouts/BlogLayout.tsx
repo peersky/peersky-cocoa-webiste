@@ -41,25 +41,34 @@ const H4 = (props: any) => (
   </Heading>
 );
 const P = (props: any) => <chakra.span py={2}>{props.children}</chakra.span>;
-const ResponsiveImage = (props: any) => (
-  <Center>
-    <Image
-      mt={4}
-      mb={1}
-      alt={props.alt}
-      {...props}
-      w={
-        props.alt.endsWith("fullwidth")
-          ? "100%"
-          : props.alt.endsWith("small")
-          ? "220px"
-          : props.alt.endsWith("medium")
-          ? "480px"
-          : ["100%", "75%", "50", null, "50%"]
-      }
-    />
-  </Center>
-);
+const ResponsiveImage = (props: any) => {
+  const docsImportPath = "../apps/bestofweb/public";
+  const imgSrc = !props.src.startsWith(docsImportPath)
+    ? props.src
+    : props.src.slice(docsImportPath.length);
+  console.log(props.src, imgSrc, props.src.startsWith(docsImportPath));
+
+  return (
+    <Center>
+      <Image
+        mt={4}
+        mb={1}
+        // {...props}
+        alt={props.alt}
+        src={imgSrc}
+        w={
+          props.alt.endsWith("fullwidth")
+            ? "100%"
+            : props.alt.endsWith("small")
+            ? "220px"
+            : props.alt.endsWith("medium")
+            ? "480px"
+            : ["100%", "75%", "50", null, "50%"]
+        }
+      />
+    </Center>
+  );
+};
 
 const A = (props: any) => (
   <Link href={props.href} textColor={useColorModeValue("blue.600", "blue.300")}>
@@ -86,16 +95,8 @@ const components = {
   a: A,
 };
 
-const BlogLayout = ({
-  children,
-  tags,
-  date,
-  ...props
-}: {
-  tags?: string[];
-  date?: string;
-  children: any;
-}) => {
+const BlogLayout = ({ children, ...props }: { children: any }) => {
+  console.log("children", children.props.meta);
   return (
     <Flex
       id="Blog"
@@ -106,16 +107,17 @@ const BlogLayout = ({
       maxW={"2048px"}
       flexBasis="200px"
       flexGrow={1}
+      {...props}
     >
       <Flex direction={"row"} flexWrap="wrap">
-        {tags &&
+        {/* {tags &&
           tags.map((tag) => (
             <Tag colorScheme={"blue"} variant={"outline"} key={`${tag}`}>
               {tag}
             </Tag>
-          ))}
+          ))} */}
         <Spacer />
-        {date && date}
+        {!!children.props?.meta?.date && children.props?.meta?.date}
       </Flex>
       <MDXProvider components={components} disableParentContext={true}>
         {children}
@@ -125,11 +127,6 @@ const BlogLayout = ({
 };
 
 const BL = chakra(BlogLayout);
-export const getLayout = (date?: string, tags?: string[]) => (page: any) =>
-  getSiteLayout(
-    <BL date={date} tags={tags}>
-      {page}
-    </BL>
-  );
+export const getLayout = () => (page: any) => getSiteLayout(<BL>{page}</BL>);
 
 export default BlogLayout;
