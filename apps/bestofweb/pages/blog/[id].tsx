@@ -37,12 +37,12 @@ export async function getStaticProps({ params }: { params: any }) {
     },
   };
 }
-var meta: any;
+
 const Post = (props: any) => {
   const Component = lazy(() => import(`../../content/${props.id}.mdx`));
 
   return <Suspense fallback={<div>Loading...</div>}>{<Component />}</Suspense>;
 };
 
-Post.getLayout = getLayout(meta?.date ?? "", meta?.tags ?? "");
+Post.getLayout = getLayout();
 export default Post;

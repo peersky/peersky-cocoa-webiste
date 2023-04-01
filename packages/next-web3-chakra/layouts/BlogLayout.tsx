@@ -95,16 +95,8 @@ const components = {
   a: A,
 };
 
-const BlogLayout = ({
-  children,
-  tags,
-  date,
-  ...props
-}: {
-  tags?: string[];
-  date?: string;
-  children: any;
-}) => {
+const BlogLayout = ({ children, ...props }: { children: any }) => {
+  console.log("children", children.props.meta);
   return (
     <Flex
       id="Blog"
@@ -115,16 +107,17 @@ const BlogLayout = ({
       maxW={"2048px"}
       flexBasis="200px"
       flexGrow={1}
+      {...props}
     >
       <Flex direction={"row"} flexWrap="wrap">
-        {tags &&
+        {/* {tags &&
           tags.map((tag) => (
             <Tag colorScheme={"blue"} variant={"outline"} key={`${tag}`}>
               {tag}
             </Tag>
-          ))}
+          ))} */}
         <Spacer />
-        {date && date}
+        {!!children.props?.meta?.date && children.props?.meta?.date}
       </Flex>
       <MDXProvider components={components} disableParentContext={true}>
         {children}
@@ -134,11 +127,6 @@ const BlogLayout = ({
 };
 
 const BL = chakra(BlogLayout);
-export const getLayout = (date?: string, tags?: string[]) => (page: any) =>
-  getSiteLayout(
-    <BL date={date} tags={tags}>
-      {page}
-    </BL>
-  );
+export const getLayout = () => (page: any) => getSiteLayout(<BL>{page}</BL>);
 
 export default BlogLayout;
