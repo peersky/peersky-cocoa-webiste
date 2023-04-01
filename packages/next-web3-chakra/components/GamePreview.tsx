@@ -1,12 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import {
-  chakra, Button,
+  chakra,
+  Button,
   Tooltip,
   Badge,
-  Td, useDisclosure
+  Td,
+  useDisclosure,
 } from "@chakra-ui/react";
 import useBestOfWebContract from "../hooks/useBestOfWebContract";
 import Web3Context from "../providers/Web3Provider/context";
+import useAppRouter from "../hooks/useRouter";
 const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
   const web3ctx = useContext(Web3Context);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -21,6 +24,7 @@ const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
     notFound = "not found",
   }
 
+  const router = useAppRouter();
   const [isGameCreator, setIsGameCreator] = useState(false);
   const [isInGame, setIsInGame] = useState(false);
 
@@ -57,18 +61,23 @@ const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
       <Td>
         <Badge>{_gsd?.gameRank.toString()}</Badge>
       </Td>
-      <Td>
-        <Badge>{_gsd?.gameMaster}</Badge>
-      </Td>
-      <Td>
-        <Badge>{_gsd?.createdBy}</Badge>
-      </Td>
+      <Td>{_gsd?.gameMaster}</Td>
+      <Td>{_gsd?.createdBy}</Td>
       <Td>
         <Badge>{gameStatus}</Badge>
       </Td>
       <Td textAlign="right">
         {isGameCreator && gameStatus == "created" && (
-          <Button onClick={onOpen}>set requirements</Button>
+          <Button
+            onClick={() =>
+              router.appendQueries({
+                gameId: gameId,
+                action: "setreqs",
+              })
+            }
+          >
+            set requirements
+          </Button>
         )}
         {!isGameCreator && (
           <>

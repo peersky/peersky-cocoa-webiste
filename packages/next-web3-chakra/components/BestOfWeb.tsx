@@ -82,7 +82,7 @@ const BestOfWeb = () => {
   //   return <Spinner />;
   return (
     <>
-      {router.query.action !== "newgame" &&
+      {router.query.action !== "newGame" &&
         router.query.action !== "setreqs" && (
           <Flex
             w="100%"
