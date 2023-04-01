@@ -1,0 +1,91 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "24 Feb 2023",
+  title: "What even is money at all?",
+  descripton: "What the heck is Money?",
+  tags: ["philosophy", "intro"],
+  path: "why-blockchain",
+};
+import { Text, Box } from "@chakra-ui/react";
+
+# {meta.title}
+
+<Box mb={8} mt={0} pt={0} justifySelf={"right"} w="100%">
+  {meta.date}
+</Box>
+
+What the heck is Money? And what has cocoa to do with it? - If such a thoughts visited your head after reading title - then it’s a good time for this article.
+
+Financial systems are in a way kind a social game, where participants must agree on some authority or value of some asset. This results in the meaning of wealth and hence performing some work like mining gold becomes meaningful - it increases one’s wealth!
+
+I'm a person of definitions and the one given above is purely mine, however this requires further definition. What is wealth?
+
+According to a German philosopher Georg Simmel, who addressed same question in his book "[Philisophy of Money](http://www.eddiejackson.net/web_documents/Philosophy%20of%20Money.pdf)" in year 1900 -
+
+**_"Money payment as the form most congruent with personal freedom"_**
+
+Georg Simmel viewed the question from a social angle. Recently researches have gone much.. much more deeper than that. By viewing financial systems as essentially weave equations, similar to electronics excitations of discrete-time spectrum signal, researchers expand boundaries in to [quantum economic theory](https://mpra.ub.uni-muenchen.de/65442/1/MPRA_paper_65442.pdf)
+
+Drop fancy words for a moment, imagine and it immediately it makes sense. When combined by many participants, each representing some particle with own potential (charge) exciting part begins - it such systems known to behave as some kind of a system of liquids, or to tell more precisely - waves! Transactions can be seen as streams and many of those create currents that have volume and power. Coincidence that we call it "currency"?
+
+Giving thoughts beyond I do attempt to define possession of money in a most abstract possible manner:
+
+**_Possession of an asset is the ability to control flow of it._**
+
+### Why distributed ledger systems will stay
+
+When it comes to such topics it’s all matter of speculation with terminology and name. Should this paragraph I call blockchain, DLT, or perhaps web3? Or crypto?
+
+The big question many adopters have is “will it stay”. Or put it other way around - If I move my funds in ETH, or other blockchain project, will I lose or win?
+
+It’s hard and perhaps even impossible to predict the future, and I will leave this topic regarding specific projects to other people.
+
+When arguing if it what will be with these technologies after 20 or 2000 years, (with the assumption we are not annihilating ourselves tomorrow with some nuclear war) I say that the values will certainly stay. Fundamental knowledge developed right now in crypto field defiantly will be useful in future.
+
+Last decades clearly showed that these values of openness are important to have healthy and sustainable growth of market based economy and our civilisation as whole.
+
+Not just because it’s right. Because eventually this open, trusted distributed ledger approach in a long run seems to be more energy efficient just because of transparency and reduction of man in the middle needed to perform actions.
+
+### How can you contribute toward Open Economy?
+
+It’s basically something we haven’t witnessed before happening in financial sector - the whole industry is born. And it’s all thanks to people who build it, this is our social impact!
+
+There is huge demand for all kind of contributions!
+
+No matter what is your skills and profession - contributions of all types are needed actually. If you are feeling caught by idea just look where you can fit best!
+
+I can suggest you few places to look at:
+
+**Contribute to Ethereum Foundation**
+
+Ethereum is what actually drives forward progress today. Community is what Ethereum is actually. And contributions are welcome, [check the contribution guideline](https://ethereum.org/en/contributing/) they have for you! I believe everyone should try to participate in this community no matter what else they do besides.
+
+**\*Academic and research activity**
+
+There is plenty of research happening now in such fields as [Zero knowledge proofs](https://en.wikipedia.org/wiki/Zero-knowledge_proof), [homomorphic encryption](https://en.wikipedia.org/wiki/Homomorphic_encryption), [game theory](https://en.wikipedia.org/wiki/Game_theory) and [quantum finance](https://en.wikipedia.org/wiki/Quantum_finance).
+
+Even besides that there is development and ecosystem and infrastructure research activity - learn about various L1 projects, L2 rollups, Trusted Execution Environments and general networking.
+
+Become crypto user
+
+Learn the real way of how to use crypto without relying on centralized providers to store your assets.
+
+Already today it solves issues of cross-border payments, and storing your assets on layer1 self custody wallet will ensure **no-one can take your money from you**
+
+**Start your own project**
+
+Wether it is a goods or services company, or organisation where you need to have members and voting or governance systems - blockchain is great idea to use!
+
+For those who ready to dive in - I am always glad to help and tell more. For those who are just considering - Its good time to plan your project! At some point code-less solutions will become everyday life and you can bring your ideas live!
+
+There are many grants out there for many disciplines such as climate change, open-source contributions and infrastructure developments. [Gitcoin](https://gitcoin.co/grants/) is just one place to take a look.
+
+**Join another project**
+
+Find projects that get you excited about, learn how community works and how can you contribute. Here I leave a [link to a great compilation of existing crypto projects](https://github.com/LukasMasuch/best-of-crypto)!
+
+Also some job positions we have open [in OpenZeppelin](https://lnkd.in/g9a5X3cv) and [Forta](https://www.notion.so/Software-Dev-Guide-Zero-to-hero-e41e0fe6affa4a1e94f159b4667bfbf4).
+
+**Build your local community**
+
+Its all about people. Gather together. Help your relatives and community to become educated and protected with best practices of crypto space.
