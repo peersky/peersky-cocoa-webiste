@@ -85,10 +85,7 @@ I've developed this [proof of concept repository](https://github.com/peersky/NFT
 
 Proxy Stores record of ERC1155 token contract that is used for access permissions.
 
-Proxy itself has no methods, any call to it will result fallback() function call, in which it will
-
-Check that ERC1155 permissions are met by sender
-Make call to implementation (target) contract
+Proxy itself has no methods, any call to it will result fallback() function call, in which it will check that ERC1155 permissions are met by sender and after that make call to an implementation (target) contract
 Implementation can be accessed in four different ways. Proxy prioritizes access in following order:
 
 By Having a token
