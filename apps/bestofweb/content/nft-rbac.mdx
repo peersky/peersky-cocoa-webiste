@@ -1,0 +1,106 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "1 Apr 2023",
+  title: "Use NFTs for RBAC",
+  description:
+    "Role based Access for Ethereum utilizing existing ERC271 and ERC1155 standards",
+  tags: ["ideas", "ethereum", "eip"],
+  path: "nft-rbac",
+};
+
+# Role based Access for Ethereum
+
+Last year we've seen big boom in the NFT industry with artists making great success by bringing their art and collectibles in to the blockchain. NFT's were true discovery as a new mechanism of creating unique, non fungible values and transfer those. However this new technology is still only emerging and is only looking for it's way on to the big market.
+
+Building a role based access based on existing NFT standards is my take how to leverage the use-case for NFTs to open up their true potential.
+
+## Tokens as used to know them.
+
+Remember the Web2. What did token mean back in these old worm tube radio times?
+
+One of most used and well adapted token in web two is actually not an arts and not a collectible type. I's a [JWT Token](https://en.wikipedia.org/wiki/JSON_Web_Token) that is commonly used for authenticating and for purposes such as defining user permissions!
+
+Being a pure utility is what makes it so popular.
+
+## Porting way of thinking on to blockchain
+
+In JWT authentication we would normally send a password or somehow otherwise login, in that process user would receive a token in return that can be used to access API. Time to pull some parallels.
+
+Let's assume following statements:
+
+- EOA is our user.
+- Process of `Login` can be seen as receiving an NFT on to the account.
+- JWT authenticated API is an equivalent of calling smart contract methods
+
+### Mapping tokens in to method signatures
+
+We know that any method call in EVM maps down to `bytes4` signature which is equivalent of `uint32`.
+
+On the other hand, NFT token Ids can be pretty much anything in number space of uint256. Which means there is intersection between those two spaces that can be used to define access permissions.
+
+We also know that smart contract itself has an access to message signature which is being called by `msg.sig` which makes it technically possible for methods to calculate required token id from message signature.
+
+## Motivation & Benefits
+
+#### Community
+
+By adapting existing standards as RBAC, now each token ID becomes an unique `Role` what will be able to access method with eligible signature!
+
+More over, because of deterministic nature of these tokens, in contrast with JWT, the automated market places for permissions and access become possible, when one could sell a permission to access an interface with minting right tokens on chain.
+
+Even more, imagine use-cases where you can legitimately borrow an elevated access to a smart contract!
+
+![borrow-admin-medium](/borrow-admin-access.jpg "Nice smart contract! Can I borrow your admin access?")
+
+#### Developers
+
+**Reliability and adaption** of battle-tested ERC721 and ERC1155 standards will allow to ensure great stability and security as well as existing tools already present for these standards. Distinct difference of ERC721 and ERC1155 makes it easy for developer to ensure correct access logic of access is defined at the very token definition level.
+
+Further on, by wrapping those tokens in to a multi-token asset, the larger scale roles can be programmatically created and managed.
+
+**Encapsulation and reusability** - Developer can deploy NFT contracts with their own permissioning logic which stays isolated from how the permissioned contract works itself. The use of separate permissions contract allows to re-use same token to access variety of different smart contracts with different interfaces.
+
+**Proxy pattern support** - The existing smart contracts that implement any kind of RBAC or are OpenZeppelin Ownable contracts can be transferred to a proxy that can manage permissions without need of redeploying nor upgrading permissioned contract
+
+**\*Internal function access** - Developer can actually make his permissioned smart contract aware of RBAC token address and interface. By doing so, any internal function can be wrapped with modifier that requires a particular token Id to be implemented. Adding such code would allow developer to define roles that can access not only a particular interface, but also, depending on input arguments - different internal methods.
+
+**_Metaverse enabling_** - Since all existing NFT uses apply, it is possible to **bridge access permissions** to another chain, wrap token in to multi-token asset etc
+
+#### Artists
+
+Instead of releasing their art on a random/incremental token Id, artists now can collaborate with projects to release their art for a particular token ID that already has intrinsic value of the access it gives. Making it possible to create truly functional game assets and design objects!
+
+### Advanced use-cases
+
+Since the space of `uint256` larger then `uint32`, we can use this in to our advantage and use that extra data space for additional logic!
+
+As an example:
+
+Token offset can be enumerated to define access to same interface but with different requirement on how the token processing should look.
+Imagine that depending on offset (0...3) access token must be either owned during method call, or it can be required to be burnt/locked/paid
+
+## Proof of concept
+
+I've developed this [proof of concept repository](https://github.com/peersky/NFT_Access) which shows a concept of being able to use a proxy to access a smart contract using ERC1155
+
+Proxy Stores record of ERC1155 token contract that is used for access permissions.
+
+Proxy itself has no methods, any call to it will result fallback() function call, in which it will
+
+Check that ERC1155 permissions are met by sender
+Make call to implementation (target) contract
+Implementation can be accessed in four different ways. Proxy prioritizes access in following order:
+
+By Having a token
+By Locking a token for a time of target contract code execution
+By Burning a token
+By sending (paying) a token to target contract
+With tokens in 1-4 having different Ids. Hence if you have token that fulfills #1, it prioritize and will not check for 2-4 conditions. If you have token that fulfills #2 it will not check 3-4 conditions etc.
+
+## Further work
+
+This is an idea that can become an EIP if it is welcomed by community and meets the developers demands. Further work will be conducted on Ethereum Magicians forum, any feedback is also welcomed in the twitter thread
+
+There are still open questions that potentially could be important for this EIP. Particularly token expiry. While in general the idea for this is that tokens map one-to-one to signatures, there could be some potential room to play.
+
+If we would use `bytes4` signature, and dedicated one extra byte for token type enumeration that leaves a `uint216`. At the moment of writing this text the block number on high speed network, Polygon was `41011527`, proving that there that there is potentially vast amount of space left to also specify an expiry date for tokens, however enumerating such tokens could become a major issue..
