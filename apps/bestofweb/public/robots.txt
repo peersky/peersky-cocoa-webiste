@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://peersky.xyz
+
+# Sitemaps
+Sitemap: https://peersky.xyz/sitemap.xml
