@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
 import {
   Flex,
-  FormLabel, NumberInput,
+  FormLabel,
+  NumberInput,
   NumberInputField,
   Button,
   Spacer,
@@ -14,7 +15,9 @@ import {
   Tbody,
   Tfoot,
   Tr,
-  Th, TableContainer, Tooltip
+  Th,
+  TableContainer,
+  Tooltip,
 } from "@chakra-ui/react";
 import ControlPanel from "./ConrolPanel";
 import useBestOfWebContract from "../hooks/useBestOfWebContract";
@@ -28,6 +31,7 @@ import { BigNumberish } from "ethers";
 import useAppRouter from "../hooks/useRouter";
 import GamePreview from "./GamePreview";
 import NewRequirement from "./NewRequirement";
+import JoinRequirements from "./JoinRequirements";
 const STATES = {
   mint: 1,
   batchMint: 2,
@@ -77,13 +81,13 @@ const BestOfWeb = () => {
     web3ctx.getChainFromId(web3ctx.chainId)
   );
   if (!contractAddress)
-    return <Text>{"Please specify terminus address "}</Text>;
-  // if (terminus.contractState.isLoading || !terminus.contractState.data)
-  //   return <Spinner />;
+    return <Text>{"Please specify contract address "}</Text>;
   return (
     <>
       {router.query.action !== "newGame" &&
-        router.query.action !== "setreqs" && (
+        router.query.action !== "setreqs" &&
+        router.query.action !== "open" &&
+        router.query.action !== "join" && (
           <Flex
             w="100%"
             minH="100vh"
@@ -218,8 +222,12 @@ const BestOfWeb = () => {
               setLimit={setLimit}
               paginatorKey={`pools`}
               hasMore={
-                page * limit <
-                Number(bestContract.contractState.data?.BestOfState.numGames)
+                !!bestContract.contractState.data?.BestOfState
+                  ? page * limit <
+                    Number(
+                      bestContract.contractState.data?.BestOfState.numGames.toString()
+                    )
+                  : false
               }
               page={page}
               pageSize={limit}
@@ -336,6 +344,53 @@ const BestOfWeb = () => {
               });
             }}
           />
+        </Flex>
+      )}
+      {router.query.action === "open" && (
+        <Flex direction="column">
+          <Heading>Open game registration</Heading>
+          <Button
+            onClick={() => {
+              bestContract.openRegistration.mutate(router.query.gameId, {
+                onSuccess: () => {
+                  router.appendQueries(
+                    {
+                      action: "setReqs",
+                      gameId: newGameId?.toString(),
+                    },
+                    true,
+                    false
+                  );
+                },
+              });
+            }}
+          >
+            Submit
+          </Button>
+        </Flex>
+      )}
+      {router.query.action === "join" && (
+        <Flex direction="column" justifyItems={"center"}>
+          <Heading>Join game</Heading>
+          <JoinRequirements gameId={router.query.gameId} />
+          <Button
+            onClick={() => {
+              bestContract.approveAll.mutate(router.query.gameId, {});
+            }}
+          >
+            Approve all
+          </Button>
+          <Button
+            onClick={() => {
+              bestContract.joinGame.mutate(router.query.gameId, {
+                onSuccess: () => {
+                  router.drop("action");
+                },
+              });
+            }}
+          >
+            Join
+          </Button>
         </Flex>
       )}
     </>

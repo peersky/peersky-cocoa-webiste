@@ -5,17 +5,27 @@ import {
   getPlayersGame,
   getRankTokenURI,
   getArtifact,
+  getContract,
 } from "@daocoacoa/bestofgame-js";
 import * as BestMethods from "@daocoacoa/bestofgame-js";
 import useToast from "./useToast";
 import queryCacheProps from "./hookCommon";
 import { Web3ProviderInterface } from "../types";
-import { BigNumberish, BytesLike } from "ethers";
+import { BigNumberish, BytesLike, ethers } from "ethers";
 import { LibCoinVending } from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
+import ERC20Abi from "../../../abi/contracts/mocks/MockERC20.sol/MockERC20.json";
+import ERC1155Abi from "../../../abi/contracts/mocks/MockERC1155.sol/MockERC1155.json";
+import ERC721Abi from "../../../abi/contracts/mocks/MockERC721.sol/MockERC721.json";
+import { MockERC20, MockERC1155, MockERC721 } from "../../../types/typechain";
 export interface BestOfWebContractArguments {
   tokenId?: string;
   gameId?: string;
   web3ctx: Web3ProviderInterface;
+}
+enum ContractTypes {
+  ERC20,
+  ERC1155,
+  ERC721,
 }
 
 export const useBestOfWebContract = ({
@@ -27,7 +37,7 @@ export const useBestOfWebContract = ({
   const toast = useToast();
   const contractState = useQuery(
     ["BestOfWebContract", "state", { chainId: web3ctx.chainId }],
-    () => getContractState(chainName, web3ctx.provider),
+    () => getContractState(chainName, web3ctx.provider as any),
     {
       ...queryCacheProps,
       retry: (failureCount, error: any) => {
@@ -35,7 +45,7 @@ export const useBestOfWebContract = ({
         return true;
       },
       onSuccess: (e) => {},
-      enabled: !!web3ctx.account && !!web3ctx.chainId,
+      enabled: !!web3ctx.account && !!web3ctx.chainId && !!web3ctx.provider,
       onError: (e: any) => {
         if (!e.message.includes("underlying network changed"))
           toast(e.message, "error", ":(");
@@ -46,11 +56,14 @@ export const useBestOfWebContract = ({
 
   const rankTokenURI = useQuery(
     ["BestOfWebContract", "rankToken", "uri", { chainId: web3ctx.chainId }],
-    () => getRankTokenURI(chainName, web3ctx.provider),
+    () => getRankTokenURI(chainName, web3ctx.provider as any),
     {
       ...queryCacheProps,
       enabled:
-        !!web3ctx.account && !!web3ctx.chainId && contractState.isSuccess,
+        !!web3ctx.account &&
+        !!web3ctx.chainId &&
+        contractState.isSuccess &&
+        !!web3ctx.provider,
       onError: (e) => console.error(e),
     }
   );
@@ -62,12 +75,13 @@ export const useBestOfWebContract = ({
       "balance",
       { chainId: web3ctx.chainId, tokenId: tokenId },
     ],
-    () => getRankTokenURI(chainName, web3ctx.provider),
+    () => getRankTokenURI(chainName, web3ctx.provider as any),
     {
       ...queryCacheProps,
       enabled:
         !!web3ctx.account &&
         !!web3ctx.chainId &&
+        !!web3ctx.provider &&
         !!tokenId &&
         contractState.isSuccess,
       onError: (e) => console.error(e),
@@ -80,12 +94,13 @@ export const useBestOfWebContract = ({
       "gameState",
       { chainId: web3ctx.chainId, gameId: gameId },
     ],
-    () => getGameState(chainName, web3ctx.provider, gameId ?? "0"),
+    () => getGameState(chainName, web3ctx.provider as any, gameId ?? "0"),
     {
       ...queryCacheProps,
       enabled:
         !!web3ctx.account &&
         !!web3ctx.chainId &&
+        !!web3ctx.provider &&
         !!gameId &&
         contractState.isSuccess,
       onError: (e) => console.error(e),
@@ -98,13 +113,14 @@ export const useBestOfWebContract = ({
       "playersGame",
       { chainId: web3ctx.chainId, player: web3ctx.account },
     ],
-    () => getPlayersGame(chainName, web3ctx.provider, gameId ?? "0"),
+    () => getPlayersGame(chainName, web3ctx.provider as any, gameId ?? "0"),
     {
       ...queryCacheProps,
       enabled:
         !!web3ctx.account &&
         !!web3ctx.chainId &&
         !!gameId &&
+        !!web3ctx.provider &&
         contractState.isSuccess,
       onError: (e) => console.error(e),
     }
@@ -128,13 +144,13 @@ export const useBestOfWebContract = ({
 
   const startGame = useMutation(
     (gameId: string) =>
-      BestMethods.startGame(chainName, web3ctx.provider)(gameId),
+      BestMethods.startGame(chainName, web3ctx.provider as any)(gameId),
     { ...commonProps }
   );
 
   const cancelGame = useMutation(
     (gameId: string) =>
-      BestMethods.cancelGame(chainName, web3ctx.provider)(gameId),
+      BestMethods.cancelGame(chainName, web3ctx.provider as any)(gameId),
     { ...commonProps }
   );
 
@@ -148,7 +164,7 @@ export const useBestOfWebContract = ({
       signature: BytesLike;
       account: string;
     }) =>
-      BestMethods.checkSignature(chainName, web3ctx.provider)(
+      BestMethods.checkSignature(chainName, web3ctx.provider as any)(
         message,
         signature,
         account
@@ -168,7 +184,7 @@ export const useBestOfWebContract = ({
       voters: string[];
       votersRevealed: [string, string, string][];
     }) =>
-      BestMethods.endTurn(chainName, web3ctx.provider)(
+      BestMethods.endTurn(chainName, web3ctx.provider as any)(
         gameId,
         turnSalt,
         voters,
@@ -179,13 +195,13 @@ export const useBestOfWebContract = ({
 
   const leaveGame = useMutation(
     (gameId: string) =>
-      BestMethods.leaveGame(chainName, web3ctx.provider)(gameId),
+      BestMethods.leaveGame(chainName, web3ctx.provider as any)(gameId),
     { ...commonProps }
   );
 
   const openRegistration = useMutation(
     (gameId: string) =>
-      BestMethods.openRegistration(chainName, web3ctx.provider)(gameId),
+      BestMethods.openRegistration(chainName, web3ctx.provider as any)(gameId),
     { ...commonProps }
   );
 
@@ -201,7 +217,7 @@ export const useBestOfWebContract = ({
       proof: BytesLike;
       proposal: string;
     }) =>
-      BestMethods.submitProposal(chainName, web3ctx.provider)(
+      BestMethods.submitProposal(chainName, web3ctx.provider as any)(
         gameId,
         proposerHidden,
         proof,
@@ -222,7 +238,7 @@ export const useBestOfWebContract = ({
       proof: BytesLike;
       signature: BytesLike;
     }) =>
-      BestMethods.submitVote(chainName, web3ctx.provider)(
+      BestMethods.submitVote(chainName, web3ctx.provider as any)(
         gameId,
         votesHidden,
         proof,
@@ -241,7 +257,7 @@ export const useBestOfWebContract = ({
       gameRank: string;
       gameId?: BigNumberish;
     }) =>
-      BestMethods.createGame(chainName, web3ctx.provider)(
+      BestMethods.createGame(chainName, web3ctx.provider as any)(
         gameMaster,
         gameRank,
         gameId
@@ -257,10 +273,92 @@ export const useBestOfWebContract = ({
       gameId: string;
       config: LibCoinVending.ConfigPositionStruct;
     }) =>
-      BestMethods.setJoinRequirements(chainName, web3ctx.provider)(
+      BestMethods.setJoinRequirements(chainName, web3ctx.provider as any)(
         gameId,
         config
       ),
+    { ...commonProps }
+  );
+
+  const approveAllRequirements = async (gameId: string) => {
+    const contract = getContract(chainName, web3ctx.provider as any);
+    const reqs = await contract.getJoinRequirements(gameId);
+    const values = reqs.ethValues;
+
+    const value = values.bet.add(values.burn).add(values.pay);
+    console.log("value.toString()", value.toString());
+
+    reqs.conctractAddresses.forEach(async (address, idx) => {
+      const type = reqs.contractTypes[idx];
+      const id = reqs.contractIds[idx];
+      const values = await contract.getJoinRequirementsByToken(
+        gameId,
+        address,
+        id,
+        type
+      );
+      const totalAllowanceRequired = values.bet.amount
+        .add(values.pay.amount)
+        .add(values.lock.amount)
+        .add(values.burn.amount);
+      const toalBalanceNeeded = totalAllowanceRequired.add(values.have.amount);
+      if (type == ContractTypes.ERC20) {
+        const erc20Contract = new ethers.Contract(
+          address,
+          ERC20Abi,
+          web3ctx.provider
+        ) as MockERC20;
+        const allowance = await erc20Contract["allowance"](
+          web3ctx.account,
+          contract.address
+        );
+        if (allowance.lt(totalAllowanceRequired)) {
+          await erc20Contract.increaseAllowance(
+            contract.address,
+            totalAllowanceRequired.sub(allowance)
+          );
+        }
+      } else if (type == ContractTypes.ERC1155) {
+        const ac = ethers.utils.getAddress(address);
+        console.log("is ERC1155", address, contract.address, ac);
+        const erc1155Contract = new ethers.Contract(
+          address,
+          ERC1155Abi,
+          web3ctx.provider?.getSigner()
+        ) as MockERC1155;
+
+        const isApproved = await erc1155Contract.isApprovedForAll(
+          web3ctx.account,
+          contract.address
+        );
+        console.log("is Approved check", isApproved);
+        if (!isApproved) {
+          await erc1155Contract.setApprovalForAll(contract.address, true);
+        }
+      } else {
+        const erc721Contract = new ethers.Contract(
+          address,
+          ERC721Abi,
+          web3ctx.provider
+        ) as MockERC721;
+        const isApproved = await erc721Contract.isApprovedForAll(
+          web3ctx.account,
+          contract.address
+        );
+        if (!isApproved) {
+          await erc721Contract.setApprovalForAll(contract.address, true);
+        }
+      }
+    });
+  };
+
+  const approveAll = useMutation(
+    (gameId: string) => approveAllRequirements(gameId),
+    { ...commonProps }
+  );
+  const joinGame = useMutation(
+    (gameId: string) =>
+      BestMethods.joinGame(chainName, web3ctx.provider as any)(gameId),
     { ...commonProps }
   );
 
@@ -285,6 +383,8 @@ export const useBestOfWebContract = ({
     setJoinRequirements,
     getContract: BestMethods.getContract,
     getArtifact,
+    joinGame,
+    approveAll,
   };
 };
 
