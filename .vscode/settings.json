@@ -13,5 +13,6 @@
     "packages/next-web3-chakra",
     "apps/bestofweb",
     "/"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
