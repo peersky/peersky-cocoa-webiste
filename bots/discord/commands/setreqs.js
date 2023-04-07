@@ -36,9 +36,9 @@ module.exports = {
     embed.setURL(`${bestOfWebURL}?${searchParams.toString()}`);
     embed
       .setDescription(
-        "Clicking this will forward you to dApp where you can create game"
+        "Clicking this will forward you to dApp where you can create a join requirements for your game"
       )
-      .setTitle("Press to create new game");
+      .setTitle("Press to set up join requirements");
 
     interaction.reply({ embeds: [embed] });
   },

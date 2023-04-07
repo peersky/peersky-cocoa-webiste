@@ -26,9 +26,9 @@ module.exports = {
     embed.setURL(`${bestOfWebURL}?${searchParams.toString()}`);
     embed
       .setDescription(
-        "Clicking this will forward you to dApp where you can create game"
+        "By opening registration you allow anyone who can fulfill requirements to join your game until it's full"
       )
-      .setTitle("Press to create new game");
+      .setTitle("Press to open registration game");
 
     interaction.reply({ embeds: [embed] });
   },
