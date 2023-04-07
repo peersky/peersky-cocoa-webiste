@@ -38,67 +38,64 @@ const getRankArtifact = (chain: SupportedChains) => {
 
 export const getContract = (
   chain: SupportedChains,
-  signerOrProvider: ethers.Signer | ethers.providers.Provider
+  provider: ethers.providers.Web3Provider | ethers.Signer
 ) => {
   const artifact = getArtifact(chain);
   return new ethers.Contract(
     artifact.contractAddress,
     artifact.abi,
-    signerOrProvider
+    provider
   ) as BestOfDiamond;
 };
 export const getContractState = async (
   chain: SupportedChains,
-  signerOrProvider: ethers.Signer | ethers.providers.Provider
+  provider: ethers.providers.Web3Provider
 ) => {
-  const contract = getContract(chain, signerOrProvider);
+  const contract = getContract(chain, provider);
   return await contract.getContractState();
 };
 
 export const getPlayersGame = async (
   chain: SupportedChains,
-  signerOrProvider: ethers.Signer | ethers.providers.Provider,
+  provider: ethers.providers.Web3Provider,
   account: string
 ) => {
-  const contract = getContract(chain, signerOrProvider);
+  const contract = getContract(chain, provider);
   return await contract.getPlayersGame(account);
 };
 
 export const getRankTokenURI = async (
   chain: SupportedChains,
-  signerOrProvider: ethers.Signer | ethers.providers.Provider
+  provider: ethers.providers.Web3Provider
 ) => {
   const artifact = getRankArtifact(chain);
   const contract = new ethers.Contract(
     artifact.contractAddress,
     artifact.abi,
-    signerOrProvider
+    provider
   ) as RankToken;
   const retval = await contract.uri("0");
   return retval;
 };
 
 export const getRankTokenBalance =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (tokenId: string, account: string) => {
     const artifact = getRankArtifact(chain);
     const contract = new ethers.Contract(
       artifact.contractAddress,
       artifact.abi,
-      signerOrProvider
+      provider
     ) as RankToken;
     return await contract.balanceOf(account, tokenId);
   };
 
 export const getGameState = async (
   chain: SupportedChains,
-  signerOrProvider: ethers.Signer | ethers.providers.Provider,
+  provider: ethers.providers.Web3Provider,
   gameId: string
 ) => {
-  const contract = getContract(chain, signerOrProvider);
+  const contract = getContract(chain, provider);
   const gameMaster = await contract.getGM(gameId);
   const joinRequirements = await contract.getJoinRequirements(gameId);
   const requirementsPerContract = await Promise.all(
@@ -166,98 +163,76 @@ export const createGame =
   };
 
 export const joinGame =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (gameId: string) => {
-    const contract = getContract(chain, signerOrProvider);
-    const reqs = await contract.getJoinRequirements(gameId);
+    const contract = getContract(chain, provider.getSigner());
+    console.log("requesting reqs", gameId);
 
-    const values = await reqs.ethValues;
+    const reqs = await contract.getJoinRequirements(gameId);
+    const values = reqs.ethValues;
 
     const value = values.bet.add(values.burn).add(values.pay);
+    console.log("value.toString()", value.toString());
 
-    return await contract.joinGame(gameId, { value: value });
+    return await contract.joinGame(gameId, { value: value.toString() ?? "0" });
   };
 
 export const startGame =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (gameId: string) => {
-    const contract = getContract(chain, signerOrProvider);
+    const contract = getContract(chain, provider);
     return await contract.startGame(gameId);
   };
 
 export const cancelGame =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (gameId: string) => {
-    const contract = getContract(chain, signerOrProvider);
+    const contract = getContract(chain, provider);
     return await contract.cancelGame(gameId);
   };
 
 export const checkSignature =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (message: BytesLike, signature: BytesLike, account: string) => {
-    const contract = getContract(chain, signerOrProvider);
+    const contract = getContract(chain, provider);
     return await contract.checkSignature(message, signature, account);
   };
 
 export const endTurn =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (
     gameId: string,
     turnSalt: BytesLike,
     voters: string[],
     votersRevealed: [string, string, string][]
   ) => {
-    const contract = getContract(chain, signerOrProvider);
+    const contract = getContract(chain, provider);
     return await contract.endTurn(gameId, turnSalt, voters, votersRevealed);
   };
 
 export const leaveGame =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (gameId: string) => {
-    const contract = getContract(chain, signerOrProvider);
+    const contract = getContract(chain, provider);
     return await contract.leaveGame(gameId);
   };
 
 export const openRegistration =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (gameId: string) => {
-    const contract = getContract(chain, signerOrProvider);
+    const contract = getContract(chain, provider.getSigner());
     return await contract.openRegistration(gameId);
   };
 
 export const submitProposal =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (
     gameId: string,
     proposerHidden: BytesLike,
     proof: BytesLike,
     proposal: string
   ) => {
-    const contract = getContract(chain, signerOrProvider);
+    const contract = getContract(chain, provider);
     return await contract.submitProposal(
       gameId,
       proposerHidden,
@@ -267,25 +242,22 @@ export const submitProposal =
   };
 
 export const submitVote =
-  (
-    chain: SupportedChains,
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (
     gameId: string,
     votesHidden: [BytesLike, BytesLike, BytesLike],
     proof: BytesLike,
     signature: BytesLike
   ) => {
-    const contract = getContract(chain, signerOrProvider);
+    const contract = getContract(chain, provider);
 
     return await contract.submitVote(gameId, votesHidden, proof, signature);
   };
 
 export const setJoinRequirements =
-  (chain: SupportedChains, signerOrProvider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (gameId: string, config: LibCoinVending.ConfigPositionStruct) => {
     console.log("config", config, gameId);
-    const contract = getContract(chain, signerOrProvider.getSigner());
+    const contract = getContract(chain, provider.getSigner());
     return await contract.setJoinRequirements(gameId, config);
   };
