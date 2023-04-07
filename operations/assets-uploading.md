@@ -50,3 +50,17 @@ path:  assets/10v3
   size: 489
 }
 ```
+
+yarn hardhat uploadDir2IPFS --path assets/sun
+yarn run v1.22.19
+path: assets/sun
+{
+path: 'sun/1',
+cid: CID(QmdZvc662NhzXrkWWc752P7R5CFV8b76Q242B4mfTdJTNS),
+size: 185
+}
+{
+path: 'sun',
+cid: CID(QmZZaGX1jaMtMpbuU5q7PBqpjqEy8SPLjSbV2HhtFjKtvg),
+size: 233
+}
