@@ -967,7 +967,7 @@
           },
           {
             "internalType": "address[]",
-            "name": "conctractAddresses",
+            "name": "contractAddresses",
             "type": "address[]"
           },
           {

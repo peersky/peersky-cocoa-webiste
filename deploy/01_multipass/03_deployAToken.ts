@@ -7,8 +7,8 @@ import { ethers } from "hardhat";
 //   MULTIPASS_CONTRACT_NAME,
 // } from "../../test/utils";
 const deploymentName = process.env.ATOKEN_NAME;
-if (!deploymentName) throw new Error("ATOKEN_NAME not exported");
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
+  if (!deploymentName) throw new Error("ATOKEN_NAME not exported");
   const { deployments, getNamedAccounts } = hre;
   const { deploy, diamond } = deployments;
 
