@@ -27,6 +27,7 @@ import Web3Context from "../providers/Web3Provider/context";
 import ChainSelector from "./ChainSelector";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { SiteMapItem, SiteMapItemType } from "../types";
+import Web3Button from "./Web3Button";
 
 const _Navbar = ({
   initialLogo,
@@ -170,57 +171,7 @@ const _Navbar = ({
         </ButtonGroup>
         {!isMobileView && (
           <>
-            {web3Provider.buttonText !==
-              web3Provider.WALLET_STATES.CONNECTED && (
-              <Button
-                isDisabled={
-                  web3Provider.WALLET_STATES.UNKNOWN_CHAIN ===
-                  web3Provider.buttonText
-                }
-                variant="link"
-                colorScheme={
-                  web3Provider.buttonText ===
-                  web3Provider.WALLET_STATES.CONNECTED
-                    ? "green"
-                    : web3Provider.WALLET_STATES.UNKNOWN_CHAIN ===
-                      web3Provider.buttonText
-                    ? "red"
-                    : metamaskSchema
-                }
-                onClick={() => web3Provider.onConnectWalletClick()}
-              >
-                {web3Provider.buttonText}
-                {"  "}
-                <Image
-                  pl={2}
-                  h="24px"
-                  src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg"
-                />
-              </Button>
-            )}
-
-            {web3Provider.buttonText ===
-              web3Provider.WALLET_STATES.CONNECTED && (
-              <Flex
-                bgColor={useColorModeValue("blue.500", "blue.800")}
-                px={2}
-                fontWeight="semibold"
-                borderRadius="md"
-              >
-                <Skeleton
-                  isLoaded={!!web3Provider.account}
-                  h="100%"
-                  colorScheme={"red"}
-                  w="100%"
-                  borderRadius={"inherit"}
-                  startColor="red.500"
-                  endColor="blue.500"
-                  p={1}
-                >
-                  {web3Provider.account}
-                </Skeleton>
-              </Flex>
-            )}
+            <Web3Button colorScheme={metamaskSchema} />
             <ChainSelector selectorScheme={selectorSchema} />
             <IconButton
               alignSelf="flex-start"
