@@ -127,7 +127,7 @@ const _JoinRequirements = ({ gameId, ...props }: { gameId: string }) => {
     : _gsd?.gameMaster
     ? gameStatusEnum["created"]
     : gameStatusEnum["notFound"];
-  _gsd?.joinRequirements.conctractAddresses;
+  _gsd?.joinRequirements.contractAddresses;
   return (
     <Skeleton isLoaded={!game.gameState.isLoading}>
       {_gsd?.joinRequirements && (
@@ -139,8 +139,8 @@ const _JoinRequirements = ({ gameId, ...props }: { gameId: string }) => {
             <Th>Amount</Th>
           </Thead>
           <Tbody>
-            {_gsd.joinRequirements?.conctractAddresses &&
-              _gsd.joinRequirements.conctractAddresses.map(
+            {_gsd.joinRequirements?.contractAddresses &&
+              _gsd.joinRequirements.contractAddresses.map(
                 (address: string, idx) => {
                   return (
                     <Tr>

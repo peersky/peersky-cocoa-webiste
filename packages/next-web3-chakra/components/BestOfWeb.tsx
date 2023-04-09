@@ -30,8 +30,6 @@ import { BestOfDiamond } from "../../../types/typechain";
 import { BigNumberish } from "ethers";
 import useAppRouter from "../hooks/useRouter";
 import GamePreview from "./GamePreview";
-import NewRequirement from "./NewRequirement";
-import JoinRequirements from "./JoinRequirements";
 const STATES = {
   mint: 1,
   batchMint: 2,
@@ -73,10 +71,7 @@ const BestOfWeb = () => {
   //     },
   //   });
   // };
-  const [gameRankToCreate, setGemRankToCreate] = React.useState("1");
-  const [newGameId, setNewGameId] = React.useState<BigNumberish | undefined>(
-    "0"
-  );
+
   const { abi, contractAddress } = bestContract.getArtifact(
     web3ctx.getChainFromId(web3ctx.chainId)
   );
@@ -280,119 +275,7 @@ const BestOfWeb = () => {
             </Paginator>
           </Flex>
         )}
-      {router.query.action === "newGame" && (
-        <Flex direction={"column"} alignItems="center">
-          <FormLabel mt={"25vh"}>Game rank to create</FormLabel>
-          <NumberInput
-            aria-label="game rank to create"
-            size="sm"
-            variant="flushed"
-            colorScheme="blue"
-            placeholder="Enter pool id"
-            value={gameRankToCreate}
-            onChange={(value: string) => setGemRankToCreate(value)}
-          >
-            <NumberInputField px={2} />
-          </NumberInput>
-          <Tooltip
-            isDisabled={!!web3ctx.account}
-            label="connect to wallet first"
-          >
-            <Button
-              mt={4}
-              isDisabled={!web3ctx.account}
-              isLoading={bestContract.createGame.isLoading}
-              onClick={() => {
-                setNewGameId(
-                  bestContract.contractState.data?.BestOfState.numGames.add("1")
-                );
-                bestContract.createGame.mutate(
-                  {
-                    gameMaster: router.query.GM,
-                    gameRank: gameRankToCreate,
-                    gameId: newGameId,
-                  },
-                  {
-                    onSuccess: () => {
-                      router.appendQueries(
-                        {
-                          action: "setReqs",
-                          gameId: newGameId?.toString(),
-                        },
-                        true,
-                        false
-                      );
-                    },
-                  }
-                );
-              }}
-            >
-              CREATE
-            </Button>
-          </Tooltip>
-        </Flex>
-      )}
-      {router.query.action === "setreqs" && (
-        <Flex direction="column">
-          <Heading>Set joining requirements for your game</Heading>
-          <NewRequirement
-            onSubmit={(e) => {
-              console.log("submitted!", e);
-              bestContract.setJoinRequirements.mutate({
-                gameId: router.query.gameId,
-                config: e.request,
-              });
-            }}
-          />
-        </Flex>
-      )}
-      {router.query.action === "open" && (
-        <Flex direction="column">
-          <Heading>Open game registration</Heading>
-          <Button
-            onClick={() => {
-              bestContract.openRegistration.mutate(router.query.gameId, {
-                onSuccess: () => {
-                  router.appendQueries(
-                    {
-                      action: "setReqs",
-                      gameId: newGameId?.toString(),
-                    },
-                    true,
-                    false
-                  );
-                },
-              });
-            }}
-          >
-            Submit
-          </Button>
-        </Flex>
-      )}
-      {router.query.action === "join" && (
-        <Flex direction="column" justifyItems={"center"}>
-          <Heading>Join game</Heading>
-          <JoinRequirements gameId={router.query.gameId} />
-          <Button
-            onClick={() => {
-              bestContract.approveAll.mutate(router.query.gameId, {});
-            }}
-          >
-            Approve all
-          </Button>
-          <Button
-            onClick={() => {
-              bestContract.joinGame.mutate(router.query.gameId, {
-                onSuccess: () => {
-                  router.drop("action");
-                },
-              });
-            }}
-          >
-            Join
-          </Button>
-        </Flex>
-      )}
+
     </>
   );
 };

@@ -17,6 +17,7 @@ import ERC20Abi from "../../../abi/contracts/mocks/MockERC20.sol/MockERC20.json"
 import ERC1155Abi from "../../../abi/contracts/mocks/MockERC1155.sol/MockERC1155.json";
 import ERC721Abi from "../../../abi/contracts/mocks/MockERC721.sol/MockERC721.json";
 import { MockERC20, MockERC1155, MockERC721 } from "../../../types/typechain";
+import { useEffect, useState } from "react";
 export interface BestOfWebContractArguments {
   tokenId?: string;
   gameId?: string;
@@ -26,6 +27,15 @@ enum ContractTypes {
   ERC20,
   ERC1155,
   ERC721,
+}
+export enum gameStatusEnum {
+  created = "created",
+  open = "open",
+  started = "started",
+  lastTurn = "last turn",
+  overtime = "overtime",
+  finished = "finished",
+  notFound = "not found",
 }
 
 export const useBestOfWebContract = ({
@@ -288,7 +298,7 @@ export const useBestOfWebContract = ({
     const value = values.bet.add(values.burn).add(values.pay);
     console.log("value.toString()", value.toString());
 
-    reqs.conctractAddresses.forEach(async (address, idx) => {
+    reqs.contractAddresses.forEach(async (address, idx) => {
       const type = reqs.contractTypes[idx];
       const id = reqs.contractIds[idx];
       const values = await contract.getJoinRequirementsByToken(
@@ -362,6 +372,35 @@ export const useBestOfWebContract = ({
     { ...commonProps }
   );
 
+  const [isGameCreator, setIsGameCreator] = useState(false);
+  const [isInGame, setIsInGame] = useState(false);
+
+  const _gsd = gameState.data;
+  useEffect(() => {
+    if (gameId) {
+      if (_gsd?.createdBy === web3ctx.account) {
+        setIsGameCreator(true);
+      } else {
+        setIsGameCreator(false);
+      }
+      if (playersGame.data?.eq(gameId)) {
+        setIsInGame(true);
+      } else {
+        setIsInGame(false);
+      }
+    }
+  }, [web3ctx.account, _gsd?.createdBy, gameId]);
+  const gameStatus = _gsd?.isFinished
+    ? gameStatusEnum["finished"]
+    : _gsd?.isOvetime
+    ? gameStatusEnum["overtime"]
+    : _gsd?.isLastTurn
+    ? gameStatusEnum["lastTurn"]
+    : _gsd?.isOpen
+    ? gameStatusEnum["open"]
+    : _gsd?.gameMaster
+    ? gameStatusEnum["created"]
+    : gameStatusEnum["notFound"];
   // const poolURI = useURI({ link: poolState.data?.uri });
   // const contractJSON = useURI({ link: contractState.data?.contractURI });
 
@@ -385,6 +424,9 @@ export const useBestOfWebContract = ({
     getArtifact,
     joinGame,
     approveAll,
+    gameStatus,
+    isGameCreator,
+    isInGame,
   };
 };
 
