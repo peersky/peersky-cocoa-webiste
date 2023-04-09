@@ -99,7 +99,7 @@ export const getGameState = async (
   const gameMaster = await contract.getGM(gameId);
   const joinRequirements = await contract.getJoinRequirements(gameId);
   const requirementsPerContract = await Promise.all(
-    joinRequirements.conctractAddresses.map(async (address, idx) => {
+    joinRequirements.contractAddresses.map(async (address, idx) => {
       return contract.getJoinRequirementsByToken(
         gameId,
         address,
@@ -259,5 +259,47 @@ export const setJoinRequirements =
   async (gameId: string, config: LibCoinVending.ConfigPositionStruct) => {
     console.log("config", config, gameId);
     const contract = getContract(chain, provider.getSigner());
+    return await contract.setJoinRequirements(gameId, config);
+  };
+
+interface ApiErrorOptions extends ErrorOptions {
+  status?: number;
+}
+
+class ApiError extends Error {
+  status: number | undefined;
+  constructor(message: string, options?: ApiErrorOptions) {
+    super(message, { cause: options?.cause });
+    this.status = options?.status;
+  }
+}
+
+export async function getApiError(response: Response) {
+  const body = await response.json();
+  return new ApiError(body.msg || "server_error", {
+    status: body?.status,
+  });
+}
+
+export const getTurnRevealed =
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  async (gameId: BigNumberish, turnId: BigNumberish) => {
+    const contract = getContract(chain, provider.getSigner());
+    //list all events of gameId that ended turnId.
+    const events = contract.filters.TurnEnded(gameId, turnId);
+    const Proposalevents = contract.filters.ProposalSubmitted(gameId);
+    //There shall be only one such event
+    if (!events?.topics?.length || events?.topics?.length == 0) {
+      const err = new ApiError("Game not found", { status: 404 });
+      return err;
+    } else {
+      const endTurnEvent = events?.topics[0];
+      const players = endTurnEvent[2];
+      const scores = endTurnEvent[3];
+      const turnSalt = endTurnEvent[4];
+
+      const;
+    }
+
     return await contract.setJoinRequirements(gameId, config);
   };

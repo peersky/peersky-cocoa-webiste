@@ -103,7 +103,7 @@ library LibCoinVending {
         uint256 timesRefunded;
         uint256 timesReleased;
         uint256 timesFunded;
-        address[] conctractAddresses;
+        address[] contractAddresses;
         uint256[] contractIds;
         ContractTypes[] contractTypes;
         bool _isConfigured;
@@ -398,7 +398,7 @@ library LibCoinVending {
         ret.timesRefunded = pos.timesRefunded;
         ret.timesReleased = pos.timesReleased;
         ret._isConfigured = pos._isConfigured;
-        ret.conctractAddresses = pos.contractAddresses;
+        ret.contractAddresses = pos.contractAddresses;
         ret.contractIds = pos.contractIds;
         ret.contractTypes = pos.contractTypes;
         return ret;
