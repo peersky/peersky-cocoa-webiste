@@ -281,7 +281,7 @@ export async function getApiError(response: Response) {
   });
 }
 
-export const getTurnRevealed =
+export const getHistoricTurn =
   (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (gameId: BigNumberish, turnId: BigNumberish) => {
     const contract = getContract(chain, provider.getSigner());
@@ -297,9 +297,59 @@ export const getTurnRevealed =
       const players = endTurnEvent[2];
       const scores = endTurnEvent[3];
       const turnSalt = endTurnEvent[4];
+      const voters = endTurnEvent[5];
+      const votersRevealed = endTurnEvent[6];
 
-      const;
+      return { players, scores, turnSalt, voters, votersRevealed };
     }
+  };
 
-    return await contract.setJoinRequirements(gameId, config);
+export const getPreviousTurnStats =
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  async (gameId: BigNumberish) => {
+    const contract = getContract(chain, provider.getSigner());
+    const currentTurn = await contract.getTurn(gameId);
+    if (currentTurn.gt(0)) {
+      return getHistoricTurn(chain, provider)(gameId, currentTurn.sub(1));
+    } else {
+      const err = new ApiError("Game not found", { status: 404 });
+      return err;
+    }
+  };
+
+export const getVoting =
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  async (gameId: BigNumberish, turnId: BigNumberish) => {
+    const contract = getContract(chain, provider.getSigner());
+    const proposalEvents = contract.filters.ProposalSubmitted(
+      gameId,
+      turnId,
+      null,
+      null,
+      null
+    );
+    const voteEvents = contract.filters.VoteSubmitted(
+      gameId,
+      turnId,
+      null,
+      null,
+      null
+    );
+    let proposals = [];
+    let playersVoted = [];
+    for (const proposalEvent in proposalEvents) {
+      proposals.push(proposalEvent[4]);
+    }
+    for (const voteEvent in voteEvents) {
+      playersVoted.push(voteEvent[2]);
+    }
+    return { proposals, playersVoted };
+  };
+
+export const getOngoingVoting =
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  async (gameId: BigNumberish) => {
+    const contract = getContract(chain, provider.getSigner());
+    const currentTurn = await contract.getTurn(gameId);
+    return getVoting(chain, provider)(gameId, currentTurn);
   };
