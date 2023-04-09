@@ -21,6 +21,14 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
     using LibTBG for LibTBG.GameSettings;
     using LibBestOf for uint256;
 
+    event VoteSubmitted(
+        uint256 indexed gameId,
+        uint256 indexed turn,
+        address indexed player,
+        bytes32[3] votesHidden,
+        bytes proof
+    );
+
     function checkSignature(bytes memory message, bytes memory signature, address account) private view returns (bool) {
         bytes32 typedHash = _hashTypedDataV4(keccak256(message));
         return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
@@ -169,6 +177,7 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         game.votesHidden[gameId.getTurn()][msg.sender].votedFor = votesHidden;
         game.votesHidden[gameId.getTurn()][msg.sender].proof = proof;
         gameId.playerMove(msg.sender);
+        emit VoteSubmitted(gameId, gameId.getTurn(), msg.sender, votesHidden, proof);
     }
 
     function onERC1155Received(

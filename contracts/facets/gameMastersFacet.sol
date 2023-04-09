@@ -25,22 +25,21 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
         uint256 indexed turn,
         address[] players,
         uint256[] scores,
-        bytes32 indexed turnSalt
+        bytes32 indexed turnSalt,
+        address[] voters,
+        string[3][] votesRevealed
     );
 
     event ProposalSubmitted(
         uint256 indexed gameId,
+        uint256 indexed turn,
         bytes32 hashedProposer,
-        bytes indexed proof,
+        bytes proof,
         string indexed proposal
     );
     event GameOver(uint256 indexed gameId, address[] indexed players, uint256[] indexed scores);
 
-    function checkSignature(
-        bytes memory message,
-        bytes memory signature,
-        address account
-    ) public view returns (bool) {
+    function checkSignature(bytes memory message, bytes memory signature, address account) public view returns (bool) {
         bytes32 typedHash = _hashTypedDataV4(keccak256(message));
         return SignatureChecker.isValidSignatureNow(account, typedHash, signature);
     }
@@ -49,12 +48,7 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
         return keccak256(abi.encodePacked(player, turnSalt));
     }
 
-    function validateVote(
-        uint256 gameId,
-        address voter,
-        string[3] memory vote,
-        bytes32 turnSalt
-    ) public view {
+    function validateVote(uint256 gameId, address voter, string[3] memory vote, bytes32 turnSalt) public view {
         IBestOf.BOGInstance storage game = gameId.getGameStorage();
         bytes32 salt = playerSalt(voter, turnSalt);
         require(gameId.isPlayerInGame(voter), "Player not in that game");
@@ -94,12 +88,7 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
         }
     }
 
-    function submitProposal(
-        uint256 gameId,
-        bytes32 proposerHidden,
-        bytes memory proof,
-        string memory proposal
-    ) public {
+    function submitProposal(uint256 gameId, bytes32 proposerHidden, bytes memory proof, string memory proposal) public {
         LibBestOf.enforceIsGM(gameId);
         IBestOf.BOGInstance storage game = gameId.getGameStorage();
         gameId.enforceHasStarted();
@@ -116,7 +105,7 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
         newProposal.proof = proof;
         game.proposals[gameId.getTurn()][proposerHidden] = newProposal;
         game.numProposals += 1;
-        emit ProposalSubmitted(gameId, proposerHidden, proof, proposal);
+        emit ProposalSubmitted(gameId, gameId.getTurn(), proposerHidden, proof, proposal);
     }
 
     function _isValidSignature(
@@ -206,7 +195,7 @@ contract GameMastersFacet is DiamondReentrancyGuard, EIP712 {
         (bool _isLastTurn, bool _isOvertime, bool _isGameOver, address[] memory leaderboard) = gameId.nextTurn();
         game.numProposals = 0;
         game.prevTurnSalt = turnSalt;
-        emit TurnEnded(gameId, turn, players, scores, turnSalt);
+        emit TurnEnded(gameId, turn, players, scores, turnSalt, voters, votesRevealed);
         if (_isLastTurn && _isOvertime) {
             emit OverTime(gameId);
         }
