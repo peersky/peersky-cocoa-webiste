@@ -32,6 +32,4 @@ const _SetReqs = ({
   );
 };
 
-const SetReqs = chakra(_SetReqs);
-
-export default SetReqs;
+export const SetReqs = chakra(_SetReqs);

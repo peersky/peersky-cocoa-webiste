@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import Web3Context from "../providers/Web3Provider/context";
 import Web3Button from "./Web3Button";
-import { Center, Heading, Fade } from "@chakra-ui/react";
+import { Center, Heading, Fade, Spinner } from "@chakra-ui/react";
 
 const RequireWeb3 = ({ children }: { children: any }) => {
   const web3ctx = useContext(Web3Context);
@@ -13,6 +13,7 @@ const RequireWeb3 = ({ children }: { children: any }) => {
         <Web3Button pt={3} />
       </Center>
     );
+  if (!web3ctx.provider || !web3ctx.signer) return <Spinner />;
   else return children;
 };
 

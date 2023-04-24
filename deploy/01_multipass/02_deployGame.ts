@@ -32,7 +32,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const rankToken = new ethers.Contract(
     rankTokenDeployment.address,
     rankTokenDeployment.abi,
-    hre.ethers.provider
+    hre.ethers.provider.getSigner(deployer)
   ) as RankToken;
   if (!rankToken) throw new Error("rank token not deployed");
 
@@ -80,10 +80,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     },
   });
   const rOwner = await rankToken.owner();
+  console.log(rankToken.address);
   if (rOwner !== deployment.address) {
     await rankToken.transferOwnership(deployment.address);
   }
 };
 
-export default func;
 func.tags = ["gameofbest", "gamediamond"];
+func.dependencies = ["ranktoken"];
+export default func;

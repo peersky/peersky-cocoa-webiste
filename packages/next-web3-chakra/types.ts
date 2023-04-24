@@ -50,6 +50,7 @@ declare function ChangeChain(chainName: SupportedChains): void;
 declare function getChainFromId(chainId: number): SupportedChains;
 export interface Web3ProviderInterface {
   provider: ethers.providers.Web3Provider | undefined;
+  signer: ethers.providers.JsonRpcSigner | undefined;
   onConnectWalletClick: Function;
   buttonText: String;
   WALLET_STATES: WalletStatesInterface;

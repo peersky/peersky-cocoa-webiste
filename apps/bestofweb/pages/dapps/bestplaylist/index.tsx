@@ -6,10 +6,12 @@ import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
 import { SupportedChains } from "@peersky/next-web3-chakra/types";
 import bestOfWebDeploymentMumbai from "../../../../../deployments/mumbai/BestOfGame.json";
 import BestOfWeb from "@peersky/next-web3-chakra/components/BestOfWeb";
-import JoinGame from "@peersky/next-web3-chakra/components/BestGame/JoinGame";
-import OpenGame from "@peersky/next-web3-chakra/components/BestGame/OpenGame";
-import NewGame from "@peersky/next-web3-chakra/components/BestGame/NewGame";
-import SetReqs from "@peersky/next-web3-chakra/components/BestGame/SetReqs";
+import {
+  SetReqs,
+  NewGame,
+  OpenGame,
+  JoinGame,
+} from "@peersky/next-web3-chakra";
 import { BigNumberish } from "ethers";
 const artifacts: Partial<
   Record<SupportedChains, { contractAddress: string; abi: any[] }>

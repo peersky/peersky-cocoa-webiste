@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
+// import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
@@ -11,9 +11,9 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {LibArray} from "../libraries/LibArray.sol";
 
 library LibTBG {
-    using EnumerableMap for EnumerableMap.AddressToUintMap;
-    using EnumerableMap for EnumerableMap.UintToAddressMap;
-    using EnumerableSet for EnumerableSet.Bytes32Set;
+    // using EnumerableMap for EnumerableMap.AddressToUintMap;
+    // using EnumerableMap for EnumerableMap.UintToAddressMap;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     struct GameSettings {
         uint256 blocksPerTurn;
@@ -30,7 +30,7 @@ library LibTBG {
         uint256 turnStartedAt;
         uint256 registrationOpenAt;
         bool hasStarted;
-        EnumerableMap.UintToAddressMap players;
+        EnumerableSet.AddressSet players;
         mapping(address => bool) madeMove;
         uint256 numPlayersMadeMove;
         mapping(address => uint256) score;
@@ -105,7 +105,7 @@ library LibTBG {
         require(_game.players.length() < tbg.settings.maxPlayersSize, "addPlayer->party full");
 
         require(canBeJoined(gameId), "addPlayer->cant join now");
-        _game.players.set(_game.players.length(), participant);
+        _game.players.add(participant);
         _game.madeMove[participant] = false;
         tbg.playerInGame[participant] = gameId;
     }
@@ -115,10 +115,6 @@ library LibTBG {
         return tbg.playerInGame[player] == gameId ? true : false;
     }
 
-    function getIdx(EnumerableMap.UintToAddressMap storage map, address key) internal view returns (uint256) {
-        return map._inner._keys._inner._indexes[bytes32(uint256(uint160(key)))];
-    }
-
     function removePlayer(uint256 gameId, address participant) internal {
         TBGStorageStruct storage tbg = TBGStorage();
         GameInstance storage _game = _getGame(gameId);
@@ -126,9 +122,7 @@ library LibTBG {
         require(tbg.playerInGame[participant] == gameId, "Not in the game");
         require(_game.hasStarted == false, "Cannot leave once started");
         tbg.playerInGame[participant] = 0;
-
-        uint256 playerIdx = getIdx(_game.players, participant);
-        _game.players.remove(playerIdx);
+        _game.players.remove(participant);
     }
 
     function isTurnTimedOut(uint256 gameId) internal view returns (bool) {
@@ -172,7 +166,7 @@ library LibTBG {
 
     function _clearCurrentMoves(GameInstance storage game) internal {
         for (uint256 i = 0; i < game.players.length(); i++) {
-            (, address player) = game.players.at(i);
+            address player = game.players.at(i);
             game.madeMove[player] = false;
         }
         game.numPlayersMadeMove = 0;
@@ -180,17 +174,13 @@ library LibTBG {
 
     function _resetPlayerStates(GameInstance storage game) internal {
         for (uint256 i = 0; i < game.players.length(); i++) {
-            (, address player) = game.players.at(i);
+            address player = game.players.at(i);
             game.madeMove[player] = false;
             game.score[player] = 0;
         }
     }
 
-    function setScore(
-        uint256 gameId,
-        address player,
-        uint256 value
-    ) internal {
+    function setScore(uint256 gameId, address player, uint256 value) internal {
         GameInstance storage _game = _getGame(gameId);
         require(isPlayerInGame(gameId, player), "player not in a game");
         _game.score[player] = value;
@@ -224,6 +214,18 @@ library LibTBG {
         } else {
             return _game.registrationOpenAt < block.number + tbg.settings.blocksToJoin ? true : false;
         }
+    }
+
+    function canStart(uint256 gameId) internal view returns (bool) {
+        GameInstance storage _game = _getGame(gameId);
+        TBGStorageStruct storage tbg = TBGStorage();
+        bool retval = true;
+        if (_game.hasStarted != false) retval = false;
+        if (_game.registrationOpenAt == 0) retval = false;
+        if (block.number <= _game.registrationOpenAt + tbg.settings.blocksToJoin) retval = false;
+        if (gameId == 0) retval = false;
+        if (_game.players.length() < tbg.settings.minPlayersSize) retval = false;
+        return retval;
     }
 
     function startGame(uint256 gameId) internal {
@@ -292,15 +294,7 @@ library LibTBG {
         }
     }
 
-    function nextTurn(uint256 gameId)
-        internal
-        returns (
-            bool,
-            bool,
-            bool,
-            address[] memory
-        )
-    {
+    function nextTurn(uint256 gameId) internal returns (bool, bool, bool, address[] memory) {
         GameInstance storage _game = _getGame(gameId);
         enforceHasStarted(gameId);
         enforceIsNotOver(gameId);
@@ -334,11 +328,7 @@ library LibTBG {
 
     function getPlayers(uint256 gameId) internal view returns (address[] memory) {
         GameInstance storage _game = _getGame(gameId);
-        address[] memory players = new address[](_game.players.length());
-        for (uint256 i = 0; i < _game.players.length(); i++) {
-            (, players[i]) = _game.players.at(i);
-        }
-        return players;
+        return _game.players.values();
     }
 
     function getGameSettings() internal view returns (GameSettings memory) {

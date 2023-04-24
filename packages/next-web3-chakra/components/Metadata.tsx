@@ -33,17 +33,17 @@ const Metadata = ({
       direction="column"
       borderRadius={"lg"}
       whiteSpace="break-spaces"
-      px={2}
+      // px={2}
       {...props}
     >
       <Box
         borderRadius={"lg"}
-        h="220px"
-        minH="220px"
+        h="100%"
+        // minH="220px"
         w="100%"
-        minW="120px"
+        // minW="120px"
         id="img"
-        m={2}
+        // m={2}
         p={0}
         backgroundPosition="center"
         bgImage={

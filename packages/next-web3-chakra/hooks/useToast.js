@@ -5,7 +5,6 @@ const useToast = () => {
 
   const toast = useCallback(
     (message, type, title) => {
-      console.log("user mssg", message);
       const userTitle = title ?? message?.response?.statusText ?? type;
 
       const userMessage =

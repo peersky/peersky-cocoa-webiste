@@ -270,4 +270,8 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
     function getPlayers(uint256 gameId) public view returns (address[] memory) {
         return gameId.getPlayers();
     }
+
+    function canStartGame(uint256 gameId) public view returns (bool) {
+        return gameId.canStart();
+    }
 }

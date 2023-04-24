@@ -106,11 +106,12 @@ const BestOfWeb = () => {
                 {uri?.data && (
                   <Metadata
                     boxShadow={"md"}
-                    w="50%"
+                    // minW="50%"
+                    // w="50%"
                     borderRadius="md"
                     borderColor={"blue.1200"}
                     borderWidth={"3px"}
-                    p={4}
+                    // p={4}
                     metadata={uri?.data}
                   />
                 )}
@@ -242,7 +243,7 @@ const BestOfWeb = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {bestContract.contractState.data?.BestOfState.numGames.gt(
+                    {bestContract.contractState.data?.BestOfState?.numGames?.gt(
                       "0"
                     ) &&
                       Array.from(
@@ -275,7 +276,6 @@ const BestOfWeb = () => {
             </Paginator>
           </Flex>
         )}
-
     </>
   );
 };

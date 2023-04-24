@@ -30,6 +30,4 @@ const _OpenGame = ({
   );
 };
 
-const OpenGame = chakra(_OpenGame);
-
-export default OpenGame;
+export const OpenGame = chakra(_OpenGame);

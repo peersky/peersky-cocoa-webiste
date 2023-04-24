@@ -1,4 +1,12 @@
-import { Flex, Heading, Button, chakra, Stack } from "@chakra-ui/react";
+import { useState } from "react";
+import {
+  Flex,
+  Heading,
+  Button,
+  chakra,
+  Stack,
+  Tooltip,
+} from "@chakra-ui/react";
 import useBestOfWebContract from "../../hooks/useBestOfWebContract";
 import { UseQueryResult, UseQueryOptions } from "react-query";
 import { useContext } from "react";
@@ -14,17 +22,23 @@ const _JoinGame = ({
 }) => {
   const web3ctx = useContext(Web3Context);
   const bestContract = useBestOfWebContract({ web3ctx: web3ctx });
+  const [canJoin, setCanJoin] = useState(true);
+  console.log("canJoin", canJoin);
 
   return (
     <Flex direction="column" justifyItems={"center"}>
       <Heading>Join game</Heading>
-      <JoinRequirements gameId={gameId} />
+      <JoinRequirements
+        gameId={gameId}
+        onInsufficient={() => setCanJoin(false)}
+      />
       <Stack
         direction={["column", "row", null, "row"]}
         justifyContent="center"
         alignItems={"center"}
       >
         <Button
+          isLoading={bestContract.approveAll.isLoading}
           colorScheme={"green"}
           onClick={() => {
             bestContract.approveAll.mutate(gameId, {});
@@ -32,20 +46,25 @@ const _JoinGame = ({
         >
           Approve all
         </Button>
-        <Button
-          onClick={() => {
-            bestContract.joinGame.mutate(gameId, {
-              onSuccess: onSuccess,
-            });
-          }}
+        <Tooltip
+          label="You are missing some assets to fulfill requirements"
+          isDisabled={canJoin}
         >
-          Join
-        </Button>
+          <Button
+            isDisabled={!canJoin}
+            isLoading={bestContract.joinGame.isLoading}
+            onClick={() => {
+              bestContract.joinGame.mutate(gameId, {
+                onSuccess: !!onSuccess ? (e) => onSuccess(e) : undefined,
+              });
+            }}
+          >
+            Join
+          </Button>
+        </Tooltip>
       </Stack>
     </Flex>
   );
 };
 
-const JoinGame = chakra(_JoinGame);
-
-export default JoinGame;
+export const JoinGame = chakra(_JoinGame);

@@ -7,12 +7,16 @@ import {
   Skeleton,
   Flex,
   chakra,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 const _Web3Button = ({ colorScheme, ...props }: { colorScheme?: string }) => {
   const web3Provider = useContext(Web3Context);
+  const bgC = useColorModeValue("blue.500", "blue.800");
   return (
     <>
-      {" "}
       {web3Provider.buttonText !== web3Provider.WALLET_STATES.CONNECTED && (
         <Button
           isDisabled={
@@ -41,7 +45,7 @@ const _Web3Button = ({ colorScheme, ...props }: { colorScheme?: string }) => {
       )}
       {web3Provider.buttonText === web3Provider.WALLET_STATES.CONNECTED && (
         <Flex
-          bgColor={useColorModeValue("blue.500", "blue.800")}
+          bgColor={bgC}
           px={2}
           fontWeight="semibold"
           borderRadius="md"

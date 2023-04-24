@@ -857,7 +857,8 @@ describe(scriptName, () => {
                   (identity) => identity.wallet.address
                 ),
                 getPlayers(adr, BOGSettings.BOG_MIN_PLAYERS).map(() => 0),
-                getTurnSalt({ gameId: 1, turn: 1 })
+                getTurnSalt({ gameId: 1, turn: 1 }),
+                
               );
           });
           describe("When all proposals received", () => {

@@ -98,6 +98,7 @@ const Bytes32InputItem = ({
         variant={"outline"}
       >
         <Input
+          onFocus={(event) => event.target.select()}
           type="search"
           value={
             uiFragment.convertToBytes &&
@@ -160,8 +161,9 @@ const NumberInputItem = ({
         {uiFragment.label}
       </FormLabel>{" "}
       <Flex direction={"row"} w="100%">
-        <NumberInput variant={"outline"} flexBasis="75px" flexGrow={1}>
+        <NumberInput variant={"outline"} flexBasis="75px" flexGrow={1}> 
           <NumberInputField
+            onFocus={(event) => event.target.select()}
             placeholder={uiFragment.placeholder ?? ""}
             // textColor={("blue.800")}
             onKeyPress={onKeyPress}
@@ -231,7 +233,9 @@ const AddressInputItem = ({
         {uiFragment.label}
       </FormLabel>{" "}
       <Input
+        onFocus={(event) => event.target.select()}
         textColor={"blue.500"}
+        defaultValue={ethers.constants.AddressZero}
         onKeyPress={onKeyPress}
         type="search"
         key={`argument-address-${abiItem.name}`}
@@ -281,6 +285,7 @@ const StringInputItem = ({
         variant={"outline"}
       >
         <Input
+          onFocus={(event) => event.target.select()}
           type="search"
           value={uiFragment.value}
           onKeyPress={onKeyPress}

@@ -4,15 +4,19 @@ import {
   useColorModeValue,
   Skeleton,
   Heading,
+  Button,
 } from "@chakra-ui/react";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
 import useAppRouter from "@peersky/next-web3-chakra/hooks/useRouter";
-import useBestOfWebContract, {
-  gameStatusEnum,
-} from "@peersky/next-web3-chakra/hooks/useBestOfWebContract";
+
 import { useContext } from "react";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
-import JoinGame from "@peersky/next-web3-chakra/components/BestGame/JoinGame";
+import {
+  ScoreTable,
+  JoinGame,
+  gameStatusEnum,
+  useBestOfWebContract,
+} from "@peersky/next-web3-chakra";
 
 const CardField = (props: any) => {
   return (
@@ -31,9 +35,11 @@ const GamePage = () => {
   const gameId = router.params["gameId"];
   const web3ctx = useContext(Web3Context);
   const game = useBestOfWebContract({ gameId: gameId, web3ctx });
+  console.log("game.isInGame", game.isInGame);
 
   return (
     <Flex>
+      {" "}
       <Stack
         w="100%"
         p={4}
@@ -60,21 +66,30 @@ const GamePage = () => {
                   <JoinGame gameId={gameId} />
                 </CardField>
               )}
-              {}
+              {game.isInGame && (
+                <Button
+                  onClick={() => game.leaveGame.mutate(gameId)}
+                  isLoading={game.leaveGame.isLoading}
+                >
+                  Leave game
+                </Button>
+              )}
+              <Button
+                isDisabled={!game.gameState.data?.canStart}
+                isLoading={game.startGame.isLoading}
+                onClick={() => game.startGame.mutate(gameId)}
+              >
+                Start game
+              </Button>
             </>
           )}
         </Skeleton>
         <Skeleton isLoaded={!game.gameState.isLoading}>
           <>
-            {!game.isInGame && (
-              <CardField>
-                <Heading size="sm">Participants</Heading>
-                {game.gameState.data?.players &&
-                  game.gameState.data?.players.map((player) => {
-                    return <Flex key={`player-${player}`}>{player}</Flex>;
-                  })}
-              </CardField>
-            )}
+            <CardField>
+              <Heading size="sm">Participants</Heading>
+              <ScoreTable gameId={gameId} />
+            </CardField>
             {}
           </>
         </Skeleton>

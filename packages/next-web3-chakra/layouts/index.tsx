@@ -58,3 +58,7 @@ export const getLayout = (page: React.ReactNode) => (
 );
 
 export default LayoutWrapper;
+export * as AppLayout from "./AppLayout";
+export * as BlogLayout from "./BlogLayout";
+export * as ContractLayout from "./ContractLayout";
+export * as DefaultLayout from "./index";

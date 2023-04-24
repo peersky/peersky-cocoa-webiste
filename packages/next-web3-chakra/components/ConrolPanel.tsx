@@ -88,7 +88,7 @@ const ControllerPanel = ({
                 },
               }}
               initialValue={
-                bestContract.contractState.data?.BestOfState.gamePrice
+                bestContract.contractState.data?.BestOfState?.gamePrice
               }
               method={web3ctx.getMethodsABI<BestOfDiamond>(
                 getArtifact(web3ctx.getChainFromId(web3ctx.chainId)).abi,
@@ -140,9 +140,6 @@ const ControllerPanel = ({
                     )
                   }
                   isDisabled={true}
-                  //   onSubmit={(nextValue) => {
-                  //     terminus.setPoolBasePrice.mutate(nextValue);
-                  //   }}
                 >
                   <Skeleton colorScheme={"orange"} isLoaded={true}>
                     <EditablePreview w="100%" px={2} />
@@ -166,9 +163,6 @@ const ControllerPanel = ({
                       .rankTokenAddress
                   }
                   isDisabled={true}
-                  //   onSubmit={(nextValue) => {
-                  //     terminus.setPaymentToken.mutate(nextValue);
-                  //   }}
                 >
                   <Skeleton colorScheme={"orange"} isLoaded={true}>
                     <EditablePreview w="100%" px={2} />
@@ -194,11 +188,6 @@ const ControllerPanel = ({
                     )
                   }
                   isDisabled={true}
-                  //   onSubmit={(nextValue) => {
-                  //     if (web3ctx.web3.utils.isAddress(nextValue)) {
-                  //       terminus.setController.mutate(nextValue);
-                  //     }
-                  //   }}
                 >
                   <Skeleton colorScheme={"orange"} isLoaded={true}>
                     <EditablePreview w="100%" px={2} />
@@ -292,9 +281,6 @@ const ControllerPanel = ({
                         placeholder={bestContract.contractState.data?.TBGSEttings.blocksPerTurn.toString()}
                         defaultValue={""}
                         isDisabled={"" || !isController}
-                        //   onSubmit={(nextValue) => {
-                        //     terminus.setURI.mutate({ uri: nextValue });
-                        //   }}
                       >
                         <Skeleton colorScheme={"orange"} isLoaded={true}>
                           <EditablePreview w="100%" px={2} />
@@ -315,9 +301,6 @@ const ControllerPanel = ({
                         placeholder={bestContract.contractState.data?.TBGSEttings.maxPlayersSize.toString()}
                         defaultValue={""}
                         isDisabled={"" || !isController}
-                        //   onSubmit={(nextValue) => {
-                        //     terminus.setURI.mutate({ uri: nextValue });
-                        //   }}
                       >
                         <Skeleton colorScheme={"orange"} isLoaded={true}>
                           <EditablePreview w="100%" px={2} />
@@ -338,9 +321,6 @@ const ControllerPanel = ({
                         placeholder={bestContract.contractState.data?.TBGSEttings.minPlayersSize.toString()}
                         defaultValue={""}
                         isDisabled={"" || !isController}
-                        //   onSubmit={(nextValue) => {
-                        //     terminus.setURI.mutate({ uri: nextValue });
-                        //   }}
                       >
                         <Skeleton colorScheme={"orange"} isLoaded={true}>
                           <EditablePreview w="100%" px={2} />
@@ -361,9 +341,6 @@ const ControllerPanel = ({
                         placeholder={bestContract.contractState.data?.TBGSEttings.blocksToJoin.toString()}
                         defaultValue={""}
                         isDisabled={"" || !isController}
-                        //   onSubmit={(nextValue) => {
-                        //     terminus.setURI.mutate({ uri: nextValue });
-                        //   }}
                       >
                         <Skeleton colorScheme={"orange"} isLoaded={true}>
                           <EditablePreview w="100%" px={2} />

@@ -20,14 +20,6 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     args: [URI, owner],
     skipIfAlreadyDeployed: true,
   });
-  const BestOfGameDeployment = await deployments.getOrNull("BestOfGame");
-  if (BestOfGameDeployment.address) {
-    const gameContract = new ethers.Contract(
-      BestOfGameDeployment.address,
-      BestOfGameDeployment.abi,
-      hre.ethers.provider
-    ) as BestOfDiamond;
-  }
 };
 
 export default func;

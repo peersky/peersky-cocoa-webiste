@@ -25,6 +25,7 @@ export const WALLET_STATES: WalletStatesInterface = {
 
 const Web3Context = createContext<Web3ProviderInterface>({
   provider: {} as any as ethers.providers.Web3Provider,
+  signer: {} as any as ethers.providers.JsonRpcSigner,
   onConnectWalletClick: () => console.error("not intied"),
   buttonText: "",
   WALLET_STATES: WALLET_STATES,

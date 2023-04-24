@@ -74,6 +74,7 @@ const makeUIFields = <T extends UIFragmentField>(
   argumentFields?: ArgumentFields,
   hide?: string[]
 ): T => {
+  console.log("ele", element.type, element.type?.startsWith("uint"));
   if (!element.name) console.log("cauthg", element);
   if (!element.type) throw new Error("not defined");
   if (element.type === "tuple" || element.type === "tuple[]") {
@@ -106,7 +107,15 @@ const makeUIFields = <T extends UIFragmentField>(
         (element.name &&
           argumentFields &&
           argumentFields[element.name]?.initialValue) ??
-        "",
+        element.type == "address"
+          ? ethers.constants.AddressZero
+          : element.type.endsWith("[]")
+          ? []
+          : element.type.startsWith("uint")
+          ? "0"
+          : element.type.startsWith("bytes")
+          ? "0x0"
+          : "",
 
       label:
         (element.name &&

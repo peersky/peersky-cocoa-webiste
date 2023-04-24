@@ -10,6 +10,7 @@ import {
 import useBestOfWebContract from "../hooks/useBestOfWebContract";
 import Web3Context from "../providers/Web3Provider/context";
 import useAppRouter from "../hooks/useRouter";
+import RouteButton from "./RouteButton";
 const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
   const web3ctx = useContext(Web3Context);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -79,27 +80,25 @@ const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
             set requirements
           </Button>
         )}
-        {!isGameCreator && (
-          <>
-            {isInGame && gameStatus === gameStatusEnum.open && (
-              <Button>Leave game</Button>
-            )}
-            {!isInGame && (
-              <Tooltip
-                label="Game can be joined only when registration is open by game creator"
-                hasArrow
-                isDisabled={gameStatus === gameStatusEnum.open}
-              >
-                <Button isDisabled={gameStatus !== gameStatusEnum.open}>
-                  Join
-                </Button>
-              </Tooltip>
-            )}
-          </>
+
+        {isInGame && gameStatus === gameStatusEnum.open && (
+          <Button>Leave game</Button>
         )}
-        <Button isDisabled={!_gsd?.players.length || _gsd?.players.length < 0}>
-          Participants
-        </Button>
+
+        {gameStatus != "created" && (
+          <RouteButton
+            variant="outline"
+            href={`bestplaylist/${gameId}`}
+            h="24px"
+          >
+            View
+          </RouteButton>
+        )}
+        {gameStatus == "created" && isGameCreator && (
+          <Button onClick={() => bestContract.openRegistration.mutate(gameId)}>
+            Open registration
+          </Button>
+        )}
       </Td>
     </>
   );

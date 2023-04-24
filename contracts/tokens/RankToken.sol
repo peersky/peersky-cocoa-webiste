@@ -5,9 +5,16 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 pragma solidity ^0.8.0;
 
 contract RankToken is ERC1155, Ownable {
-    constructor(string memory uri_, address owner) ERC1155(uri_) {
+    string private _contractURI;
+
+    constructor(string memory uri_, address owner, string memory cURI) ERC1155(uri_) {
         require(owner != address(0), "must specify owner of the contract");
+        _contractURI = cURI;
         transferOwnership(owner);
+    }
+
+    function contractURI() public view returns (string memory) {
+        return _contractURI;
     }
 
     function setURI(string memory uri) public onlyOwner {

@@ -232,7 +232,7 @@ const Home = () => {
         </GridItem>
         <GridItem
           as={Link}
-          href="/Utils"
+          href="/tools"
           bgColor={cardBgColor}
           w="100%"
           h="45vh"

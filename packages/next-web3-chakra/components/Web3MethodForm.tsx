@@ -18,6 +18,7 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Select,
+  FormLabel,
 } from "@chakra-ui/react";
 import { useMutation } from "react-query";
 import Web3Context from "../providers/Web3Provider/context";
@@ -93,15 +94,19 @@ const Web3MethodForm = ({
     const contract = new ethers.Contract(
       contractAddress,
       [method] as any as string,
-      web3ctx.provider.getSigner()
+      web3ctx.provider?.getSigner()
     );
+
+    console.log("web3provider", web3ctx.provider, web3ctx.account);
 
     let response;
     if (method.name) {
       const options = {
         value: ethers.utils.parseUnits(value, valueIsEther ? "ether" : "wei"),
       };
-      response = await contract.functions[method.name](...args, options);
+      response = contract.functions[method.name](...args, options).then((r) =>
+        r.wait(1)
+      );
     } else {
       throw new Error("no method name");
     }
@@ -238,37 +243,46 @@ const Web3MethodForm = ({
           }
         })}
         <Flex direction={"row"} w="100%">
-          {!hide?.includes("msg.value") && (
-            <>
-              <NumberInput variant={"outline"} flexBasis="75px" flexGrow={1}>
-                <NumberInputField
-                  placeholder={"value to send ETH"}
-                  textColor={"blue.800"}
-                  onKeyPress={handleKeypress}
-                  value={value}
-                  onChange={(event) => setValue(event.target.value)}
-                  fontSize={"sm"}
-                  w="100%"
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-              <Select
-                onChange={(e) =>
-                  setValueIsEther(e.target.value === "1" ? false : true)
-                }
-                flexBasis="25px"
-                flexGrow={1}
-                maxW="200px"
-                ml={4}
-              >
-                <option value="1">wei (**1)</option>
-                <option value="18">Eth (**18)</option>
-              </Select>
-            </>
-          )}
+          {!hide?.includes("msg.value") &&
+            method.stateMutability == "payable" && (
+              <Flex direction={"column"} w="100%" borderTopWidth={"1px"} mt={4}>
+                <FormLabel>Value to pay</FormLabel>
+                <Flex w="100%">
+                  <NumberInput
+                    variant={"outline"}
+                    flexBasis="75px"
+                    flexGrow={1}
+                  >
+                    <NumberInputField
+                      onFocus={(event) => event.target.select()}
+                      placeholder={value}
+                      textColor={"blue.500"}
+                      onKeyPress={handleKeypress}
+                      value={value}
+                      onChange={(event) => setValue(event.target.value)}
+                      fontSize={"sm"}
+                      w="100%"
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <Select
+                    onChange={(e) =>
+                      setValueIsEther(e.target.value === "1" ? false : true)
+                    }
+                    flexBasis="25px"
+                    flexGrow={1}
+                    maxW="200px"
+                    ml={4}
+                  >
+                    <option value="1">wei (**1)</option>
+                    <option value="18">Eth (**18)</option>
+                  </Select>
+                </Flex>
+              </Flex>
+            )}
         </Flex>
         <Flex direction={"row"} flexWrap="wrap">
           <Button

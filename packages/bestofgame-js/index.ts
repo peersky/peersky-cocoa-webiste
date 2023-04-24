@@ -52,17 +52,15 @@ export const getContractState = async (
   provider: ethers.providers.Web3Provider
 ) => {
   const contract = getContract(chain, provider);
-  return await contract.getContractState();
+  return contract.getContractState();
 };
 
-export const getPlayersGame = async (
-  chain: SupportedChains,
-  provider: ethers.providers.Web3Provider,
-  account: string
-) => {
-  const contract = getContract(chain, provider);
-  return await contract.getPlayersGame(account);
-};
+export const getPlayersGame =
+  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  async (account: string) => {
+    const contract = getContract(chain, provider);
+    return contract.getPlayersGame(account);
+  };
 
 export const getRankTokenURI = async (
   chain: SupportedChains,
@@ -117,6 +115,7 @@ export const getGameState = async (
   const createdBy = await contract.gameCreator(gameId);
   const gameRank = await contract.getGameRank(gameId);
   const players = await contract.getPlayers(gameId);
+  const canStart = await contract.canStartGame(gameId);
 
   return {
     gameMaster,
@@ -131,14 +130,15 @@ export const getGameState = async (
     createdBy,
     gameRank,
     players,
+    canStart,
   };
 };
 
 export const createGame =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameMaster: string, gameRank: string, gameId?: BigNumberish) => {
     console.log("createGame", gameMaster, gameRank.toString());
-    const contract = getContract(chain, provider.getSigner());
+    const contract = getContract(chain, signer);
     const reqs = await contract.getContractState();
 
     const value = reqs.BestOfState.gamePrice;
@@ -163,31 +163,32 @@ export const createGame =
   };
 
 export const joinGame =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: string) => {
-    const contract = getContract(chain, provider.getSigner());
+    const contract = getContract(chain, signer);
     console.log("requesting reqs", gameId);
 
     const reqs = await contract.getJoinRequirements(gameId);
     const values = reqs.ethValues;
 
     const value = values.bet.add(values.burn).add(values.pay);
-    console.log("value.toString()", value.toString());
 
-    return await contract.joinGame(gameId, { value: value.toString() ?? "0" });
+    return contract
+      .joinGame(gameId, { value: value.toString() ?? "0" })
+      .then((tx) => tx.wait(1));
   };
 
 export const startGame =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: string) => {
-    const contract = getContract(chain, provider);
+    const contract = getContract(chain, signer);
     return await contract.startGame(gameId);
   };
 
 export const cancelGame =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: string) => {
-    const contract = getContract(chain, provider);
+    const contract = getContract(chain, signer);
     return await contract.cancelGame(gameId);
   };
 
@@ -199,40 +200,42 @@ export const checkSignature =
   };
 
 export const endTurn =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (
     gameId: string,
     turnSalt: BytesLike,
     voters: string[],
     votersRevealed: [string, string, string][]
   ) => {
-    const contract = getContract(chain, provider);
-    return await contract.endTurn(gameId, turnSalt, voters, votersRevealed);
+    const contract = getContract(chain, signer);
+    return (
+      await contract.endTurn(gameId, turnSalt, voters, votersRevealed)
+    ).wait(1);
   };
 
 export const leaveGame =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: string) => {
-    const contract = getContract(chain, provider);
-    return await contract.leaveGame(gameId);
+    const contract = getContract(chain, signer);
+    return contract.leaveGame(gameId).then((tx) => tx.wait(1));
   };
 
 export const openRegistration =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: string) => {
-    const contract = getContract(chain, provider.getSigner());
+    const contract = getContract(chain, signer);
     return await contract.openRegistration(gameId);
   };
 
 export const submitProposal =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (
     gameId: string,
     proposerHidden: BytesLike,
     proof: BytesLike,
     proposal: string
   ) => {
-    const contract = getContract(chain, provider);
+    const contract = getContract(chain, signer);
     return await contract.submitProposal(
       gameId,
       proposerHidden,
@@ -242,23 +245,23 @@ export const submitProposal =
   };
 
 export const submitVote =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (
     gameId: string,
     votesHidden: [BytesLike, BytesLike, BytesLike],
     proof: BytesLike,
     signature: BytesLike
   ) => {
-    const contract = getContract(chain, provider);
+    const contract = getContract(chain, signer);
 
     return await contract.submitVote(gameId, votesHidden, proof, signature);
   };
 
 export const setJoinRequirements =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: string, config: LibCoinVending.ConfigPositionStruct) => {
     console.log("config", config, gameId);
-    const contract = getContract(chain, provider.getSigner());
+    const contract = getContract(chain, signer);
     return await contract.setJoinRequirements(gameId, config);
   };
 
@@ -284,43 +287,48 @@ export async function getApiError(response: Response) {
 export const getHistoricTurn =
   (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (gameId: BigNumberish, turnId: BigNumberish) => {
-    const contract = getContract(chain, provider.getSigner());
+    const contract = getContract(chain, provider);
     //list all events of gameId that ended turnId.
     const events = contract.filters.TurnEnded(gameId, turnId);
     const Proposalevents = contract.filters.ProposalSubmitted(gameId);
     //There shall be only one such event
     if (!events?.topics?.length || events?.topics?.length == 0) {
       const err = new ApiError("Game not found", { status: 404 });
-      return err;
+      throw err;
     } else {
       const endTurnEvent = events?.topics[0];
       const players = endTurnEvent[2];
       const scores = endTurnEvent[3];
       const turnSalt = endTurnEvent[4];
-      const voters = endTurnEvent[5];
-      const votersRevealed = endTurnEvent[6];
+      const voters = endTurnEvent[5] as any as string[];
+      const votesRevealed = endTurnEvent[6] as any as string[];
 
-      return { players, scores, turnSalt, voters, votersRevealed };
+      return { players, scores, turnSalt, voters, votesRevealed };
     }
   };
 
 export const getPreviousTurnStats =
   (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
   async (gameId: BigNumberish) => {
-    const contract = getContract(chain, provider.getSigner());
+    const contract = getContract(chain, provider);
     const currentTurn = await contract.getTurn(gameId);
-    if (currentTurn.gt(0)) {
-      return getHistoricTurn(chain, provider)(gameId, currentTurn.sub(1));
+    if (currentTurn.gt(1)) {
+      return await getHistoricTurn(chain, provider)(gameId, currentTurn.sub(1));
     } else {
-      const err = new ApiError("Game not found", { status: 404 });
-      return err;
+      return {
+        players: "N/A",
+        scores: "N/A",
+        turnSalt: "N/A",
+        voters: ["N/A"],
+        votesRevealed: ["N/A"],
+      };
     }
   };
 
 export const getVoting =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: BigNumberish, turnId: BigNumberish) => {
-    const contract = getContract(chain, provider.getSigner());
+    const contract = getContract(chain, signer);
     const proposalEvents = contract.filters.ProposalSubmitted(
       gameId,
       turnId,
@@ -347,9 +355,9 @@ export const getVoting =
   };
 
 export const getOngoingVoting =
-  (chain: SupportedChains, provider: ethers.providers.Web3Provider) =>
+  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: BigNumberish) => {
-    const contract = getContract(chain, provider.getSigner());
+    const contract = getContract(chain, signer);
     const currentTurn = await contract.getTurn(gameId);
-    return getVoting(chain, provider)(gameId, currentTurn);
+    return getVoting(chain, signer)(gameId, currentTurn);
   };

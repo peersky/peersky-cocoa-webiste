@@ -1,4 +1,9 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import Web3Context, { WALLET_STATES } from "./context";
 import Web3 from "web3";
 import {
@@ -14,6 +19,7 @@ import { BaseContract, ContractFunction, ethers } from "ethers";
 import { ExternalProvider } from "@ethersproject/providers";
 import { useMutation } from "react-query";
 import useToast from "../../hooks/useToast";
+import { Spinner } from "@chakra-ui/react";
 declare global {
   interface Window {
     ethereum: any;
@@ -91,8 +97,7 @@ export const getMethodsABI: typeof GetMethodsAbiType = (abi, name) => {
   if (index !== -1) {
     const item = abi[index];
     return item;
-  }
-  else throw "accesing wrong abi element";
+  } else throw "accesing wrong abi element";
 };
 
 export const chains: { [key in SupportedChains]: ChainInterface } = {
@@ -179,6 +184,9 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
     Object.assign({}, window?.ethereum) &&
       Object.assign({}, window?.ethereum)?.selectedAddress
   );
+
+  const [signer, setSigner] = React.useState<ethers.providers.JsonRpcSigner>();
+  const [avatar, setAvatar] = React.useState<string | null>();
   console.log(
     "account",
     account,
@@ -234,7 +242,10 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
           // setProvider(new ethers.providers.Web3Provider(window.ethereum));
           // provider;
           setProvider(new ethers.providers.Web3Provider(window?.ethereum));
+
           setAccount(await provider.getSigner().getAddress());
+          setSigner(provider.getSigner());
+          setAvatar(await provider.getAvatar(account));
           const _chainId = window.ethereum.chainId;
           changeChainFromWalletProvider(_chainId);
           wasSetupSuccess = true;
@@ -416,10 +427,16 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   //     }}
   //   );
 
+  // Wallets like Metamask at the moment do not support multiple signers providing to the app
+  // const getSigner = useCallback(() => {
+  //   return provider?.getSigner(account);
+  // }, [account, provider]);
+  console.log("avatar,", avatar);
   return (
     <Web3Context.Provider
       value={{
         provider,
+        signer,
         onConnectWalletClick,
         buttonText,
         WALLET_STATES,
@@ -443,3 +460,4 @@ export class ReactiveContract extends BaseContract {
 }
 
 export default Web3Provider;
+export * as Web3Context from "./context";

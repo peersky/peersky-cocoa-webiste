@@ -9,6 +9,7 @@ import {
   Tbody,
   Td,
   Tr,
+  Skeleton,
 } from "@chakra-ui/react";
 import useBestOfWebContract from "../../hooks/useBestOfWebContract";
 import { UseQueryResult, UseQueryOptions } from "react-query";
@@ -23,7 +24,16 @@ const _ScoreTable = ({
   onSuccess?: UseQueryOptions["onSuccess"];
 }) => {
   const web3ctx = useContext(Web3Context);
-  const bestContract = useBestOfWebContract({ web3ctx: web3ctx });
+  const bestContract = useBestOfWebContract({
+    web3ctx: web3ctx,
+    gameId: gameId,
+  });
+
+  console.log(
+    "bestContract.gameState.data?.players",
+    bestContract.gameState.data?.players,
+    bestContract.previousTurnStats.data?.voters
+  );
 
   return (
     <Table>
@@ -35,16 +45,45 @@ const _ScoreTable = ({
         <Th>Total Score</Th>
       </Thead>
       <Tbody>
-        <Tr></Tr>
-        <Tr></Tr>
-        <Tr></Tr>
-        <Tr></Tr>
-        <Tr></Tr>
+        {bestContract.gameState.data?.players.map((player, idx) => {
+          console.log(
+            "bestContract.previousTurnStats.data?.voters",
+            bestContract.previousTurnStats.data?.voters
+          );
+          const prevIndex =
+            bestContract.previousTurnStats.data?.voters?.findIndex(
+              (voter) => voter === player
+            );
+          const lastVotes = !!prevIndex
+            ? bestContract.previousTurnStats.data?.votesRevealed[prevIndex]
+            : "N/A";
+          return (
+            <Tr>
+              <Td>
+                <Skeleton isLoaded={!bestContract.gameState.isLoading}>
+                  {player}
+                </Skeleton>
+              </Td>
+              <Td>
+                <Skeleton isLoaded={!bestContract.previousTurnStats.isLoading}>
+                  {lastVotes}
+                </Skeleton>
+              </Td>
+              <Td>
+                <Skeleton isLoaded={!bestContract.previousTurnStats.isLoading}>
+                  {bestContract.previousTurnStats.data?.votesRevealed[
+                    bestContract.previousTurnStats.data?.voters?.findIndex(
+                      (voter) => voter === player
+                    )
+                  ] ?? "N/A"}
+                </Skeleton>
+              </Td>
+            </Tr>
+          );
+        })}
       </Tbody>
     </Table>
   );
 };
 
-const ScoreTable = chakra(_ScoreTable);
-
-export default ScoreTable;
+export const ScoreTable = chakra(_ScoreTable);
