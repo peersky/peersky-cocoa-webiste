@@ -18,7 +18,8 @@
     "@types/mdx": "^2.0.3",
     "@types/node": "^18.14.1",
     "react-pro-sidebar": "^1.0.0",
-    "react-query": "^3.18.1"
+    "react-query": "^3.18.1",
+    "remark-emoji": "^3.1.1"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.2.1",
