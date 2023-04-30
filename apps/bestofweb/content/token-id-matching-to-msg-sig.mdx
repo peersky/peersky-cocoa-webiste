@@ -1,0 +1,33 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2023-04-30",
+  title: "Semantic NFT definitions",
+  description:
+    "Enable semantic meaning for NFT token IDs by standartizing their matching to method signatures",
+  tags: ["ideas", "ethereum", "NFTs"],
+  path: "token-id-matching-to-msg-sig",
+};
+
+# {meta.title}
+
+After discussing with peers and validating previous idea of [NFT defined Role based Access](/blog/nft-rbac) it is clear that there are many parties already approaching a sacred grail of NFT based permission management. Hence I instead of access management I want to focus attention on most important in this idea - _matching token Id to interface name creates semantical meaning_.
+
+Having such semantic definition for token Ids meets a very common metaverse builders issue - there is hard to find common ground between multiple different standards and marketplaces.
+
+## Possible simple implementation
+
+Smart contract supporting such semantic token id matching must implement:
+
+- `supportsInterface` specific to this standards
+- `getPermissionTokenContract() public view returns (address)`
+
+These two should be sufficient in order to get required checks from external contracts
+
+The implementation of the access logic can be left out of standardizing, it can be up to developer to implement this, the only thing left to standardize is the token ids and related privileges themselves. I.e.:
+
+1. tokenId = msg.sig + 0 -> unlimited access for one having that token
+2. tokenId = msg.sig + 1 -> access by locking token in the contract for time of operation
+3. tokenId = msg.sig + 2 -> access by burning a token in exchange of calling the interface
+4. tokenId = msg.sig + 3 -> access by sending a token to target contract
+
+Rest implementations on how the access checks are performed can be left to a particular implementations.
