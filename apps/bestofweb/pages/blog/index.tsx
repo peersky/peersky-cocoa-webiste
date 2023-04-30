@@ -36,25 +36,12 @@ const Blog = (props: any) => {
                 borderBottomWidth="2px"
                 borderBottomColor={"gray.500"}
               >
-                <Heading w={ui.isMobileView ? "100%" : "50%"}>
+                <Heading w={ui.isMobileView ? "100%" : "100%"}>
                   {post?.title}
                 </Heading>
-                <Spacer />
+
                 {/* <Spacer /> */}
-                <Text w={ui.isMobileView ? "100%" : "15%"}>{post.date} </Text>
-                <Spacer />
-                <Flex w={ui.isMobileView ? "100%" : "15%"} wrap="wrap">
-                  {post?.tags?.map((tagName: string) => (
-                    <Tag
-                      variant={"solid"}
-                      colorScheme={"blue"}
-                      key={tagName}
-                      h="24px"
-                    >
-                      {tagName}
-                    </Tag>
-                  ))}
-                </Flex>
+
                 <RouteButton
                   variant="outline"
                   href={`blog/${post.path}`}
@@ -63,6 +50,21 @@ const Blog = (props: any) => {
                 >
                   Open
                 </RouteButton>
+              </Flex>
+              <Flex pt={2} w={ui.isMobileView ? "100%" : "100%"} wrap="wrap">
+                {post?.tags?.map((tagName: string) => (
+                  <Tag
+                    variant={"solid"}
+                    colorScheme={"blue"}
+                    key={tagName}
+                    h="24px"
+                  >
+                    {tagName}
+                  </Tag>
+                ))}
+                <Spacer />
+                <Text w={ui.isMobileView ? "100%" : "15%"}>{post.date} </Text>
+                {/* <Spacer /> */}
               </Flex>
               <Text fontSize={"sm"}>{post?.description}</Text>
             </Flex>
