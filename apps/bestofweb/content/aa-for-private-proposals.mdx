@@ -48,10 +48,10 @@ In order to participate in such vote Alice would have to:
 
 1. Generate random secret and nullifier
 2. Compute their hash - commitment
-3. Insert commitment in to smart contract merkle tree. Here smart contract would be able to track number of proposals Alice can submit to the protocol.
+3. Insert commitment in to smart contract merkle tree. Hence the smart contract would be able to track number of proposals Alice can submit to the protocol.
 
-Further process would be same as previously described with only difference that now in submitting user operation, Alice would have to also reveal nullifier part of her commitment, so it b could be used to track how many proposals are created.
+Further process would be same as previously described with only difference that now in submitting user operation, Alice would have to also reveal nullifier part of her commitment, so it could be used to track how many proposals are created.
 
-This approach would allow not only limit number of proposals, but also support a changing number of legitimate proposers since each potential future proposal would be assigned an id in form of commitment prior to the agenda being set. This of course would create an exposure of proposers by fact of them submitting a commitements, however this could be mitigated by at governance protocol level easily - i.e. require every participants create equal number of commitements as part of a protocol constraint.
+This approach would allow not only limit number of proposals, but also support a changing number of legitimate proposers since each potential future proposal would be assigned an id in form of commitment prior to the agenda being set. This of course would create an exposure of proposers by fact of them submitting commitements, however this could be mitigated by at governance protocol level easily - i.e. require every participants create equal number of commitements as part of a protocol constraint.
 
 Sounds interesting? Discuss in a [twitter thread](https://twitter.com/iampeersky/status/1652849844166483969?s=20)
