@@ -48,7 +48,7 @@ const Blog = (props: any) => {
   console.log(allTags);
   return (
     <Flex w="100%" py={8} direction="column">
-      <Flex py={2}>
+      <Flex py={2} flexWrap="wrap">
         {allTags.map((tagName: string) => (
           <Tag
             as={Button}
