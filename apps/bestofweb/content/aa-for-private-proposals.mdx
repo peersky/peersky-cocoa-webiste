@@ -17,7 +17,7 @@ Robust and cryptographically safe means to ensure private vote submissions exist
 
 Today proposals are generally submitted as signed by proposer whose identity (signer address) is not kept secret.
 
-While not discussed broadly as a large problem, this actually is a red flag for any applications or governance processes where proposer must be kept private. Hence I m looking at a solutions which would ensure that proposer reputation does not create a voting bias as well as grant some level anonymity for a proposer.
+While not discussed broadly as a large problem, this actually is a red flag for any applications or governance processes where proposer must be kept private. Besides obvious bonuses of privacy for a submitter, it also allows to avoid creating authority bias, as well as makes it more complicated for participants to agree on voting against someone.
 
 ## How can we solve this with use of Account abstraction and ZKPs?
 
@@ -29,21 +29,29 @@ If organization wants to support such private proposal submissions in a decentra
 
 Now Alice can do following:
 
-1. With use of ZKPs Alice can generate proof that she is legitimate proposer
-2. Create random account that has not been used ever before and store it's private key safely
-3. Create `userOperation` with proposal, proof, nullifier allowing her to claim later that vote is her, and a paymaster contract address, that would pay her transaction fees
+1. With use of ZKPs Alice can generate proof that she is legitimate proposer (proof her address is part of merkle tree)
+2. Create random account that has not been used ever before
+3. Create `userOperation` with proposal, proof, and a paymaster contract address, that would pay her transaction fees. Optionally she could submit also a secret message, signed by both her public address and anonymous signer that submits operation, hence having a way to prove later she was a proposer.
 4. Send this transactions to transaction Bundler(s)
 
 VOILA! Now on chain voting can happen! It will be visible what proposal is as well as the, proof of legitimate proposer can be verified directly on-chain.
 
 If later Alice wants to become known, all she needs to do is to take that EOA that she used to submit proposal and her publicly known EOA and create a double signature on a message stating she is the proposer.
 
-## Little more technical
+This approach while being the most simple one has some drawbacks - to support cases when set of legitimate agenda setters changes, or if number of agenda items must be limited, membership in merkle tree by address can become a problem
 
-Technical implementation actually is very similar to a famous project starting with T letter :tornado: :dollar:.
+## Even better approach
 
-Being the legitimate proposer can be proven as proof as being a leaf in a merkle tree, hence verifying contract needs only to know the root hash. While special nullifierHash can be used to support cases when only one proposal is allowed per proposer. Same nullifier can be used later if proposer wants to prove his ownership over proposal, for sake of this the address of proposer can be a part of nullifier, so it can be submitted by anyone and is frontrun safe.
+Above example allows Alice to create unlimited number of proposals. If we would like to limit Alice to say one unique proposal, the protocol would actually look very similar to a famous project starting with T letter: :tornado: :dollar:.
 
-This approach will require either some constraints on how fast the set of proposers allowed to change, either a historical root hashes lookup.
+In order to participate in such vote Alice would have to:
+
+1. Generate random secret and nullifier
+2. Compute their hash - commitment
+3. Insert commitment in to smart contract merkle tree. Here smart contract would be able to track number of proposals Alice can submit to the protocol.
+
+Further process would be same as previously described with only difference that now in submitting user operation, Alice would have to also reveal nullifier part of her commitment, so it b could be used to track how many proposals are created.
+
+This approach would allow not only limit number of proposals, but also support a changing number of legitimate proposers since each potential future proposal would be assigned an id in form of commitment prior to the agenda being set. This of course would create an exposure of proposers by fact of them submitting a commitements, however this could be mitigated by at governance protocol level easily - i.e. require every participants create equal number of commitements as part of a protocol constraint.
 
 Sounds interesting? Discuss in a [twitter thread](twitter.com/iampeersky)
