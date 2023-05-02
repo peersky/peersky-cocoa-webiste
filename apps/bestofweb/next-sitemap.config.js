@@ -5,4 +5,5 @@ module.exports = {
   robotsTxtOptions: {
     includeNonIndexSitemaps: true,
   },
+  generateIndexSitemap: false,
 };
