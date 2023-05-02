@@ -1,6 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import propTypes from "prop-types";
+import { title } from "process";
 
 const METATAGS = {
   title: propTypes.string.isRequired,
@@ -28,43 +29,52 @@ const METATAGS = {
   twitterImageAlt: propTypes.string,
 };
 
-export const SEOHead = ({
-  title,
-  keywords,
-  description,
-  url,
-  image,
-  ogType,
-  ogURL,
-  ogTitle,
-  ogDescription,
-  ogImage,
-  twitterCard,
-  twitterURL,
-  twitterTitle,
-  twitterDescription,
-  twitterCreator,
-  twitterImageAlt,
-  twitterImage,
-}: {
-  title: string;
-  keywords: string;
-  description: string;
-  url: string;
-  image: string;
-  ogType: string;
-  ogURL: string;
-  ogTitle: string;
-  ogDescription: string;
-  ogImage: string;
-  twitterCard: string;
-  twitterURL: string;
-  twitterTitle: string;
-  twitterDescription: string;
-  twitterCreator: string;
-  twitterImageAlt: string;
-  twitterImage: string;
-}) => {
+export const SEOHead = (
+  {
+    title,
+    keywords,
+    description,
+    url,
+    image,
+    ogType,
+    ogURL,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    twitterCard,
+    twitterURL,
+    twitterTitle,
+    twitterDescription,
+    twitterCreator,
+    twitterImageAlt,
+    twitterImage,
+  }: {
+    title: string;
+    keywords: string;
+    description: string;
+    url: string;
+    image: string;
+    ogType?: string;
+    ogURL?: string;
+    ogTitle?: string;
+    ogDescription?: string;
+    ogImage?: string;
+    twitterCard?: string;
+    twitterURL?: string;
+    twitterTitle?: string;
+    twitterDescription?: string;
+    twitterCreator?: string;
+    twitterImageAlt?: string;
+    twitterImage?: string;
+  } = {
+    title: "Personal Blog, Ideas, Apps and Utils",
+    keywords: "blockchain, blog, ideas, dApps, peersky",
+    description:
+      "This is a personal web space, free of product placement and ads, where you can find content about blockchain as well as explore some dApps and Utils I develop",
+    url: "https://peersky.xyz",
+    image: "/daocoacoa.png",
+  }
+) => {
   return (
     <Head>
       <meta
