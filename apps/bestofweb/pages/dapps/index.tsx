@@ -69,5 +69,14 @@ const Projects = () => {
   );
 };
 
+export async function getStaticProps() {
+  const metaTags = {
+    title: "dApps",
+    description: "Work in progress stuff",
+    url: `https://peersky.xyz/dapps`,
+  };
+  return { props: { metaTags } };
+}
+
 Projects.getLayout = getLayout();
 export default Projects;

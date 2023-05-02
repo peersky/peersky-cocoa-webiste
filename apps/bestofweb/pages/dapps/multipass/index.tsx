@@ -308,9 +308,6 @@ const Home = () => {
 };
 
 export async function getStaticProps() {
-  const blogPosts = await require("../../content/");
-  console.log(blogPosts);
-  const postsArray = Object.values(blogPosts).map((post: any) => post.meta);
   const metaTags = {
     title: "Multipass protocol",
     description:
@@ -319,7 +316,7 @@ export async function getStaticProps() {
       "blog, peersky, peersky.eth, ideas, blockchain, technology, philosophy",
     url: `https://peersky.xyz/dapps/multipass`,
   };
-  return { props: { posts: postsArray, metaTags } };
+  return { props: { metaTags } };
 }
 Home.getLayout = getLayout;
 export default Home;
