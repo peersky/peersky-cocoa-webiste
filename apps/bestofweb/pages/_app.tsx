@@ -71,7 +71,15 @@ export default function CachingApp({ Component, pageProps }: any) {
     // { rel: "preload", as: "image", href: WHITE_LOGO_W_TEXT_URL },
   ];
   pageProps.preloads && headLinks.push(...pageProps.preloads);
-
+  const defaultMetaTags = {
+    title: "Personal Blog, Ideas, Apps and Utils",
+    keywords: "blockchain, blog, ideas, dApps, peersky",
+    description:
+      "This is a personal web space, free of product placement and ads, where you can find content about blockchain as well as explore some dApps and Utils I develop",
+    url: "https://peersky.xyz",
+    image: "/daocoacoa.png",
+  };
+  const metaTags = { ...defaultMetaTags, ...pageProps.metaTags };
   return (
     <>
       <style global jsx>{`
@@ -85,7 +93,7 @@ export default function CachingApp({ Component, pageProps }: any) {
           overflow: hidden;
         }
       `}</style>
-      <HeadSEO {...pageProps.metaTags} />
+      <HeadSEO {...metaTags} />
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
         <AppContext>{getLayout(<Component {...pageProps} />)}</AppContext>

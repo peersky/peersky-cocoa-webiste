@@ -23,13 +23,20 @@ export async function getStaticProps({ params }: { params: any }) {
   const post: any = postsArray.find(
     (_post: any) => _post.meta.path === params.id
   );
-  const metaTags = {
+  let metaTags = {
     title: post.meta.title,
     description: post.meta.description,
     keywords: post.meta.tags.toLocaleString(),
     url: `https://peersky.xyz/bog/${post.meta.path}}`,
-    image: post.meta?.image && post.meta?.image,
   };
+  if (post.meta.image) {
+    console.log("definingimg");
+    Object.defineProperty(metaTags, "image", {
+      value: post.meta.image,
+      writable: true,
+      enumerable: true,
+    });
+  }
   return {
     props: {
       ...params,
