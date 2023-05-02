@@ -284,5 +284,20 @@ const Signup = () => {
     </Box>
   );
 };
+export async function getStaticProps() {
+  const blogPosts = await require("../../content/");
+  console.log(blogPosts);
+  const postsArray = Object.values(blogPosts).map((post: any) => post.meta);
+  const metaTags = {
+    title: "Multipass protocol",
+    description:
+      "Linking your public blockchain identity to social network domains",
+    keywords:
+      "blog, peersky, peersky.eth, ideas, blockchain, technology, philosophy",
+    url: `https://peersky.xyz/dapps/multipass/signup`,
+  };
+  return { props: { posts: postsArray, metaTags } };
+}
+
 Signup.getLayout = getLayout;
 export default Signup;

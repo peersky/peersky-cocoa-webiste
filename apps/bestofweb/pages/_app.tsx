@@ -85,7 +85,7 @@ export default function CachingApp({ Component, pageProps }: any) {
           overflow: hidden;
         }
       `}</style>
-      {pageProps.metaTags && <HeadSEO {...pageProps.metaTags} />}
+      <HeadSEO {...pageProps.metaTags} />
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
         <AppContext>{getLayout(<Component {...pageProps} />)}</AppContext>
