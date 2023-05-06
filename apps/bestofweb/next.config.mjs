@@ -1,12 +1,13 @@
 import emoji from "remark-emoji";
 import nextMDX from "@next/mdx";
+import remarkGfm from "remark-gfm";
 /** @type {import('next').NextConfig} */
 const withMDX = nextMDX({
   options: {
     // If you use remark-gfm, you'll need to use next.config.mjs
     // as the package is ESM only
     // https://github.com/remarkjs/remark-gfm#install
-    remarkPlugins: [emoji],
+    remarkPlugins: [emoji, remarkGfm],
     rehypePlugins: [],
     // If you use `MDXProvider`, uncomment the following line.
     providerImportSource: "@mdx-js/react",
