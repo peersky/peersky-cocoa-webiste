@@ -1,0 +1,57 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2023-04-30",
+  title: "Private agenda setters with account abstraction and ZKP",
+  description: "",
+  tags: ["account abstraction", "ideas", "governance", "ZK"],
+  path: "aa-for-private-proposals",
+};
+
+# {meta.title}
+
+One of the most common problems in the governance on public blockchain are the privacy concerns. Existing governance solutions while amazingly transparent are not sufficient for building secure governance trough voting processes and this article is an airplane brain-breeze on topic how AA and especially EIP-4337 can contribute towards this.
+
+## Motivation
+
+Robust and cryptographically safe means to ensure private vote submissions exist today - ZKP's. However, the voting itself is just a one component of a larger **governance process**. It actually all starts with setting agenda - a governance proposal that can be voted on.
+
+Today proposals are generally submitted as signed by proposer whose identity (signer address) is not kept secret.
+
+While not discussed broadly as a large problem, this actually is a red flag for any applications or governance processes where proposer must be kept private. Besides obvious bonuses of privacy for a submitter, it also allows to avoid creating authority bias, as well as makes it more complicated for participants to agree on voting against someone.
+
+## How can we solve this with use of Account abstraction and ZKPs?
+
+Let's assume Alice is a member of some Organization, where she has a legitimate power create organization wide proposal.
+
+Alice wants to submit a proposal which she is very shy of. For example proposal is to _extend weekend days to Monday_. Such to some extend can upset some people, and she would prefer to submit this privately. If she might want later to let world know the Hero - she would like to have also an opportunity to generate a proof, whenever she wants, that she is a proposer.
+
+If organization wants to support such private proposal submissions in a decentralized manner, it only needs to setup a proper paymaster account that will agree to pay bundlers for submitting transactions that will not revert (have valid proof).
+
+Now Alice can do following:
+
+1. With use of ZKPs Alice can generate proof that she is legitimate proposer (proof her address is part of merkle tree)
+2. Create random account that has not been used ever before
+3. Create `userOperation` with proposal, proof, and a paymaster contract address, that would pay her transaction fees. Optionally she could submit also a secret message, signed by both her public address and anonymous signer that submits operation, hence having a way to prove later she was a proposer.
+4. Send this transactions to transaction Bundler(s)
+
+VOILA! Now on chain voting can happen! It will be visible what proposal is as well as the, proof of legitimate proposer can be verified directly on-chain.
+
+If later Alice wants to become known, all she needs to do is to take that EOA that she used to submit proposal and her publicly known EOA and create a double signature on a message stating she is the proposer.
+
+This approach while being the most simple one has some drawbacks - to support cases when set of legitimate agenda setters changes, or if number of agenda items must be limited, membership in merkle tree by address can become a problem
+
+## Even better approach
+
+Above example allows Alice to create unlimited number of proposals. If we would like to limit Alice to say one unique proposal, the protocol would actually look very similar to a famous project starting with T letter: :tornado: :dollar:.
+
+In order to participate in such vote Alice would have to:
+
+1. Generate random secret and nullifier
+2. Compute their hash - commitment
+3. Insert commitment in to smart contract merkle tree. Hence the smart contract would be able to track number of proposals Alice can submit to the protocol.
+
+Further process would be same as previously described with only difference that now in submitting user operation, Alice would have to also reveal nullifier part of her commitment, so it could be used to track how many proposals are created.
+
+This approach would allow not only limit number of proposals, but also support a changing number of legitimate proposers since each potential future proposal would be assigned an id in form of commitment prior to the agenda being set. This of course would create an exposure of proposers by fact of them submitting commitements, however this could be mitigated by at governance protocol level easily - i.e. require every participants create equal number of commitements as part of a protocol constraint.
+
+Sounds interesting? Discuss in a [twitter thread](https://twitter.com/iampeersky/status/1652849844166483969?s=20)

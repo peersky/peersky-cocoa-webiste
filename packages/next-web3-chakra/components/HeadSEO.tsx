@@ -1,6 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import propTypes from "prop-types";
+import { title } from "process";
 
 const METATAGS = {
   title: propTypes.string.isRequired,
@@ -52,18 +53,18 @@ export const SEOHead = ({
   description: string;
   url: string;
   image: string;
-  ogType: string;
-  ogURL: string;
-  ogTitle: string;
-  ogDescription: string;
-  ogImage: string;
-  twitterCard: string;
-  twitterURL: string;
-  twitterTitle: string;
-  twitterDescription: string;
-  twitterCreator: string;
-  twitterImageAlt: string;
-  twitterImage: string;
+  ogType?: string;
+  ogURL?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  twitterCard?: string;
+  twitterURL?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterCreator?: string;
+  twitterImageAlt?: string;
+  twitterImage?: string;
 }) => {
   return (
     <Head>

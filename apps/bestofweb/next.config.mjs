@@ -1,7 +1,18 @@
+import emoji from "remark-emoji";
+import nextMDX from "@next/mdx";
 /** @type {import('next').NextConfig} */
-const isProd = process.env.NODE_ENV === "production";
-const withMDX = require("@next/mdx")();
-module.exports = withMDX({
+const withMDX = nextMDX({
+  options: {
+    // If you use remark-gfm, you'll need to use next.config.mjs
+    // as the package is ESM only
+    // https://github.com/remarkjs/remark-gfm#install
+    remarkPlugins: [emoji],
+    rehypePlugins: [],
+    // If you use `MDXProvider`, uncomment the following line.
+    providerImportSource: "@mdx-js/react",
+  },
+});
+export default withMDX({
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   transpilePackages: ["@peersky/next-web3-chakra"],
   reactStrictMode: false,

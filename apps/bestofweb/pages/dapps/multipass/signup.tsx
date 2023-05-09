@@ -279,5 +279,17 @@ const Signup = () => {
     </Box>
   );
 };
+export async function getStaticProps() {
+  const metaTags = {
+    title: "Multipass protocol",
+    description:
+      "Linking your public blockchain identity to social network domains",
+    keywords:
+      "blog, peersky, peersky.eth, ideas, blockchain, technology, philosophy",
+    url: `https://peersky.xyz/dapps/multipass/signup`,
+  };
+  return { props: { metaTags } };
+}
+
 Signup.getLayout = getLayout;
 export default Signup;
