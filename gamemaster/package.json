@@ -1,0 +1,32 @@
+{
+  "name": "gamemaster",
+  "version": "1.0.0",
+  "description": "GameMaster API server",
+  "main": "index.js",
+  "author": "Peersky",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peersky/daococoa.git",
+    "directory": "backend"
+  },
+  "scripts": {
+    "server": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "@daocoacoa/multipass-js": "^0.0.1",
+    "@daocoacoa/bestofgame-js": "^0.0.1",
+    "discord.js": "^14.3.0",
+    "typescript": "^4.9.5",
+    "koa": "^2.14.2",
+    "@koa/router": "^12.0.0",
+    "@peersky/eth-auth": "^1.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19",
+    "ts-node": "^10.9.1",
+    "@types/koa__router": "^12.0.0",
+    "@types/koa": "^2.13.6"
+  }
+}
