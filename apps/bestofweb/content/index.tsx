@@ -4,6 +4,7 @@ import * as NFTRBAC from "./nft-rbac.mdx";
 import * as SAFEENV from "./setting-safe-enviroment-ru.mdx";
 import * as PRIVATEAGENDA from "./aa-for-private-proposals.mdx";
 import * as SEMANTICTOKENIDS from "./token-id-matching-to-msg-sig.mdx";
+import * as SELECTINGGWALLET from "./selecting-a-wallet-ru.mdx";
 export {
   OpenEconomyManifest,
   HowAccountsRu,
@@ -11,4 +12,5 @@ export {
   SAFEENV,
   PRIVATEAGENDA,
   SEMANTICTOKENIDS,
+  SELECTINGGWALLET,
 };
