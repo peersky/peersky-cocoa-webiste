@@ -1,0 +1,138 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2023-03-28",
+  title: "Crypto Guide Part 1 - How a cryptocurrency wallet is structured",
+  description:
+    "Unerstanding how cryptocurrency wallet is made, what are important terms and security considerations to be aware of",
+  tags: ["english", "accounts", "guides"],
+  path: "how-wallets-made-en",
+};
+
+# How a cryptocurrency wallet is structured
+
+A wallet typically refers to a program that performs wallet functions. Although formally speaking, a wallet is not even a specific program that you run on your computer. It refers to your cryptographic derivatives - addresses and keys associated with them. But for the sake of simplicity, let's consider a wallet as a whole - the program and its derivatives.
+
+It's crucial to understand that you can always change the specific wallet program; it is essentially secondary and not strictly necessary. All operations that can be imagined can be performed without it, but that's more at the developer level.
+
+Cryptographic derivatives and mathematics are what matter!
+
+## A bit of Ethereum terminology
+
+In the Ethereum Virtual Machine (EVM), there are _addresses_, also referred to as "_Accounts_."
+**They are always 20-byte numbers (40 characters with a 0x prefix) representing an "account number."**
+
+Address = Account.
+
+Assets can be sent to an _address_, and smart contract code can be deployed on it. In theory, each address has an associated access private key, similar to a bank account number but cooler!
+
+There are many addresses in Ethereum. A lot: 2<sup>160</sup> → ~ 1.46<sup>48</sup>. For comparison, according to the [ESA](https://www.esa.int/Science_Exploration/Space_Science/Herschel/How_many_stars_are_there_in_the_Universe), there are only about 10<sup>24</sup> stars in the observable universe.
+
+If a corresponding access private key has been generated for a specific address, such address is referred to as an **EOA (Externally Owned Account)**.
+
+If, as a result of an operation signed by an **EOA**, some (pseudo) random address has had a piece of software code deployed on it, such an account is called a **Smart Contract**, emphasizing that this account executes some logic when interacting with it.
+
+## Wallet - What's Under the Hood?
+
+In general terms, the purpose of a wallet is simply to store cryptographic keys and secrets and allow the user to use them. We need these keys to be able to sign messages.
+
+_An analogy with real world would be comparing a cryptographic wallet to a bank vault, which can only be accessed by one who has a right a private key.
+Inside this vault, there is a unique seal that you can "**sign**" any document with._
+
+_No one can copy this seal. However, duplicating the key to the vault, on the contrary, is very easy. That's why in this example, it would be correct to say that the drawing of the key is important._
+![KeyDrawing-medium](/key-drawing.webp "Better!-small")
+
+When you leave this "vault", holder of this signed document can use it in any way whatsoever. For example, you send this document to Ethereum, which, like a meticulous accountant, verifies the signature and the document itself. If everything complies with the protocol, it records your documents and signature in its global "ledger."
+
+That's why with the same wallet, you can perform transactions on different protocols such as Ethereum, Polygon, Binance Smart Chain, and so on - its just different ledger books, but the signing seal says the same! This also implies, that assets are not stored "in the wallet"; they reside on the decentralized network, in these different ledger books. The wallet only holds access to this "seal," which the owner can use to manage the assets.
+
+### Cryptographic Components that Make Up a Wallet
+
+1. **Mnemonic**, also known as "seed phrase," "wallet recovery code," or "backup code," is the **most secretive object**. In popular wallets, it usually consists of 12 or 24 randomly chosen words generated during wallet creation.
+2. **Private Key** - a 32-byte number (64 characters) representing access to a specific address. It is derived from the mnemonic.
+3. **Address, or sometimes referenced as Account or an EOA** - a 20-byte number (40 characters with a `0x` prefix) representing your "account number."
+4. **Public Key** - a 32-byte number, less commonly known. It is derived from the private key and can be used to receive encrypted messages.
+5. **Password** - Wallet software specific property. Each program may have different requirements for it. You enter it to unlock the program. The private keys on the disk in the software wallet storage are encrypted with this password.
+
+#### Interconnection of Components
+
+The **mnemonic** is used to calculate the **private keys** of all accounts in sequence, up to the specific account index number desired by the user.
+
+_Each account in the wallet has its own account number._
+
+The **public key** is derived from the private key, and the **address** of the specific account is derived from the public key.
+
+I won't go into the details of the calculations here. For enthusiasts, the details are described in cryptography journals. You can find references in the [Ethereum Whitepaper](https://ethereum.org/669c9e2e2027310b6b3cdce6e1c52962/Ethereum_Whitepaper_-_Buterin_2014.pdf).
+
+### Security Considerations
+
+**Mnemonic**
+
+The most crucial secret. You only need to know it in order to always recover the other components. In practice, this means that **you must never lose it and never show it to anyone**.
+
+If your mnemonic has been compromised, the only correct solution is to urgently withdraw all the assets from all the addresses that are part of that wallet (here, by "wallet" we mean the set of addresses and keys you have used, not just a specific program).
+
+_For example, you may have used the same mnemonic in two or three different wallet programs with different numbers of generated accounts. You need to withdraw from all of these accounts._
+
+It is also necessary to isolate or redirect all contracts using the accounts related to this mnemonic. (Throughout the text, I will assume this to be part of "assets".)
+
+**Private Key**
+
+This is the second most important secret. If it is compromised, then only the specific **account** associated with it is no longer secure, and you need to move the assets to another address. The rest of the accounts remain secure.
+
+**Address and Public Key**
+
+By their nature, these are public information and do not pose a direct threat, except for providing additional information about the accounts you use. _In some cases, you may want to conceal the fact that an account is part of your wallet._
+
+**Password**
+
+As we have already discussed, the key, and even it's "drawings" - mnemonic, are easily copied. In the operation of a software wallet, the keys and mnemonic are stored on the file system of your device, so you don't have to enter them every time. To protect these files from being compromised, they are encrypted with a password.
+If the password is compromised, and you are **certain** that the **files** encrypted with this password have not been compromised, then it is sufficient to change the password.
+
+However, if there is even a slight possibility that an adversary had access to your system, it is advisable to immediately bring up new mnemonic and all derived from it accounts, and transfer all assets to new structure. **This should be done if the file system has been compromised, even if the password has not been disclosed, as the password could be a subject of brute-force attacks.**
+
+**Conclusion on Security Overview**
+
+It's as if we are in a quantum world - with numbers of immense magnitude comparable to the size of the universe, and at the same time with the ever-present probability of unexpected events.
+It is important to realize that all the cryptographic methods we use are based on probabilities. Extremely low, byt still a probabilities of someone accidentally guessing your key or mnemonic. There is always a probability.
+
+_As a remedy of a kind, I can tell that similar probabilistic assumptions exist in any other authentication system, such as online banking, since cryptography used there is essentially the same._
+
+Also that is why the mnemonic is so long, and that is why the password used to encrypt your data and files must be complex - **we must ensure high entropy** to lower down probabily of someone "guessing" our secrets.
+
+### RPC Endpoint
+
+When you click the "Send" button, your wallet connects via HTTP to a server - the **entry point** into the distributed ledger protocol that you are using. If you wallet allows to configure this endpoint, than usually there will be a settings field of your wallet under the keyword "RPC URL" for each specific network you are working with.
+
+One takeaway of this architecture is that "**tracking you by IP** is possible.". But not for everyone, only those who have access to analytics from the RPC server that serves you. Ahh, this book never gets old... ([Big brother is watching you ](<https://en.wikipedia.org/wiki/Big_Brother_(Nineteen_Eighty-Four)>)).
+
+![bigbro-medium](/big-bro.png "big brother is watching you")
+
+That's why when you create a wallet in popular software wallet apps, you will be asked to agree to the terms of use, which will include these nuances.
+
+_The only effective way to bypass this kind of tracking is to run your own blockchain node for each protocol you will be working with and accordingly reconfigure the RPC endpoints of your wallet._
+
+**RPC endpoints are conditionally free**: when you create a (software) wallet, it will be configured with a free public link by default. However, if you want your transactions to be more reliably forwarded to the blockchain or you want to process a large volume of transactions, then you will need either your own node or register with services that provide RPC endpoint services, such as [Infura](https://infura.io/) or [Alchemy](https://www.alchemy.com/).
+
+## **Types of Wallets**
+
+- **Centralized** (**custodial**) - Essentially, it is not a cryptographic wallet in the full sense of the word. By using it, you rely on the wallet provider as a trusted intermediary storing your assets. Examples of such wallets are exchange accounts like Binance or Coinbase, or [OpenZeppelin Relays](https://docs.openzeppelin.com/defender/relay). In your account, they provide you with an address to receive funds, but the private keys are hidden from you.
+
+- **Software** (**non-custodial** or **self-custodial**) - Now we're talking. With this type, you store your secrets yourself, and you have full control over your funds. It can come in different forms such as a browser extension, a mobile application, or a command-line interface.
+
+- **Hardware Wallet** - It stores cryptographic primitives inside a special device, similar to a USB flash drive. It is highly secure, but if you lose or damage the device - consider your assets from now are a museum exhibits. It is essentially self-custodial. Great combination with multisignature wallets (see below)
+
+In the case of self-custodial, "With great power comes great responsibility."
+
+### Contract Wallets (MultiSigs)
+
+These are **Smart Contracts** that perform wallet functions within the blockchain. They provide an additional level of security, mainly used for corporate accounts as they allow for additional access control logic. For example, time delays, emergency locks, multi-signature requirements, and more.
+
+Such wallets are considered the most reliable among all options, even though they are still controlled by the same Externally Owned Accounts (EOA).
+
+#### Decentralized Autonomous Organization
+
+DAO treasuries can be seen as a subtype of such wallets actually, but this is larger topic which involves not just ability to store and transfer assets, but also govern these, which goes beyond this article
+
+## Conclusion
+
+I hope this article has helped you understand the basic structure of crypto wallets. In the next article, I will explain how to safely create a wallet and perform wallet operations in a way that minimizes any foreseeable risks.
