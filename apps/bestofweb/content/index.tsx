@@ -8,6 +8,7 @@ import * as SEMANTICTOKENIDS from "./token-id-matching-to-msg-sig.mdx";
 import * as SELECTINGGWALLET from "./selecting-a-wallet-ru.mdx";
 import * as SELECTINGGWALLETEN from "./selecting-a-wallet-en.mdx";
 import * as HowAccountsEn from "./how-wallets-made-en.mdx";
+import * as SecuringKeys from "./securing-private-keys-bp.mdx";
 export {
   OpenEconomyManifest,
   HowAccountsRu,
@@ -19,4 +20,5 @@ export {
   HowAccountsEn,
   SAFEENVEN,
   SELECTINGGWALLETEN,
+  SecuringKeys,
 };
