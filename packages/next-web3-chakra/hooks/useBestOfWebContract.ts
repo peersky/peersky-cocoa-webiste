@@ -444,20 +444,7 @@ export const useBestOfWebContract = ({
       }
     }
   }, [web3ctx.account, _gsd?.createdBy, gameId, playersGame.data, setIsInGame]);
-  const gameStatus = _gsd?.isFinished
-    ? gameStatusEnum["finished"]
-    : _gsd?.isOvetime
-    ? gameStatusEnum["overtime"]
-    : _gsd?.isLastTurn
-    ? gameStatusEnum["lastTurn"]
-    : _gsd?.isOpen
-    ? gameStatusEnum["open"]
-    : _gsd?.gameMaster
-    ? gameStatusEnum["created"]
-    : gameStatusEnum["notFound"];
-  // const poolURI = useURI({ link: poolState.data?.uri });
-  // const contractJSON = useURI({ link: contractState.data?.contractURI });
-  console.log("playersGame", playersGame.data?.toString());
+
   return {
     contractState,
     rankTokenURI,
@@ -478,7 +465,6 @@ export const useBestOfWebContract = ({
     getArtifact,
     joinGame,
     approveAll,
-    gameStatus,
     isGameCreator,
     isInGame,
     previousTurnStats,

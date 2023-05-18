@@ -12,7 +12,9 @@
   "license": "MIT",
   "dependencies": {
     "@daocoacoa/multipass-js": "^0.0.1",
-    "discord.js": "^14.3.0"
+    "@daocoacoa/bestofgame-js": "^0.0.1",
+    "discord.js": "^14.3.0",
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.19",

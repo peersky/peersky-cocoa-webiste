@@ -7,3 +7,4 @@ export * from "./useRequirements";
 export * from "./useRouter";
 export * from "./useStorage";
 export * from "./useToast";
+export * from "./useGameMasterBackend";

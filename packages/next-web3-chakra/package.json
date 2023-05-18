@@ -60,7 +60,8 @@
     "styled-components": "^5.3.6",
     "uuid": "^8.3.2",
     "web3": "^1.8.2",
-    "web3-utils": "^1.8.2"
+    "web3-utils": "^1.8.2",
+    "@peersky/eth-auth": "^2.0.0"
   },
   "repository": {
     "type": "git",

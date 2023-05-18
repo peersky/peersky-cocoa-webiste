@@ -10,16 +10,17 @@ import {
   ChainInterface,
   GetMethodsAbiType,
   SupportedChains,
-  TokenInterface,
 } from "../../types";
 import router from "next/router";
 export const MAX_INT =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 import { BaseContract, ContractFunction, ethers } from "ethers";
-import { ExternalProvider } from "@ethersproject/providers";
 import { useMutation } from "react-query";
-import useToast from "../../hooks/useToast";
-import { Spinner } from "@chakra-ui/react";
+import {
+  isOutdated,
+  parseToken,
+  signAccessToken,
+} from "@peersky/eth-auth";
 declare global {
   interface Window {
     ethereum: any;
@@ -347,6 +348,30 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
       }
     }
   }, [chainId, targetChain, account]);
+
+  const [token, setToken] = useState(localStorage.getItem("EEAToken"));
+  React.useEffect(() => {
+    if (!!signer) {
+      if (!token) {
+        signAccessToken(signer, 60 * 60 * 24 * 30).then((t) => setToken(t));
+      } else {
+        if (parseToken(token).address !== account || isOutdated(token)) {
+          signAccessToken(signer, 60 * 60 * 24 * 30).then((t) => setToken(t));
+        }
+      }
+    }
+  }, [account, token, signer]);
+
+  React.useEffect(() => {
+    if (
+      token &&
+      account &&
+      !isOutdated(token) &&
+      parseToken(token).address === account
+    ) {
+      localStorage.setItem("EEAToken", token);
+    }
+  }, [account, token]);
 
   // onMount check if there is provided address by provider already, if yes - set it in this state and provide to web3
   // As well as try to look up for chainId in list of supported chains

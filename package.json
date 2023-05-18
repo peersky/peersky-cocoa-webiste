@@ -6,7 +6,8 @@
   "scripts": {
     "frontend:dev": "source .secrets/dev.env && yarn workspace bestofweb run dev",
     "frontend:build": "yarn workspace bestofweb run build",
-    "discord:dev": "source .secrets/bot_mumbai.env && yarn workspace discord-bot run dev"
+    "discord:dev": "source .secrets/bot_mumbai.env && yarn workspace discord-bot run dev",
+    "gm:dev": "source .secrets/bot_mumbai.env && yarn workspace gamemaster run dev"
   },
   "keywords": [],
   "author": "Tim Pechersky (@Peersky)",
@@ -63,6 +64,7 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "bots/*"
+    "bots/*",
+    "gamemaster/"
   ]
 }

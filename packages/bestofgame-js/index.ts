@@ -1,18 +1,33 @@
 import {
   BestOfDiamond,
   LibCoinVending,
-} from "../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
-import { RankToken } from "../../types/typechain";
-import { BigNumberish, BytesLike, ethers } from "ethers";
-import deploymentMumbai from "../../deployments/mumbai/BestOfGame.json";
-import rankDeploymentMumbai from "../../deployments/mumbai/RankToken.json";
-import { SupportedChains } from "../../types";
+} from "./types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/BestOfDiamond";
+import { RankToken } from "./types/typechain";
+import { BigNumberish, BytesLike, ethers, Wallet } from "ethers";
+import deploymentMumbai from "./deployments/mumbai/BestOfGame.json";
+import rankDeploymentMumbai from "./deployments/mumbai/RankToken.json";
+import { ProposalMessage, ProposalTypes, SupportedChains } from "./types";
+import { gameStatusEnum } from "./types/enums";
+
 const artifacts: Partial<
-  Record<SupportedChains, { contractAddress: string; abi: any[] }>
+  Record<
+    SupportedChains,
+    {
+      contractAddress: string;
+      abi: any[];
+      version: string;
+      name: string;
+      chainId: number;
+    }
+  >
 > = {
   mumbai: {
     contractAddress: deploymentMumbai.address,
     abi: deploymentMumbai.abi,
+    //ToDo: This should be based on deployment artifact somehow
+    version: "0.0.1",
+    name: "BestOfGame",
+    chainId: 80001,
   },
 };
 const RankTokenArtifacts: Partial<
@@ -88,6 +103,16 @@ export const getRankTokenBalance =
     return await contract.balanceOf(account, tokenId);
   };
 
+export const getCurrentTurn = async (
+  chain: SupportedChains,
+  provider: ethers.providers.Web3Provider,
+  gameId: string
+) => {
+  const contract = getContract(chain, provider);
+  const currentTurn = await contract.getTurn(gameId);
+  return currentTurn;
+};
+
 export const getGameState = async (
   chain: SupportedChains,
   provider: ethers.providers.Web3Provider,
@@ -106,6 +131,7 @@ export const getGameState = async (
       );
     })
   );
+
   const scores = await contract.getScores(gameId);
   const currentTurn = await contract.getTurn(gameId);
   const isFinished = await contract.isGameOver(gameId);
@@ -116,6 +142,20 @@ export const getGameState = async (
   const gameRank = await contract.getGameRank(gameId);
   const players = await contract.getPlayers(gameId);
   const canStart = await contract.canStartGame(gameId);
+
+  const gamePhase = isFinished
+    ? gameStatusEnum["finished"]
+    : isOvetime
+    ? gameStatusEnum["overtime"]
+    : isLastTurn
+    ? gameStatusEnum["lastTurn"]
+    : currentTurn.gte(0)
+    ? gameStatusEnum["started"]
+    : isOpen
+    ? gameStatusEnum["open"]
+    : gameMaster
+    ? gameStatusEnum["created"]
+    : gameStatusEnum["notFound"];
 
   return {
     gameMaster,
@@ -131,13 +171,13 @@ export const getGameState = async (
     gameRank,
     players,
     canStart,
+    gamePhase,
   };
 };
 
 export const createGame =
   (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameMaster: string, gameRank: string, gameId?: BigNumberish) => {
-    console.log("createGame", gameMaster, gameRank.toString());
     const contract = getContract(chain, signer);
     const reqs = await contract.getContractState();
 
@@ -166,7 +206,6 @@ export const joinGame =
   (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: string) => {
     const contract = getContract(chain, signer);
-    console.log("requesting reqs", gameId);
 
     const reqs = await contract.getJoinRequirements(gameId);
     const values = reqs.ethValues;
@@ -260,7 +299,6 @@ export const submitVote =
 export const setJoinRequirements =
   (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: string, config: LibCoinVending.ConfigPositionStruct) => {
-    console.log("config", config, gameId);
     const contract = getContract(chain, signer);
     return await contract.setJoinRequirements(gameId, config);
   };
@@ -360,4 +398,119 @@ export const getOngoingVoting =
     const contract = getContract(chain, signer);
     const currentTurn = await contract.getTurn(gameId);
     return getVoting(chain, signer)(gameId, currentTurn);
+  };
+
+export class GameMaster {
+  EIP712name: string;
+  EIP712Version: string;
+  signer: ethers.Wallet;
+  verifyingContract: string;
+  chainId: string;
+  constructor({
+    EIP712name,
+    EIP712Version,
+    verifyingContract,
+    signer,
+    chainId,
+  }: {
+    EIP712name: string;
+    EIP712Version: string;
+    verifyingContract: string;
+    signer: ethers.Wallet;
+    chainId: string;
+  }) {
+    this.EIP712Version = EIP712Version;
+    this.EIP712name = EIP712name;
+    this.signer = signer;
+    this.chainId = chainId;
+    this.verifyingContract = verifyingContract;
+  }
+
+  getTurnSalt = ({
+    gameId,
+    turn,
+  }: {
+    gameId: BigNumberish;
+    turn: BigNumberish;
+  }) => {
+    return ethers.utils.solidityKeccak256(
+      ["bytes32", "uint256", "uint256"],
+      [ethers.utils.keccak256(this.signer.privateKey), gameId, turn]
+    );
+  };
+
+  getTurnPlayersSalt = ({
+    gameId,
+    turn,
+    proposer,
+  }: {
+    gameId: BigNumberish;
+    turn: BigNumberish;
+    proposer: string;
+  }) => {
+    return ethers.utils.solidityKeccak256(
+      ["address", "bytes32"],
+      [proposer, this.getTurnSalt({ gameId, turn })]
+    );
+  };
+}
+
+export class Player {
+  EIP712name: string;
+  EIP712Version: string;
+  provider: ethers.providers.Web3Provider;
+  verifyingContract: string;
+  chainId: string;
+
+  constructor({
+    EIP712name,
+    EIP712Version,
+    verifyingContract,
+    provider,
+    chainId,
+  }: {
+    EIP712name: string;
+    EIP712Version: string;
+    verifyingContract: string;
+    provider: ethers.providers.Web3Provider;
+    chainId: string;
+  }) {
+    this.EIP712Version = EIP712Version;
+    this.EIP712name = EIP712name;
+    this.provider = provider;
+    this.chainId = chainId;
+    this.verifyingContract = verifyingContract;
+  }
+}
+export const signProposalMessage =
+  (chain: SupportedChains, proposer: ethers.providers.JsonRpcSigner) =>
+  async ({
+    proposal,
+    turn,
+    gameId,
+    salt,
+  }: {
+    proposal: string;
+    turn: string;
+    gameId: string;
+    salt: string;
+  }) => {
+    // ProposalMessage
+    const message: ProposalMessage = {
+      proposal: proposal,
+      turn: turn,
+      gameId: gameId,
+      salt: salt,
+    };
+    const artifact = getArtifact(chain);
+    const domain = {
+      name: artifact.name,
+      version: artifact.version,
+      chainId: artifact.chainId,
+      verifyingContract: artifact.contractAddress,
+    };
+    const s = await proposer._signTypedData(domain, ProposalTypes, {
+      ...message,
+    });
+    return s;
   };

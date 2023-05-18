@@ -6,24 +6,17 @@ import {
   Badge,
   Td,
   useDisclosure,
+  Spinner,
 } from "@chakra-ui/react";
 import useBestOfWebContract from "../hooks/useBestOfWebContract";
 import Web3Context from "../providers/Web3Provider/context";
 import useAppRouter from "../hooks/useRouter";
 import RouteButton from "./RouteButton";
+import { gameStatusEnum } from "../../../types/enums";
 const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
   const web3ctx = useContext(Web3Context);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const game = useBestOfWebContract({ gameId, web3ctx });
-  enum gameStatusEnum {
-    created = "created",
-    open = "open",
-    started = "started",
-    lastTurn = "last turn",
-    overtime = "overtime",
-    finished = "finished",
-    notFound = "not found",
-  }
 
   const router = useAppRouter();
   const [isGameCreator, setIsGameCreator] = useState(false);
@@ -45,17 +38,8 @@ const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
       setIsInGame(false);
     }
   }, [web3ctx.account, _gsd?.createdBy]);
-  const gameStatus = _gsd?.isFinished
-    ? gameStatusEnum["finished"]
-    : _gsd?.isOvetime
-    ? gameStatusEnum["overtime"]
-    : _gsd?.isLastTurn
-    ? gameStatusEnum["lastTurn"]
-    : _gsd?.isOpen
-    ? gameStatusEnum["open"]
-    : _gsd?.gameMaster
-    ? gameStatusEnum["created"]
-    : gameStatusEnum["notFound"];
+  if (!_gsd) return <Spinner />;
+
   return (
     <>
       <Td>{gameId}</Td>
@@ -65,10 +49,10 @@ const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
       <Td>{_gsd?.gameMaster}</Td>
       <Td>{_gsd?.createdBy}</Td>
       <Td>
-        <Badge>{gameStatus}</Badge>
+        <Badge>{_gsd.gamePhase}</Badge>
       </Td>
       <Td textAlign="right">
-        {isGameCreator && gameStatus == "created" && (
+        {isGameCreator && _gsd.gamePhase == "created" && (
           <Button
             onClick={() =>
               router.appendQueries({
@@ -81,11 +65,11 @@ const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
           </Button>
         )}
 
-        {isInGame && gameStatus === gameStatusEnum.open && (
+        {isInGame && _gsd.gamePhase === gameStatusEnum.open && (
           <Button>Leave game</Button>
         )}
 
-        {gameStatus != "created" && (
+        {_gsd.gamePhase != "created" && (
           <RouteButton
             variant="outline"
             href={`bestplaylist/${gameId}`}
@@ -94,7 +78,7 @@ const _GamePreview = ({ gameId, ...props }: { gameId: string }) => {
             View
           </RouteButton>
         )}
-        {gameStatus == "created" && isGameCreator && (
+        {_gsd.gamePhase == "created" && isGameCreator && (
           <Button onClick={() => bestContract.openRegistration.mutate(gameId)}>
             Open registration
           </Button>
