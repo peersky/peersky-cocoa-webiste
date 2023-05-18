@@ -148,7 +148,6 @@ const Blog = (props: any) => {
 
 export async function getStaticProps() {
   const blogPosts = await require("../../content/");
-  console.log(blogPosts);
   const postsArray = Object.values(blogPosts).map((post: any) => post.meta);
   const metaTags = {
     title: "Peersky.eth blog",

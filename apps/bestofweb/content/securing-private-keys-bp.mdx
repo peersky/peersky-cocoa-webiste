@@ -1,0 +1,169 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2023-05-17",
+  title: "Securing private keys best practices",
+  description:
+    "How to make sure your private keys are organized and stored in best possible way",
+  tags: ["english", "best practice"],
+  path: "securing-private-keys-bp",
+};
+
+# {meta.title}
+
+When we talk about blockchain technologies we always must assume that no matter how many abstractions we create, there always will be a point when everything winds down to having private keys and keeping them secure.
+
+It is true that smart contract wallets and perspectives of account abstraction can bring in great security benefits and ease requirement of using these keys all the time, but at the end of the day, someone has to sign transactions, and these signer keys always will stay a point of failure due to very nature of cryptography.
+
+Hence in this article I want to share with you very high level best practices of how to keep your private keys secure.
+One of the reasons for such a topic being quite complicated to share with a reader is that it actually must involve some stages where your own creativity and secret planning becomes crucial. Hence, here I will try to give high level recommendations without giving you a particular script of action.
+
+## Prerequisites
+
+Before even getting to the topic of securing private keys, you must understand topics such as: _How a cryptocurrency wallet is structured, what are primitives from which it consists and have a general understanding of how to ensure a safe working environment and what kind of software you are going to use._
+
+For those who are in doubt I have a dedicated writeup on these topics:
+
+[Crypto Guide Part 1 - How a cryptocurrency wallet is structured](../how-wallets-made-en)
+
+[Crypto Guide Part 2 - Best Security Practices](../setting-safe-enviroment-en)
+
+[Crypto Guide Part 3 - Selecting a software wallet](../selecting-a-wallet-en)
+
+## Best practices
+
+_Below you will find a list of items that I consider to be a good practice when planning and using private keys_
+
+### Planning
+
+First of all, the most responsible approach would be to plan your own private key “infrastructure”.
+Treat this as **your secret sauce** that on its own is already a secret that you do not share with anyone.
+
+#### 1. Define scopes
+
+We all have different projects, or in a broader meaning scopes; As example you might have scopes such as “Personal”, “Work”, “Family” etc.
+
+Or you might have scopes within the organization you work with: “Project A”, “Project B”, “Client A”, “Client B” etc.
+
+Understand clearly what scopes you have and write them down
+
+#### 2. Plan for scope isolation
+
+Within a scope it might be acceptable to have deterministic dependencies (_i.e. deriving private keys from the same seed phrase_).
+
+**This should never be the case in different scopes** though.
+Keep all your private key infrastructure isolated by each scope.
+
+Use different browser profiles, user accounts or even computers for different scopes.
+
+#### 3. Plan for least privileged roles
+
+There is absolutely no reason to use the same account everywhere. Different actions you take on a chain might have different security implications.
+
+Plan for it by answering following:
+
+- What kinds of activity you might be doing
+- What are the least privileges required for each kind of activity
+- What are timing requirements for each kind of activity
+- What are implications of each kind of activity being compromised
+
+Once you answer these questions you can group all possible activities into groups that are united by least privileges required.
+
+_Think of it as a level of control each activity shall have over the total value of your assets_.
+
+Good practice would be to define at least cold wallet role and operational wallet role. Depending on your scope you might want to have other roles such as micropayments role for use on mobile devices, or deployer role for smart contract DevOps etc.
+
+#### 4. Understand Timing constraints
+
+These groups further can be refined by timing requirements for each activity. You might find that some roles require immediate access, others are okay to wait for a few hours and some others you might even use time locking mechanisms on.
+
+#### 5. Plan Key generation and storage workflow
+
+By now you should have understood what roles you have, and what timing constraints you have for each role as well as what are security implications.
+
+Now it’s time for your secret sauce - create a plan for these keys to be created and stored.
+
+Keys for High value and lower timing requirements should be planned to be reconstructed for each operation. Keys with least value and high speed requirements can be planned to be stored in software wallets.
+
+For keys that require sharing to other people, or organizational requirements such as ability to revoke key from a user - it's a good thought to use secure keys that are stored on secure custodial accounts, i.e. [OpenZeppelin Relays](https://docs.openzeppelin.com/defender/relay)
+
+**Use seed phrases wisely**
+
+Seed phrases are great because you are able to enhance security by easily generating the required number of EOAs.
+
+Despite that often security seed phrase provides is not utilized to its full capability. Part of the fault is wallet apps such as Metamask or Brave, which force users to have a seed phrase in order to use a wallet and do not offer a way to use wallets with just importing private keys.
+
+**Plan for an emergency EOA**
+
+There is always a probability that something goes wrong.
+
+Might be a matter of minutes or even seconds before your assets are lost.
+
+It’s a great planning practice to have in mind workflow by which you will determine the address to which to flush compromised accounts. You might pre-generate that address, or might just have a plan how to generate one.
+
+You can also plan to use tools like [OpenZeppelin Defender](https://www.openzeppelin.com/defender) to prepare automatic scripts for such a case.
+
+#### 6. Plan for key rotation
+
+In case of high value cold wallet storage, it might be a reasonable to change all signing keys or seed phrases related to once key was once reconstructed.
+
+It also makes sense to rotate other keys that are stored in wallet on file systems. That way even if encrypted keys were hijacked and after a while compromised, you have a good chance of avoiding any loss of control due to keys rotation procedure.
+
+### Storing keys
+
+_Once you got the plan ready, you eventually will have to store some of these keys if not all of them somewhere._
+
+#### Don’t store seed phrases in your wallet
+
+This is not the best approach. With a good plan in mind, you can instead create a seed phrase once, generate a bunch of accounts according to your plan, import private keys into corresponding apps and then remove the seed phrase from the wallet file system.
+
+Then even if your file system gets compromised, and the adversary manages to break the encryption password, all he gets is only a few private keys, while the seed phrase stays out of his reach, while you still benefit from being able to quickly reconstruct a big set of your infrastructure from a single secret.
+
+#### Avoid storing seed phrase as text
+
+Even if you use a piece of paper. The problem here is that common wordlists are known. Usually these are 2048 words that are based on BIP-39 and can be easily recognized.
+
+For example:
+
+- [Wordlist that Metamask uses](https://github.com/MetaMask/scure-bip39/blob/main/src/wordlists/english.ts)
+- [Wordlist that EthersJS uses (encoded)](https://github.com/ethers-io/ethers.js/blob/main/src.ts/wordlists/lang-en.ts)
+
+#### MultiSignature wallets for cold storage
+
+Benefit of having a multi signature wallet is that you are able to not only store assets in a more secure way, but also have some kind of social recovery mechanism. You still need an EOAs to control it, but now you can store these keys in different locations.
+
+#### Use Multi-party computing for EOAs
+
+Drawback of multisig wallets is that they still are controlled by EOAs. Now when it comes to storing private keys or even a seed phrase it is best practice to split up this secret into shares.
+
+In such cases you can use various MPC tools:
+
+- [Shamir’s Shared Sharing CLI tool](http://point-at-infinity.org/ssss/) (Not an HTTPS website :( But you will find there C source code with makefile, so you can self-inspect that )
+- [Fireblocks MPC](https://www.fireblocks.com/platforms/mpc-wallet/) wallet for enterprise grade security
+- [ZenGo MPC wallet](https://zengo.com/mpc-wallet/)
+- [Web3Auth TorUs wallet](https://app.tor.us/) can be considered as MPC as well
+
+Simplest way to use it would be to use Shamir’s Shared Sharing CLI tool. For MacOs you can get distribution from `brew ssss`.
+
+You can distribute shares to different places that are well known only to you. Simple 2 out of 3 shares schema gives you one key to store as a recovery option in case one share is lost.
+
+### Some helper tools in conclustion
+
+I have written some tools that might be useful for more advanced users. Feel free to use.. on your own risk :)
+
+#### [Ethers-cli helper tool](https://github.com/ethers-io/ethers-cli)
+
+- random wallet
+- execute transaction from CLI
+- print all accounts of a mnemonic to some set index limit
+- Find private key for an account if given a mnemonic and maximum index
+- Fund accounts with gas token from a selected account.
+
+#### [Freestyle wallet](https://github.com/peersky/freestyle_wallet)
+
+If you want to use your own seed phrase, instead of predefined wordlists, this tool can help you with that.
+
+N.B. Take caution when using - make sure your phrase has high entropy value!
+
+# Let me know what you think
+
+[Here is a twitter thread](https://twitter.com/iampeersky/status/1658857783830413312?s=20), please leave any comments for this article there.

@@ -1,0 +1,220 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2023-04-30",
+  title: "Crypto Guide Part 3 - Selecting a software wallet",
+  description:
+    "How to choose an non-custodial wallet app for EVM using Ethereum Wallet selector",
+  tags: ["english", "accounts", "guides"],
+  path: "selecting-a-wallet-en",
+};
+
+# {meta.title}
+
+So, if you have already familiarized yourself with [how a crypto wallet works](/blog/how-wallets-made-en/) and know how to follow [best practices for working with crypto](/blog/setting-safe-enviroment-en/), I congratulate you on being ready to dive into practice!
+
+In this article, we will explore how to choose software to manage your digital wallet.
+
+I could simply list the wallets I recommend, but my goal here is to show you a pattern how to evaluate wallets. Over time, wallet offerings and context may change, so this article focuses on how to find a wallet from the available choices.
+
+**A Small Disclaimer** - We will be discussing wallets designed for EVM compatibility, but the same principles can be applied to other chains as well.
+
+**Disclaimer** - All software mentioned here reflects the author's personal preferences. This website is free from advertising and product placement.
+
+Let's get started!
+
+## Choosing a Wallet with the Ethereum Wallet Selector
+
+We know we want to set up a wallet, which one should we choose? The Ethereum Foundation offers a great tool called the [wallet selector](https://ethereum.org/en/wallets/find-wallet/). I highly recommend exploring the Ethereum website a bit more, where you can find [useful practices](https://ethereum.org/en/wallets/)!
+
+Let's open the tool... so many options, so many filters. What should we do?
+
+![wallet-selector-medium](/wallet-selector-1.png "wallet-selector")
+
+### Filtering the Important Features
+
+Let's go to the "Feature Filters" tab as it will allow us to fine-tune what we want.
+
+#### 1. Device
+
+There's no need to try to find a wallet that supports all platforms simultaneously. As we already [know](/blog/how-wallets-made-en/), you can switch wallet software while preserving your keys, so **choose the best option for each platform**.
+
+Next, the question may arise regarding Desktop vs Browser. When working with a Web3 wallet, you usually need it specifically in the **browser**.
+
+**I will now consider the selection process specifically for this option**. However, an attentive reader will notice that after choosing Browser from the available programs, all social-recovery enabled solutions disappear. Don't worry, we will come back to them later.
+
+#### 2. Security
+
+Check both options - Open Source and Non-custodial.
+
+![wallet-selector-security-medium](/wallet-selector-security.png "security options")
+
+#### 3. Features
+
+![features-features-everywhere-medium](/features-features-everywhere.jpg "features-features-everywhere")
+
+What I recommend checking:
+
+- **RPC importing** - _means you can choose the entry point into the blockchain_
+- **Layer 2** - _support for blockchain scaling solutions, a must-have_
+- **Token importing** - _if you plan to work with ERC20 tokens, it's a must-have_
+- **Fee optimization** - _smart transaction cost optimization_
+- **ENS support** - _Support for [ENS domains](https://ens.domains/) allows entering the recipient in a readable format, for example, my address is `Peersky.eth`_
+
+The rest is up to personal preference.
+
+Let's see what's left. As of May 2, 2023, the shortlist includes 6 wallets:
+
+- [MetaMask](https://metamask.io/)
+- [Web3Auth](https://web3auth.io/)
+- [Frame](https://frame.sh/)
+- [OneKey](https://onekey.so/)
+- [Brave](https://brave.com/wallet)
+- [BlockWallet](https://blockwallet.io/)
+
+### Exploring Each Option
+
+Now it's time to decide what to choose. Let's examine each wallet for developer reputation, code solidity, and unique features.
+
+#### MetaMask
+
+MetaMask can truly be considered the most solid, so to speak, veteran of the blockchain.
+
+- MetaMask is developed by one of the largest companies in the Ethereum ecosystem, [ConsenSys](https://consensys.net/).
+- The extension's [GitHub repository](https://github.com/MetaMask/metamask-extension) has almost 10,000 stars.
+- There is an active [Bug Bounty](https://hackerone.com/metamask?type=team) program that rewards hackers for finding vulnerabilities.
+- Excellent [documentation](https://docs.metamask.io/wallet) for developers.
+
+Some disadvantages include:
+
+- Not the most user-friendly UX of an browser extension.
+- No option to opt-out of mnemonic storage.
+- Lack of NFT import (although they promise that this will change soon).
+
+**Overall, MetaMask can rightly be considered the most authoritative wallet**. If you need one wallet that will definitely work with any dApp, this is our choice!
+
+#### Web3Auth
+
+Web3Auth is truly a revolutionary approach to how private keys are stored. Instead of storing everything on the device, it uses a multi-party computing scheme that allows the "key" to be divided into three parts, with at least two parts required for its reconstruction. One part is stored on your device, the second part is stored in OAuth (you can log in with your Google account!), and the third part can be saved as a recovery method.
+
+Web3Auth is a technology that allows logging in to a website without a traditional wallet while remaining a non-custodial solution. The wallet itself is called **Torus**.
+
+- Developed by Torus Labs Pte Ltd, a Singaporean company that has received $15 million USD in investments.
+- The [web sdk repository](https://github.com/Web3Auth/web3auth-web) has 322 stars on GitHub.
+- There is an active [Bug Bounty](https://web3auth.io/docs/contribute/bug-bounty) program.
+- Works with external applications through [WalletConnect](https://walletconnect.com/).
+
+Some disadvantages include:
+
+- Working with external applications is possible **only** through [WalletConnect](https://walletconnect.com/).
+- Despite the open-source codebase, the application is entirely web-based, which means there may be issues with the app.
+- The MPC 2/3 login scheme means that if a hacker gains access to your OAuth and device, it could result in the loss of your wallet.
+
+Overall, Web3Auth is truly an impressive and advanced technology. It's interesting to experiment with, but I wouldn't recommend it as your primary wallet.
+
+#### Frame
+
+[Frame](https://frame.sh/) is a desktop application that allows you to interact with any dApp. The developers focus on privacy, good UX, hardware wallet support, and cross-chain operability.
+
+- Developed by independent developer [Jordan Muir](https://github.com/floating) from Brooklyn, NY.
+- The [repository](https://github.com/floating/frame) has 870 stars on GitHub.
+- No active bug bounty program found.
+
+Some drawbacks to consider:
+
+- Individual developer. This can be both good (less concern about data collection) and bad (less guarantee of stability).
+
+Overall, Frame can be a good solution for those planning to use a hardware wallet. If you decide to use this wallet, I recommend conducting your own research.
+
+#### OneKey
+
+[OneKey](https://onekey.so/) primarily focuses on hardware wallets but also provides wallets for browsers, desktops, and mobile devices. However, it does not have any obvious advantages over other wallets.
+
+- Developed by a company registered in [Hong Kong](https://www.crunchbase.com/organization/torus-labs) that raised $20M USD in Series A funding.
+- The [application repository](https://github.com/OneKeyHQ/app-monorepo) has 1400 stars on GitHub.
+- There is an active [bug bounty program](https://github.com/OneKeyHQ/app-monorepo/blob/onekey/docs/BUG_RULES.md).
+- It offers a variety of options if you specifically want a hardware wallet.
+
+Some drawbacks to consider:
+
+- It's not clear if there are any competitive advantages to using the application without a hardware wallet. Since the business model is primarily focused on hardware wallets, the developer is likely to actively promote their hardware solutions.
+
+#### Brave
+
+[Brave](https://brave.com/wallet) is a well-known browser wallet based on Google's Chromium. It is a popular solution in the industry due to its good UX, stable browser performance, and overall project quality.
+
+- Developed by [Brave Software, Inc](https://www.bloomberg.com/profile/company/1342858D:US), registered in the United States. The company has received a total investment of $42M USD.
+- The [browser repository](https://github.com/brave/brave-browser) has an impressive 15,000 stars on GitHub.
+- There is an active [bug bounty program](https://hackerone.com/brave).
+- It offers the ability to monetize your time spent on viewing ads through the integration of the [BAT](https://basicattentiontoken.org/) token.
+- Built-in ad-blocker.
+
+Some drawbacks to consider:
+
+- Similar to other wallets, it assumes that the user will store the mnemonic phrase for generating new wallets.
+- The built-in financial portfolio monitor could use further improvements.
+
+Overall, Brave is a solid option that can be recommended for use.
+
+#### BlockWallet
+
+[BlockWallet](https://blockwallet.io) positions itself as a privacy-focused solution. Operations are performed through a proxy, so RPC endpoints cannot easily track you by IP address. However, it does not mean that services cannot reach out to BlockWallet itself, so engaging in strictly prohibited activities is still not advisable.
+
+- Developed in Tallinn, Harjumaa, Estonia. There is limited financial and other information available about the project.
+- The [extension repository](https://github.com/block-wallet/extension) has 39 stars on GitHub.
+- There is an active [bug bounty program](https://immunefi.com/bounty/blockwallet/).
+- The wallet has a built-in proxy.
+- The ability to submit transactions to a private mempool [Flashbots](https://www.flashbots.net) helps avoid [MEV](https://ethereum.org/en/developers/docs/mev/) on your transactions.
+
+Some drawbacks to consider:
+
+- The low number of stars on GitHub and the lack of financial information on CrunchBase suggest that the project is in its early stages.
+- The guarantees of privacy are not entirely clear, especially considering the very limited [Privacy Policy](https://blockwallet.io/privacy-policy.html).
+
+Overall, it's an interesting option if you want to try submitting transactions through Flashbots, but I would not recommend it as your primary wallet.
+
+## When is a Hardware Wallet Needed?
+
+As we can see, many developers offer solutions specialized for hardware wallets. Maybe it's worth just storing your keys in such a device?
+
+In general, it's a pretty good option. However, there are some trade-offs. Firstly, you can loose it. Secondly, the purpose of this device is very obvious to anyone who finds it, and it can be attempted to be tampered.
+
+In the positive aspects, it's a completely offline storage solution, and you can share the wallet with colleagues without revealing the actual key. Clearly, it offers higher security than writing down the mnemonic phrase on a piece of paper.
+
+It's a great combination to use with a multi-signature wallets, since multi-sig pattern will be resilient in case if device is lost or damaged, but will benefit from increased security of offline storage.
+
+#### What about WalletConnect?
+
+[WalletConnect](https://walletconnect.com/) is not a wallet, my dear friends! Yes, they also have a wallet, but it's not mandatory to use it. Main reason we know about WalletConnect is a technology that allows applications to connect with wallets on different devices.
+Idea is that you install a wallet that supports the WalletConnect protocol on your phone. [Here is their list](https://explorer.walletconnect.com/?type=wallet).
+
+Afterwards, while working on your computer, you can sign transactions with the wallet on your phone! The technology itself is wonderful, but in terms of storing private keys, I don't consider it as an option.
+
+## Smart Contract Wallets
+
+In the final part, let's discuss smart contract wallets. This is the **most** secure way to store assets. The idea is that you deploy a smart contract on the network and store your assets in that smart contract as a wallet.
+
+You will still need a regular wallet (EOA) like the ones mentioned earlier, but typically, smart contract wallets use multiple access keys. For example, the requirements for transferring assets can be set as 2 out of 3 signatures, or 5 out of 7, or any other number you configure.
+
+This is an excellent solution for large organizations or storing significant sums of assets. In such cases, you can create conditions for asset movement that require agreement from shareholders, each of whom has their own key. Alternatively, you can use your friends or family members as an additional level of security.
+
+The downside of such a wallet is that it is still a smart contract. This means that the address cannot sign transactions with its cryptographic key (as nobody knows the key for the smart contract). Moreover, the time required to execute transactions significantly increases due to the need to gather signatures from multiple EOA wallets.
+
+The industry standard for smart contract wallets is [**Gnosis Safe**](https://safe.global/), which is rightfully considered an enterprise-level solution.
+
+## Social Recovery
+
+This is perhaps the most important and useful feature for the average user, and it's quite self-explanatory - the ability to recover access to your wallet through your community.
+
+So why isn't this our main priority?
+
+The reason is that these technologies are still in the early stages of development. To some extent, smart contract wallets like **Gnosis Safe** allow for social recovery mechanisms, and **Web3Auth** also has a decent solution. However, I wouldn't say that there is a widely recognized industry-standard solution available today.
+
+The most promising candidate for social recovery, which may evolve into a widely accepted solution, is [**EIP-4337 Account Abstraction**](https://eips.ethereum.org/EIPS/eip-4337). However, there are still many questions to be answered, and in future, more in-depth technical articles, I will discuss how the social recovery technology could potentially look in that context.
+
+## Conclusion
+
+In this article, we have learned how to search for different wallets and explored the strengths and weaknesses of various wallet types.
+
+In the next article of the series, I will demonstrate the practical process of creating an EOA wallet.
+
+Stay tuned for the next installment!

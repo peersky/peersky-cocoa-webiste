@@ -1,0 +1,147 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2023-04-07",
+  title: "Crypto Guide Part 2 - Best Security Practices",
+  description:
+    "Preparing for secure crypto operations. Best practices and pre-flight checklist.",
+  tags: ["english", "accounts", "guides"],
+  path: "setting-safe-enviroment-en",
+};
+
+# {meta.title}
+
+Continuing the series of articles on **secure use of digital currencies**, I want to talk about how to set up a secure working environment and what "best practices" to use to ensure that the secrets of your wallet discussed in the [previous article](https://peersky.xyz/blog/how-wallets-made-en/) remain secrets for everyone but you. :)
+
+As we discussed in the previous article, a crypto wallet is essentially a virtual bank vault in which a seal is stored, and documents signed with that seal are valid. The security of the key, or even the "blueprint" of the key (which can be considered as the mnemonic) is a secret that needs to be carefully guarded.
+
+In the past, when we went to a bank branch, what was always special about that institution? A good bank always ensures the security and confidentiality of its clients' personal information. Being our own bank, we must provide similar conditions for ourselves when working with a crypto wallet.
+
+In this article, we will look at general practices, which are generally useful not only in crypto operations but also in everyday internet surfing. For convenience, I will divide the article into several categories, which can be seen as a "Pre-flight Checklist" for a pilot to go through.
+
+Let's get started!
+
+## Best Practices
+
+### Defining Account Purposes
+
+Instead of generating just one address (account) and keeping everything on it, it is best to predefine the purposes of the accounts. You can create a plan on a sheet of paper, for example.
+
+### Isolate accounts
+
+By default, all software wallets will work with a mnemonic phrase, but this means that the mnemonic is stored in a fairly predictable location on the file system and is only protected by a password, which can be compromised or brute forced.
+
+I don't find such an architecture nor most secure nor necessary.
+
+**In any software wallet, there will be an option to import a private key** - this is a more secure solution that allows you to store only the necessary keys that were derived from a mnemonic, while the phrase can be stored elsewhere.
+The downside of this approach is that generating new accounts should also be done in a different location, but in real application usually you need to do this only once.
+
+### Dedicate your time
+
+It is good practice to set aside dedicated time during which you will not be distracted by external factors such as phone calls, unrelated conversations, etc.
+
+Your goal is to complete sensitive operations as quickly as possible, close your wallets, clear your workspace, and have a clear finish line for your "operations session".
+
+### Staying present
+
+It is not advisable to leave your workspace until the operations are complete. If you still need to leave your workspace (for example, to use the restroom) and you cannot fully control access by third parties during that time, the best solution is to completely interrupt all operations. In any case, even if you step away from an open wallet for a minute, it is good practice to lock your computer or phone.
+
+### Do not sign random messages
+
+Sometimes an application (dApp) may request your signature for authentication or other operations. For example, [selling an NFT on OpenSea](https://support.opensea.io/hc/en-us/articles/360063498333-How-do-I-sell-an-NFT-#:~:text=Selling%20an%20NFT%20using%20OpenSea&text=On%20OpenSea%2C%20navigate%20to%20the,an%20NFT%20to%20get%20started.).
+
+Such signatures should always have a clear message about what you are signing. Specifically for this purpose, the [EIP-712 Typed message](https://eips.ethereum.org/EIPS/eip-712) has been developed.
+
+Example of an EIP-712 signature request:
+![metamask-eip712-small](/metamask-eip712.png "metamask-eip712")
+
+### Secure your enviroment
+
+#### Surroundings
+
+Your workspace is a vulnerability point during important financial operations or when setting up personal keys and wallets.
+
+For example, it's a bad idea to perform operations where your mnemonic or private keys are visible in plain text at a restaurant, café, or conference.
+
+Before starting any task, always ensure that there are no cameras pointed at your keyboard and nobody can look over your shoulder.
+
+A malicious actor may only need a photo of your screen taken with a smartphone or a recording from a surveillance camera. That's why it's essential to assess the environment where you are before working with a crypto wallet.
+
+If you are using a mobile phone for payments at a café, the application and its configuration should also ensure the secrecy of your secrets. Whenever possible, use biometrics instead of a PIN code.
+
+#### Secure devices
+
+Besides the physical environment, it is also important to secure the working environment within your device. The following list addresses not only the crypto environment but also the overall security of your web2 accounts.
+
+- Use a separate user or browser for crypto operations.
+- Encrypt your operating system's file system.
+- Use a strong password and biometrics to access your file system.
+- Configure trusted DNS servers in your network settings, such as [Google's trusted DNS](https://developers.google.com/speed/public-dns?hl=en): 4.4.4.4 and 8.8.8.8.
+- Use a separate password manager from your operating system, certified for network security, such as [1Password](https://1password.com/) or [Keeper Security](https://www.keepersecurity.com/), and set a strong master password. This approach is convenient and secure.
+- Enable two-factor authentication wherever possible.
+- Avoid using mobile SMS for two-factor authentication, as they can be easily bypassed.
+- If you use a password manager, do not store two-factor authentication or backup codes in the same location. This ensures security even if the password manager is compromised.
+
+In general, it is best practice to have a separate device (or purchase a specialized computer) dedicated to crypto operations or a specific task.
+
+I recommend watching an interesting video about how Ethereum's creator, Vitalik Buterin, received Shiba tokens, where he discusses the security measures taken for an operation with huge value: [Youtube - Vitalik Buterin talked about Shiba Inu](https://youtu.be/9VynqkMMZyM)
+
+### Network Security
+
+Public Wi-Fi is dangerous. Remember that. When using public internet, the owner of the router can scan your traffic or even attempt to manipulate data packets.
+**Enforce HTTPS in your browser!**
+
+Even the information that someone in a restaurant is connected to the Ethereum RPC can signal to an attacker that there is a potential target in the vicinity.
+
+If your operations involve transmitting data over a network, the best solution is to either perform them over a secure connection, such as your home private network, or directly connect to your ISP.
+
+**A good practice in public places is to use a VPN in public networks or switch to your personal mobile internet.**
+
+## Computer Hygiene
+
+### Viruses
+
+Digital viruses are a reality. Despite the efforts of computer and operating system manufacturers to provide maximum security, Trojans still pose a significant risk. Remember that almost all Trojans are somehow initiated by the user's actions.
+
+To minimize these risks, it is advisable to isolate the computer on which operations will be performed from unreliable actions.
+
+Good practices include:
+
+- Avoid installing unknown programs from untrusted sources.
+- Avoid using unnecessary browser plugins
+- Limit browser plugins permissions manually (Chrome defaults to plugins being able to read all data on all websites you are on)
+- Immediately delete all files containing sensitive data once they are no longer needed.
+- Do not visit websites that do not support **HTTPS** (configure browser settings to block them).
+- Regularly clear the history, cache, and cookies of your terminals.
+- Avoid connecting to the internet when an operation can be done offline.
+- Keep your system up to date and install the latest security updates from the OS manufacturer.
+
+### On-Chain hygiene
+
+In addition to maintaining hygiene on your machine, you should understand and monitor the actions and privileges granted in the network.
+For example, in the case of ERC20 tokens and NFTs, to transact on DEXs and other marketplaces, you will need to grant permissions to contracts to spend your tokens (Allowance, Approval). Often, these contracts request unlimited permission upfront.
+![approval-metamask-small](/approval-metamask.png "approval-metamask")
+
+**A best practice is to set the Allowance to exactly the amount required for the transaction**. For example, this is how it's done in [MetaMask](https://support.metamask.io/hc/en-us/articles/6055177143579-How-to-customize-token-approvals-with-a-spending-cap).
+
+You can check the already granted approvals, for example, on Ethereum, using [EtherScan token Approval checker](https://etherscan.io/tokenapprovalchecker).
+
+Additionally, if you engage in more advanced activities in the blockchain, such as your accounts being able to perform privileged actions on contracts, keep your own registry where you record all the privileges and which account holds them.
+
+It's also a good practice to refrain from transacting with contracts that are considered "entry points for hackers" by regulators. For example, interacting with the Tornado Cash protocol may lead to blacklisting on exchanges as they consider such an account suspicious.
+
+**Remember that all actions on the blockchain are publicly recorded** - it is not advisable to engage in illegal activities on the blockchain, as everything can ultimately be analyzed.
+
+## Operational Checklist
+
+Instead of a conclusion, I will provide you with a checklist that you can go through, similar to how a pilot goes through a pre-flight checklist.
+
+- [ ] I know what I want to do and understand how much time it will take.
+- [ ] I am familiar with the network in which I will be performing operations.
+- [ ] I know which accounts I will be using.
+- [ ] I have allocated sufficient time for my task.
+- [ ] I have enough fuel (gas) on my accounts. _[What is gas?](https://ethereum.org/en/developers/docs/gas/)_
+- [ ] I am in a secure location.
+- [ ] My computer is well-configured and up to date.
+- [ ] My network connection is secure.
+- [ ] The addresses to which transfers will be made are correct.
+- [ ] I understand the consequences of my transaction.
