@@ -9,6 +9,7 @@ import * as SELECTINGGWALLET from "./selecting-a-wallet-ru.mdx";
 import * as SELECTINGGWALLETEN from "./selecting-a-wallet-en.mdx";
 import * as HowAccountsEn from "./how-wallets-made-en.mdx";
 import * as SecuringKeys from "./securing-private-keys-bp.mdx";
+import * as DAON from "./dao-of-nature.mdx";
 export {
   OpenEconomyManifest,
   HowAccountsRu,
@@ -21,4 +22,5 @@ export {
   SAFEENVEN,
   SELECTINGGWALLETEN,
   SecuringKeys,
+  DAON,
 };
