@@ -77,7 +77,7 @@ export default function CachingApp({ Component, pageProps }: any) {
     description:
       "This is a personal web space, free of product placement and ads, where you can find content about blockchain as well as explore some dApps and Utils I develop",
     url: "https://peersky.xyz",
-    image: "daocoacoa.png",
+    image: "/daocoacoa.png",
   };
   const metaTags = { ...defaultMetaTags, ...pageProps.metaTags };
   return (
