@@ -10,6 +10,7 @@ import * as SELECTINGGWALLETEN from "./selecting-a-wallet-en.mdx";
 import * as HowAccountsEn from "./how-wallets-made-en.mdx";
 import * as SecuringKeys from "./securing-private-keys-bp.mdx";
 import * as DAON from "./dao-of-nature.mdx";
+import * as E2E from "./wild-digital-west.mdx";
 export {
   OpenEconomyManifest,
   HowAccountsRu,
@@ -23,4 +24,5 @@ export {
   SELECTINGGWALLETEN,
   SecuringKeys,
   DAON,
+  E2E,
 };
