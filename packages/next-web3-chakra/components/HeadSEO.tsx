@@ -47,6 +47,7 @@ export const SEOHead = ({
   twitterCreator,
   twitterImageAlt,
   twitterImage,
+  baseURL,
 }: {
   title: string;
   keywords: string;
@@ -65,6 +66,7 @@ export const SEOHead = ({
   twitterCreator?: string;
   twitterImageAlt?: string;
   twitterImage?: string;
+  baseURL: string;
 }) => {
   return (
     <Head>
@@ -98,7 +100,7 @@ export const SEOHead = ({
       <meta
         key="meta-og-image"
         property="og:image"
-        content={ogImage ?? image}
+        content={ogImage ?? baseURL + image}
       />
 
       {/* <!-- Twitter --> */}
@@ -125,7 +127,7 @@ export const SEOHead = ({
       <meta
         key="meta-twitter-image"
         property="twitter:image"
-        content={twitterImage ?? image}
+        content={twitterImage ?? baseURL + image}
       />
 
       {twitterImageAlt && (

@@ -27,7 +27,7 @@ export async function getStaticProps({ params }: { params: any }) {
     title: post.meta.title,
     description: post.meta.description,
     keywords: post.meta.tags.toLocaleString(),
-    url: `https://peersky.xyz/bog/${post.meta.path}}`,
+    url: `https://peersky.xyz/bog/${post.meta.path}`,
   };
   if (post.meta.image) {
     console.log("definingimg");
