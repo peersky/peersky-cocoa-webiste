@@ -20,7 +20,7 @@ const DefaultLayout = dynamic(
 import { useRouter } from "next/router";
 import NProgress from "nprogress";
 // import { WHITE_LOGO_W_TEXT_URL } from "../src/constants";
-
+const baseURL = "https://peersky.xyz";
 export default function CachingApp({ Component, pageProps }: any) {
   const [queryClient] = useState(new QueryClient());
 
@@ -76,8 +76,8 @@ export default function CachingApp({ Component, pageProps }: any) {
     keywords: "blockchain, blog, ideas, dApps, peersky",
     description:
       "This is a personal web space, free of product placement and ads, where you can find content about blockchain as well as explore some dApps and Utils I develop",
-    url: "https://peersky.xyz",
-    image: "daocoacoa.png",
+    url: baseURL,
+    image: baseURL + "/daocoacoa.png",
   };
   const metaTags = { ...defaultMetaTags, ...pageProps.metaTags };
   return (
@@ -93,7 +93,7 @@ export default function CachingApp({ Component, pageProps }: any) {
           overflow: hidden;
         }
       `}</style>
-      <HeadSEO {...metaTags} />
+      <HeadSEO baseURL={baseURL} {...metaTags} />
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
         <AppContext>{getLayout(<Component {...pageProps} />)}</AppContext>
