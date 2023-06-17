@@ -18,6 +18,8 @@ export interface SiteMapItem {
 export type SiteMap = SiteMapItem[];
 export interface WebSiteConfig {
   SITEMAP: SiteMap;
+  DEFAULT_LOGO: string;
+  ENABLE_WEB3: boolean;
 }
 
 export interface WalletStatesInterface {

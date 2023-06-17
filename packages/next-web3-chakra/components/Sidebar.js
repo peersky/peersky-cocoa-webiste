@@ -49,60 +49,65 @@ const _Sidebar = ({
       <Menu menuItemStyles={{ colorScheme: "red" }}>
         <Box p={4} alignItems="center">
           <Divider borderColor="blue.600" />
-          {web3ctx.buttonText !== web3ctx.WALLET_STATES.CONNECTED && (
-            <Button
-              isDisabled={
-                web3ctx.WALLET_STATES.UNKNOWN_CHAIN === web3ctx.buttonText
-              }
-              variant="link"
-              colorScheme={
-                web3ctx.buttonText === web3ctx.WALLET_STATES.CONNECTED
-                  ? "green"
-                  : web3ctx.WALLET_STATES.UNKNOWN_CHAIN === web3ctx.buttonText
-                  ? "red"
-                  : "metamaskSchema"
-              }
-              onClick={() => web3ctx.onConnectWalletClick()}
-            >
-              {web3ctx.buttonText}
-              {"  "}
-              <Image
-                pl={2}
-                h="24px"
-                src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg"
-              />
-            </Button>
-          )}
-
-          {web3ctx.buttonText === web3ctx.WALLET_STATES.CONNECTED && (
-            <Flex>
-              <code>
-                <Badge
-                  colorScheme={metamaskSchema ?? "blue"}
-                  variant={"subtle"}
-                  size="md"
-                  fontSize="16px"
-                  borderRadius={"md"}
-                  mr={2}
-                  p={0}
+          {!!ui.webSiteConfig.ENABLE_WEB3 && (
+            <>
+              {" "}
+              {web3ctx.buttonText !== web3ctx.WALLET_STATES.CONNECTED && (
+                <Button
+                  isDisabled={
+                    web3ctx.WALLET_STATES.UNKNOWN_CHAIN === web3ctx.buttonText
+                  }
+                  variant="link"
+                  colorScheme={
+                    web3ctx.buttonText === web3ctx.WALLET_STATES.CONNECTED
+                      ? "green"
+                      : web3ctx.WALLET_STATES.UNKNOWN_CHAIN ===
+                        web3ctx.buttonText
+                      ? "red"
+                      : "metamaskSchema"
+                  }
+                  onClick={() => web3ctx.onConnectWalletClick()}
                 >
-                  <Skeleton
-                    isLoaded={!!web3ctx.account}
-                    h="100%"
-                    colorScheme={"red"}
-                    w="100%"
-                    borderRadius={"inherit"}
-                    startColor="red.500"
-                    endColor="blue.500"
-                    p={1}
-                  >
-                    {web3ctx.account}
-                  </Skeleton>
-                </Badge>
-              </code>
-            </Flex>
+                  {web3ctx.buttonText}
+                  {"  "}
+                  <Image
+                    pl={2}
+                    h="24px"
+                    src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg"
+                  />
+                </Button>
+              )}
+              {web3ctx.buttonText === web3ctx.WALLET_STATES.CONNECTED && (
+                <Flex>
+                  <code>
+                    <Badge
+                      colorScheme={metamaskSchema ?? "blue"}
+                      variant={"subtle"}
+                      size="md"
+                      fontSize="16px"
+                      borderRadius={"md"}
+                      mr={2}
+                      p={0}
+                    >
+                      <Skeleton
+                        isLoaded={!!web3ctx.account}
+                        h="100%"
+                        colorScheme={"red"}
+                        w="100%"
+                        borderRadius={"inherit"}
+                        startColor="red.500"
+                        endColor="blue.500"
+                        p={1}
+                      >
+                        {web3ctx.account}
+                      </Skeleton>
+                    </Badge>
+                  </code>
+                </Flex>
+              )}
+              <ChainSelector selectorScheme={selectorSchema} />
+            </>
           )}
-          <ChainSelector selectorScheme={selectorSchema} />
           <IconButton
             alignSelf="flex-start"
             aria-label="Menu"

@@ -29,14 +29,12 @@ import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { SiteMapItem, SiteMapItemType } from "../types";
 
 const _Navbar = ({
-  initialLogo,
   selectorSchema,
   metamaskSchema,
   colorScheme,
   ...props
 }: {
   colorScheme?: string;
-  initialLogo?: string;
   selectorSchema?: string;
   metamaskSchema?: string;
 }) => {
@@ -105,8 +103,8 @@ const _Navbar = ({
             h="100%"
             justifyContent="left"
             src={useColorModeValue(
-              `/${initialLogo ?? themeLogo}`,
-              `/inverted-${initialLogo ?? themeLogo}`
+              `/${webSiteConfig.DEFAULT_LOGO ?? themeLogo}`,
+              `/inverted-${webSiteConfig.DEFAULT_LOGO ?? themeLogo}`
             )}
             // href="/"
             alt="Logo"
@@ -168,7 +166,7 @@ const _Navbar = ({
               );
             })}
         </ButtonGroup>
-        {!isMobileView && (
+        {!isMobileView && !!webSiteConfig.ENABLE_WEB3 && (
           <>
             {web3Provider.buttonText !==
               web3Provider.WALLET_STATES.CONNECTED && (
