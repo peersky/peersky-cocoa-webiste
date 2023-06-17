@@ -89,10 +89,12 @@ const Web3MethodForm = ({
   }, [state, argumentFields, onCancel]);
 
   const web3call = async ({ args }: { args: any }) => {
+    const signer = web3ctx.provider?.getSigner();
+    if (!signer) throw new Error("Signer undefined");
     const contract = new ethers.Contract(
       contractAddress,
       [method] as any as string,
-      web3ctx.provider.getSigner()
+      signer
     );
 
     let response;

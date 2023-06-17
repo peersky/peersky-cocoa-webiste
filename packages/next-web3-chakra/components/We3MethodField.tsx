@@ -132,9 +132,10 @@ const NumberInputItem = ({
   onKeyPress: any;
   inputItem: any;
   dispatchArguments: React.Dispatch<{
-    value?: any;
-    index: number;
-    valueIsEther?: boolean;
+    value: any;
+    index: any;
+    type?: "bytesFormat" | undefined;
+    valueIsEther?: boolean | undefined;
   }>;
   index: number;
 }) => {
@@ -178,6 +179,7 @@ const NumberInputItem = ({
             dispatchArguments({
               index,
               valueIsEther: e.target.value === "1" ? false : true,
+              value: undefined,
             })
           }
           flexBasis="25px"
@@ -467,6 +469,8 @@ const Web3MethodField = ({
   dispatchArguments: React.Dispatch<{
     value: any;
     index: any;
+    type?: "bytesFormat" | undefined;
+    valueIsEther?: boolean | undefined;
   }>;
   inputItem: extendedInputs;
   index: number;
