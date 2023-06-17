@@ -166,67 +166,71 @@ const _Navbar = ({
               );
             })}
         </ButtonGroup>
-        {!isMobileView && !!webSiteConfig.ENABLE_WEB3 && (
+        {!isMobileView && (
           <>
-            {web3Provider.buttonText !==
-              web3Provider.WALLET_STATES.CONNECTED && (
-              <Button
-                isDisabled={
-                  web3Provider.WALLET_STATES.UNKNOWN_CHAIN ===
-                  web3Provider.buttonText
-                }
-                variant="link"
-                colorScheme={
-                  web3Provider.buttonText ===
-                  web3Provider.WALLET_STATES.CONNECTED
-                    ? "green"
-                    : web3Provider.WALLET_STATES.UNKNOWN_CHAIN ===
+            {!!webSiteConfig.ENABLE_WEB3 && (
+              <>
+                {web3Provider.buttonText !==
+                  web3Provider.WALLET_STATES.CONNECTED && (
+                  <Button
+                    isDisabled={
+                      web3Provider.WALLET_STATES.UNKNOWN_CHAIN ===
                       web3Provider.buttonText
-                    ? "red"
-                    : metamaskSchema
-                }
-                onClick={() => web3Provider.onConnectWalletClick()}
-              >
-                {web3Provider.buttonText}
-                {"  "}
-                <Image
-                  pl={2}
-                  h="24px"
-                  src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg"
-                />
-              </Button>
-            )}
-
-            {web3Provider.buttonText ===
-              web3Provider.WALLET_STATES.CONNECTED && (
-              <Flex>
-                <code>
-                  <Badge
-                    colorScheme={metamaskSchema ?? "blue"}
-                    variant={"subtle"}
-                    size="md"
-                    fontSize="16px"
-                    borderRadius={"md"}
-                    mr={2}
-                    p={0}
+                    }
+                    variant="link"
+                    colorScheme={
+                      web3Provider.buttonText ===
+                      web3Provider.WALLET_STATES.CONNECTED
+                        ? "green"
+                        : web3Provider.WALLET_STATES.UNKNOWN_CHAIN ===
+                          web3Provider.buttonText
+                        ? "red"
+                        : metamaskSchema
+                    }
+                    onClick={() => web3Provider.onConnectWalletClick()}
                   >
-                    <Skeleton
-                      isLoaded={!!web3Provider.account}
-                      h="100%"
-                      colorScheme={"red"}
-                      w="100%"
-                      borderRadius={"inherit"}
-                      startColor="red.500"
-                      endColor="blue.500"
-                      p={1}
-                    >
-                      {web3Provider.account}
-                    </Skeleton>
-                  </Badge>
-                </code>
-              </Flex>
+                    {web3Provider.buttonText}
+                    {"  "}
+                    <Image
+                      pl={2}
+                      h="24px"
+                      src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg"
+                    />
+                  </Button>
+                )}
+
+                {web3Provider.buttonText ===
+                  web3Provider.WALLET_STATES.CONNECTED && (
+                  <Flex>
+                    <code>
+                      <Badge
+                        colorScheme={metamaskSchema ?? "blue"}
+                        variant={"subtle"}
+                        size="md"
+                        fontSize="16px"
+                        borderRadius={"md"}
+                        mr={2}
+                        p={0}
+                      >
+                        <Skeleton
+                          isLoaded={!!web3Provider.account}
+                          h="100%"
+                          colorScheme={"red"}
+                          w="100%"
+                          borderRadius={"inherit"}
+                          startColor="red.500"
+                          endColor="blue.500"
+                          p={1}
+                        >
+                          {web3Provider.account}
+                        </Skeleton>
+                      </Badge>
+                    </code>
+                  </Flex>
+                )}
+                <ChainSelector selectorScheme={selectorSchema} />
+              </>
             )}
-            <ChainSelector selectorScheme={selectorSchema} />
             <IconButton
               alignSelf="flex-start"
               aria-label="Menu"
