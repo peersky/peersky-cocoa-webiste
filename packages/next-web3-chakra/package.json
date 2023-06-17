@@ -1,10 +1,13 @@
 {
   "name": "@peersky/next-web3-chakra",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Web3 enabled react components made for nextjs and chakra ui",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
