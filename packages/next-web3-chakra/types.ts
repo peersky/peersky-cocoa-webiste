@@ -20,6 +20,10 @@ export interface WebSiteConfig {
   SITEMAP: SiteMap;
   DEFAULT_LOGO: string;
   ENABLE_WEB3: boolean;
+  COPYRIGHT_NAME: string;
+  DISCORD?: string;
+  TWITTER?: string;
+  GITHUB?: string;
 }
 
 export interface WalletStatesInterface {

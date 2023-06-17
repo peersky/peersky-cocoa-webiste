@@ -121,27 +121,25 @@ const Footer = ({
               </Link>
             </Flex>
             <Text fontSize={"sm"}>
-              © {moment().year()} Peersky.xyz All rights reserved
+              © {moment().year()} {ui.webSiteConfig.COPYRIGHT_NAME} All rights
+              reserved
             </Text>
             <Stack direction={"row"} spacing={6}>
-              <SocialButton
-                label={"Twitter"}
-                href={"https://twitter.com/iampeersky"}
-              >
-                <FaTwitter />
-              </SocialButton>
-              <SocialButton
-                label={"Github"}
-                href={"https://github.com/peersky/"}
-              >
-                <FaGithub />
-              </SocialButton>
-              <SocialButton
-                label={"Discord"}
-                href={"https://discord.gg/hkXgaqwr"}
-              >
-                <FaDiscord />
-              </SocialButton>
+              {ui.webSiteConfig.TWITTER && (
+                <SocialButton label={"Twitter"} href={ui.webSiteConfig.TWITTER}>
+                  <FaTwitter />
+                </SocialButton>
+              )}
+              {ui.webSiteConfig.GITHUB && (
+                <SocialButton label={"Github"} href={ui.webSiteConfig.GITHUB}>
+                  <FaGithub />
+                </SocialButton>
+              )}
+              {ui.webSiteConfig.DISCORD && (
+                <SocialButton label={"Discord"} href={ui.webSiteConfig.DISCORD}>
+                  <FaDiscord />
+                </SocialButton>
+              )}
             </Stack>
           </Stack>
           {ui.webSiteConfig.SITEMAP.length > 0 &&
