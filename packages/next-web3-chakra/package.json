@@ -1,6 +1,6 @@
 {
   "name": "@peersky/next-web3-chakra",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Web3 enabled react components made for nextjs and chakra ui",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -20,7 +20,6 @@
     "clean": true,
     "target": "es2019",
     "format": [
-      "cjs",
       "esm"
     ]
   },
