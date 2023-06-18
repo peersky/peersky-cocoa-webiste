@@ -9,9 +9,11 @@ import NewRequirement from "../NewRequirement";
 const _SetReqs = ({
   gameId,
   onSuccess,
+  onCancel,
 }: {
   gameId: string;
   onSuccess?: UseQueryOptions["onSuccess"];
+  onCancel: () => void;
 }) => {
   const web3ctx = useContext(Web3Context);
   const bestContract = useBestOfWebContract({ web3ctx: web3ctx });
@@ -27,6 +29,7 @@ const _SetReqs = ({
             config: e.request,
           });
         }}
+        onCancel={onCancel}
       />
     </Flex>
   );

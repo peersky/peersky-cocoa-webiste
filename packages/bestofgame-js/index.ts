@@ -55,6 +55,7 @@ export const getContract = (
   chain: SupportedChains,
   provider: ethers.providers.Web3Provider | ethers.Signer
 ) => {
+  console.log("getting contract", chain, provider);
   const artifact = getArtifact(chain);
   return new ethers.Contract(
     artifact.contractAddress,
@@ -149,7 +150,7 @@ export const getGameState = async (
     ? gameStatusEnum["overtime"]
     : isLastTurn
     ? gameStatusEnum["lastTurn"]
-    : currentTurn.gte(0)
+    : currentTurn.gt(0)
     ? gameStatusEnum["started"]
     : isOpen
     ? gameStatusEnum["open"]
@@ -266,23 +267,6 @@ export const openRegistration =
     return await contract.openRegistration(gameId);
   };
 
-export const submitProposal =
-  (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
-  async (
-    gameId: string,
-    proposerHidden: BytesLike,
-    proof: BytesLike,
-    proposal: string
-  ) => {
-    const contract = getContract(chain, signer);
-    return await contract.submitProposal(
-      gameId,
-      proposerHidden,
-      proof,
-      proposal
-    );
-  };
-
 export const submitVote =
   (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (
@@ -367,29 +351,37 @@ export const getVoting =
   (chain: SupportedChains, signer: ethers.providers.JsonRpcSigner) =>
   async (gameId: BigNumberish, turnId: BigNumberish) => {
     const contract = getContract(chain, signer);
-    const proposalEvents = contract.filters.ProposalSubmitted(
+    const filterProposalEvent = contract.filters.ProposalSubmitted(
       gameId,
       turnId,
       null,
       null,
       null
     );
-    const voteEvents = contract.filters.VoteSubmitted(
+    const filterVoteEvent = contract.filters.VoteSubmitted(
       gameId,
       turnId,
       null,
       null,
       null
     );
+    const proposalEvents = await contract.queryFilter(
+      filterProposalEvent,
+      0,
+      "latest"
+    );
+    const voteEvents = await contract.queryFilter(filterVoteEvent, 0, "latest");
     let proposals = [];
     let playersVoted = [];
-    for (const proposalEvent in proposalEvents) {
-      proposals.push(proposalEvent[4]);
-    }
-    for (const voteEvent in voteEvents) {
-      playersVoted.push(voteEvent[2]);
-    }
-    return { proposals, playersVoted };
+    console.log("voteEvents", proposalEvents);
+    // for (const filterProposalEvent in filterProposalEvents.topics) {
+    //   if (filterProposalEvent)
+    //     proposals.push(contract.interface.parseLog({ log: proposalEvent }));
+    // }
+    // for (const voteEvent in voteEvents) {
+    //   playersVoted.push(voteEvent[2]);
+    // }
+    return { voteEvents, proposalEvents };
   };
 
 export const getOngoingVoting =
@@ -405,24 +397,24 @@ export class GameMaster {
   EIP712Version: string;
   signer: ethers.Wallet;
   verifyingContract: string;
-  chainId: string;
+  chain: SupportedChains;
   constructor({
     EIP712name,
     EIP712Version,
     verifyingContract,
     signer,
-    chainId,
+    chain,
   }: {
     EIP712name: string;
     EIP712Version: string;
     verifyingContract: string;
     signer: ethers.Wallet;
-    chainId: string;
+    chain: SupportedChains;
   }) {
     this.EIP712Version = EIP712Version;
     this.EIP712name = EIP712name;
     this.signer = signer;
-    this.chainId = chainId;
+    this.chain = chain;
     this.verifyingContract = verifyingContract;
   }
 
@@ -451,6 +443,43 @@ export class GameMaster {
     return ethers.utils.solidityKeccak256(
       ["address", "bytes32"],
       [proposer, this.getTurnSalt({ gameId, turn })]
+    );
+  };
+
+  proposerHidden = ({
+    gameId,
+    turn,
+    proposer,
+  }: {
+    gameId: BigNumberish;
+    turn: BigNumberish;
+    proposer: string;
+  }) => {
+    return ethers.utils.solidityKeccak256(
+      ["address", "bytes32"],
+      [proposer, this.getTurnPlayersSalt({ gameId, turn, proposer })]
+    );
+  };
+
+  submitProposal = async (
+    gameId: string,
+    proposerHidden: BytesLike,
+    proof: BytesLike,
+    proposal: string
+  ) => {
+    const contract = getContract(this.chain, this.signer);
+    console.log(
+      "submitting proposal tx..",
+      gameId,
+      proposerHidden,
+      proof,
+      proposal
+    );
+    return await contract.submitProposal(
+      gameId,
+      proposerHidden,
+      proof,
+      proposal
     );
   };
 }

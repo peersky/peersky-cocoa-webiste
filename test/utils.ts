@@ -2,32 +2,32 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-await-in-loop */
 // import { time } from "@openzeppelin/test-helpers";
-import hre from "hardhat";
+import hre, { deployments, config } from "hardhat";
+import aes from "crypto-js/aes";
 import { contract, ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   MultipassDiamond,
   BestOfDiamond,
 } from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol";
-import {
-  MockERC1155,
-  MockERC20,
-  MockERC721,
-} from "../types/typechain/contracts/mocks";
+import { MockERC1155, MockERC20, MockERC721 } from "../types/typechain/";
+import { ProposalTypes } from "../types";
 const {
   ZERO_ADDRESS,
   ZERO_BYTES32,
 } = require("@openzeppelin/test-helpers/src/constants");
 import { BigNumber, BigNumberish, Bytes, BytesLike, Wallet } from "ethers";
 // @ts-ignore
-import { deploy as deployMultipass } from "../scripts/deployMultipass";
-import { deploy as deployRankToken } from "../scripts/deployRankToken";
-import { deploy as deployBestOfGame } from "../scripts/deployBestOfGame";
+import deployMultipass from "../deploy/00_deployMultipass";
+import deployRankToken from "../deploy/01_deployRankToken";
+import deployBestOfGame from "../deploy/02_deployGame";
 import { LibMultipass } from "../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 import { RankToken } from "../types/typechain/contracts/tokens/RankToken";
 import { BestOfInit } from "../types/typechain/contracts/initializers/BestOfInit";
 import { assert } from "console";
 import MultipassJs from "@daocoacoa/multipass-js";
+import { Deployment } from "hardhat-deploy/types";
+import { HardhatEthersHelpers } from "@nomiclabs/hardhat-ethers/types";
 
 export interface SignerIdentity {
   name: string;
@@ -80,9 +80,17 @@ export const addPlayerNameId = (idx: any) => {
   return { name: `player-${idx}`, id: `player-${idx}-id` };
 };
 
-export const setupAddresses = async (): Promise<AdrSetupResult> => {
+export const setupAddresses = async (
+  getNamedAccounts: () => Promise<{
+    [name: string]: string;
+  }>,
+  _eth: typeof import("/Users/t/GitHub/daocacao/node_modules/ethers/lib/ethers") &
+    HardhatEthersHelpers
+): Promise<AdrSetupResult> => {
   const [
     _contractDeployer,
+    _multipassOwner,
+    ,
     _player1,
     _player2,
     _player3,
@@ -100,9 +108,10 @@ export const setupAddresses = async (): Promise<AdrSetupResult> => {
     _player15,
     _player16,
     _player17,
-    _player18,
-    _maliciousActor1,
   ] = await ethers.getSigners();
+
+  const { gameOwner: gameOwnerAddress } = await getNamedAccounts();
+
   const createRandomIdentityAndSeedEth = async (name: string) => {
     let newWallet = await ethers.Wallet.createRandom();
     newWallet = newWallet.connect(ethers.provider);
@@ -122,7 +131,9 @@ export const setupAddresses = async (): Promise<AdrSetupResult> => {
   const gameCreator1 = await createRandomIdentityAndSeedEth("gameCreator1");
   const gameCreator2 = await createRandomIdentityAndSeedEth("gameCreator2");
   const gameCreator3 = await createRandomIdentityAndSeedEth("gameCreator3");
-  const multipassOwner = await createRandomIdentityAndSeedEth("multipassOwner");
+  const maliciousActor1 = await createRandomIdentityAndSeedEth(
+    "maliciousActor"
+  );
   const registrar1 = await createRandomIdentityAndSeedEth("registrar1");
   const gameMaster1 = await createRandomIdentityAndSeedEth("GM1");
   const gameMaster2 = await createRandomIdentityAndSeedEth("GM2");
@@ -133,12 +144,27 @@ export const setupAddresses = async (): Promise<AdrSetupResult> => {
   const maliciousActor3 = await createRandomIdentityAndSeedEth(
     "MaliciousActor3"
   );
-  const gameOwner = await createRandomIdentityAndSeedEth("gameOwner");
+  const player18 = await createRandomIdentityAndSeedEth("player18");
 
   const contractDeployer: SignerIdentity = {
     wallet: _contractDeployer,
     name: "contractDeployer",
     id: "contractDeployer-id",
+  };
+
+  const accounts = config.networks.hardhat.accounts as any;
+  const gameOwner: SignerIdentity = {
+    wallet: ethers.Wallet.fromMnemonic(
+      accounts.mnemonic,
+      accounts.path + `/${2}`
+    ).connect(_eth.provider),
+    name: "gameOwner",
+    id: "gameOwner-id",
+  };
+  const multipassOwner: SignerIdentity = {
+    wallet: _multipassOwner,
+    name: "multipassOwner",
+    id: "multipassOwner-id",
   };
   const player1: SignerIdentity = {
     wallet: _player1,
@@ -225,16 +251,6 @@ export const setupAddresses = async (): Promise<AdrSetupResult> => {
     name: "player17",
     id: "player17-id",
   };
-  const player18: SignerIdentity = {
-    wallet: _player18,
-    name: "player18",
-    id: "player18-id",
-  };
-  const maliciousActor1: SignerIdentity = {
-    wallet: _maliciousActor1,
-    name: "maliciousActor1",
-    id: "maliciousActor1-id",
-  };
 
   return {
     contractDeployer,
@@ -295,115 +311,99 @@ export const BOGSettings = {
   BOG_NUM_WINNERS,
   // BOG_NUM_ACTIONS_TO_TAKE,
 };
-export const setupEnvironment = async ({
-  contractDeployer,
-  multipassOwner,
-  bestOfOwner,
-}: {
-  contractDeployer: SignerIdentity;
-  multipassOwner: SignerIdentity;
-  bestOfOwner: SignerIdentity;
+
+export const setupTest = deployments.createFixture(
+  async ({ deployments, getNamedAccounts, ethers: _eth }, options) => {
+    const adr = await setupAddresses(getNamedAccounts, _eth);
+    const { deployer: hhdeploydeployer } = await hre.getNamedAccounts();
+
+    await adr.contractDeployer.wallet.sendTransaction({
+      to: hhdeploydeployer,
+      value: _eth.utils.parseEther("1"),
+    });
+    await deployments.fixture(["multipass", "ranktoken", "gameofbest"]);
+    const MockERC20F = await _eth.getContractFactory(
+      "MockERC20",
+      adr.contractDeployer.wallet
+    );
+    const mockERC20 = (await MockERC20F.deploy(
+      "Mock ERC20",
+      "MCK20",
+      adr.contractDeployer.wallet.address
+    )) as MockERC20;
+    await mockERC20.deployed();
+
+    const MockERC1155F = await _eth.getContractFactory(
+      "MockERC1155",
+      adr.contractDeployer.wallet
+    );
+    const mockERC1155 = (await MockERC1155F.deploy(
+      "MOCKURI",
+      adr.contractDeployer.wallet.address
+    )) as MockERC1155;
+    await mockERC1155.deployed();
+
+    const MockERC721F = await _eth.getContractFactory(
+      "MockERC721",
+      adr.contractDeployer.wallet
+    );
+    const mockERC721 = (await MockERC721F.deploy(
+      "Mock ERC721",
+      "MCK721",
+      adr.contractDeployer.wallet.address
+    )) as MockERC721;
+    await mockERC721.deployed();
+    const env = await setupEnvironment({
+      Multipass: await deployments.get("Multipass"),
+      RankToken: await deployments.get("RankToken"),
+      BestOfGame: await deployments.get("BestOfGame"),
+      mockERC20: mockERC20,
+      mockERC721: mockERC721,
+      mockERC1155: mockERC1155,
+      adr,
+    });
+
+    return {
+      adr,
+      env,
+    };
+  }
+);
+// export const setupTest = () => setupTest();
+export const setupEnvironment = async (setup: {
+  Multipass: Deployment;
+  RankToken: Deployment;
+  BestOfGame: Deployment;
+  mockERC20: MockERC20;
+  mockERC721: MockERC721;
+  mockERC1155: MockERC1155;
+  adr: AdrSetupResult;
 }): Promise<EnvSetupResult> => {
-  const multipassAddress = await deployMultipass({
-    ownerAddress: multipassOwner.wallet.address,
-    signer: contractDeployer.wallet,
-    name: MULTIPASS_CONTRACT_NAME,
-    version: MULTIPASS_CONTRACT_VERSION,
-  });
   const multipass = (await ethers.getContractAt(
-    "MultipassDiamond",
-    multipassAddress
+    setup.Multipass.abi,
+    setup.Multipass.address
   )) as MultipassDiamond;
 
   if (!process.env.IPFS_GATEWAY_URL || !process.env.RANK_TOKEN_PATH)
     throw new Error("Rank token IPFS route not exported");
-  const rankTokenAddress = await deployRankToken({
-    owner: contractDeployer.wallet.address,
-    signer: contractDeployer.wallet,
-    URI: process.env.IPFS_GATEWAY_URL + process.env.RANK_TOKEN_PATH,
-  });
+
   const rankToken = (await ethers.getContractAt(
-    "RankToken",
-    rankTokenAddress
+    setup.RankToken.abi,
+    setup.RankToken.address
   )) as RankToken;
 
-  const bestOfInitialSettings: BestOfInit.ContractInitializerStruct = {
-    blocksPerTurn: BOG_BLOCKS_PER_TURN,
-    maxPlayersSize: BOG_MAX_PLAYERS,
-    minPlayersSize: BOG_MIN_PLAYERS,
-    rankTokenAddress: rankTokenAddress,
-    blocksToJoin: BOG_BLOCKS_TO_JOIN,
-    gamePrice: BOG_GAME_PRICE,
-    joinGamePrice: BOG_JOIN_GAME_PRICE,
-    maxTurns: BOG_MAX_TURNS,
-    numWinners: BOG_NUM_WINNERS,
-  };
-
-  const bestOfGameAddress = await deployBestOfGame({
-    ownerAddress: bestOfOwner.wallet.address,
-    signer: contractDeployer.wallet,
-    version: BESTOF_CONTRACT_VERSION,
-    name: BESTOF_CONTRACT_NAME,
-    gameInitializer: bestOfInitialSettings,
-  });
-
   const bestOfGame = (await ethers.getContractAt(
-    "BestOfDiamond",
-    bestOfGameAddress
+    setup.BestOfGame.abi,
+    setup.BestOfGame.address
   )) as BestOfDiamond;
 
-  const MockERC20F = await ethers.getContractFactory(
-    "MockERC20",
-    contractDeployer.wallet
-  );
-  const mockERC20 = (await MockERC20F.deploy(
-    "Mock ERC20",
-    "MCK20",
-    contractDeployer.wallet.address
-  )) as MockERC20;
-  await mockERC20.deployed();
-
-  const MockERC1155F = await ethers.getContractFactory(
-    "MockERC1155",
-    contractDeployer.wallet
-  );
-  const mockERC1155 = (await MockERC1155F.deploy(
-    "MOCKURI",
-    contractDeployer.wallet.address
-  )) as MockERC1155;
-  await mockERC1155.deployed();
-
-  const MockERC721F = await ethers.getContractFactory(
-    "MockERC721",
-    contractDeployer.wallet
-  );
-  const mockERC721 = (await MockERC721F.deploy(
-    "Mock ERC721",
-    "MCK721",
-    contractDeployer.wallet.address
-  )) as MockERC721;
-  await mockERC721.deployed();
-
-  // const {
-  //   multipass,
-  //   bestOfGame,
-  //   rankToken,
-  // }: {
-  //   multipass: MultipassDiamond;
-  //   bestOfGame: BestOfDiamond;
-  //   rankToken: RankToken;
-  // } = await deployAll.main({
-  //   signer: contractDeployer.wallet,
-  //   multipassOwner: multipassOwner.wallet.address,
-  //   bestOfOwner: bestOfOwner.wallet.address,
-  // });
   return {
     multipass,
     bestOfGame,
     rankToken,
-    mockERC1155,
-    mockERC20,
-    mockERC721,
+    mockERC1155: setup.mockERC1155,
+    mockERC20: setup.mockERC20,
+    mockERC721: setup.mockERC721,
   };
 };
 
@@ -567,38 +567,19 @@ export const getUserRegisterProps = async (
 // };
 
 export interface ProposalSubmittion {
-  proposerHidden: string;
-  proof: string;
+  gmSignature: string;
+  proposalEncryptedByGM: string;
+  proposalHash: string;
   proposal: string;
+  proposer: SignerIdentity;
 }
 
 interface ProposalMessage {
   gameId: BigNumberish;
-  proposal: string;
   turn: BigNumberish;
-  salt: BytesLike;
+  encryptedByGMProposal: string;
+  proposalHash: BytesLike;
 }
-
-const ProposalTypes = {
-  signHashedProposal: [
-    {
-      type: "uint256",
-      name: "gameId",
-    },
-    {
-      type: "uint256",
-      name: "turn",
-    },
-    {
-      type: "bytes32",
-      name: "salt",
-    },
-    {
-      type: "string",
-      name: "proposal",
-    },
-  ],
-};
 
 export const signProposalMessage = async (
   message: ProposalMessage,
@@ -620,9 +601,9 @@ export const signProposalMessage = async (
 };
 
 interface VoteMessage {
-  vote1: string;
-  vote2: string;
-  vote3: string;
+  vote1: BigNumberish;
+  vote2: BigNumberish;
+  vote3: BigNumberish;
   gameId: BigNumberish;
   turn: BigNumberish;
   salt: BytesLike;
@@ -637,15 +618,15 @@ interface PublicVoteMessage {
 const VoteTypes = {
   signVote: [
     {
-      type: "string",
+      type: "uint256",
       name: "vote1",
     },
     {
-      type: "string",
+      type: "uint256",
       name: "vote2",
     },
     {
-      type: "string",
+      type: "uint256",
       name: "vote3",
     },
     {
@@ -674,15 +655,15 @@ const publicVoteTypes = {
       name: "turn",
     },
     {
-      type: "bytes32",
+      type: "uint256",
       name: "vote1",
     },
     {
-      type: "bytes32",
+      type: "uint256",
       name: "vote2",
     },
     {
-      type: "bytes32",
+      type: "uint256",
       name: "vote3",
     },
   ],
@@ -768,11 +749,11 @@ export const mockVote = async ({
   gameId: BigNumberish;
   turn: BigNumberish;
   gm: SignerIdentity;
-  vote: [string, string, string];
+  vote: [BigNumberish, BigNumberish, BigNumberish];
   verifierAddress: string;
 }): Promise<{
   proof: string;
-  vote: [string, string, string];
+  vote: [BigNumberish, BigNumberish, BigNumberish];
   voteHidden: [BytesLike, BytesLike, BytesLike];
   publicSignature: string;
 }> => {
@@ -841,7 +822,7 @@ export const getPlayers = (
 
 export type MockVotes = Array<{
   proof: string;
-  vote: [string, string, string];
+  vote: [BigNumberish, BigNumberish, BigNumberish];
   voteHidden: [BytesLike, BytesLike, BytesLike];
   publicSignature: string;
 }>;
@@ -865,7 +846,7 @@ export const mockVotes = async ({
 }): Promise<MockVotes> => {
   const votes: Array<{
     proof: string;
-    vote: [string, string, string];
+    vote: [BigNumberish, BigNumberish, BigNumberish];
     voteHidden: [BytesLike, BytesLike, BytesLike];
     publicSignature: string;
   }> = [];
@@ -935,11 +916,7 @@ export const mockVotes = async ({
       turn,
       gm,
       verifierAddress,
-      vote: [
-        proposals[firstSelected],
-        proposals[secondSelected],
-        proposals[thirdSelected],
-      ],
+      vote: [firstSelected, secondSelected, thirdSelected],
     });
     votes[k] = { vote, voteHidden, proof, publicSignature };
   }
@@ -947,39 +924,42 @@ export const mockVotes = async ({
 };
 
 export const mockProposalSecrets = async ({
+  gm,
   proposer,
   gameId,
   turn,
   verifierAddress,
 }: {
+  gm: SignerIdentity;
   proposer: SignerIdentity;
   gameId: BigNumberish;
   turn: BigNumberish;
   verifierAddress: string;
 }): Promise<ProposalSubmittion> => {
-  const playerSalt = getTurnPlayersSalt({
-    gameId,
-    turn,
-    player: proposer.wallet.address,
-  });
-  const proposerHidden = ethers.utils.solidityKeccak256(
-    ["address", "bytes32"],
-    [proposer.wallet.address, playerSalt]
-  );
+  const _gmW = gm.wallet as Wallet;
   const proposal = String(gameId) + String(turn) + proposer.id;
+  const encryptedByGMProposal = aes
+    .encrypt(proposal, _gmW.privateKey)
+    .toString();
+  const proposalHash: BytesLike = ethers.utils.solidityKeccak256(
+    ["string"],
+    [proposal]
+  );
   const message = {
-    gameId,
-    proposal,
-    turn,
-    salt: playerSalt,
+    gameId: gameId,
+    turn: turn,
+    encryptedByGMProposal: encryptedByGMProposal,
+    proposalHash: proposalHash,
   };
 
-  const s = await signProposalMessage(message, verifierAddress, proposer);
+  const s = await signProposalMessage(message, verifierAddress, gm);
 
   return {
-    proof: s,
-    proposerHidden,
+    gmSignature: s,
+    proposalEncryptedByGM: encryptedByGMProposal,
+    proposalHash,
     proposal,
+    proposer,
   };
 };
 
@@ -988,15 +968,18 @@ export const mockProposals = async ({
   gameId,
   turn,
   verifierAddress,
+  gm,
 }: {
   players: SignerIdentity[];
   gameId: BigNumberish;
   turn: BigNumberish;
   verifierAddress: string;
+  gm: SignerIdentity;
 }) => {
   let proposals = [] as any as ProposalSubmittion[];
   for (let i = 0; i < players.length; i++) {
     let proposal = await mockProposalSecrets({
+      gm,
       proposer: players[i],
       gameId,
       turn,

@@ -54,12 +54,9 @@ contract BestOfInit {
 
     // You can add parameters to this function in order to pass in
     // data to set your own state variables
-    function init(
-        string memory name,
-        string memory version,
-        contractInitializer memory initializer
-    ) external {
+    function init(string memory name, string memory version, contractInitializer memory initializer) external {
         // adding ERC165 data
+        LibDiamond.enforceIsContractOwner();
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;

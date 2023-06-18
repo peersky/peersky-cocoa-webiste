@@ -38,7 +38,7 @@ export const deploy = async ({
 
   const rankToken = await ethers.getContractAt(
     "RankToken",
-    gameInitializer.rankTokenAddress
+    await gameInitializer.rankTokenAddress
   );
   await rankToken.connect(_signer).functions.transferOwnership(diamondAddress);
 

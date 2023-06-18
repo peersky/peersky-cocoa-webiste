@@ -26,9 +26,7 @@ export const upload2IPFS = async (file: Buffer) => {
 
 export const uploadDir2IPFS = async (path: string) => {
   console.log("path: ", path);
-  for await (const file of client.addAll(
-    globSource(`./${path}`, { recursive: true })
-  )) {
+  for await (const file of client.addAll(globSource(`./${path}`, "**/*"))) {
     console.log(file);
   }
 };

@@ -61,18 +61,24 @@ const GamePage = () => {
       onClose();
     }
   }, [router.query.action, onClose, onOpen]);
-  const [proposa, setProposal] = useState("");
+  const [proposal, setProposal] = useState("");
   const [signature, setSignature] = useState<string>();
   const bgColor = useColorModeValue("blue.500", "blue.900");
+  console.log(
+    "State:",
+    web3ctx.signer,
+    game.gameState.data?.currentTurn,
+    gmClient.playerSaltQuery.data
+  );
   if (
     !web3ctx.signer ||
     !game.gameState.data?.currentTurn ||
-    !router.query?.playerSalt
+    !gmClient.playerSaltQuery.data
   )
     return "";
   const signer = web3ctx.signer;
   const turn = game.gameState.data.currentTurn.toString();
-  const playerSalt = router.query.playerSalt;
+  const playerSalt = gmClient.playerSaltQuery.data;
   return (
     <Flex>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -85,28 +91,36 @@ const GamePage = () => {
             <Input
               placeholder="your proposal"
               onChange={(e) => setProposal(e.target.value)}
-              value={proposa}
+              value={proposal}
             />
             <Text>{signature}</Text>
           </ModalBody>
           <ModalFooter>
             <Button
               onClick={async () => {
+                console.log(
+                  "going to sign:",
+                  proposal,
+                  turn,
+                  gameId,
+                  playerSalt
+                );
                 const signature = await signProposalMessage(
                   web3ctx.getChainFromId(web3ctx.chainId),
                   signer
                 )({
-                  proposal: proposa,
+                  proposal: proposal,
                   turn,
                   gameId,
                   salt: playerSalt,
                 });
-                setSignature(signature);
+                gmClient.submitProposalMutation.mutate({ proposal, signature });
+                // setSignature(signature);
               }}
             >
               Sign
             </Button>
-            <Button>Cancel</Button>
+            <Button onClick={() => router.drop("action")}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -120,6 +134,13 @@ const GamePage = () => {
         </Skeleton>
         <Skeleton isLoaded={!game.gameState.isLoading}>
           <CardField>Game status: {game.gameState.data?.gamePhase}</CardField>
+        </Skeleton>
+        <Skeleton isLoaded={!game.getCurrentTurn.isLoading}>
+          <CardField>
+            Proposals submitted:{" "}
+            {game.getCurrentTurn.data?.proposalEvents?.length ?? 0} /{" "}
+            {game.gameState.data.players.length}
+          </CardField>
         </Skeleton>
         <Skeleton isLoaded={!game.gameState.isLoading}>
           {game.gameState.data?.gamePhase === gameStatusEnum.open && (

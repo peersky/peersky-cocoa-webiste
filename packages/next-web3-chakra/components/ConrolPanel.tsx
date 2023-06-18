@@ -27,6 +27,13 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  Input,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  InputGroup,
 } from "@chakra-ui/react";
 import Web3Context from "../providers/Web3Provider/context";
 import useBestOfWebContract from "../hooks/useBestOfWebContract";
@@ -34,6 +41,7 @@ import { ethers } from "ethers";
 import Web3MethodForm from "./Web3MethodForm";
 import { getArtifact } from "@daocoacoa/bestofgame-js";
 import { BestOfDiamond } from "../../../types/typechain";
+import { useGameMasterBackend } from "../hooks";
 const STATES = {
   newGame: 1,
   setRequirements: 2,
@@ -46,6 +54,7 @@ const ControllerPanel = ({
   isController: boolean;
   address: string;
 }) => {
+  const [newGameRank, setNewGameRank] = React.useState("1");
   const web3ctx = useContext(Web3Context);
   const { isOpen, onOpen, onClose } = useDisclosure();
   // const [isOpen, onOpen] = React.useState(false);
@@ -55,16 +64,28 @@ const ControllerPanel = ({
     web3ctx: web3ctx,
   });
 
+  const gmBackend = useGameMasterBackend({});
+
+  console.log(
+    "bestContract.gameState.isSuccess",
+    bestContract.gameState.isSuccess
+  );
   if (
     bestContract.contractState.isLoading ||
-    bestContract.rankTokenBalance.isLoading
+    bestContract.rankTokenBalance.isLoading ||
+    bestContract.gameState.isLoading ||
+    gmBackend.gmAddressQuery.isLoading
   )
     return <Spinner />;
 
+  const gameMaster = gmBackend.gmAddressQuery.data;
+  console.log("gameMaster", gameMaster);
+  if (!gameMaster) throw new Error("GM not set X_o");
   const test = web3ctx.getMethodsABI<BestOfDiamond>(
     getArtifact(web3ctx.getChainFromId(web3ctx.chainId)).abi,
     "createGame(address,uint256)"
   );
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -77,38 +98,38 @@ const ControllerPanel = ({
           <ModalCloseButton />
           <ModalBody>
             {/* {state === STATES.newGame && ( */}
-            <Web3MethodForm
-              hide={["gameMaster", "msg.value"]}
-              showSwitch={false}
-              title=""
-              argumentFields={{
-                gameMaster: {
-                  initialValue: "0x6ecF5fcf5b2F9b6D507DeB8Da4eAe1cec450E45f",
-                  convertToBytes: false,
-                },
-              }}
-              initialValue={
-                bestContract.contractState.data?.BestOfState?.gamePrice
-              }
-              method={web3ctx.getMethodsABI<BestOfDiamond>(
-                getArtifact(web3ctx.getChainFromId(web3ctx.chainId)).abi,
-                "createGame(address,uint256)"
-              )}
-              contractAddress={
-                getArtifact(web3ctx.getChainFromId(web3ctx.chainId))
-                  .contractAddress
-              }
-              rendered={true}
-              key={`creategame`}
-            />
+            <NumberInput variant={"outline"} flexBasis="75px" flexGrow={1}>
+              <NumberInputField
+                placeholder={`Game rank`}
+                // textColor={("blue.800")}
+                // onKeyPress={onKeyPress}
+                value={newGameRank}
+                onChange={(event) => setNewGameRank(event.target.value)}
+                fontSize={"sm"}
+                w="100%"
+              />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
           </ModalBody>
 
-          {/* <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
+          <ModalFooter>
+            <Button colorScheme="blue" variant="ghost" mr={3} onClick={onClose}>
               Close
             </Button>
-            <Button variant="ghost">Secondary Action</Button>
-          </ModalFooter> */}
+            <Button
+              onClick={() =>
+                bestContract.createGame.mutate({
+                  gameMaster,
+                  gameRank: newGameRank,
+                })
+              }
+            >
+              Sumitta
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
       <Flex {...props}>
@@ -134,7 +155,7 @@ const ControllerPanel = ({
                   placeholder={""}
                   defaultValue={
                     bestContract.contractState.data?.BestOfState
-                      .joinGamePrice &&
+                      ?.joinGamePrice &&
                     ethers.utils.formatEther(
                       bestContract.contractState.data?.BestOfState.joinGamePrice
                     )
@@ -160,7 +181,7 @@ const ControllerPanel = ({
                   placeholder={""}
                   defaultValue={
                     bestContract.contractState.data?.BestOfState
-                      .rankTokenAddress
+                      ?.rankTokenAddress ?? ""
                   }
                   isDisabled={true}
                 >

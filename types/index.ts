@@ -7,11 +7,10 @@ export type SupportedChains =
   | "ethereum"
   | "goerli";
 
-export * as typechain from "typechain";
 export * as enums from "./enums";
 
 export const ProposalTypes = {
-  signHashedProposal: [
+  signProposalByGM: [
     {
       type: "uint256",
       name: "gameId",
@@ -22,11 +21,11 @@ export const ProposalTypes = {
     },
     {
       type: "bytes32",
-      name: "salt",
+      name: "proposalHash",
     },
     {
       type: "string",
-      name: "proposal",
+      name: "encryptedByGMProposal",
     },
   ],
 };

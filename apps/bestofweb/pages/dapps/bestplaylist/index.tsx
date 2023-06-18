@@ -80,7 +80,13 @@ const Home = () => {
             />
           )}
           {router.query.action === "setreqs" && (
-            <SetReqs gameId={router.query.gameId} />
+            <SetReqs
+              gameId={router.query.gameId}
+              onCancel={() => {
+                console.log("back!");
+                router.drop("action");
+              }}
+            />
           )}
           {router.query.action === "open" && (
             <OpenGame

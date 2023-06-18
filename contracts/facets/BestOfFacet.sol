@@ -15,6 +15,8 @@ import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "../abstracts/draft-EIP712Diamond.sol";
 
+import "hardhat/console.sol";
+
 contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC721Receiver, EIP712 {
     using LibTBG for LibTBG.GameInstance;
     using LibTBG for uint256;
@@ -158,11 +160,12 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
         uint256 gameId,
         bytes32[3] memory votesHidden,
         bytes memory proof,
-        bytes memory submitSignature
+        bytes memory gmSignature
     ) public {
         gameId.enforceGameExists();
         gameId.enforceHasStarted();
         bytes memory message = abi.encode(
+            //ToDo: add address of a player to signature as well proof
             LibBestOf._VOTE_SUBMIT_PROOF_TYPEHASH,
             gameId,
             gameId.getTurn(),
@@ -171,13 +174,50 @@ contract BestOfFacet is IBestOf, IERC1155Receiver, DiamondReentrancyGuard, IERC7
             votesHidden[2]
         );
         BOGInstance storage game = gameId.getGameStorage();
-        _isValidSignature(message, submitSignature, gameId.getGM());
+        _isValidSignature(message, gmSignature, gameId.getGM());
         require(!gameId.isGameOver(), "Game over");
         require(gameId.getTurn() > 1, "No proposals exist at turn 1: cannot vote");
-        game.votesHidden[gameId.getTurn()][msg.sender].votedFor = votesHidden;
-        game.votesHidden[gameId.getTurn()][msg.sender].proof = proof;
-        gameId.playerMove(msg.sender);
+        // game.votesHidden[msg.sender].votedFor = votesHidden;
+        game.votesHidden[msg.sender].proof = proof;
+        gameId.playerMove(msg.sender); // This will enforce player is in in the game
         emit VoteSubmitted(gameId, gameId.getTurn(), msg.sender, votesHidden, proof);
+    }
+
+    event ProposalSubmitted(
+        uint256 indexed gameId,
+        uint256 indexed turn,
+        address indexed proposer,
+        bytes gmSignature,
+        string proposalEncryptedByGM,
+        bytes32 proposalHash
+    );
+
+    function submitProposal(
+        uint256 gameId,
+        bytes memory gmSignature,
+        string memory encryptedByGMProposal,
+        bytes32 proposalHash
+    ) public {
+        IBestOf.BOGInstance storage game = gameId.getGameStorage();
+        gameId.enforceGameExists();
+        gameId.enforceHasStarted();
+        require(LibTBG.getPlayersGame(msg.sender) == gameId, "not a player");
+        require(!gameId.isGameOver(), "Game over");
+        require(!gameId.isLastTurn(), "Cannot propose in last turn");
+        uint256 _turn = gameId.getTurn();
+        require(bytes(encryptedByGMProposal).length != 0, "Cannot propose empty");
+        require(game.futureProposalHashes[msg.sender] == bytes32(0), "Already proposed!");
+        bytes memory message = abi.encode(
+            LibBestOf._PROPOSAL_PROOF_TYPEHASH,
+            gameId,
+            _turn,
+            proposalHash,
+            keccak256(abi.encodePacked(encryptedByGMProposal))
+        );
+        require(_isValidSignature(message, gmSignature, gameId.getGM()), "wrong signature");
+        game.futureProposalHashes[msg.sender] = proposalHash;
+        game.numFutureProposals += 1;
+        emit ProposalSubmitted(gameId, gameId.getTurn(), msg.sender, gmSignature, encryptedByGMProposal, proposalHash);
     }
 
     function onERC1155Received(

@@ -30,9 +30,9 @@ library LibBestOf {
     }
 
     bytes32 internal constant _PROPOSAL_PROOF_TYPEHASH =
-        keccak256("signHashedProposal(uint256 gameId,uint256 turn,bytes32 salt,string proposal)");
+        keccak256("signProposalByGM(uint256 gameId,uint256 turn,bytes32 proposalHash,string encryptedByGMProposal)");
     bytes32 internal constant _VOTE_PROOF_TYPEHASH =
-        keccak256("signVote(string vote1,string vote2,string vote3,uint256 gameId,uint256 turn,bytes32 salt)");
+        keccak256("signVote(uint256 vote1,uint256 vote2,uint256 vote3,uint256 gameId,uint256 turn,bytes32 salt)");
     bytes32 internal constant _VOTE_SUBMIT_PROOF_TYPEHASH =
         keccak256("publicSignVote(uint256 gameId,uint256 turn,bytes32 vote1,bytes32 vote2,bytes32 vote3)");
 
@@ -59,33 +59,30 @@ library LibBestOf {
 
     function getProposalScore(
         uint256 gameId,
-        string memory proposal,
         address[] memory voters,
-        string[3][] memory votesRevealed,
+        uint256[3][] memory votesRevealed,
         address proposer
     ) internal view returns (uint256) {
         address[] memory players = gameId.getPlayers();
+        IBestOf.BOGInstance storage game = getGameStorage(gameId);
+        uint256 proposalIdx = game.playersOngoingProposalIdx[proposer];
         assert(voters.length <= players.length);
         uint256 score = 0;
         for (uint256 i = 0; i < voters.length; i++) {
-            if (compareStrings(votesRevealed[i][0], proposal)) score += 3;
-            if (compareStrings(votesRevealed[i][1], proposal)) score += 2;
-            if (compareStrings(votesRevealed[i][2], proposal)) score += 1;
+            if (votesRevealed[i][0] == proposalIdx) score += 3;
+            if (votesRevealed[i][1] == proposalIdx) score += 2;
+            if (votesRevealed[i][2] == proposalIdx) score += 1;
             if (
-                (bytes(votesRevealed[i][0]).length == 0 &&
-                    bytes(votesRevealed[i][1]).length == 0 &&
-                    bytes(votesRevealed[i][2]).length == 0) && (voters[i] != proposer)
-            ) score += 3;
+                (votesRevealed[i][0] >= game.numOngoingProposals ||
+                    votesRevealed[i][1] >= game.numOngoingProposals ||
+                    votesRevealed[i][2] >= game.numOngoingProposals ||
+                    (voters[i] != proposer))
+            ) score = 3; // This means vote is empty -> give 3 points everyone except voter (N.B. Ensure default Vote Indicies not equal to zero! )
         }
         return score;
     }
 
-    function fulfillRankRq(
-        address applicant,
-        address to,
-        uint256 gameRank,
-        bool mustLock
-    ) internal {
+    function fulfillRankRq(address applicant, address to, uint256 gameRank, bool mustLock) internal {
         IBestOf.BOGSettings storage settings = BOGStorage();
         if (gameRank > 1) {
             IERC1155 rankToken = IERC1155(settings.rankTokenAddress);

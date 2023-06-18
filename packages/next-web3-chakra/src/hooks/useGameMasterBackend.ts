@@ -1,5 +1,9 @@
-import { getPlayerSalt } from "@daocoacoa/gm-js";
-import { useQuery } from "react-query";
+import {
+  getPlayerSalt,
+  relayProposal,
+  getGameMasterAddress,
+} from "@daocoacoa/gm-js";
+import { useMutation, useQuery } from "react-query";
 import queryCacheProps from "./hookCommon";
 
 export const useGameMasterBackend = ({
@@ -9,17 +13,40 @@ export const useGameMasterBackend = ({
   turn?: string;
   gameId?: string;
 }) => {
-  const authToken = localStorage.getItem("EEAToken");
+  const authToken = sessionStorage.getItem("EEAToken");
   const playerSaltQuery = useQuery(
     ["GMBackend", "PlayerSalt", turn, gameId],
-    async () => getPlayerSalt({ turn: turn ?? "0", gameId: gameId ?? "0" }),
+    () =>
+      getPlayerSalt({ turn: turn ?? "0", gameId: gameId ?? "0" }).then(
+        (r) => r.data
+      ),
     {
       ...queryCacheProps,
       enabled: !!turn && !!gameId && !!authToken,
     }
   );
+  const gmAddressQuery = useQuery(
+    ["GMBackend", "gmAddress"],
+    () => getGameMasterAddress().then((r) => r.data),
+    {
+      ...queryCacheProps,
+    }
+  );
 
-  return { playerSaltQuery };
+  const submitProposalMutation = useMutation(
+    async ({
+      signature,
+      proposal,
+    }: {
+      signature: string;
+      proposal: string;
+    }) => {
+      if (!gameId) throw new Error("No GameId");
+      if (!turn) throw new Error("turn number");
+      relayProposal({ turn, gameId })({ signature, proposal });
+    }
+  );
+  return { playerSaltQuery, submitProposalMutation, gmAddressQuery };
 };
 
 export default useGameMasterBackend;

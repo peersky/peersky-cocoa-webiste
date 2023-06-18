@@ -29,6 +29,7 @@ import {
 import { LibCoinVending } from "../../../types/typechain/contracts/facets/RequirementsFacet";
 import { BigNumberish, BytesLike, ethers } from "ethers";
 import { v4 } from "uuid";
+import useAppRouter from "../hooks/useRouter";
 
 enum ContractTypes {
   ERC20 = 0,
@@ -337,8 +338,10 @@ const ContractField = ({
 // enum requirementType
 const _NewRequirement = ({
   onSubmit,
+  onCancel,
 }: {
   onSubmit: (e: UIRequirementConfig) => void;
+  onCancel?: () => void;
 }) => {
   const [requirements, dispatch] = React.useReducer(reducer, initialArgs);
 
@@ -470,13 +473,16 @@ const _NewRequirement = ({
         </MenuList>
         {/* </Portal> */}
       </Menu>
-      <Button
-        onClick={() => {
-          onSubmit(requirements);
-        }}
-      >
-        Submit
-      </Button>
+      <Flex dir="row">
+        <Button
+          onClick={() => {
+            onSubmit(requirements);
+          }}
+        >
+          Submit
+        </Button>
+        <Button onClick={onCancel}>Back</Button>
+      </Flex>
     </Flex>
   );
 };

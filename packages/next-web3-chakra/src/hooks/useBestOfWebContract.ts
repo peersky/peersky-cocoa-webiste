@@ -109,7 +109,7 @@ export const useBestOfWebContract = ({
       "gameState",
       { chainId: web3ctx.chainId, gameId: gameId },
     ],
-    () => getGameState(chainName, provider, gameId ?? "0"),
+    async () => getGameState(chainName, provider, gameId ?? "0"),
     {
       ...queryCacheProps,
       enabled:
@@ -121,6 +121,8 @@ export const useBestOfWebContract = ({
       onError: (e) => console.error(e),
     }
   );
+
+  console.log("game state status", gameState.isSuccess);
 
   const playersGame = useQuery(
     [
@@ -147,6 +149,26 @@ export const useBestOfWebContract = ({
       { chainId: web3ctx.chainId, player: web3ctx.account },
     ],
     () => BestMethods.getPreviousTurnStats(chainName, provider)(gameId ?? "0"),
+    {
+      // ...queryCacheProps,
+      enabled:
+        !!web3ctx.account &&
+        !!web3ctx.chainId &&
+        !!gameId &&
+        !!web3ctx.provider &&
+        contractState.isSuccess,
+      onError: (e) => console.error(e),
+    }
+  );
+
+  const getCurrentTurn = useQuery(
+    [
+      "BestOfWebContract",
+      "currentTurnState",
+      { chainId: web3ctx.chainId, player: web3ctx.account },
+    ],
+    async () =>
+      await BestMethods.getOngoingVoting(chainName, signer)(gameId ?? "0"),
     {
       // ...queryCacheProps,
       enabled:
@@ -236,26 +258,26 @@ export const useBestOfWebContract = ({
     { ...commonProps }
   );
 
-  const submitProposal = useMutation(
-    ({
-      gameId,
-      proposerHidden,
-      proof,
-      proposal,
-    }: {
-      gameId: string;
-      proposerHidden: BytesLike;
-      proof: BytesLike;
-      proposal: string;
-    }) =>
-      BestMethods.submitProposal(chainName, signer)(
-        gameId,
-        proposerHidden,
-        proof,
-        proposal
-      ),
-    { ...commonProps }
-  );
+  // const submitProposal = useMutation(
+  //   ({
+  //     gameId,
+  //     proposerHidden,
+  //     proof,
+  //     proposal,
+  //   }: {
+  //     gameId: string;
+  //     proposerHidden: BytesLike;
+  //     proof: BytesLike;
+  //     proposal: string;
+  //   }) =>
+  //     BestMethods.submitProposal(chainName, signer)(
+  //       gameId,
+  //       proposerHidden,
+  //       proof,
+  //       proposal
+  //     ),
+  //   { ...commonProps }
+  // );
 
   const submitVote = useMutation(
     ({
@@ -457,7 +479,7 @@ export const useBestOfWebContract = ({
     endTurn,
     leaveGame,
     openRegistration,
-    submitProposal,
+    // submitProposal,
     submitVote,
     createGame,
     setJoinRequirements,
@@ -468,6 +490,7 @@ export const useBestOfWebContract = ({
     isGameCreator,
     isInGame,
     previousTurnStats,
+    getCurrentTurn,
   };
 };
 

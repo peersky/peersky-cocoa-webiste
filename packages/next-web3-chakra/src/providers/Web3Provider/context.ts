@@ -17,8 +17,8 @@ export interface web3MethodCall {
 }
 
 export const WALLET_STATES: WalletStatesInterface = {
-  ONBOARD: "Install MetaMask!",
-  CONNECT: "Connect with Web3",
+  ONBOARD: "Get a wallet",
+  CONNECT: "Login with Web3",
   CONNECTED: "Connected",
   UNKNOWN_CHAIN: "Unsupported chain",
 };

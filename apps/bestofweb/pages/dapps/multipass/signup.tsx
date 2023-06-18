@@ -18,7 +18,7 @@ import { useMutation } from "react-query";
 import {
   LibMultipass,
   MultipassDiamond,
-} from "../../../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
+} from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 // import { useWeb3}
 // import { Link } from "@chakra-ui/next-js";
 // import { FaPassport } from "react-icons/fa";
