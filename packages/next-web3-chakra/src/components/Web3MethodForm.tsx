@@ -27,7 +27,6 @@ import { AbiInput, AbiItem } from "web3-utils";
 import { useMutation } from "react-query";
 import Web3Context from "../providers/Web3Provider/context";
 import useToast from "../hooks/useToast";
-import FileUpload from "./FileUpload";
 import Web3MethodField from "./We3MethodField";
 
 import { ArgumentFields, StateInterface, ExtendedInputs } from "../types";

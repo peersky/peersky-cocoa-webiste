@@ -4,7 +4,7 @@ const useToast = () => {
   const chakraToast = useChakraToast();
 
   const toast = useCallback(
-    (message, type, title) => {
+    (message: any, type: "info" | "warning" | "success" | "error" | "loading" | undefined, title?: string) => {
       const userTitle = title ?? message?.response?.statusText ?? type;
 
       const userMessage =
@@ -16,14 +16,14 @@ const useToast = () => {
       const id = `${userTitle}-${userMessage}-${type}`;
       if (!chakraToast.isActive(id)) {
         // if (
-          // Object.prototype.hasOwnProperty.call(mixpanel, "get_distinct_id") &&
-          // type === "error"
+        // Object.prototype.hasOwnProperty.call(mixpanel, "get_distinct_id") &&
+        // type === "error"
         // ) {
-          // mixpanel.track(`${MIXPANEL_EVENTS.TOAST_ERROR_DISPLAYED}`, {
-          //   status: message?.response?.status,
-          //   title: userTitle,
-          //   detail: userMessage,
-          // });
+        // mixpanel.track(`${MIXPANEL_EVENTS.TOAST_ERROR_DISPLAYED}`, {
+        //   status: message?.response?.status,
+        //   title: userTitle,
+        //   detail: userMessage,
+        // });
         // }
 
         chakraToast({

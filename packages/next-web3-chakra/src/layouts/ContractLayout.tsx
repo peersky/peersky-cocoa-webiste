@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
-import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
-import useAppRouter from "@peersky/next-web3-chakra/hooks/useRouter";
+import useAppRouter from "../hooks/useRouter";
 import { getLayout as getSiteLayout } from "./AppLayout";
 import {
   Modal,
@@ -11,12 +10,11 @@ import {
   ModalFooter,
   ModalBody,
   useDisclosure,
-  ModalCloseButton,
   Input,
   chakra,
 } from "@chakra-ui/react";
-import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
-import useToast from "@peersky/next-web3-chakra/hooks/useToast";
+import Web3Context from "../providers/Web3Provider/context";
+import useToast from "../hooks/useToast";
 import { ethers } from "ethers";
 const ContractLayout = ({
   children,

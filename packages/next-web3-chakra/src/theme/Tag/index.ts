@@ -1,4 +1,4 @@
-const subtleVariant = () => {
+const subtleVariant = (props) => {
   return {
     bg: `white.200`,
     boxShadow: "sm",

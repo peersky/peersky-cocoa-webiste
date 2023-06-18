@@ -1,4 +1,4 @@
-import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+import { Sidebar, Menu } from "react-pro-sidebar";
 import { useContext } from "react";
 import {
   Flex,
@@ -41,12 +41,9 @@ const _Sidebar = ({
       width="280px"
       backgroundColor={"#006D99"}
       breakPoint="lg"
-      toggled={ui.sidebarToggled}
-      onToggle={ui.setSidebarToggled}
-      collapsed={ui.sidebarCollapsed}
       hidden={!ui.sidebarVisible}
     >
-      <Menu menuItemStyles={{ colorScheme: "red" }}>
+      <Menu>
         <Box p={4} alignItems="center">
           <Divider borderColor="blue.600" />
           {!!ui.webSiteConfig.ENABLE_WEB3 && (

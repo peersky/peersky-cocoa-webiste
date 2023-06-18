@@ -6,7 +6,6 @@ const Menu = {
     const { colorScheme: c } = props;
     return {
       item: {
-        placeContent: "center",
         w: "full",
         px: 6,
         mx: 0,

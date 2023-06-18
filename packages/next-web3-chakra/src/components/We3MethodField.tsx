@@ -27,7 +27,6 @@ import {
 } from "@chakra-ui/react";
 import Web3Context from "../providers/Web3Provider/context";
 import BN from "bn.js";
-import FileUpload from "./FileUpload";
 import Papa from "papaparse";
 import { AbiInput } from "web3-utils";
 import { ethers } from "ethers";
