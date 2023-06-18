@@ -1,32 +1,29 @@
 {
   "name": "@peersky/next-web3-chakra",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Web3 enabled react components made for nextjs and chakra ui",
   "main": "src/index.ts",
+  "type": "module",
   "files": [
     "dist"
   ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    },
-    "./package.json": "./package.json"
-  },
   "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "splitting": false,
     "clean": true,
     "target": "es2019",
     "format": [
-      "esm",
-      "cjs"
+      "cjs",
+      "esm"
     ],
     "keepNames": true,
     "sourcemap": true
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsup src --dts"
+    "build": "tsc"
   },
   "author": "Peersky",
   "license": "MIT",
