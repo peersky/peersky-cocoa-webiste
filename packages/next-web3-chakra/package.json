@@ -1,9 +1,26 @@
 {
   "name": "@peersky/next-web3-chakra",
-  "version": "0.1.2",
+  "version": "0.3.3",
   "description": "Web3 enabled react components made for nextjs and chakra ui",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "splitting": false,
+    "clean": true,
+    "target": "es2019",
+    "format": [
+      "cjs",
+      "esm"
+    ],
+    "keepNames": true,
+    "sourcemap": true
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
@@ -29,7 +46,8 @@
     "eslint-plugin-unused-imports": "^2.0.0",
     "prettier": "^2.8.4",
     "typechain": "^8.0.0",
-    "typescript": "^4.9.5"
+    "tsup": "^7.0.0",
+    "typescript": "4.9.5"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.17",

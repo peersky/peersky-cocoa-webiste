@@ -1,22 +1,26 @@
 {
+  // see https://www.typescriptlang.org/tsconfig to better understand tsconfigs
+  "include": ["./src"],
   "compilerOptions": {
-    "target": "esnext",
     "module": "esnext",
     "lib": ["dom", "esnext"],
-    "moduleResolution": "node",
-    "allowJs": true,
-    "skipLibCheck": true,
+    "declarationMap": true,
+    "importHelpers": true,
+    "declaration": true,
+    "sourceMap": true,
+    "rootDir": "./src",
     "strict": true,
-    "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "moduleResolution": "node",
     "jsx": "react-jsx",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
     "downlevelIteration": true,
-    "outDir": "dist"
-  },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts", "hooks/hookCommon.js"],
-  "exclude": ["node_modules", "./dist/*/**"]
+    "outDir": "./dist"
+  }
 }
