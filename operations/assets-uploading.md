@@ -50,3 +50,29 @@ path:  assets/10v3
   size: 489
 }
 ```
+
+yarn hardhat uploadDir2IPFS --path assets/sun
+yarn run v1.22.19
+path: assets/sun
+{
+path: 'sun/1',
+cid: CID(QmdZvc662NhzXrkWWc752P7R5CFV8b76Q242B4mfTdJTNS),
+size: 185
+}
+{
+path: 'sun',
+cid: CID(QmZZaGX1jaMtMpbuU5q7PBqpjqEy8SPLjSbV2HhtFjKtvg),
+size: 233
+}
+
+NEW rank token image:
+yarn hardhat upload2IPFS --path 'assets/rank_token.png'
+
+{
+path: 'QmaAZmV9KtZt63c4MJv95nMNi3XzfQhfvmhjA2i6asmnis',
+cid: CID(QmaAZmV9KtZt63c4MJv95nMNi3XzfQhfvmhjA2i6asmnis),
+size: 1444040
+}
+✨ Done in 5.04s.
+
+

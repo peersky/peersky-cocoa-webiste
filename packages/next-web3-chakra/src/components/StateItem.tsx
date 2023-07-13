@@ -25,17 +25,16 @@ import Web3MethodField from "./We3MethodField";
 const ReactJson = dynamic(() => import("react-json-view"), {
   ssr: false,
 });
-import { ArgumentFields, StateInterface, ExtendedInputs } from "../types";
 import useABIItemForm from "../hooks/useAbiItemForm";
 import { ethers } from "ethers";
+import { JsonFragment } from "@ethersproject/abi";
 
 const _StateItem = ({
   abiItem,
   address,
   args,
-  ...props
 }: {
-  abiItem: AbiItem;
+  abiItem: JsonFragment;
   address: string;
   args?: any;
 }) => {
@@ -43,6 +42,7 @@ const _StateItem = ({
 
   const { state, dispatchArguments, getArgs } = useABIItemForm(abiItem);
 
+  console.dir(state);
   const getItemState = async () => {
     setIsEnabled(false);
     const contract = new ethers.Contract(
@@ -114,9 +114,7 @@ const _StateItem = ({
             onChange={() => {
               setAllBytesAreStrings((old) => {
                 dispatchArguments({
-                  value: !old,
-                  index: 0,
-                  type: "bytesFormat",
+                  allBytesAsStrings: !old,
                 });
                 return !old;
               });
@@ -126,32 +124,37 @@ const _StateItem = ({
           </Switch>
         )}
       </Flex>
-      {state.inputs?.length !== 0 &&
-        state?.inputs?.map((item, idx: number) => {
-          return (
-            <Box key={`state-${idx}`}>
-              <Web3MethodField
-                inputItem={item}
-                index={idx}
-                dispatchArguments={dispatchArguments}
-                onKeyPress={handleKeypress}
-              />
-              <Button
-                onClick={() => {
-                  response.remove();
-                  setIsEnabled(true);
-                }}
-                isLoading={response.isLoading}
-                alignSelf={"center"}
-                variant={"solid"}
-                size="sm"
-                colorScheme={"orange"}
-              >
-                Submit
-              </Button>
-            </Box>
-          );
-        })}
+      {state.inputs?.length !== 0 && (
+        <Box>
+          {state?.inputs?.map((item, idx) => {
+            return (
+              <Box key={`state-${idx}`}>
+                <Web3MethodField
+                  abiItem={item}
+                  uiFragment={state.ui[idx]}
+                  index={idx}
+                  dispatchArguments={dispatchArguments}
+                  onKeyPress={handleKeypress}
+                />
+              </Box>
+            );
+          })}
+          <Button
+            onClick={() => {
+              response.remove();
+              setIsEnabled(true);
+            }}
+            isLoading={response.isLoading}
+            alignSelf={"center"}
+            variant={"solid"}
+            size="sm"
+            colorScheme={"orange"}
+          >
+            Submit
+          </Button>
+        </Box>
+      )}
+
       <Skeleton isLoaded={!response.isLoading}>
         {response?.data && (
           <Box cursor="crosshair" overflowWrap={"break-word"}>

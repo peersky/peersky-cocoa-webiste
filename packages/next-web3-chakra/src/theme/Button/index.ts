@@ -83,15 +83,16 @@ const variantMenuButton = (props) => {
 const variantOutline = (props) => {
   const { colorScheme: c } = props;
   return {
-    // borderColor: `${c}.900`,
+    borderColor: mode(`${c}.400`, `${c}.400`)(props),
     // borderWidth: `0.125rem`,
     // textColor: mode(`${c}.700`, "whiteAlpha.700")(props),
     borderWidth: "3px",
     boxSizing: "border-box",
-    // color: `${c}.900`,
-    textColor: mode(`${c}.900`, `${c}.400`)(props),
+    // textColor: mode(`${c}.400`, `${c}.400`)(props),
+    textColor: mode(`${c}.100`, `${c}.400`)(props),
     _hover: {
       boxShadow: "md",
+      bg: mode(`${c}.400`, `${c}.800`)(props),
     },
     _focus: {
       textDecoration: "underline",
@@ -101,18 +102,19 @@ const variantOutline = (props) => {
 const variantSolid = (props) => {
   const { colorScheme: c } = props;
   return {
-    bg: mode(`${c}.900`, `${c}.400`)(props),
+    bg: mode(`${c}.400`, `${c}.700`)(props),
+    textColor: mode(`${c}.0`, `${c}.100`)(props),
     _focus: {
       textDecoration: "underline",
     },
     _disabled: {
-      bg: `${c}.200`,
+      bg: mode(`${c}.400`, `${c}.400`)(props),
     },
     _hover: {
-      bg: `${c}.500`,
+      bg: mode(`${c}.500`, `${c}.600`)(props),
       // color: `${c}.100`,
       _disabled: {
-        bg: `${c}.100`,
+        bg: mode(`${c}.500`, `${c}.300`)(props),
       },
     },
   };

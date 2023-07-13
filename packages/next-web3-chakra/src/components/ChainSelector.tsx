@@ -17,7 +17,7 @@ const ChainSelector = ({ selectorScheme }: { selectorScheme?: string }) => {
   const web3Provider = useContext(Web3Context);
   return (
     <code>
-      <Menu colorScheme={"blue"} gutter={0} matchWidth={true}>
+      <Menu colorScheme={"blue"} gutter={0} matchWidth={true} variant="rounded">
         <MenuButton
           mx={2}
           px={6}

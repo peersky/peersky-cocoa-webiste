@@ -71,13 +71,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </Head>
         <body>
-          <script
+          <noscript
             dangerouslySetInnerHTML={{
-              __html: `
-         <!-- Google Tag Manager (noscript) -->
-         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KJLR89H"
-         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-         <!-- End Google Tag Manager (noscript) -->`,
+              __html: `src="https://www.googletagmanager.com/ns.html?id=GTM-KJLR89H"
+              height="0"
+              width="0"
+              style="display:none;visibility:hidden"`,
             }}
           />
           <Main />

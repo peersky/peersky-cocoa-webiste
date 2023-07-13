@@ -12,16 +12,16 @@ import {
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
-import { LibMultipass } from "../../../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
+import { LibMultipass } from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 // import { Link } from "@chakra-ui/next-js";
 import SplitWithImage from "@peersky/next-web3-chakra/components/SplitWithImage";
 // import { FaPassport } from "react-icons/fa";
 import { chains } from "@peersky/next-web3-chakra/providers/Web3Provider";
-import { supportedChains } from "@peersky/next-web3-chakra/types";
+import { SupportedChains } from "@peersky/next-web3-chakra/types";
 const multipassDeploymentMumbai = require("../../../../../deployments/mumbai/Multipass.json");
 const mumbaiAddress = multipassDeploymentMumbai.address;
 const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
-const multipassChainAddresses: Partial<Record<supportedChains, string>> = {
+const multipassChainAddresses: Partial<Record<SupportedChains, string>> = {
   mumbai: mumbaiAddress,
 };
 
@@ -115,8 +115,6 @@ const Home = () => {
       "0x0000000000000000000000000000000000000000000000000000000000000000"
     );
   };
-
-  console.log("dbg:", web3ctx.chainId);
 
   return (
     <Box h="100vh">

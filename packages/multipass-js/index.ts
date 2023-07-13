@@ -1,7 +1,6 @@
 import { ethers, BigNumber, Wallet, BytesLike } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { Network } from "hardhat/types";
-import { LibMultipass } from "../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
+import { LibMultipass } from "./types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 export enum SearchCriteria {
   id,
   username,

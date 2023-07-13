@@ -18,17 +18,17 @@ import { useMutation } from "react-query";
 import {
   LibMultipass,
   MultipassDiamond,
-} from "../../../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
+} from "../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 // import { useWeb3}
 // import { Link } from "@chakra-ui/next-js";
 // import { FaPassport } from "react-icons/fa";
 // import { chains } from "@peersky/next-web3-chakra/providers/Web3Provider";
-import { supportedChains } from "@peersky/next-web3-chakra/types";
+import { SupportedChains } from "@peersky/next-web3-chakra/types";
 import multipassDeploymentMumbai from "../../../../../deployments/mumbai/Multipass.json";
 import useToast from "@peersky/next-web3-chakra/hooks/useToast";
 // const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
 const multipassArtifacts: Partial<
-  Record<supportedChains, { contractAddress: string; abi: any[] }>
+  Record<SupportedChains, { contractAddress: string; abi: any[] }>
 > = {
   mumbai: {
     contractAddress: multipassDeploymentMumbai.address,
@@ -63,7 +63,6 @@ const Signup = () => {
       ) as MultipassDiamond;
 
       let response;
-      console.log("sending tx");
       response = await contract.register(...args);
 
       return response;
@@ -88,7 +87,6 @@ const Signup = () => {
           targetDomain: ethers.utils.formatBytes32String(""),
         };
         const response = await _multipass.resolveRecord(query);
-        console.log("response", response);
         setIsRegistred(response[0]);
       },
     }
@@ -108,10 +106,8 @@ const Signup = () => {
   const domainBytes32 = domain ? ethers.utils.formatBytes32String(domain) : "";
   const chainId = query?.chainId;
 
-  console.log("domain", domainBytes32);
   useEffect(() => {
     const queryUserById = async () => {
-      console.log("sdf2", message, contractAddress);
       const _multipass = new ethers.Contract(
         contractAddress,
         multipassABI,
@@ -125,7 +121,6 @@ const Signup = () => {
         targetDomain: ethers.utils.formatBytes32String(""),
       };
       const response = await _multipass.resolveRecord(query);
-      console.log("response", response);
       setIsRegistred(response[0]);
     };
 

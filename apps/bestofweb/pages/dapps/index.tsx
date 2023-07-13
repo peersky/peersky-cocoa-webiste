@@ -46,21 +46,14 @@ const Projects = () => {
         mt={4}
       >
         <Text display={"inline-block"} minW="180px">
-          Game master Protocol
+          Best playlist
         </Text>
         <Spacer />
-        <Text>
-          Verifiable way of submitting non-zk yet anonymous votes and proposals
-          trough a trusted third party relay
-        </Text>
+        <Text>Vote for best playlist of the web</Text>
         <Spacer />
-        {/* <RouteButton
-          variant="outline"
-          href={`dapps/bestofweb`}
-          isDisabled={true}
-        >
+        <RouteButton variant="outline" href={`dapps/bestplaylist`}>
           go!
-        </RouteButton> */}
+        </RouteButton>
         <RouteButton variant="outline" href={`dapps/gm/wtf`}>
           Learn more
         </RouteButton>

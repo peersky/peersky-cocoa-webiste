@@ -16,7 +16,7 @@ export const deploy = async ({
 
   const RankToken = await ethers.getContractFactory("RankToken", _signer);
 
-  const rankToken = await RankToken.deploy(URI, owner ?? _signer.address);
+  const rankToken = await RankToken.deploy(URI, owner ?? _signer.address, );
   await rankToken.deployed();
   return rankToken.address;
 };

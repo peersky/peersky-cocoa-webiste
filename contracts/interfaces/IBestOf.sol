@@ -23,10 +23,10 @@ interface IBestOf {
         LibTBG.GameSettings TBGSEttings;
     }
 
-    struct Proposal {
-        string proposal;
-        bytes proof;
-    }
+    // struct HiddenProposal {
+    //     string cipherText; //encrypted with game masters key
+    //     bytes32 hash; //plain proposal string hashed with current turn salt
+    // }
 
     struct VoteHidden {
         bytes32[3] votedFor;
@@ -36,10 +36,13 @@ interface IBestOf {
     struct BOGInstance {
         uint256 rank;
         address createdBy;
-        mapping(uint256 => mapping(bytes32 => Proposal)) proposals;
-        mapping(uint256 => mapping(address => VoteHidden)) votesHidden;
+        mapping(uint256 => string) ongoingProposals; //Previous Turn Proposals (These are being voted on)
+        mapping(address => uint256) playersOngoingProposalIdx;
+        uint256 numOngoingProposals;
+        mapping(address => bytes32) futureProposalHashes; //Current turn Proposal submittion
+        uint256 numFutureProposals;
+        mapping(address => VoteHidden) votesHidden;
         bytes32 prevTurnSalt;
-        uint256 numProposals;
     }
 
     event RegistrationOpen(uint256 indexed gameid);

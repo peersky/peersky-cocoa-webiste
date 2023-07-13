@@ -30,8 +30,9 @@ const ContractLayout = ({
   const handleChange = (event: any) => setValue(event.target.value);
   const { contractAddress } = router.query;
   const handleSubmit = () => {
-    if (value && ethers.utils.isAddress(value)) {
-      router.appendQuery("contractAddress", value, true, false);
+    const _value = value.toLocaleLowerCase();
+    if (value && ethers.utils.isAddress(_value)) {
+      router.appendQuery("contractAddress", _value, true, false);
     } else {
       toast("Not an address", "error", "Not an address");
     }
@@ -45,6 +46,9 @@ const ContractLayout = ({
           <ModalBody>
             <Input
               value={value}
+              onKeyDown={(e) => {
+                e.code === "Enter" && handleSubmit();
+              }}
               onChange={handleChange}
               variant="outline"
               placeholder="0x.."

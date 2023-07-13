@@ -1,7 +1,9 @@
 import Web3 from "web3/types";
 import { AbiItem, AbiInput } from "web3-utils";
 import { ethers } from "ethers";
-
+export type { SupportedChains } from "../../types";
+import { SupportedChains } from "./types";
+import { JsonFragment } from "@ethersproject/abi";
 export enum SiteMapItemType {
   EMPTY = 0,
   CONTENT,
@@ -33,23 +35,16 @@ export interface WalletStatesInterface {
   UNKNOWN_CHAIN: String;
 }
 
-export type supportedChains =
-  | "localhost"
-  | "mumbai"
-  | "polygon"
-  | "ethereum"
-  | "goerli";
-
 export interface ChainInterface {
   chainId: number;
-  name: supportedChains;
+  name: SupportedChains;
   rpcs: Array<string>;
 }
 
 export declare function GetMethodsAbiType<T>(
-  abi: AbiItem[],
+  abi: JsonFragment[],
   name: keyof T
-): AbiItem;
+): JsonFragment;
 
 export interface TokenInterface {
   address: string;
@@ -57,10 +52,11 @@ export interface TokenInterface {
   signed_message: string;
 }
 
-declare function ChangeChain(chainName: supportedChains): void;
-declare function getChainFromId(chainId: number): supportedChains;
+declare function ChangeChain(chainName: SupportedChains): void;
+declare function getChainFromId(chainId: number): SupportedChains;
 export interface Web3ProviderInterface {
   provider: ethers.providers.Web3Provider | undefined;
+  signer: ethers.providers.JsonRpcSigner | undefined;
   onConnectWalletClick: Function;
   buttonText: String;
   WALLET_STATES: WalletStatesInterface;
@@ -87,7 +83,15 @@ export interface UIProviderInterface {
   sessionId: string | undefined;
   webSiteConfig: WebSiteConfig;
 }
-
+// export interface ArgumentFields {
+//   value: string;
+//   placeholder: string;
+//   hide: boolean;
+//   label: string;
+//   valueIsEther?: boolean;
+//   convertToBytes: boolean;
+//   initialValue: string;
+// }
 export interface ArgumentField {
   placeholder?: string;
   initialValue?: string;
@@ -100,20 +104,47 @@ export interface ArgumentFields {
   [Key: string]: ArgumentField;
 }
 
-export interface Web3InpuUIField {
-  value: string;
-  placeholder: string;
+export interface FragmentBaseUIField {
   hide: boolean;
   label: string;
-  valueIsEther?: boolean;
-  convertToBytes: boolean;
-  initialValue: string;
 }
-export interface ExtendedInputs extends Omit<AbiInput, "components"> {
-  components?: ExtendedInputs[];
-  meta: Web3InpuUIField;
+export interface UIStringFragmentField extends FragmentBaseUIField {
+  value: string;
+  placeholder: string;
+  convertToBytes?: boolean;
 }
 
-export interface StateInterface extends Omit<AbiItem, "inputs"> {
-  inputs: Array<ExtendedInputs>;
+export interface UINumberFragmentField extends FragmentBaseUIField {
+  value: string;
+  placeholder: string;
+  valueIsEther?: boolean;
+}
+
+export interface UIBoolFragmentField extends FragmentBaseUIField {
+  value: boolean;
+  placeholder: string;
+}
+export interface UINUmberFragmentFieldArray
+  extends Omit<UINumberFragmentField, "value"> {
+  value: Array<string>;
+}
+export interface UIStringFragmentFieldArray
+  extends Omit<UIStringFragmentField, "value"> {
+  value: Array<string>;
+}
+export interface UITupleFragmentField extends FragmentBaseUIField {
+  components: Array<UIFragmentField>;
+  placeholder?: Array<UIFragmentField>;
+  value?: Array<UIFragmentField>;
+}
+export type UIFragmentField =
+  | UINumberFragmentField
+  | UIStringFragmentField
+  | UITupleFragmentField
+  | UINUmberFragmentFieldArray
+  | UIStringFragmentFieldArray;
+export interface UIFragment extends JsonFragment {
+  ui: Array<UIFragmentField>;
+  allBytesAsStrings?: boolean;
+  allValuesAsEther?: boolean;
 }

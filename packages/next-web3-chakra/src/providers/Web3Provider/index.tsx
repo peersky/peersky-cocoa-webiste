@@ -1,19 +1,27 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import Web3Context, { WALLET_STATES } from "./context";
 import Web3 from "web3";
 import {
   ChainInterface,
   GetMethodsAbiType,
-  supportedChains,
-  TokenInterface,
+  SupportedChains,
 } from "../../types";
 import router from "next/router";
 export const MAX_INT =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
 import { BaseContract, ContractFunction, ethers } from "ethers";
-import { ExternalProvider } from "@ethersproject/providers";
 import { useMutation } from "react-query";
-import useToast from "../../hooks/useToast";
+import {
+  isOutdated,
+  parseToken,
+  signAccessToken,
+  tryGetAuthenticated,
+} from "@peersky/eth-auth";
 declare global {
   interface Window {
     ethereum: any;
@@ -28,6 +36,7 @@ const _askWalletProviderToChangeChain = async (
 ) => {
   if (targetChain?.chainId && provider) {
     try {
+      console.log("trying to change chain");
       await window.ethereum
         .request({
           method: "wallet_switchEthereumChain",
@@ -40,6 +49,7 @@ const _askWalletProviderToChangeChain = async (
               .then((network) => setChainId(network.chainId))
         );
     } catch (switchError: any) {
+      console.log("caught error");
       // This error code indicates that the chain has not been added to MetaMask.
       if (switchError.code === 4902) {
         try {
@@ -47,7 +57,7 @@ const _askWalletProviderToChangeChain = async (
             method: "wallet_addEthereumChain",
             params: [
               {
-                chainId: `${targetChain?.chainId}`,
+                chainId: `0x${targetChain?.chainId.toString(16)}`,
                 chainName: targetChain?.name,
                 rpcUrls: targetChain?.rpcs,
               },
@@ -66,16 +76,35 @@ const _askWalletProviderToChangeChain = async (
   }
 };
 export const getMethodsABI: typeof GetMethodsAbiType = (abi, name) => {
-  const index = abi.findIndex(
-    (item) => item.name === name && item.type == "function"
-  );
+  const split = name.toString().split("(");
+  const index = abi.findIndex((item) => {
+    if (item.name === split[0] && item.type == "function") {
+      if (split.length == 1) {
+        return item.name === split[0] ? true : false;
+      } else {
+        const itemArguments = item.inputs;
+        const NameArgs = split[1].slice(0, -1);
+        const types = NameArgs.split(",");
+        let isAMatch = false;
+        if (itemArguments?.length == types.length) {
+          isAMatch = true;
+          itemArguments.forEach((itemArg, idx) => {
+            if (itemArg.type !== types[idx]) {
+              isAMatch = false;
+            }
+          });
+        }
+        return isAMatch;
+      }
+    } else return false;
+  });
   if (index !== -1) {
     const item = abi[index];
     return item;
   } else throw "accesing wrong abi element";
 };
 
-export const chains: { [key in supportedChains]: ChainInterface } = {
+export const chains: { [key in SupportedChains]: ChainInterface } = {
   ethereum: {
     chainId: 1,
     name: "ethereum",
@@ -121,11 +150,11 @@ const getChainFromId = (chainId: string | number) => {
       if (chain.chainId == chainId) return true;
     }) ?? [];
   if (!chainName) throw new Error("chain id is not found");
-  return chainName as any as supportedChains;
+  return chainName as any as SupportedChains;
 };
 const isKnownChain = (_chainId: number) => {
   return Object.keys(chains).some((key) => {
-    return chains[key as any as supportedChains].chainId == _chainId;
+    return chains[key as any as SupportedChains].chainId == _chainId;
   });
 };
 
@@ -155,15 +184,22 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
       ? WALLET_STATES.CONNECTED
       : WALLET_STATES.ONBOARD
   );
-  console.log("buttonText", buttonText);
   const [account, setAccount] = React.useState<string>(
     Object.assign({}, window?.ethereum) &&
-      Object.assign({}, window?.ethereum)?.selectedAddress
+      Object.assign({}, window?.ethereum)?.selectedAddress &&
+      ethers.utils.getAddress(
+        Object.assign({}, window?.ethereum)?.selectedAddress
+      )
   );
+
+  const [signer, setSigner] = React.useState<ethers.providers.JsonRpcSigner>();
+  const [avatar, setAvatar] = React.useState<string | null>();
   console.log(
     "account",
     account,
-    Object.assign({}, window?.ethereum).selectedAddress
+    ethers.utils.getAddress(
+      Object.assign({}, window?.ethereum)?.selectedAddress
+    )
   );
   const [chainId, setChainId] = React.useState<number>(
     Object.assign({}, window?.ethereum) &&
@@ -173,19 +209,19 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   const changeChainFromWalletProvider = (_chainId: number) => {
     console.log("changeChainFromWalletProvider");
     const chainKey = Object.keys(chains).find((_key) => {
-      const key: supportedChains = _key as any as supportedChains;
+      const key: SupportedChains = _key as any as SupportedChains;
       return chains[key].chainId == _chainId;
-    }) as any as supportedChains | undefined;
+    }) as any as SupportedChains | undefined;
     if (chainKey) {
       _setChain(chains[chainKey]);
-      setButtonText(WALLET_STATES.CONNECTED);
+      // setButtonText(WALLET_STATES.CONNECTED);
     } else {
       _setChain(undefined);
       setButtonText(WALLET_STATES.UNKNOWN_CHAIN);
     }
   };
 
-  const changeChainFromUI = (chainName: supportedChains) => {
+  const changeChainFromUI = (chainName: SupportedChains) => {
     if (window?.ethereum) {
       _askWalletProviderToChangeChain(
         chains[chainName],
@@ -206,16 +242,24 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const setWeb3ProviderAsWindowEthereum = async () => {
-    console.log("setWeb3ProviderAsWindowEthereum");
+    console.log("wallet setup: setWeb3ProviderAsWindowEthereum");
     let wasSetupSuccess = false;
     provider &&
       (await window.ethereum
         .request({ method: "eth_requestAccounts" })
         .then(async () => {
+          console.log("wallet setup: eth_requestAccounts success");
           // setProvider(new ethers.providers.Web3Provider(window.ethereum));
           // provider;
           setProvider(new ethers.providers.Web3Provider(window?.ethereum));
           setAccount(await provider.getSigner().getAddress());
+          setSigner(provider.getSigner());
+          try {
+            const avatar = await provider.getAvatar(account);
+            setAvatar(avatar);
+          } catch (e: any) {
+            console.warn("Could not setup avatar:", e?.message);
+          }
           const _chainId = window.ethereum.chainId;
           changeChainFromWalletProvider(_chainId);
           wasSetupSuccess = true;
@@ -229,18 +273,46 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
             console.error(err);
           }
         }));
-
+    console.log("wallet setup was success:", wasSetupSuccess);
     return wasSetupSuccess;
   };
+
   const onConnectWalletClick = async () => {
     if (window.ethereum) {
+      console.log("wallet setup");
       await setWeb3ProviderAsWindowEthereum().then((result) => {
         if (result) console.log("wallet setup was successfull");
-        else
+        if (!!signer && !!account) {
+          if (!token) {
+            if (!!localStorage.getItem(`EEAToken-${account}`)) {
+              setToken(localStorage.getItem(`EEAToken-${account}`));
+            } else {
+              try {
+                signAccessToken(signer, 60 * 60 * 24 * 30).then(
+                  (t) => setToken(t),
+                  (e) => console.error(e?.message)
+                );
+              } catch (e) {
+                console.error("No token was signed");
+              }
+            }
+          } else {
+            if (tryGetAuthenticated(token) !== account || isOutdated(token)) {
+              console.log("token found but address is incoreect");
+              try {
+                signAccessToken(signer, 60 * 60 * 24 * 30).then(
+                  (t) => setToken(t),
+                  (e) => console.error(e?.message)
+                );
+              } catch (e) {
+                console.error("No token was signed");
+              }
+            }
+          }
+        } else
           console.warn(
             "wallet setup failed, should go in fallback mode immediately"
           );
-        setButtonText(result ? WALLET_STATES.CONNECTED : WALLET_STATES.CONNECT);
       });
     } else {
       router.push("https://metamask.io/download/");
@@ -253,9 +325,9 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
       targetChain?.chainId &&
       chainId === targetChain?.chainId &&
       window?.ethereum &&
-      window?.ethereum?.selectedAddress
+      ethers.utils.getAddress(window?.ethereum?.selectedAddress)
     ) {
-      setAccount(window?.ethereum?.selectedAddress);
+      setAccount(ethers.utils.getAddress(window?.ethereum?.selectedAddress));
     }
     // eslint-disable-next-line
   }, [chainId, targetChain?.chainId]);
@@ -305,9 +377,23 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
     //eslint-disable-next-line
   }, []);
 
+  const [token, setToken] = useState(
+    localStorage.getItem(`EEAToken-${account}`)
+  );
+  // React.useEffect(() => {}, [account, token, signer]);
+
   // When chainId or web3 or targetChain changes -> update button state
   React.useLayoutEffect(() => {
-    if (account) {
+    // console.log("window?.ethereum?.selectedAddress...", token, account);
+    if (
+      token &&
+      account &&
+      !isOutdated(token) &&
+      tryGetAuthenticated(token) === account
+    ) {
+      console.log("wallet setup: storing token to localstorage");
+      localStorage.setItem(`EEAToken-${account}`, token);
+      sessionStorage.setItem(`EEAToken`, token);
       setButtonText(WALLET_STATES.CONNECTED);
     } else {
       if (!window.ethereum) {
@@ -316,18 +402,33 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
         setButtonText(WALLET_STATES.CONNECT);
       }
     }
-  }, [chainId, targetChain, account]);
+  }, [chainId, targetChain, account, token]);
 
   // onMount check if there is provided address by provider already, if yes - set it in this state and provide to web3
   // As well as try to look up for chainId in list of supported chains
   React.useLayoutEffect(() => {
+    const _token = localStorage.getItem(
+      `EEAToken-${ethers.utils.getAddress(window?.ethereum?.selectedAddress)}`
+    );
+
     console.log(
       "window?.ethereum?.selectedAddress",
-      window?.ethereum?.selectedAddress
+      ethers.utils.getAddress(window?.ethereum?.selectedAddress),
+      _token,
+      token,
+      localStorage.getItem(
+        "EEAToken-0x60fd63279525f97A248FDE1A2eB82E15B8CFEF55"
+      ),
+      "EEAToken-0x60fd63279525f97A248FDE1A2eB82E15B8CFEF55",
+      `EEAToken-${ethers.utils.getAddress(window?.ethereum?.selectedAddress)}`
     );
     if (window.ethereum) {
-      if (window?.ethereum?.selectedAddress) {
-        setButtonText(WALLET_STATES.CONNECTED);
+      if (
+        ethers.utils.getAddress(window?.ethereum?.selectedAddress) &&
+        _token &&
+        tryGetAuthenticated(_token) ===
+          ethers.utils.getAddress(window?.ethereum?.selectedAddress)
+      ) {
         setWeb3ProviderAsWindowEthereum().then((result) => {
           if (result) {
             window?.ethereum
@@ -339,11 +440,6 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
             console.warn(
               "provider setup failed, should go in fallback mode immediately"
             );
-
-          console.log(
-            "sertting button to ",
-            result ? WALLET_STATES.CONNECTED : WALLET_STATES.CONNECT
-          );
         });
         //  ÷
       } else {
@@ -353,7 +449,7 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
       setButtonText(WALLET_STATES.ONBOARD);
     }
     //eslint-disable-next-line
-  }, []);
+  }, [account, token]);
 
   // const call =
   //   ({ contractAddress, method }: { contractAddress: string; method: any }) =>
@@ -397,10 +493,16 @@ const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   //     }}
   //   );
 
+  // Wallets like Metamask at the moment do not support multiple signers providing to the app
+  // const getSigner = useCallback(() => {
+  //   return provider?.getSigner(account);
+  // }, [account, provider]);
+  console.log("avatar,", avatar);
   return (
     <Web3Context.Provider
       value={{
         provider,
+        signer,
         onConnectWalletClick,
         buttonText,
         WALLET_STATES,
@@ -424,3 +526,4 @@ export class ReactiveContract extends BaseContract {
 }
 
 export default Web3Provider;
+export * as Web3Context from "./context";

@@ -122,3 +122,4 @@ const UIProvider = ({
 };
 
 export default UIProvider;
+export * as UIContext from "./context";

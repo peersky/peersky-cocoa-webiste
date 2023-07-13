@@ -1,0 +1,4 @@
+{
+  "watch": ["bot.ts", "commands/"],
+  "ext": "js, ts"
+}

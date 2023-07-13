@@ -9,6 +9,7 @@ import { ChevronRightIcon } from "@chakra-ui/icons";
 import { getLayout as getSiteLayout } from ".";
 import useRouter from "../hooks/useRouter";
 import Link from "next/link";
+import RequireWeb3 from "../components/RequireWeb3";
 const AppLayout = (props: any) => {
   const [path, setPath] = useState<String[]>([]);
   const router = useRouter();
@@ -69,7 +70,7 @@ const AppLayout = (props: any) => {
           );
         })}
       </Breadcrumb>
-      {props.children}
+      <RequireWeb3>{props.children}</RequireWeb3>
     </Flex>
   );
 };

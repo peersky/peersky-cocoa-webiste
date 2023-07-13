@@ -14,3 +14,13 @@ export enum TokenMust {
   BET,
   GIVE,
 }
+
+export enum gameStatusEnum {
+  created = "created",
+  open = "open",
+  started = "started",
+  lastTurn = "last turn",
+  overtime = "overtime",
+  finished = "finished",
+  notFound = "not found",
+}

@@ -3,18 +3,9 @@ const abi = require("../../../../../abi/contracts/mocks/MockERC1155.sol/MockERC1
 import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
 import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
 import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
-import {
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  Input,
-} from "@chakra-ui/react";
 import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
 import useToast from "@peersky/next-web3-chakra/hooks/useToast";
+import { ethers } from "ethers";
 const Contract = () => {
   const web3ctx = useContext(Web3Context);
   const router = useRouter();
@@ -23,37 +14,12 @@ const Contract = () => {
   const handleChange = (event) => setValue(event.target.value);
   const { contractAddress } = router.query;
   const handleSubmit = () => {
-    if (value && web3ctx.provider.utils.isAddress(value)) {
+    if (value && ethers.utils.isAddress(value)) {
       router.appendQuery("contractAddress", value);
     } else {
       toast("Not an address", "error", "Not an address");
     }
   };
-  if (!contractAddress || !web3ctx.provider.utils.isAddress(contractAddress))
-    return (
-      <>
-        <Modal isOpen={true}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Please set contract address</ModalHeader>
-            <ModalBody>
-              <Input
-                value={value}
-                onChange={handleChange}
-                variant="outline"
-                placeholder="0x.."
-              ></Input>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button variant="ghost" onClick={() => handleSubmit()}>
-                Submit
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </>
-    );
   return (
     <ContractInterface
       abi={abi}

@@ -1,13 +1,15 @@
 {
-  "name": "Daocoacoa-workspace",
+  "name": "daocoacoa-workspace",
   "version": "1.0.0",
   "private": true,
   "description": "",
-  "main": "index.js",
   "scripts": {
     "frontend:dev": "source .secrets/dev.env && yarn workspace bestofweb run dev",
     "frontend:build": "yarn workspace bestofweb run build",
-    "discord:dev": "source .secrets/bot_mumbai.env && yarn workspace discord-bot run dev"
+    "discord:dev": "source .secrets/bot_mumbai.env && yarn workspace discord-bot run dev",
+    "gm:dev": "source .secrets/bot_mumbai.env && yarn workspace gamemaster run dev",
+    "contracts:upgrade:game:mumbai": "source .secrets/hh_mumbai.env &&  yarn hardhat --network mumbai deploy --tags upgrade_game",
+    "contracts:test": "export NODE_ENV=TEST && yarn hardhat test"
   },
   "keywords": [],
   "author": "Tim Pechersky (@Peersky)",
@@ -47,7 +49,10 @@
     "solidity-coverage": "^0.7.21",
     "typechain": "^8.0.0",
     "web3": "^1.8.2",
-    "@daocoacoa/multipass-js": "^0.0.1"
+    "@daocoacoa/multipass-js": "^0.0.1",
+    "ipfs-http-client": "60.0.1",
+    "crypto-js": "^4.1.1",
+    "@types/crypto-js": "^4.1.1"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.0",
@@ -57,13 +62,13 @@
     "@types/node": "^17.0.36",
     "cli-table": "^0.3.11",
     "hardhat-gas-reporter": "^1.0.8",
-    "ipfs-http-client": "50.1.2",
     "ts-node": "^10.8.0",
-    "typescript": "^4.7.2"
+    "typescript": "^4.9.5"
   },
   "workspaces": [
     "apps/*",
     "packages/*",
-    "bots/*"
+    "bots/*",
+    "gamemaster/"
   ]
 }

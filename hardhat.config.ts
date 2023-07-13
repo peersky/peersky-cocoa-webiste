@@ -9,8 +9,8 @@ import "@typechain/hardhat";
 import "hardhat-abi-exporter";
 import { toSignature, isIncluded } from "./utils/diamond";
 import { cutFacets, replaceFacet } from "./scripts/libraries/diamond";
-import * as ipfsUtils from "./utils/ipfs";
-import fs from "fs";
+// import * as ipfsUtils from "./utils/ipfs";
+// import fs from "fs";
 import "hardhat-gas-reporter";
 import "hardhat-contract-sizer";
 import "hardhat-deploy";
@@ -22,18 +22,18 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
-task("upload2IPFS", "Uploads files to ipfs")
-  .addParam("path", "file path")
-  .setAction(async (taskArgs) => {
-    const data = fs.readFileSync(taskArgs.path);
-    await ipfsUtils.upload2IPFS(data);
-  });
+// task("upload2IPFS", "Uploads files to ipfs")
+//   .addParam("path", "file path")
+//   .setAction(async (taskArgs) => {
+//     const data = fs.readFileSync(taskArgs.path);
+//     await ipfsUtils.upload2IPFS(data);
+//   });
 
-task("uploadDir2IPFS", "Uploads directory to ipfs")
-  .addParam("path", "path")
-  .setAction(async (taskArgs) => {
-    await ipfsUtils.uploadDir2IPFS(taskArgs.path);
-  });
+// task("uploadDir2IPFS", "Uploads directory to ipfs")
+//   .addParam("path", "path")
+//   .setAction(async (taskArgs) => {
+//     await ipfsUtils.uploadDir2IPFS(taskArgs.path);
+//   });
 
 task("replaceFacet", "Upgrades facet")
   .addParam("facet", "facet")
@@ -63,11 +63,11 @@ task("addFacet", "adds a facet")
     });
   });
 
-task("PublishIPNS", "Publishes IPNS with new pointer")
-  .addParam("value")
-  .setAction(async (taskArgs) => {
-    await ipfsUtils.publish(`${taskArgs.value}`);
-  });
+// task("PublishIPNS", "Publishes IPNS with new pointer")
+//   .addParam("value")
+//   .setAction(async (taskArgs) => {
+//     await ipfsUtils.publish(`${taskArgs.value}`);
+//   });
 
 export default {
   gasReporter: {
@@ -79,10 +79,22 @@ export default {
   namedAccounts: {
     deployer: {
       default: "0xCA618ea6Adb914B694E2acF1d77fe92894fbfA30",
+      // hardhat: await ethers.getSigners()[0],
+    },
+    gameOwner: {
+      default: "0xCA618ea6Adb914B694E2acF1d77fe92894fbfA30",
+      hardhat: "0xBfdF0Ee33BF4a2640D67f720Ae6594E81f8114d4",
+      // hardhat: await ethers.getSigners()[2],
     },
   },
   defaultNetwork: "hardhat",
   networks: {
+    hardhat: {
+      accounts: {
+        mnemonic:
+          "describe ribbon asthma today achieve nut label uniform seed charge library away",
+      }, // LOCALUSE ONLY BABE
+    },
     mumbai: {
       url: "https://matic-mumbai.chainstacklabs.com",
       accounts: process.env.PRIVATE_KEY && [process.env.PRIVATE_KEY],
@@ -95,11 +107,9 @@ export default {
       url: process.env.GANACHE_RPC_URL ?? "",
       accounts: process.env.PRIVATE_KEY && [process.env.PRIVATE_KEY],
     },
-    gorli: {
-      url: process.env.GORLI_RPC_URL ?? "",
-      accounts: process.env.GORLI_PRIVATE_KEY && [
-        process.env.GORLI_PRIVATE_KEY,
-      ],
+    goerli: {
+      url: process.env.RPC_URL ?? "",
+      accounts: process.env.PRIVATE_KEY && [process.env.PRIVATE_KEY],
     },
   },
   paths: {
@@ -184,7 +194,7 @@ export default {
     path: "./abi",
     runOnCompile: true,
     clear: true,
-    format: "fullName",
+    format: "json",
     // flat: true,
     // only: [":ERC20$"],
     spacing: 2,
