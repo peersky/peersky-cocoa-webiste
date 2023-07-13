@@ -15,7 +15,7 @@ const withMDX = nextMDX({
 });
 export default withMDX({
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
-  transpilePackages: ["@peersky/next-web3-chakra"],
+  // transpilePackages: ["@peersky/next-web3-chakra"],
   reactStrictMode: true,
   trailingSlash: true,
   // output: "standalone",
