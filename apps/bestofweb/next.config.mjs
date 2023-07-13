@@ -14,6 +14,7 @@ const withMDX = nextMDX({
   },
 });
 export default withMDX({
+  images: { unoptimized: true },
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   // transpilePackages: ["@peersky/next-web3-chakra"],
   reactStrictMode: true,
