@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import useRouter from "@peersky/next-web3-chakra/dist/hooks/useRouter";
-import Web3Context from "@peersky/next-web3-chakra/dist/providers/Web3Provider/context";
+import { useAppRouter } from "@peersky/next-web3-chakra/dist/hooks/useRouter";
+import { Web3Context } from "@peersky/next-web3-chakra/dist/providers/Web3Provider/context";
 import {
   Button,
   Box,
@@ -23,12 +23,12 @@ import {
 // import { Link } from "@chakra-ui/next-js";
 // import { FaPassport } from "react-icons/fa";
 // import { chains } from "@peersky/next-web3-chakra/dist/providers/Web3Provider";
-import { supportedChains } from "@peersky/next-web3-chakra/dist/types";
+import { SupportedChains } from "@peersky/next-web3-chakra/dist/types";
 import multipassDeploymentMumbai from "../../../../../deployments/mumbai/Multipass.json";
-import useToast from "@peersky/next-web3-chakra/dist/hooks/useToast";
+import { useToast } from "@peersky/next-web3-chakra/dist/hooks/useToast";
 // const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
 const multipassArtifacts: Partial<
-  Record<supportedChains, { contractAddress: string; abi: any[] }>
+  Record<SupportedChains, { contractAddress: string; abi: any[] }>
 > = {
   mumbai: {
     contractAddress: multipassDeploymentMumbai.address,
@@ -43,7 +43,7 @@ const Signup = () => {
     active: false,
   });
   const web3ctx = useContext(Web3Context);
-  const { query, appendQueries, appendQuery } = useRouter();
+  const { query, appendQueries, appendQuery } = useAppRouter();
   const multipassABI =
     multipassArtifacts[web3ctx.getChainFromId(query.chainId)]?.abi;
   const contractAddress =
