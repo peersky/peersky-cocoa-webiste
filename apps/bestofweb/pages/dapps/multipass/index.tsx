@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import useRouter from "@peersky/next-web3-chakra/dist/hooks/useRouter";
-import Web3Context from "@peersky/next-web3-chakra/dist/providers/Web3Provider/context";
+import { useAppRouter } from "@peersky/next-web3-chakra/dist/hooks/useRouter";
+import { Web3Context } from "@peersky/next-web3-chakra/dist/providers/Web3Provider/context";
 import {
   Button,
   Box,
@@ -14,14 +14,14 @@ import { ethers } from "ethers";
 import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/AppLayout";
 import { LibMultipass } from "../../../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 // import { Link } from "@chakra-ui/next-js";
-import SplitWithImage from "@peersky/next-web3-chakra/dist/components/SplitWithImage";
+import { SplitWithImage } from "@peersky/next-web3-chakra/dist/components/SplitWithImage";
 // import { FaPassport } from "react-icons/fa";
 import { chains } from "@peersky/next-web3-chakra/dist/providers/Web3Provider";
-import { supportedChains } from "@peersky/next-web3-chakra/dist/types";
+import { SupportedChains } from "@peersky/next-web3-chakra/dist/types";
 const multipassDeploymentMumbai = require("../../../../../deployments/mumbai/Multipass.json");
 const mumbaiAddress = multipassDeploymentMumbai.address;
 const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
-const multipassChainAddresses: Partial<Record<supportedChains, string>> = {
+const multipassChainAddresses: Partial<Record<SupportedChains, string>> = {
   mumbai: mumbaiAddress,
 };
 
@@ -33,7 +33,7 @@ const Home = () => {
   });
   // const [appScreen, setAppScreen]
   // const [changeChainRequested, setChainChangeRequested] = React.useState(false);
-  const { query, appendQueries, appendQuery } = useRouter();
+  const { query, appendQueries, appendQuery } = useAppRouter();
   const domain = query?.domain;
   const domainBytes32 = domain ? ethers.utils.formatBytes32String(domain) : "";
   const web3ctx = useContext(Web3Context);
