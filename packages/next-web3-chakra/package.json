@@ -1,6 +1,6 @@
 {
   "name": "@peersky/next-web3-chakra",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Web3 enabled react components made for nextjs and chakra ui",
   "main": "src/index.ts",
   "type": "module",
@@ -79,7 +79,8 @@
     "styled-components": "^5.3.6",
     "uuid": "^8.3.2",
     "web3": "^1.8.2",
-    "web3-utils": "^1.8.2"
+    "web3-utils": "^1.8.2",
+    "@peersky/eth-auth": "2.0.0"
   },
   "repository": {
     "type": "git",

@@ -1,4 +1,4 @@
-import { default as defaultTheme } from "@peersky/next-web3-chakra/theme/";
+import { theme as defaultTheme } from "@peersky/next-web3-chakra/dist/theme";
 
 import { extendTheme } from "@chakra-ui/react";
 
