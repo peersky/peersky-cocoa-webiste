@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
-import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
+import useRouter from "@peersky/next-web3-chakra/dist/hooks/useRouter";
+import Web3Context from "@peersky/next-web3-chakra/dist/providers/Web3Provider/context";
 import {
   Button,
   Box,
@@ -11,13 +11,13 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
-import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/AppLayout";
 import { LibMultipass } from "../../../../../types/typechain/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond";
 // import { Link } from "@chakra-ui/next-js";
-import SplitWithImage from "@peersky/next-web3-chakra/components/SplitWithImage";
+import SplitWithImage from "@peersky/next-web3-chakra/dist/components/SplitWithImage";
 // import { FaPassport } from "react-icons/fa";
-import { chains } from "@peersky/next-web3-chakra/providers/Web3Provider";
-import { supportedChains } from "@peersky/next-web3-chakra/types";
+import { chains } from "@peersky/next-web3-chakra/dist/providers/Web3Provider";
+import { supportedChains } from "@peersky/next-web3-chakra/dist/types";
 const multipassDeploymentMumbai = require("../../../../../deployments/mumbai/Multipass.json");
 const mumbaiAddress = multipassDeploymentMumbai.address;
 const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");

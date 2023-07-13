@@ -6,7 +6,6 @@ This is a website building bricks package such as navbar, footer, cards, layouts
 
 It is intended to be used for Web3 specific projects - grants you a web3 provider interface, chain selector drop down, and allows to build generic smart contract interface by just pointing address and ABI. How cool is that?
 
-
 ### Use case
 
 https://peersky.github.io/daococoa/
@@ -20,7 +19,7 @@ Install `yarn add @peersky/next-web3-chakra`
 Create `config.ts` that has exports SITEMAP:
 
 ```
-import { SiteMap, SiteMapItemType } from "@peersky/next-web3-chakra/types";
+import { SiteMap, SiteMapItemType } from "@peersky/next-web3-chakra/dist/types";
 export const SITEMAP: SiteMap = [
   {
     title: "Blog",
@@ -32,7 +31,7 @@ export const SITEMAP: SiteMap = [
 create your theme. Here is how you start with default theme:
 
 ```jsx
-import { default as defaultTheme } from "@peersky/next-web3-chakra/theme/";
+import { default as defaultTheme } from "@peersky/next-web3-chakra/dist/theme/";
 
 import { extendTheme } from "@chakra-ui/react";
 
@@ -47,7 +46,7 @@ export default theme;
 Wrap your application:
 
 ```jsx
-import { UIProvider, Web3Provider } from "@peersky/next-web3-chakra/providers";
+import { UIProvider, Web3Provider } from "@peersky/next-web3-chakra/dist/providers";
 import { SITEMAP } from "./config";
 import theme from "./theme";
 ....
@@ -64,7 +63,7 @@ import theme from "./theme";
 This package does not use next13 layouts. Instead old fashioned way is preserved. Use as follows to ensure items defined in layouts do not rerender when you switch between pages:
 
 ```js
-import { getLayout } from "@peersky/next-web3-chakra/layouts/BlogLayout";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BlogLayout";
 const Blog = <div>lorem<div>
 Blog.getLayout = getLayout();
 export default Blog;
@@ -72,11 +71,11 @@ export default Blog;
 
 #### Components
 
-Import from `@peersky/next-web3-chakra/components` see inside repository for more details
+Import from `@peersky/next-web3-chakra/dist/components` see inside repository for more details
 
 #### Providers
 
-Import from `@peersky/next-web3-chakra/providers`
+Import from `@peersky/next-web3-chakra/dist/providers`
 
 UI Provider gives you general information about state of UI:
 

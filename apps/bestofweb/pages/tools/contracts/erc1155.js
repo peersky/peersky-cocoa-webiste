@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 const abi = require("../../../../../abi/contracts/mocks/MockERC1155.sol/MockERC1155.json");
-import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
-import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
-import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
+import ContractInterface from "@peersky/next-web3-chakra/dist/components/ContractInteface";
+import useRouter from "@peersky/next-web3-chakra/dist/hooks/useRouter";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/AppLayout";
 import {
   Button,
   Modal,
@@ -13,8 +13,8 @@ import {
   ModalBody,
   Input,
 } from "@chakra-ui/react";
-import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
-import useToast from "@peersky/next-web3-chakra/hooks/useToast";
+import Web3Context from "@peersky/next-web3-chakra/dist/providers/Web3Provider/context";
+import useToast from "@peersky/next-web3-chakra/dist/hooks/useToast";
 const Contract = () => {
   const web3ctx = useContext(Web3Context);
   const router = useRouter();

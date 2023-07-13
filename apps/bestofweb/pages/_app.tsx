@@ -3,20 +3,20 @@ import "../styles/styles.css";
 import "../styles/nprogress.css";
 // import "../styles/sidebar.css";
 import dynamic from "next/dynamic";
-import HeadSEO from "@peersky/next-web3-chakra/components/HeadSEO";
+import HeadSEO from "@peersky/next-web3-chakra/dist/components/HeadSEO";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 const AppContext = dynamic(() => import("../AppContext"), {
   ssr: false,
 });
 const DefaultLayout = dynamic(
-  () => import("@peersky/next-web3-chakra/layouts"),
+  () => import("@peersky/next-web3-chakra/dist/layouts"),
   {
     ssr: false,
     loading: () => <div>loading...</div>,
   }
 );
-// import DefaultLayout from "@peersky/next-web3-chakra/layouts";
+// import DefaultLayout from "@peersky/next-web3-chakra/dist/layouts";
 import { useRouter } from "next/router";
 import NProgress from "nprogress";
 // import { WHITE_LOGO_W_TEXT_URL } from "../src/constants";

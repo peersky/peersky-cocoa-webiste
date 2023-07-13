@@ -1,8 +1,8 @@
-import { getLayout } from "@peersky/next-web3-chakra/layouts/BlogLayout";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BlogLayout";
 import { Flex, Spacer, Text, Heading } from "@chakra-ui/react";
-import RouteButton from "@peersky/next-web3-chakra/components/RouteButton";
+import RouteButton from "@peersky/next-web3-chakra/dist/components/RouteButton";
 import { useContext } from "react";
-import UIContext from "@peersky/next-web3-chakra/providers/UIProvider/context";
+import UIContext from "@peersky/next-web3-chakra/dist/providers/UIProvider/context";
 
 const Projects = () => {
   const ui = useContext(UIContext);

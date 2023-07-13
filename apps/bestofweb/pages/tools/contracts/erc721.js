@@ -1,8 +1,8 @@
 import React from "react";
 const _abi = require("../../../../../abi/contracts/mocks/MockERC721.sol/MockERC721.json");
-import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
-import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
-import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
+import ContractInterface from "@peersky/next-web3-chakra/dist/components/ContractInteface";
+import useRouter from "@peersky/next-web3-chakra/dist/hooks/useRouter";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/AppLayout";
 
 const Contract = () => {
   const router = useRouter();

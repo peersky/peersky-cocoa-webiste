@@ -1,4 +1,4 @@
-import { getLayout } from "@peersky/next-web3-chakra/layouts/BlogLayout";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BlogLayout";
 import { lazy, Suspense } from "react";
 
 const Post = () => {

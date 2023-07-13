@@ -1,9 +1,9 @@
-import { getLayout } from "@peersky/next-web3-chakra/layouts/BlogLayout";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BlogLayout";
 import { Flex, Spacer, Text, Tag, Heading, Button } from "@chakra-ui/react";
-import RouteButton from "@peersky/next-web3-chakra/components/RouteButton";
+import RouteButton from "@peersky/next-web3-chakra/dist/components/RouteButton";
 import React, { useContext } from "react";
-import UIContext from "@peersky/next-web3-chakra/providers/UIProvider/context";
-import useAppRouter from "@peersky/next-web3-chakra/hooks/useRouter";
+import UIContext from "@peersky/next-web3-chakra/dist/providers/UIProvider/context";
+import useAppRouter from "@peersky/next-web3-chakra/dist/hooks/useRouter";
 
 const Blog = (props: any) => {
   const ui = useContext(UIContext);

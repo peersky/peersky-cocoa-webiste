@@ -1,7 +1,7 @@
 import React from "react";
 import { Flex, Center } from "@chakra-ui/react";
-import PixelsCard from "@peersky/next-web3-chakra/components/PixelsCard";
-import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
+import PixelsCard from "@peersky/next-web3-chakra/dist/components/PixelsCard";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/AppLayout";
 
 const CONTRACTS = ["erc20", "erc721", "Multipass", "erc1155", "BestOfGame"];
 const COLORS = ["blue", "green", "pink", "orange"];

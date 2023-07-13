@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { getLayout } from "@peersky/next-web3-chakra/layouts/BlogLayout";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BlogLayout";
 const Home = () => {
   const Component = lazy(() => import(`../content/landing.mdx`));
 

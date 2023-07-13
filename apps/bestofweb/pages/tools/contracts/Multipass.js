@@ -1,7 +1,7 @@
 import React from "react";
-import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
-import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
-import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
+import ContractInterface from "@peersky/next-web3-chakra/dist/components/ContractInteface";
+import useRouter from "@peersky/next-web3-chakra/dist/hooks/useRouter";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/AppLayout";
 // import {
 //   Modal,
 //   Button,
@@ -12,7 +12,7 @@ import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
 //   ModalBody,
 //   Input,
 // } from "@chakra-ui/react";
-import useToast from "@peersky/next-web3-chakra/hooks/useToast";
+import useToast from "@peersky/next-web3-chakra/dist/hooks/useToast";
 import { ethers } from "ethers";
 const Contract = () => {
   const router = useRouter();

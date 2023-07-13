@@ -1,12 +1,12 @@
 import React from "react";
-import ContractInterface from "@peersky/next-web3-chakra/components/ContractInteface";
-import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
-import { getLayout } from "@peersky/next-web3-chakra/layouts/ContractLayout";
+import ContractInterface from "@peersky/next-web3-chakra/dist/components/ContractInteface";
+import useRouter from "@peersky/next-web3-chakra/dist/hooks/useRouter";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/ContractLayout";
 import dynamic from "next/dynamic";
 import { Flex, Heading } from "@chakra-ui/react";
 
 const UploadABI = dynamic(
-  () => import("@peersky/next-web3-chakra/components/UploadAbi"),
+  () => import("@peersky/next-web3-chakra/dist/components/UploadAbi"),
   { ssr: false }
 );
 

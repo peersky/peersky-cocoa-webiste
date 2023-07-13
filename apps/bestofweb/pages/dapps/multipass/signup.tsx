@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import useRouter from "@peersky/next-web3-chakra/hooks/useRouter";
-import Web3Context from "@peersky/next-web3-chakra/providers/Web3Provider/context";
+import useRouter from "@peersky/next-web3-chakra/dist/hooks/useRouter";
+import Web3Context from "@peersky/next-web3-chakra/dist/providers/Web3Provider/context";
 import {
   Button,
   Box,
@@ -12,7 +12,7 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { ethers } from "ethers";
-import { getLayout } from "@peersky/next-web3-chakra/layouts/AppLayout";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/AppLayout";
 import { useMutation } from "react-query";
 // import MultipassClient from "@daocoacoa/multipass-js";
 import {
@@ -22,10 +22,10 @@ import {
 // import { useWeb3}
 // import { Link } from "@chakra-ui/next-js";
 // import { FaPassport } from "react-icons/fa";
-// import { chains } from "@peersky/next-web3-chakra/providers/Web3Provider";
-import { supportedChains } from "@peersky/next-web3-chakra/types";
+// import { chains } from "@peersky/next-web3-chakra/dist/providers/Web3Provider";
+import { supportedChains } from "@peersky/next-web3-chakra/dist/types";
 import multipassDeploymentMumbai from "../../../../../deployments/mumbai/Multipass.json";
-import useToast from "@peersky/next-web3-chakra/hooks/useToast";
+import useToast from "@peersky/next-web3-chakra/dist/hooks/useToast";
 // const multipassABI = require("../../../../../abi/hardhat-diamond-abi/HardhatDiamondABI.sol/MultipassDiamond.json");
 const multipassArtifacts: Partial<
   Record<supportedChains, { contractAddress: string; abi: any[] }>
