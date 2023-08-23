@@ -6,6 +6,11 @@ export const SITEMAP: SiteMap = [
     path: "/blog",
     type: SiteMapItemType.CONTENT,
   },
+  {
+    title: "Projects",
+    path: "/projects",
+    type: SiteMapItemType.CONTENT,
+  },
   // {
   //   title: "dApp",
   //   path: "/dapps",
