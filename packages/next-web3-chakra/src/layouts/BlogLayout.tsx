@@ -40,7 +40,11 @@ const H4 = (props: any) => (
     {props.children}
   </Heading>
 );
-const P = (props: any) => <chakra.span py={2}>{props.children}</chakra.span>;
+const P = (props: any) => (
+  <chakra.span fontSize={"xs"} py={2}>
+    {props.children}
+  </chakra.span>
+);
 const ResponsiveImage = (props: any) => {
   const docsImportPath = "../apps/bestofweb/public";
   const imgSrc = !props.src.startsWith(docsImportPath)
@@ -100,7 +104,7 @@ const BlogLayout = ({ children, ...props }: { children: any }) => {
   return (
     <Flex
       id="Blog"
-      px={["8px", "12px", "20%"]}
+      px={["0px", "0px", "20%"]}
       mt={8}
       mb="220px"
       direction="column"
