@@ -100,7 +100,7 @@ const BlogLayout = ({ children, ...props }: { children: any }) => {
   return (
     <Flex
       id="Blog"
-      px={["0px", "0%", "20%"]}
+      px={["8px", "12px", "20%"]}
       mt={8}
       mb="220px"
       direction="column"
