@@ -1,6 +1,6 @@
 import React from "react";
 import { Flex, Center, Input, Text, Heading } from "@chakra-ui/react";
-import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BlogLayout";
+import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BreadcumpLayout";
 import { ethers } from "ethers";
 
 const Solihash = () => {
