@@ -2882,6 +2882,45 @@
     proper-lockfile "^4.1.1"
     solidity-ast "^0.4.15"
 
+"@peersky/eth-auth@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@peersky/eth-auth/-/eth-auth-2.0.0.tgz#b9243c63dc07d94d18e7786de0d05ce6f8108d66"
+  integrity sha512-eVOZ8VJFeP9e6DhysQGHvmr5wpQHl/VjMjc/Uw2PxZvFLK9mSFzD4UGUyi916ZSGmGEsoRbt4/BGlFeoJwKQ6Q==
+
+"@peersky/next-web3-chakra@=0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@peersky/next-web3-chakra/-/next-web3-chakra-0.3.4.tgz#3cd05a8fad43801ea536647f809d5cde7abff480"
+  integrity sha512-HvjkzrE/EfbEJgKuvcqZHgVqaKD76LkR4oCYTi06yGijUXkbSa2H336lIo3DC57L7YXeuKmdXNbvkqBcyA0eyQ==
+  dependencies:
+    "@chakra-ui/icons" "^2.0.17"
+    "@chakra-ui/next-js" "^2.0.1"
+    "@chakra-ui/react" "^2.5.1"
+    "@choc-ui/chakra-autocomplete" "^5.1.4"
+    "@emotion/react" "^11.10.6"
+    "@emotion/styled" "^11.10.6"
+    "@peersky/eth-auth" "2.0.0"
+    "@stripe/stripe-js" "^1.16.0"
+    axios "1.3.4"
+    core-js "^3.19.1"
+    framer-motion "^6.5.1"
+    moment "^2.29.1"
+    next "13.2.1"
+    nprogress "^0.2.0"
+    papaparse "^5.3.2"
+    react "^18.2.0"
+    react-ace "^10.1.0"
+    react-dom "^18.2.0"
+    react-dropzone "^14.2.3"
+    react-icons "^4.3.1"
+    react-json-view "^1.21.3"
+    react-pro-sidebar "^1.0.0"
+    react-query "^3.18.1"
+    remark-gfm "^3.0.1"
+    styled-components "^5.3.6"
+    uuid "^8.3.2"
+    web3 "^1.8.2"
+    web3-utils "^1.8.2"
+
 "@pkgr/utils@^2.3.1":
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/@pkgr/utils/-/utils-2.4.2.tgz#9e638bbe9a6a6f165580dc943f138fd3309a2cbc"
