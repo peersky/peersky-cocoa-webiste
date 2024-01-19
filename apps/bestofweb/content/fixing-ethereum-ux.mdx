@@ -1,0 +1,115 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2023-12-24",
+  title: "Fixing Ethereum UX with user-centric asset model",
+  description:
+    "How do we secure growth for ethereum for the next decades by designing secure, user centric architecture for assets and applications",
+  tags: ["ideas", "ethereum", "eip"],
+  path: "fixing-ethereum-ux",
+};
+
+# {meta.title}
+
+_{meta.description}_
+
+## Introduction
+
+It's not a secret that Ethereum ecosystem still feels a bit like a [wild-wild west](/blog/wild-digital-west).
+
+To build a complicated, multi-component, yet secure application on ethereum, it's a challenge that is hard to lift for anyone in particular, which stops less tech savvy users to interacting with web3 and slows down the adoption rates.
+
+One of most critical problems that affects both UX and security is that industry is still evolving and an asset developer simply cannot deploy a token and forget about it. Simply because they might need to add another asset facing interface, functionality or, even more importantly - do a security patching.
+
+This yields to architecture today where most of assets either are upgradable, or are used in applications that are upgradable and have direct asset on behalf of user. More over, the solidity programming itself is a complicated process where developers most of the time must posses decent understanding of memory layouts for contracts and operate with addresses directly.
+
+_All this reminds me stories about assembly programming in 90s._
+
+![zilog-medium](/z80.jpg "zilog-computer-reference")
+
+Isn't it similar? People learn how to operate some specific hardware (EVM in our case) with a very less interfaces and drivers, more likely in bare-metal style!
+
+## EVM is just another machine
+
+### Let's remember how CPU IO works in real world
+
+It's virtual, nevertheless it's based on same machinery principles as any computer. In a similar way you also have an address bus in traditional CPU interaction with peripherals, and this field of computer architecture is quite well studied by now. Why don't we learn from it?
+
+When conventional computer interacts with I/O device, such as keyboard, or WiFi module, it actually connects to some very unified (from it's point of view) interface which narrows down interaction to need to read and write data to according registers. Hence, similarly to a storage slots in solidity, we have registers located at some offset from zero address.
+
+![cpuio](/evmhw/cpu-io.png "cpu-io-interface")
+
+The multiple device interaction in it's turn defined by address bus which routes processor to the right interface:
+![multiple-device-bus-medium](/evmhw/multiple-device-bus.png "multiple-device-bus")
+
+Actually if you are working today with say bare-metal programming in micro-controllers that are resource-limited often this will be the way to go. For example, you can take a look on a popular microcontroller chip: [STM32F4 reference manual](https://www.st.com/resource/en/reference_manual/dm00031020-stm32f405-415-stm32f407-417-stm32f427-437-and-stm32f429-439-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf). This is a huge book, which embedded developer will know very well for his "stone".
+
+#### Operating System role
+
+Operating system is a wrapper of this low level interactions. The most "down to roots" thing I love is for example [freeRTOS](!https://www.freertos.org/index.html), more familiar UNIX and Windows architectures of course are popular.
+All of them perform few very mission-critical tasks:
+
+- OS schedules access to its resources
+- Abstracts applications from the low-level resource specifics.
+
+![oslayers-medium](/evmhw/os-layers.png "os-layers")
+
+This encapsulation creates important security consideration. Operating System isolates underlying resources from access by applications directly, and does this **in users favor**! More than that, user does not need to completely trust application because OS will by default strictly permission any app access:
+
+![btpermission-small](/evmhw/bt-permission.png "bt-permission")
+
+### Translating real world architecture in EVM
+
+_Everything new is well-forgotten old_
+
+Let's try mapping this knowledge in to what we know about blockchain and EVM!
+
+#### 1. Assets
+
+Think of an IoT enabled house. If there is an _asset_ behind the door, which is controlled trough WiFi by chip in a computer, and we can declare, that the one who is able to open the doors is owning an _asset_. If we also understood section above that any peripheral is just an interface that can be accessed by calling right address on address bus, then we can map this equation out to the fact that from CPU standpoint, an _asset_ ownership is equal to ability to set or unset a byte in some registry on some _address_ of IO bus.
+
+**Hence, an asset, nothing but a bytes sitting on some address at some offset(slot)!\***. _asset = memory slot @ address_
+
+Therefore when defining asset standard as lowest-level thing, it should be simplistic yet strictly permission, ability to mutate storage must be property only available to owner, while asset issuance logic can be predefined, it still has to go trough owner call ( permit to mint as example).
+
+#### 2. Interfaces and their standards
+
+If we think of computer architecture, the rules how CPU can drive peripherals are strictly standardized. Chip designers often play big role in such standard definitions, and readers bell might ring on such words as PCI-E, I2C, SPI and others, which all industry foundation without which nothing could work, however they don't specify the hardware functionality, but rather the communication standard between components.
+
+Thinking of this I conclude that **_Interfaces are not assets_**. The asset definition is nothing to do with how you interface it, it should only define how memory slots are organized, while the ability to _drive_ such assets should be defined by **_asset interface standards_** which define "virtual [hardware abstraction layer](https://en.wikipedia.org/wiki/Hardware_abstraction)".
+
+Hence, the analogy is that implementations of a standard, such as [ERC20 implementation](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol) are equivalent of _HAL drivers_, however need to encapsulate storage from that logic. It indeed follows my feeling from introduction, that we're programming on bare-metal level today: interacting directly with drivers!
+
+#### 3. Operating system & Account abstraction
+
+From takeaways from above, it follows that the various extensions to the standards, like [ERC20 Permit](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/extensions/ERC20Permit.sol) is nothing else but an attempt to build a some kind of security layers to allow applications interface with user assets.
+
+We already know that proper design used in computer architecture for that is to have operating system to take care of that. So if EVM is just yet another machine, wouldn't be it great to just roll whole UNIX user model on it? Maybe we can, Im not sure, but for sake of simplicity for now, lets focus getting basic concept.
+
+If assets are equivalent to some hardware, than Operating system is the layer which manages any application access to such resources (assets). To my understanding this is what we can do with smart wallets today. In this model, _any asset interaction should pass trough the smart wallet contract_, while wallet owner should be able to expose wallet API to some applications he trusts, therefore allowing them to operate in a similar manner as installing app on computer allows access to hardware functionality _without direct driver access_.
+
+#### Resulting analogy
+
+![trasnlatingfromostoevm](/evmhw/trasnlating-from-os-to-evm.png "trasnlating-from-os-to-evm")
+
+## Chain of trust
+
+The above concepts security benefits as well as resulting UX are easy to understand if take a look on flow of trust in traditional OS and compare it to what we have:
+![trust-evm-n-os](/evmhw/trust-evm-n-os.png "trust-evm-n-os")
+
+Other words saying, trust flow indicated as below would work for blockchain case:
+
+Asset Storage -> Drivers -> User Wallet -> Application -> Application Storage
+
+You can think of any arrow as a potential place where security circuit breakers can be installed, with ultimately user choosing which wallet provider to trust, which drivers (standards) to use and how grant access to these for third party applications. While applications also can select wallet requirements and API dependencies from wallet that they require to function, they also in theory are able to maintain their upgradeability without need to compromise users security, similarly as you select update process on desktop, it is possible to do for on-chain applications as well.
+
+### Need for secure apps
+
+It's important to note that in the flow shown above, there still is a need for user wallet granting some permissions to the app. This is another possible security vulnerability. Such design implies that Applications, in order to be considered secure de-facto must be not upgradable, or, rather shall I say - should always point on implementation, rather than a proxy. In case application version upgrades, it seems that rather issuing new implementations is needed from app developer, why user can stay **in the center** of decision making by deciding whether he wants to migrate or not. Application developer can disable app from working with his storage, but he cannot affect nor the assets directly, nor the user configuration without user directly allowing him to do so.
+
+This all brings in important understanding that under such design a decentralized App package manager, or rather App Store will be needed, which will be able to rate security applications as well as manage dependencies and wallet API requirements.
+
+## EIP Versioning
+
+One of core problems today in Ethereum ecosystem to my feeling is that EIPs are extremely hard to get moving, and easy to get stagnating. Reason for this, in my opinion is that organization is rather is a heap-like, where we create yet-another EIP to address issues of previous EIP.
+For example [ERC-2612](https://eips.ethereum.org/EIPS/eip-2612) is an extension of EIP20. We cannot today just update the EIP20 to a new revision because that would break underlying applications compatibility. However, if we would have user-centric asset model, the doorway would be open to actually version EIPs instead of deprecating old EIPs, we can keep track of versions. Think of this:
+_EIP-20.0 => EIP20.1 => EIP20.1_ etc. This would become even more important as users are able to install applications because semantic versioning requirements would make sense. As example app could require latest non-breaking EIP-20 standard which supports needed functionality, while user wallet would provide wrapper managing permissions to parts of that interface
