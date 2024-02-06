@@ -6,11 +6,11 @@ export const SITEMAP: SiteMap = [
     path: "/blog",
     type: SiteMapItemType.CONTENT,
   },
-  {
-    title: "Projects",
-    path: "/projects",
-    type: SiteMapItemType.CONTENT,
-  },
+  // {
+  //   title: "Projects",
+  //   path: "/projects",
+  //   type: SiteMapItemType.CONTENT,
+  // },
   // {
   //   title: "dApp",
   //   path: "/dapps",
@@ -44,11 +44,11 @@ export const SITEMAP: SiteMap = [
   //   type: SiteMapItemType.CONTENT,
   // },
 
-  {
-    title: "About",
-    path: "/about",
-    type: SiteMapItemType.CONTENT,
-  },
+  // {
+  //   title: "About",
+  //   path: "/about",
+  //   type: SiteMapItemType.CONTENT,
+  // },
   // {
   //   title: "Legal",
   //   path: "/legal",
