@@ -1,0 +1,148 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2024-26-05",
+  title: "[DRAFT] Tokenomics for progressive decentralization",
+  description:
+    "This article explores the potential of decentralized autonomous organizations (DAOs) in blockchain technology, focusing on scoped responsibilities, efficient governance, and innovative solutions like Rankify's reputation system for autonomous competence identification.",
+  tags: ["english", "philosophy", "ideas", "DAO"],
+  path: "dao-spawn",
+  image: "/broccoli.webp",
+};
+
+# {meta.title}
+
+_{meta.description}_
+
+Decentralized autonomous organizations (DAOs) are emerging as one of the most promising and enduring applications of blockchain technology, likely to shape the future for the next fifty years and beyond. This projection is based on the fact that popularity for blockchain technology itself is in many aspects defined by demand for decentralized and autonomous management systems.
+In contrast to centralized authorities and authoritarian systems, decentralized approaches, which emphasize cooperative equilibrium and freedom, tend to prevail in the long run.
+
+However, the challenge remains to develop protocols that enable these decentralized organizations to function also as high-performing cooperative collectives. These collectives must be capable of defining the complex mechanisms necessary for any organization while preserving their autonomy.
+
+Today's autonomous governance systems still require significant advancements. Specifically, a truly autonomous protocol should:
+
+- **Delegate and yet decentralize**: It must delegate permissions over privileged activities through clearly defined rules established by the protocol yet must stay sufficiently decentralized.
+- **Ensure Voting Power Orthogonality**: Ultimate voting power should have only one linear relationship to the DAO's mission and constitution.
+- **Be Inclusive and Internally Competitive**: : Instead of competing with other DAOs, it should provide an interface to foster competition and cooperation within a single framework.
+
+In the following sections, let's focus on drilling these points to the details and look for some means how to solve those.
+
+## 1. Delegation and decentralization
+
+The goal of scoping responsibilities is to increase performance by aligning the level of decision-making authority with the importance and complexity of tasks. Small and non-critical tasks should require small quorums, while important and specialized tasks should require expertise-specific quorums.
+
+A clear example of this can be found in consensus layers, where explicit rules are defined. For instance, in Ethereum, the role of a block builder is a scoped responsibility that improves protocol performance. The ability to be elected as a block proposer or block builder depends on a participant's adherence to protocol rules.
+
+Proof of Work (PoW) provides an even clearer example, as it does not rely on having an underlying asset staked. Instead, the ability to obtain and run mining hardware creates a direct link to one's ability to create new blocks.
+
+Thus, Bitcoin can be seen as a DAO governed by those who can operate ASIC miners and network bandwidth, while Ethereum is governed by those who can manage SSD drives, RAM, network bandwidth and invested enough to stake. In both cases, governance power is linked to technical capability and resource availability.
+
+On application-layer similar scoping exists. For example Arbitrum DAO security council election program involves an on-chain event where responsibilities are scoped through elections. Security council members are elected by the entire DAO to provide specialized services.
+
+Similarly many other DAOs will have some privileged roles, for example Compound DAO has [Pause Guardians](https://docs.compound.finance/governance/) as well as funds EOA relays to act as paymaster for governance action execution.
+
+Drawing a parallel with the consensus layer, we see that achieving consensus at the application layer is much slower. Consequently, security councils are likely to be elected for longer terms. This can be seen as a sign of lower performance, as ideally, we would want to re-evaluate privileged members based on their availability and reputation and any other criteria on a per-block basis, which is currently impossible.
+
+One of risks of such delegation often is that someone steps in as central actor. That's bad from decentralization standpoint, especially if central actor privilege allows that actor to gain more power in next voting cycle.
+
+![decentralization](/eth-stats-combined-15may2023.png)
+[Ethereum Proof-of-Stake Consensus Layer:
+Participation and Decentralization. Dominic Grandjean, Lioba Heimbach](https://arxiv.org/pdf/2306.10777).
+
+Image above is showing centralization dynamics in Ethereum protocol itself. One could argue that Nakomoto coefficient stays constant in right hand side, however, in ideal world, we would want to see a positivie dynamic, with it reaching all time highs as a good sign.
+
+![nakomoto_in_daos](/nakomoto_in_daos.png)
+[The Hidden Shortcomings of (D)AOs –
+An Empirical Study of On-Chain Governance, Rainer Feichtinger et al.](https://arxiv.org/pdf/2302.12125)
+
+In the application layer, we observe a positive dynamic in the Nakamoto coefficient, though this can be attributed to the concept of "money makes money." For instance, an Ethereum node operator can reinvest earnings to run additional nodes, thereby compounding their influence. However, analyzing application layer protocols is more complex because DeFi protocol earnings do not directly translate into voting power. Additionally, DAO protocols often launch through token offerings, leading to extreme centralization during a project's early stages.
+
+An open question to analyze is whether we can **achieve decentralization goals through delegation**?
+
+Let's examine a pattern seen across both consensus and application layers. Delegation can occur from a protocol or DAO to a public address, whether a signer or a smart contract. This delegation can be either persistent or temporary, and it might involve a single entity, a group, or another decentralized organization.
+
+When a decentralized entity delegates responsibilities, it doesn't necessarily decentralize the protocol itself. However, if part of the protocol governance is entirely transferred to the delegated entity, the decentralization of that entity affects the Nakamoto coefficient of the relevant protocol aspects.
+
+![granting permissions](/granting-1.png)
+
+For example, if a governing entity assigns specific privileges to a multisig wallet (smart account) and then adds additional signers, the total value of the organization must account for the possessions held by the multisig. This effectively expands the organization and allows specific permissions and treasuries to be encapsulated per scope. Adding more signers to such smart accounts can impact the Nakamoto coefficient if we consider the DAO as a multi-contract infrastructure.
+
+The downside of this method is that as more signers are added, the organization may lose super-majority control over the account, which can be seen as a natural trade-off for achieving decentralization. To address it properly means to ensure that such additional infrastructure is secure and is a carefully tailored system, where additional signers allocation corresponds to autonomy requirements, ensuring that it has fundamental alignment with delegator.
+
+## 2. Voting Power Orthogonality
+
+To decentralize effectively and ensure alignment of delegates with the overall organization, a common and deterministic rule for power generation must be established. This ensures that at the moment of delegation, the delegating entity can be confident about the long-term intentions of the additional signer entity. For example, in Ethereum's Proof of Stake (PoS) system, the role of a block proposer is defined by clear [rules of delegation, penalties, and time limits](https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/rewards-and-penalties/). The protocol delegates specific tasks to entities based on a pseudo-random number generation process, granting temporary privileged access.
+
+Defining automatic rules akin to those in PoS or PoW for these higher-layer responsibilities remains an open question. However, we can hypothesize a protocol based on a "Proof of Security" or "Proof of exploit" mechanism aligned with the security council's mission. Literally any kind of proofing system can be adapted.
+
+To generalize this autonomously, we can set aside specific implementation details for any "Proof of X" and assume that (i) an interface for such proofs must exist; (ii) such proofs must be capable of accommodating long-term organizational goals, and (iii) organizations must be able to utilize these proofs effectively.
+
+![granting permissions](/tournament-deploy.png)
+
+One way to see that is if organization itself would deploy a some kind of challenge, a minting rule must be represent whole dimension _autonomously_ from other parts of DAO infrastructure. By deploying such additional infrastructure, DAO itself creates a loop back to that control, allowing to define time-invariance from it's main missions and objectives.
+
+One proposed solution being developed by Rankify involves autonomous competence identification. This is particularly interesting for such tournament requirements, since generating assets autonomously otherwise on-chain is a subject of sybil attack and other risks. Competence proofs through a continuous "game" that abstracts personalities from ideas, allowing reputations to be built based on the quality of those ideas. Airdrops, and blockchain games in general also can be seen as form of such.
+
+In this article, I generalize this concept as a small building block that provides a "tournament" mechanism, enabling the creation of reputations in specific dimensions.
+
+The image above illustrates how a decentralized system can have two governance entries, functioning as a [two port network](https://en.wikipedia.org/wiki/Two-port_network) with two governance voting inputs and two execution outputs. This matrix representation facilitates the analysis and integration of large-scale systems.
+
+![3 port network-small](/3p-network.png)
+_We can easily analyze more dimensions that can be added and interconnected to define input-output relationships._
+
+## 3. Inclusiveness and competitiveness
+
+For example, a DAO running an election campaign for its security council can already be seen as an entity that creates a challenge: participants must become active in their community, prove their expertise in the industry, and demonstrate a commitment to the DAO's security. If such a group of elected entities acted as a sub-DAO, it could create a similar challenge, showing the best competence in their particular field. This would allow them to fine-tune their structure while maintaining transparency to the parent DAO members in terms of interface and intent definition.
+
+![sub-dao-medium](/sub-dao-example.png)
+
+This approach not only allows the organization to split into factions but also provides a way for inclusion or integration with other organizations in a graceful manner. For example, two competing decentralized organizations managing DeFi protocols may have very similar structures, working in the same dimensions such as security councils and financial analysis experts.
+
+If these organizations decentralize effectively using the proposed method, the well-designed "sub-elements" they create can represent a metaverse of governance systems, acting as plug-in points for other businesses (organizations) seeking to delegate tasks in similar sectors. If these elements are orthogonal to other dimensions and represent what both parties need, they can manage processes for both organizations, promoting collaborative equilibria at higher organizational levels.
+
+In this context, competition becomes more focused within challenges and tournaments—proofing systems that participants must go through to generate voting power. This narrows down competition to specialized fields while allowing higher-level consensus.
+
+#### Game of Life
+
+Fun aspect of such a system is that system outputs (assets and infrastructure) can be the organizations themselves or privileged accounts. Therefore, organizations can consist of cross-streams of entangled cooperation that can be analyzed, forming a unified autonomous decentralized organization infrastructure. With proper design, this infrastructure can be highly resilient to failure and analyzed for stability criteria.
+
+To elaborate on this idea further, we can consider a higher abstraction: every self-sovereign DAO infrastructure can be seen as a matrix where:
+
+- **Cell**: An M of N signature account as described before.
+- **Head**: An immutable signer on that account, described as the parent DAO in sections above.
+- **Inputs**: Controlling entities.
+- **Outputs**: Controlled entities.
+
+![cell-1-medium](/cell-game-1.png)
+
+If we establish simple rules where forming or breaking connections from both sides requires a cell head plus inputs to form a quorum, we can create interconnected structures. These structures can use combinations of themselves to form interlinked systems that can be explored as a kind of "Game of Life" for DAOs, where liveness is defined as "a cell must perform activity through its outputs."
+
+![cell-2-medium](/cell-game-2.png)
+
+How likely is that such systems would be a **high-productivity capable autonomous systems** is an open question for now, however from the liveness definition, we can expect that non-productive and not useful systems would simply get disconnected from others, and if we assume that having input or output connection implies some side-rules cells agree upon from financial standpoint, than we can expect market will push for productivity.
+
+## Tokenomics: Linking pieces together
+
+Linking these systems together is an interesting area to analyze. When multiple governing bodies control a shared asset or infrastructure (referred to as a cell), tournaments that challenge competencies in the field must have a deterministic model for minting voting power for the parent DAO.
+
+Moreover, it is important to analyze how the capitalization of the parent DAO token changes as decentralization occurs. If we want to treat the decentralized infrastructure, governed by many entities, as a single organization, it is desirable to express capitalization through a single token. At a larger scale, such a decentralization pattern might involve regularly spawning sub-DAOs.
+
+To implement a token mechanic represented by a single token, factories can register their records on a registry and append them to a multisig, creating a value link between the parent organization and the spawned sub-DAOs. As specific rules for obtaining governance power in sub-DAOs come into play, they can present arbitrage opportunities if the cost of obtaining sub-DAO voting power is outweighed by the governance leverage it provides over assets and infrastructure.
+
+![two-daos-2](/two_sub_dao.png)
+
+In the image above, one possible implementation shows that the parent DAO uses factories to create a clear decentralization landscape, effectively delegating its power to sub-DAOs. To ensure that the parent DAO token price does not fall as more assets and infrastructure come under the control of multisig bodies, the parent DAO can program tournament entry requirements to be expressed in its governance token. In the simplest manner, participants would bet their governance tokens to participate, creating a baseline for the price relationship between parent and child organizations.
+
+The concept of a tournament becomes a critical security point for such a protocol, as sybil attack resistance must be sufficient. In simple terms, the protocol must ensure that delegates of the child organizations possess the required competencies.
+
+This highlights the importance of proofing systems, as any kind of proofing protocol can be integrated. Existing proofing systems such as PoW, PoS, and emerging methods like [Proof of Location](https://arxiv.org/pdf/2403.13230) or [Proof of Exploit](https://docs.usefirewall.com/firewalled-rollups/proof-of-exploit-consensus) can be combined with participation requirements.
+
+For the application layer, being able to prove one's competencies is a general challenge. Specifically, we want to assess an agent's competence in a particular subject, independently of any other social skills. This is different from other proofing systems due to the social and subjective nature of competency.
+
+In this context, the solution proposed by [Rankify.it](https://rankify,it) to create an autonomous competence identification protocol can be seen as a generic solution. Additionally, Rankify proposes integrating AI agent benchmarking within the same framework, allowing parts of the decentralized organization to be benchmarked on a recurrent basis and seamlessly swapped between human and AI agents.
+
+In this model, any tournament is expressed in terms of a subject, which might be a text description, image, or any other specific challenge to participants. Participants then group themselves to form games where they propose and vote anonymously to identify the best delegate, who is then rewarded.
+
+The token model can be deeper than a simple price relationship, especially if we distinguish between a "Tournament asset" and a "Child organization Governance asset." In rankify case the award is issued in form of semi non-fungable token representing participatnt rating in system.
+This rating element could be used on it's own as
+
+## Instead of conclusion [WIP]
