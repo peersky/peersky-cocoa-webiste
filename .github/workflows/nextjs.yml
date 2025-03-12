@@ -75,7 +75,7 @@ jobs:
       - name: Build & Export
         run: ${{ steps.detect-package-manager.outputs.runner }} workspace bestofweb run build
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./apps/bestofweb/build
 
