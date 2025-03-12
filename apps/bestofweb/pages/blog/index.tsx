@@ -48,6 +48,36 @@ const Blog = (props: any) => {
   console.log(allTags);
   return (
     <Flex w="100%" py={8} direction="column">
+      <Flex
+        w="80%"
+        p={4}
+        // m={4}
+        bg="yellow.100"
+        borderRadius="md"
+        borderWidth="1px"
+        borderColor="yellow.300"
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        placeSelf="center"
+      >
+        <Heading size="md" color="yellow.800" mb={2}>
+          Blog Migration Notice
+        </Heading>
+        <Text color="yellow.800">
+          Recent blog posts have been moved to{" "}
+          <RouteButton
+            href="https://mirror.xyz/peersky.eth"
+            isExternal
+            variant="link"
+            color="yellow.800"
+            textDecoration="underline"
+          >
+            mirror.xyz/peersky.eth
+          </RouteButton>
+          <br />I will integrate them back here soon.
+        </Text>
+      </Flex>
       <Flex py={2} flexWrap="wrap">
         {allTags.map((tagName: string) => (
           <Tag
