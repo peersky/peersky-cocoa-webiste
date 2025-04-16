@@ -1,9 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Roboto+Mono:wght@400;700&family=Source+Code+Pro:wght@400;700&display=swap');
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'Roboto Mono', 'Courier New', monospace;
 }
 
 a {
@@ -15,6 +16,14 @@ a {
   box-sizing: border-box;
 }
 
+/* Add some additional styling for code elements to enhance the technical look */
+code, pre {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'Roboto Mono', 'Courier New', monospace;
+  background-color: #f4f4f4;
+  border-radius: 3px;
+  padding: 0.2em 0.4em;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
@@ -22,5 +31,9 @@ a {
   body {
     color: white;
     background: black;
+  }
+
+  code, pre {
+    background-color: #2d2d2d;
   }
 }
