@@ -16,23 +16,23 @@ export const SITEMAP: SiteMap = [
   //   path: "/dapps",
   //   type: SiteMapItemType.CONTENT,
   // },
-  {
-    title: "Tools",
-    path: "/tools",
-    type: SiteMapItemType.CONTENT,
-    // children: [
-    //   {
-    //     title: "Contract R/W",
-    //     path: "/contracts",
-    //     type: SiteMapItemType.CONTENT,
-    //   },
-    //   {
-    //     title: "Hash calcualtor",
-    //     path: "/solihash",
-    //     type: SiteMapItemType.EXTERNAL,
-    //   },
-    // ],
-  },
+  //   {
+  //     title: "Tools",
+  //     path: "/tools",
+  //     type: SiteMapItemType.CONTENT,
+  // children: [
+  //   {
+  //     title: "Contract R/W",
+  //     path: "/contracts",
+  //     type: SiteMapItemType.CONTENT,
+  //   },
+  //   {
+  //     title: "Hash calcualtor",
+  //     path: "/solihash",
+  //     type: SiteMapItemType.EXTERNAL,
+  //   },
+  // ],
+  //   },
   // {
   //   title: "Multipass",
   //   path: "/multipass",
