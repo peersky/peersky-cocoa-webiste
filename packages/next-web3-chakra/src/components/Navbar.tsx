@@ -28,16 +28,19 @@ import ChainSelector from "./ChainSelector";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { SiteMapItem, SiteMapItemType } from "../types";
 
+interface NavbarProps {
+  selectorSchema?: string;
+  metamaskSchema?: string;
+  colorScheme?: string;
+  [x: string]: any;
+}
+
 const _Navbar = ({
   selectorSchema,
   metamaskSchema,
   colorScheme,
   ...props
-}: {
-  colorScheme?: string;
-  selectorSchema?: string;
-  metamaskSchema?: string;
-}) => {
+}: NavbarProps) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isMobileView, webSiteConfig, setSidebarToggled, sidebarToggled } =
     useContext(UIContext);

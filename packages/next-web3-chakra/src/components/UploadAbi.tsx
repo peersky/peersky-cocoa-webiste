@@ -1,8 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { Flex, ButtonGroup, Button, useToast, Spinner } from "@chakra-ui/react";
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/mode-json";
+
+const AceEditor = dynamic(
+  () =>
+    import("react-ace").then((mod) => {
+      require("ace-builds/src-noconflict/theme-github");
+      require("ace-builds/src-noconflict/mode-json");
+      return mod.default;
+    }),
+  { ssr: false }
+);
 
 const UploadABI = ({ onSubmit, ...props }) => {
   const toast = useToast();

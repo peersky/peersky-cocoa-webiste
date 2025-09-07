@@ -4,7 +4,11 @@ const useToast = () => {
   const chakraToast = useChakraToast();
 
   const toast = useCallback(
-    (message: any, type: "info" | "warning" | "success" | "error" | "loading" | undefined, title?: string) => {
+    (
+      message: any,
+      type: "info" | "warning" | "success" | "error" | "loading",
+      title?: string
+    ) => {
       const userTitle = title ?? message?.response?.statusText ?? type;
 
       const userMessage =

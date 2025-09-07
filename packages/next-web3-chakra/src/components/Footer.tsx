@@ -61,14 +61,13 @@ const SocialButton = ({ children, label, href }: any) => {
   );
 };
 
-const Footer = ({
-  colorScheme,
-  initialLogo,
-  ...props
-}: {
+interface FooterProps {
   colorScheme?: string;
   initialLogo?: string;
-}) => {
+  [x: string]: any;
+}
+
+const Footer = ({ colorScheme, initialLogo, ...props }: FooterProps) => {
   const ui = useContext(UIContext);
   const theme = useTheme();
   const { components } = theme;

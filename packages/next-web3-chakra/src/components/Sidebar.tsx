@@ -20,12 +20,21 @@ import ChainSelector from "./ChainSelector";
 import UIContext from "../providers/UIProvider/context";
 import Web3Context from "../providers/Web3Provider/context";
 
+interface SidebarProps {
+  initialLogo?: string;
+  selectorSchema?: string;
+  metamaskSchema?: string;
+  colorScheme?: string;
+  [x: string]: any;
+}
+
 const _Sidebar = ({
-  initialLogo = undefined,
-  selectorSchema = undefined,
-  metamaskSchema = undefined,
-  colorScheme = undefined,
-}) => {
+  initialLogo,
+  selectorSchema,
+  metamaskSchema,
+  colorScheme,
+  ...props
+}: SidebarProps) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const ui = useContext(UIContext);
   const web3ctx = useContext(Web3Context);
@@ -42,6 +51,7 @@ const _Sidebar = ({
       backgroundColor={"#006D99"}
       breakPoint="lg"
       hidden={!ui.sidebarVisible}
+      {...props}
     >
       <Menu>
         <Box p={4} alignItems="center">

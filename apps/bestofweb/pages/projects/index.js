@@ -1,4 +1,4 @@
-import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BlogLayout";
+import { getBlogLayout } from "@peersky/next-web3-chakra";
 import { lazy, Suspense } from "react";
 
 const Post = () => {
@@ -19,5 +19,5 @@ export async function getStaticProps() {
     },
   };
 }
-Post.getLayout = getLayout();
+Post.getLayout = getBlogLayout();
 export default Post;

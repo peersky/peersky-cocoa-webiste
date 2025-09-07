@@ -1,4 +1,4 @@
-import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BlogLayout";
+import { getLayout } from "@peersky/next-web3-chakra";
 import { lazy, Suspense } from "react";
 
 export async function getStaticPaths() {
@@ -52,5 +52,5 @@ const Post = (props: any) => {
   return <Suspense fallback={<div>Loading...</div>}>{<Component />}</Suspense>;
 };
 
-Post.getLayout = getLayout();
+Post.getLayout = getLayout;
 export default Post;

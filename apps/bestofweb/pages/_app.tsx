@@ -3,19 +3,19 @@ import "../styles/styles.css";
 import "../styles/nprogress.css";
 // import "../styles/sidebar.css";
 import dynamic from "next/dynamic";
-import { SEOHead } from "@peersky/next-web3-chakra/dist/components/HeadSEO";
+import { SEOHead } from "@peersky/next-web3-chakra";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 const AppContext = dynamic(() => import("../AppContext"), {
   ssr: false,
 });
 const DefaultLayout = dynamic(
-  () => import("@peersky/next-web3-chakra/dist/layouts"),
+  () => import("@peersky/next-web3-chakra").then((mod) => mod.DefaultLayout),
   {
     ssr: false,
     loading: () => <div>loading...</div>,
   }
-);
+) as any;
 // import DefaultLayout from "@peersky/next-web3-chakra/dist/layouts";
 import { useRouter } from "next/router";
 import NProgress from "nprogress";
@@ -61,7 +61,7 @@ export default function CachingApp({ Component, pageProps }: any) {
       <DefaultLayout
         selectorSchema="grey"
         metamaskSchema="grey"
-        navbarBG="grey.900"
+        colorScheme="grey"
       >
         {page}
       </DefaultLayout>

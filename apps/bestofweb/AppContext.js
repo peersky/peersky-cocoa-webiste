@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./theme";
-import { UIProvider } from "@peersky/next-web3-chakra/dist/providers";
+import { UIProvider } from "@peersky/next-web3-chakra";
 // import Fonts from "./Theme/Fonts";
 import { SITEMAP } from "./config";
 import { ProSidebarProvider } from "react-pro-sidebar";

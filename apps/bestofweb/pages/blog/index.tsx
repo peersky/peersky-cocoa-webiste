@@ -1,13 +1,20 @@
-import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BlogLayout";
-import { Flex, Spacer, Text, Tag, Heading, Button } from "@chakra-ui/react";
-import { RouteButton } from "@peersky/next-web3-chakra/dist/components/RouteButton";
-import React, { useContext } from "react";
-import { UIContext } from "@peersky/next-web3-chakra/dist/providers/UIProvider/context";
-import { useAppRouter } from "@peersky/next-web3-chakra/dist/hooks/useRouter";
+import { getLayout } from "@peersky/next-web3-chakra";
+import {
+  Flex,
+  Spacer,
+  Text,
+  Tag,
+  Heading,
+  Button,
+  useMediaQuery,
+} from "@chakra-ui/react";
+import { RouteButton } from "@peersky/next-web3-chakra";
+import React from "react";
+import { useAppRouter } from "@peersky/next-web3-chakra";
 
 const Blog = (props: any) => {
-  const ui = useContext(UIContext);
   const appRouter = useAppRouter();
+  const [isMobileView] = useMediaQuery("(max-width: 768px)");
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   React.useEffect(() => {
     setSelectedTags(appRouter.query?.tags?.split("&"));
@@ -121,7 +128,7 @@ const Blog = (props: any) => {
           return (
             <Flex
               key={post.title}
-              dir={ui.isMobileView ? "column" : "row"}
+              dir={isMobileView ? "column" : "row"}
               w="100%"
               borderWidth="2px"
               borderRadius={"md"}
@@ -138,7 +145,7 @@ const Blog = (props: any) => {
                 borderBottomWidth="2px"
                 borderBottomColor={"gray.500"}
               >
-                <Heading w={ui.isMobileView ? "100%" : "100%"}>
+                <Heading w={isMobileView ? "100%" : "100%"}>
                   {post?.title}
                 </Heading>
 
@@ -148,12 +155,12 @@ const Blog = (props: any) => {
                   variant="outline"
                   href={`blog/${post.path}`}
                   h="24px"
-                  w={ui.isMobileView ? "50%" : "15%"}
+                  w={isMobileView ? "50%" : "15%"}
                 >
                   Open
                 </RouteButton>
               </Flex>
-              <Flex pt={2} w={ui.isMobileView ? "100%" : "100%"} wrap="wrap">
+              <Flex pt={2} w={isMobileView ? "100%" : "100%"} wrap="wrap">
                 {post?.tags?.map((tagName: string) => (
                   <Tag
                     variant={"solid"}
@@ -165,7 +172,7 @@ const Blog = (props: any) => {
                   </Tag>
                 ))}
                 <Spacer />
-                <Text w={ui.isMobileView ? "100%" : "15%"}>{post.date} </Text>
+                <Text w={isMobileView ? "100%" : "15%"}>{post.date} </Text>
                 {/* <Spacer /> */}
               </Flex>
               <Text fontSize={"sm"}>{post?.description}</Text>
@@ -189,5 +196,5 @@ export async function getStaticProps() {
   return { props: { posts: postsArray, metaTags } };
 }
 
-Blog.getLayout = getLayout();
+Blog.getLayout = getLayout;
 export default Blog;

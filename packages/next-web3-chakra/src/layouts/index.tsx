@@ -1,7 +1,7 @@
 export * as AppLayout from "./AppLayout";
 export * as BlogLayout from "./BlogLayout";
 export * as ContractLayout from "./ContractLayout";
-import { Box, chakra, Flex } from "@chakra-ui/react";
+import { chakra, Flex, type ChakraProps } from "@chakra-ui/react";
 import { Suspense } from "react";
 import React from "react";
 import Footer from "../components/Footer";
@@ -10,48 +10,40 @@ import Scrollable from "../components/Scrollable";
 import _Sidebar from "../components/Sidebar";
 // import RootLayout from "./RootLayout";
 
-const _LayoutWrapper = ({
-  children,
-  ...props
-}: {
+interface LayoutProps extends ChakraProps {
   children: React.ReactNode;
-}) => {
+  selectorSchema?: string;
+  metamaskSchema?: string;
+  colorScheme?: string;
+}
+
+const _LayoutWrapper = (props: LayoutProps) => {
+  const { children, selectorSchema, metamaskSchema, colorScheme, ...rest } =
+    props;
   return (
-    // <RootLayout {...props}>
-
-    <Scrollable className="Main">
+    <Scrollable className="Main" {...rest}>
       <Navbar
-
-      // colorScheme={components.Navbar.colorScheme}
+        selectorSchema={selectorSchema}
+        metamaskSchema={metamaskSchema}
+        colorScheme={colorScheme}
       />
-      {/* <Flex
-         direction="row"
-         id="PeerApp"
-         className="Main"
-         w="100%"
-         h="100%"
-         maxH="100%"
-       > */}
-      {/* <Suspense fallback="">
-       </Suspense> */}
-      <_Sidebar />
+      <_Sidebar
+        selectorSchema={selectorSchema}
+        metamaskSchema={metamaskSchema}
+        colorScheme={colorScheme}
+      />
       <Flex
         mt="84px"
         direction="column"
         flexGrow={1}
         flexBasis="100px"
         overflowX="hidden"
-        // overflowY={"scroll"}
       >
         <Suspense fallback=""></Suspense>
-        {/* <Flex> </Flex> */}
         {children}
       </Flex>
-      {/* </Flex> */}
-      {/* <Footer /> */}
-      <Footer />
+      <Footer colorScheme={colorScheme} />
     </Scrollable>
-    // </RootLayout>
   );
 };
 
