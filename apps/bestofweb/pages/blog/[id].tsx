@@ -52,7 +52,7 @@ const Post = (props: any) => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       {
-        <Box px={["5px", "20px", "20%"]}>
+        <Box px={["5px", "20px", "0"]}>
           <Component />
         </Box>
       }
