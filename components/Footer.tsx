@@ -13,7 +13,7 @@ import {
   Image,
   Flex,
 } from "@chakra-ui/react";
-import { FaGithub, FaTwitter, FaDiscord } from "react-icons/fa";
+import { FaGithub, FaTwitter, FaDiscord } from "react-icons/fa"
 import moment from "moment";
 import UIContext from "../providers/UIProvider/context";
 const LINKS_SIZES = {
@@ -122,23 +122,6 @@ const Footer = ({ colorScheme, initialLogo, ...props }: FooterProps) => {
               © {moment().year()} {ui.webSiteConfig.COPYRIGHT_NAME} All rights
               reserved
             </Text>
-            <Stack direction={"row"} spacing={6}>
-              {ui.webSiteConfig.TWITTER && (
-                <SocialButton label={"Twitter"} href={ui.webSiteConfig.TWITTER}>
-                  <FaTwitter />
-                </SocialButton>
-              )}
-              {ui.webSiteConfig.GITHUB && (
-                <SocialButton label={"Github"} href={ui.webSiteConfig.GITHUB}>
-                  <FaGithub />
-                </SocialButton>
-              )}
-              {ui.webSiteConfig.DISCORD && (
-                <SocialButton label={"Discord"} href={ui.webSiteConfig.DISCORD}>
-                  <FaDiscord />
-                </SocialButton>
-              )}
-            </Stack>
           </Stack>
           {ui.webSiteConfig.SITEMAP.length > 0 &&
             Object.values(ui.webSiteConfig.SITEMAP).map(

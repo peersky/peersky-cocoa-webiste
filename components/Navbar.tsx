@@ -163,19 +163,7 @@ const Navbar_ = ({
               );
             })}
         </ButtonGroup>
-        {!isMobileView && (
-          <>
-            <IconButton
-              alignSelf="flex-start"
-              aria-label="Menu"
-              colorScheme="blue"
-              size="sm"
-              variant="solid"
-              onClick={toggleColorMode}
-              icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
-            />
-          </>
-        )}
+
       </Flex>
     </Flex>
     // <Flex w="100px" h="100px" bgColor={"red.100"}>1</Flex>
