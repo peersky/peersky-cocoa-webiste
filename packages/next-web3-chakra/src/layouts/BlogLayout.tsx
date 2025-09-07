@@ -41,7 +41,7 @@ const H4 = (props: any) => (
   </Heading>
 );
 const P = (props: any) => (
-  <chakra.span fontSize={"xs"} py={2}>
+  <chakra.span fontSize={"sm"} py={2}>
     {props.children}
   </chakra.span>
 );
@@ -81,7 +81,9 @@ const A = (props: any) => (
 );
 
 const UL = (props: any) => (
-  <UnorderedList my={4}>{props.children}</UnorderedList>
+  <UnorderedList my={4} fontSize={"sm"}>
+    {props.children}
+  </UnorderedList>
 );
 
 const OL = (props: any) => <OrderedList my={4}>{props.children}</OrderedList>;
@@ -104,11 +106,11 @@ const BlogLayout = ({ children, ...props }: { children: any }) => {
   return (
     <Flex
       id="Blog"
-      px={["0px", "0px", "20%"]}
+      // px={["5px", "20px", "20%"]}
       mt={8}
       mb="220px"
       direction="column"
-      maxW={"2048px"}
+      maxW={"1444px"}
       flexBasis="200px"
       flexGrow={1}
       {...props}

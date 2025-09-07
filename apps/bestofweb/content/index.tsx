@@ -11,7 +11,7 @@ import * as HowAccountsEn from "./how-wallets-made-en.mdx";
 import * as SecuringKeys from "./securing-private-keys-bp.mdx";
 import * as DAON from "./dao-of-nature.mdx";
 import * as E2E from "./wild-digital-west.mdx";
-import * as FEUX from "./fixing-ethereum-ux.mdx";
+import * as UBI from "./ubi-against-agi.mdx";
 export {
   OpenEconomyManifest,
   // HowAccountsRu,
@@ -25,6 +25,6 @@ export {
   SELECTINGGWALLETEN,
   SecuringKeys,
   DAON,
-  FEUX,
   E2E,
+  UBI,
 };

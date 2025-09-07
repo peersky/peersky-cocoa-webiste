@@ -1,0 +1,183 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2023-04-01",
+  title: "Social network UBI against AGI",
+  description:
+    "How do we create intrinsic value universal basic income to counter risks of AGI and ensure a sustainable future for humanity?",
+  tags: ["ideas", "ethereum", "eip"],
+  path: "nft-rbac",
+};
+
+# {meta.title}
+
+1. # Introduction
+
+During a recent trip to Da Nang, Vietnam, I attended a semiconductor conference where industry leaders, including Bruno Wu, discussed the emergence of "no-light" factories—facilities where humans are absent, eliminating the need for illumination.
+
+In related discussions, I've spoken with various industry leaders such as Thomas Stanzak (Nethermind), Vitalik Buterin (Ethereum Foundation), and other key players in DePIN and AI. Companies like PeaQ, for instance, are developing projects involving self-sustainable car fleets. In these systems, cars not only serve as driving agents but also participate in DeFi, managing their own income and wealth.
+
+What is the role of humans in the future economy? More importantly, what is the economy's role in human life? My perspective is simple: the economy exists solely to improve our lives. Period.
+
+In this article, I aim to explore a fundamental question: if advanced civilizations possess machines and artificial intelligence capable of performing all tasks, including complex and undesirable ones, why does fear persist? Is this a natural reaction, and can it be resolved within a free-market system?
+
+2. #  Background
+
+The idea of universal basic income is not new. It's been around for the past century and it's been largely applied for both traditional finance and small-scale experiments as well as it was trudged in a blockchain environment where large-scale financial systems are very easy to simulate and very programmably can be designed.
+
+## Fiat based Universal Basic History
+
+To test the viability and effects of UBI, several pilot programs and experiments have been conducted around the world. These studies have provided valuable insights into how UBI can impact individuals, families, and communities. Some of the most [well-known experiments include:](https://en.wikipedia.org/wiki/Universal_basic_income_pilots#:~:text=A%20similar%20field%20experiment%20of,Manitoba%20between%201974%20and%201979.)
+
+Universal Basic Income (UBI) experiments have yielded diverse results, offering insights into its potential impacts on work, well-being, and economic stability.
+
+**Early Experiments in North America:**
+
+* **Mincome (Manitoba, Canada, 1974-1979):** This program in Dauphin provided a guaranteed annual income. It led to a small reduction in work hours, mainly among new mothers and teenagers (who extended their schooling). Crucially, the experiment was linked to a significant decrease in hospitalizations, particularly for mental health, and an increase in high school completion rates.
+* **Negative Income Tax Experiments (United States, 1968-1980):** A series of four large-scale U.S. experiments tested a system where individuals below a certain income threshold received government supplements. While a modest decline in work effort was observed, primarily among women and secondary earners, there were positive outcomes like improved educational attainment for recipients' children.
+
+**Recent Global Initiatives:**
+
+* **Finland (2017-2018):** This two-year experiment gave 2,000 unemployed individuals €560 monthly. While it didn't significantly boost employment in the first year, recipients reported higher well-being, less stress, and greater confidence compared to a control group. A slight positive effect on employment was noted in the second year.
+* **GiveDirectly (Kenya, 2016-present):** One of the most extensive UBI studies to date, this ongoing experiment in rural Kenya provides long-term, unconditional cash transfers to thousands. Early findings indicate positive impacts on economic well-being (investment in businesses, livestock, home improvements) and psychological well-being (reduced stress, increased happiness). No significant reduction in work effort has been observed.
+* **Stockton Economic Empowerment Demonstration (SEED) (Stockton, USA, 2019-2021):** This privately funded experiment gave 125 Stockton residents $500 monthly for two years. The cash transfers stabilized recipients' finances, helping them afford necessities and pay down debt. Full-time employment among recipients increased at a higher rate than in the control group, challenging the idea that UBI discourages work. Participants also reported better mental and physical health.
+
+### Blockchain based experiments
+
+**Circles UBI: A Web of Trust Economy**
+
+Circles UBI, operating on the Gnosis Chain, is an ambitious blockchain-based Universal Basic Income (UBI) project. It utilizes a social-graph-based economic model where each participant generates their own personal cryptocurrency.
+
+* **Mechanism:** Unlike a singular global currency, Circles UBI relies on a "web of trust." Users can validate and accept the personal currencies of individuals they know and deem trustworthy. This fosters a network effect, enabling transactions between those with mutual trusted connections. An individual's currency gains value as their trust network expands.
+* **Outcomes:** The Circles Garden wallet has attracted thousands of users, with communities, notably in Berlin, successfully experimenting with local economies for goods and services. However, challenges persist, including the consistently low value of the Circles token (CRC), which hinders significant purchases. The reliance on a web of trust can create social silos and prove complex for new users. The closure of the Circles Coop in Berlin in late 2023 underscores the sustainability issues of such community-driven initiatives.
+
+**Proof of Humanity (PoH) and the UBI Token**
+
+Proof of Humanity is an Ethereum blockchain-based, Sybil-resistant registry of unique human identities. Its core function is to establish a decentralized, trustworthy list of individuals, serving as a foundation for various applications, particularly a UBI token.
+
+* **Mechanism:** Inclusion in the PoH registry requires a short video submission and vouching by an already registered member. This establishes a social verification chain, making it difficult for bots or individuals with multiple accounts to exploit. Once registered, individuals begin to accrue UBI tokens ($UBI) over time.
+* **Outcomes:** PoH has successfully registered thousands of individuals, demonstrating a viable decentralized identity verification model. Verified participants receive a consistent, albeit small, stream of UBI tokens. Criticisms include the UBI token's volatile and generally low value, limiting its real-world impact as a basic income. High Ethereum transaction fees also pose a significant barrier for users claiming or transacting their UBI.
+
+**GoodDollar: Yield-Generated UBI**
+
+GoodDollar is a non-profit initiative that has developed a protocol to generate and distribute UBI in the form of G$ tokens. Its model is based on generating yield from staked cryptocurrencies.
+
+* **Mechanism:** GoodDollar supporters stake cryptocurrencies (primarily stablecoins) in third-party decentralized finance (DeFi) protocols. The interest generated from these staked assets is used to mint new G$ tokens, which are then distributed daily to registered and face-verified users. This system funds UBI through returns on capital rather than direct contributions.
+* **Outcomes:** GoodDollar has garnered a large user base, with hundreds of thousands of sign-ups globally, especially in developing countries. Its user-friendly mobile application enhances accessibility. The main challenge is the low monetary value of the daily G$ distribution, often just a few cents per person. While it introduces many to cryptocurrency, it falls short of providing a meaningful basic income. The project's success is also heavily reliant on the often-volatile yields within the DeFi space.
+
+Blockchain-based UBI experiments are still in their nascent stages. None have yet achieved the scale or monetary value to function as a true universal basic income. They face substantial hurdles, including price volatility, user experience complexities, and the ongoing difficulty of reliably verifying unique identities in a decentralized environment.
+
+### **AI effect on economy**
+
+#### **Layoffs**
+
+AI is increasingly cited as a factor influencing workforce reduction and a key driver for future job displacement.
+
+While many companies are hesitant to explicitly name AI as the primary cause for layoffs, some are beginning to do so. For instance, Salesforce confirmed the elimination of approximately 4,000 customer service positions, with [CEO Marc Benioff directly linking the reduction to the efficiency gains from AI agents.](https://www.cnbc.com/2025/09/02/salesforce-ceo-confirms-4000-layoffs-because-i-need-less-heads-with-ai.html)
+
+Major financial and consulting firms have released startling forecasts regarding AI's long-term impact:
+
+* A **Goldman Sachs** [report](https://www.goldmansachs.com/insights/articles/generative-ai-could-raise-global-gdp-by-7-percent.html) estimates that generative AI could automate the equivalent of **300 million full-time jobs** globally. The report also suggests that up to two-thirds of jobs in the U.S. and Europe are exposed to some degree of AI automation.
+* Research from **McKinsey** [projects](https://www.mckinsey.com/mgi/our-research/generative-ai-and-the-future-of-work-in-america) that by 2030, activities that account for up to **30% of hours currently worked** across the US economy could be automated, with the pace of transformation accelerated by generative AI.
+* The **World Economic Forum's "[Future of Jobs Report 2025](https://www.weforum.org/publications/the-future-of-jobs-report-2025/digest/?gad_source=1&gad_campaignid=22234048793&gbraid=0AAAAAoVy5F5Hr2lrp8hPRaB8BUbWHDZCk&gclid=CjwKCAjw2vTFBhAuEiwAFaScwot_2bA-exxsTaNfJnQG1i1gzmpuDX_kpmLhh1z6MYnTiOkfI436yBoCDuwQAvD_BwE)"** indicates that while AI will create new roles, it is also expected to lead to significant job churn. The report predicts the displacement of 92 million jobs globally by 2030, offset by the creation of 170 million new ones, resulting in a net **gain** but requiring massive reskilling. This research reported expected growth in job roles likeFarmworkers, Delivery Drivers, Construction Workers, Salespersons, and Food Processing Workers.
+  * In my view that is totally off, WEF is not catching up with the speed at which the robotics industry advances.
+* **Underreported AI-driven Layoffs:** An [analysis](https://www.challengergray.com/wp-content/uploads/2025/07/Challenger-Report-June-2025.pdf) by Challenger, Gray & Christmas suggests that job cuts explicitly attributed to AI are likely underreported. Many companies may categorize these layoffs under broader terms like "technological updates" or "restructuring."
+
+#### **Social network crisis**
+
+The proliferation of AI-generated content, low-quality "garbage data," and an unyielding pursuit of engagement have created a digital environment that many users find inauthentic, overwhelming, and detrimental to their mental well-being.
+
+Social networks, once platforms for connecting with friends and family, have transformed into "attention suggestion engines" and "marketing agencies" for lifestyle coaches, inundated with an inescapable flow of irrelevant content. This is evident across platforms like X, LinkedIn, Facebook, and Instagram, where users struggle to find genuine interactions. Many successful individuals I know personally avoid social networks entirely due to their extractive nature. LinkedIn, for example, is filled with automated "Great post, impressive achievement" responses.
+
+This decline in quality stems from several factors:
+
+* **Prioritization of "What" over "Who":** Users are increasingly comfortable engaging with content from non-friends, focusing on the information itself rather than the source.
+* **Lack of Motivation for High-Quality Content:** There's an explicit lack of incentive to produce stimulating, high-quality content in crucial social network application industries like education and governance.
+
+Furthermore, effectively communicating meaningful thoughts is inherently difficult, and relying on centralized services risks algorithmic downplaying. While platforms like TikTok and Instagram boast massive daily active users, studies [suggest](https://time.com/4793331/instagram-social-media-mental-health/) these platforms don't contribute to happiness and have not been effective tools for large-scale collaboration or coordination.
+
+In contrast, Universal Basic Income (UBI), when properly implemented, has demonstrated significant benefits for health, safety, and security. It empowers individuals, fostering a sense of freedom to express their true nature and contribute meaningfully to society. Successful societies often show that talented individuals, freed from early job pressures, can deliver superior long-term results.
+
+The challenge lies in defining the intrinsic value for UBI. Traditional fiat financing relies on inflation to stimulate economic growth. Distributing UBI traditionally would shift the inflation mechanism from central authorities to citizens, a move largely impossible for large-scale economies in a non-destructive manner. This implies a need for decentralized currency issuance, which is only efficiently possible in electronic formats. Experiments in blockchain technology strongly suggest its capability to facilitate this.
+
+### Digital wallets
+
+The advancements in digital technology have started to catch up on a big institutional scale. The ePassport technology has already run for over a decade and allows anyone to verify the country of issuance of passports, and upcoming standards such as [eEIDAS](https://digital-strategy.ec.europa.eu/en/policies/eidas-regulation) in Europe will only amplify the trend where we are able to digitally attest to individual certificates issued by centralised state-level authorities.
+
+## Peeramid Network: Social networking UBI
+
+**Goal**
+
+This system aims to establish a sustainable economic model for a future society rooted in decentralized values. Within this framework, unique authorship and perspectives, along with their peer recognition in a social network, will intrinsically shape governance power.
+
+This approach is expected to foster a more equitable, democratic, and content society, yielding long-term economic growth beneficial for both AI-driven economies and the planet as a whole.
+
+#### **High level architecture**
+
+**Authorities** such as the government or communities are issuing ECDSA signature certificates to individual **citizens**. Simplest and large scale usable example being ePassports today.
+
+Every authority is represented by its own token and governance contract that is able to hold a **treasury**.
+
+These authorities gather together in **conglomerates**, such as the United Nations organisation or European Union. Conglomerates represent trust between entities that each certificate is 1 to 1 equivalent, simple words say \- they trust conglomerate members do not fake accounts.
+![archubi-medium](/arch_ubi.png "architecture for proposed UBI")
+
+Citizens claim a daily UBI that is per-signed certificate. During the event of claiming they are given the opportunity to i) create **1 social post a day,** that will be permissionlessly visible to ANY conglomerate member, ii) upvote any of others social posts expressing support in terms of UBI tokens themselves.
+
+Whenever a post gets upvoted, the author gets **governance power minted in the governance contracts.**  The relationship between voter and supporter is evaluated. If they are both authorized by the same authorities certificate key, the upvote weights are quadratic. If voters certificate differs (e.g. certificate A holder is supported by certificate B) The weights are cubic. This is done to minimize governance attack risks when the number of certificate holders differs substantially between states.
+
+Conglomerate governance layer ir M of N multisignature contract that consists of authorities governance contracts.
+
+#### **Governance as intrinsic UBI value**
+
+For a new digital currency to be truly valuable, it must possess a distinct intrinsic property that can withstand the modern, competitive, and ruthless business environment, where cost optimization is paramount.
+
+The power of governance provides multiple intrinsic values. Primarily, governance contracts themselves hold substantial value if they control the certificate key infrastructure. However, even without this control, a simple treasury held within such governance contracts, earned through coordinated activity similar to existing DAOs, is significant.
+
+The conglomerate governance layer itself facilitates system evolution and holds immense intrinsic value, mirroring the intrinsic values of our current modern governance systems.
+
+#### **Denominating goods in UBI currency**
+
+The true economic value of any currency lies not in its intrinsic worth, but in its capacity to facilitate fair trade and resolve real-world issues.
+
+Currently, highly automated companies heavily depend on intellectual property rights like patents, trade secrets, and brand trademarks.
+
+Consider a scenario where a software company lays off 10,000 employees due to extensive automation. The following year, this company seeks to acquire intellectual property, such as a patent, from an individual author. This author explicitly refuses payment in any currency other than the proposed UBI currency. This fact alone means that once companies are compelled to pay in UBI, their financial denomination will be measured in human days. Consequently, a company's ability to pay in capitalized currencies becomes irrelevant; it will instead need to solicit UBI tokens from its employees to secure the required patent.
+
+If such a company would dully try to send signed email with promise of fiat based proposal, the author could use techniques like [ZKMail](https://zk.email/) to prove a value company is ready to pay for the IP. If he would do this together with disclosing his ask in UBI denomination, he is immediately creating a market signal for market correction, and hence strongly non-zero market price is established.
+
+![ubivalueflow-medium](/ip-value-flow.png "UBI value flow for IP")
+
+#### **Technical prototype design**
+
+I’ve created a technical prototype for the Celo network because they have deployed [Self protocol](https://self.xyz/) verifiers for passports. Code can be explored at [https://github.com/peersky/wip](https://github.com/peersky/wip) (wip stands for world improvement proposals aka work in progress).
+
+The system uses ZK verification of the country of issuance and expiry date. For each new country onboarded, contracts automatically deploy governance contracts and add them to multisig signers.
+
+Daily claim is set to 64 tokens while In order to incentivise daily activity the requirements to claim it is required to spend 32 for supporting any existing proposals from the day before, meaning effective UBI is 32 tokens a day while 32 more are always spent in quadratic or cubic proportion to grow other participant power in their according governance contracts.
+
+Anticipating chances that not every human wants to open a platform on a daily basis, the claims sum up, however to incentivise activity the rewards for non-active days are reduced to 16 tokens, while if there is case of zero activity in platform, that may happen in cold start environment, the each day without active content on the network creates exponentially larger benefit for posting.
+
+The content of proposals themselves may be stored in decentralised storages etc and is out of scope of detailed solution at this point.
+
+#### **Social impact**
+
+This project transforms the concept of social network from simply indicative support to a fully fetched path of contributing ideas to getting elected to the governance body of the organisation.
+
+The permissionless nature of blockchain allows anyone to build their own recommendation and filtering engines permissionally while limited ability to post daily creates a scarcity but also a space for freedom of thought and self-expression.
+
+#### **Scalability**
+
+The system is intrinsically scalable both vertically and horizontally:
+
+For vertical scalability the existing “governance” layers may be used to define higher order derived organisations, for example City \-\> District value flow can be supported.
+
+Conglomerate based authority ensures ability to have independent attestation logic. Networks like PeaQ might use machine identifiers to build machine economies, while network states or corporations can create their own certificate issuance infrastructure and use it for their own conglomerate system with their own enclosed value infrastructure.
+
+#### **Security analysis**
+
+The biggest security concern of this system is the assumption that conglomerate members do not create “virtual accounts” (“Dead souls” by Nikolai Gogol). The Sybil attack case is fully dependent on issuing authority and if ZK proofs for identity anonymization are used, it is hard to verify authenticity.
+
+The proposed architecture assumes this is not the case, however it raises significant social and governance questions and accents attention to policies and certificate issuance security.
+
+How are our governments storing ePassport certificates \- this is a paramount question in any digital election system today.
+
+The experience using ePassport certification using Self protocol also exposed a critical flaw in the modern digital passport system \- there are no unique person identifiers available, and our verifier contract can only use passport number as identifier, which could be re-issued. This implies that if the system would take off as popular, we would be witnessing ques for replacing passports on a daily basis, which would raise important social questions and generally is healthy for our society.
