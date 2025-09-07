@@ -1,4 +1,4 @@
-import { SiteMap, SiteMapItemType } from "@peersky/next-web3-chakra/dist/types";
+import { SiteMap, SiteMapItemType } from "@peersky/next-web3-chakra";
 
 export const SITEMAP: SiteMap = [
   {
