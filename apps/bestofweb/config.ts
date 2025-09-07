@@ -1,4 +1,4 @@
-import { SiteMap, SiteMapItemType } from "@peersky/next-web3-chakra";
+import { SiteMap, SiteMapItemType } from "./types";
 export const SITEMAP: SiteMap = [
   {
     title: "Blog",

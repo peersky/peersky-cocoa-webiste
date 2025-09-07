@@ -3,20 +3,22 @@ import "../styles/styles.css";
 import "../styles/nprogress.css";
 // import "../styles/sidebar.css";
 import dynamic from "next/dynamic";
-import { SEOHead } from "@peersky/next-web3-chakra";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 const AppContext = dynamic(() => import("../AppContext"), {
   ssr: false,
 });
-const DefaultLayout = dynamic(
-  () => import("@peersky/next-web3-chakra").then((mod) => mod.DefaultLayout),
-  {
-    ssr: false,
-    loading: () => <div>loading...</div>,
-  }
-) as any;
+const DefaultLayout = dynamic(() => import("../layouts"), {
+  ssr: false,
+  loading: () => <div>loading...</div>,
+});
 // import DefaultLayout from "@peersky/next-web3-chakra/dist/layouts";
+
+// Dynamic import for SEOHead to avoid SSR issues
+const SEOHead = dynamic(() => import("../components/HeadSEO"), {
+  ssr: false,
+  loading: () => null,
+});
 import { useRouter } from "next/router";
 import NProgress from "nprogress";
 // import { WHITE_LOGO_W_TEXT_URL } from "../src/constants";
@@ -57,15 +59,20 @@ export default function CachingApp({ Component, pageProps }: any) {
 
   const getLayout =
     Component.getLayout ||
-    ((page: React.ReactNode) => (
-      <DefaultLayout
-        selectorSchema="grey"
-        metamaskSchema="grey"
-        colorScheme="grey"
-      >
-        {page}
-      </DefaultLayout>
-    ));
+    ((page: React.ReactNode) => {
+      if (!DefaultLayout) {
+        return <div>Loading layout...</div>;
+      }
+      return (
+        <DefaultLayout
+          selectorSchema="grey"
+          metamaskSchema="grey"
+          colorScheme="grey"
+        >
+          {page}
+        </DefaultLayout>
+      );
+    });
 
   const headLinks = [
     // { rel: "preload", as: "image", href: WHITE_LOGO_W_TEXT_URL },
@@ -93,7 +100,7 @@ export default function CachingApp({ Component, pageProps }: any) {
           overflow: hidden;
         }
       `}</style>
-      <SEOHead baseURL={baseURL} {...metaTags} />
+      {SEOHead && <SEOHead baseURL={baseURL} {...metaTags} />}
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
         <AppContext>{getLayout(<Component {...pageProps} />)}</AppContext>

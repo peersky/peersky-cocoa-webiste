@@ -1,4 +1,4 @@
-import { getLayout } from "@peersky/next-web3-chakra";
+import { getLayout as getBlogLayout } from "../../layouts/BlogLayout";
 import {
   Flex,
   Spacer,
@@ -8,9 +8,9 @@ import {
   Button,
   useMediaQuery,
 } from "@chakra-ui/react";
-import { RouteButton } from "@peersky/next-web3-chakra";
+import RouteButton from "../../components/RouteButton";
 import React from "react";
-import { useAppRouter } from "@peersky/next-web3-chakra";
+import useAppRouter from "../../hooks/useRouter";
 
 const Blog = (props: any) => {
   const appRouter = useAppRouter();
@@ -196,5 +196,5 @@ export async function getStaticProps() {
   return { props: { posts: postsArray, metaTags } };
 }
 
-Blog.getLayout = getLayout;
+Blog.getLayout = getBlogLayout();
 export default Blog;

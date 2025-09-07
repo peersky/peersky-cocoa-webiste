@@ -1,4 +1,4 @@
-import { theme as _theme } from "@peersky/next-web3-chakra";
+import _theme from "./theme/theme";
 
 import { extendTheme } from "@chakra-ui/react";
 const theme = extendTheme({
