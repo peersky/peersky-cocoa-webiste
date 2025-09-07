@@ -1,6 +1,6 @@
 import { getLayout } from "@peersky/next-web3-chakra/dist/layouts/BlogLayout";
 import { lazy, Suspense } from "react";
-
+import { Box } from "@chakra-ui/react";
 export async function getStaticPaths() {
   const blogPosts = await require("../../content/");
   const postsArray = Object.values(blogPosts).map((post) => post);
@@ -49,7 +49,15 @@ export async function getStaticProps({ params }: { params: any }) {
 const Post = (props: any) => {
   const Component = lazy(() => import(`../../content/${props.id}.mdx`));
 
-  return <Suspense fallback={<div>Loading...</div>}>{<Component />}</Suspense>;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      {
+        <Box px={["5px", "20px", "20%"]}>
+          <Component />
+        </Box>
+      }
+    </Suspense>
+  );
 };
 
 Post.getLayout = getLayout();
