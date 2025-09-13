@@ -41,7 +41,7 @@ const H4 = (props: any) => (
   </Heading>
 );
 const P = (props: any) => (
-  <chakra.span fontSize={"sm"} py={2}>
+  <chakra.span fontSize={"sm"} py={2} display="block">
     {props.children}
   </chakra.span>
 );
