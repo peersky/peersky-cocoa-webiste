@@ -14,7 +14,7 @@ const withMDX = nextMDX({
   },
 });
 export default withMDX({
-  images: { unoptimized: false },
+  images: { unoptimized: true },
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   transpilePackages: ["@next/mdx"],
   reactStrictMode: true,
