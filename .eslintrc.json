@@ -1,77 +1,64 @@
-{
-  "settings": {
-    "react": {
-      "createClass": "createReactClass",
-      "pragma": "React",
-      "fragment": "Fragment",
-      "version": "detect",
-      "flowVersion": "0.53"
-    },
-    "propWrapperFunctions": [
-      "forbidExtraProps",
-      { "property": "freeze", "object": "Object" },
-      { "property": "myFavoriteWrapper" }
-    ],
-    "componentWrapperFunctions": [
-      "observer",
-      { "property": "styled" },
-      { "property": "observer", "object": "Mobx" },
-      { "property": "observer", "object": "<pragma>" }
-    ],
-    "linkComponents": ["Hyperlink", { "name": "Link", "linkAttribute": "to" }]
-  },
+// {
 
-  "env": {
-    "browser": true,
-    "es6": true,
-    "node": true
-  },
-  "extends": [
-    "next/core-web-vitals",
-    "eslint:recommended",
-    "plugin:prettier/recommended",
-    "plugin:@next/next/recommended"
-  ],
-  "globals": {
-    "Atomics": "readonly",
-    "SharedArrayBuffer": "readonly"
-  },
+//   "settings": {
+//     "react": {
+//       "createClass": "createReactClass",
+//       "pragma": "React",
+//       "fragment": "Fragment",
+//       "version": "detect",
+//       "flowVersion": "0.53"
+//     },
+//     "propWrapperFunctions": ["forbidExtraProps", { "property": "freeze", "object": "Object" }, { "property": "myFavoriteWrapper" }],
+//     "componentWrapperFunctions": ["observer", { "property": "styled" }, { "property": "observer", "object": "Mobx" }, { "property": "observer", "object": "<pragma>" }],
+//     "linkComponents": ["Hyperlink", { "name": "Link", "linkAttribute": "to" }]
+//   },
 
-  "plugins": ["unused-imports", "@babel", "prettier"],
-  "rules": {
-    "react/display-name": 0,
-    "max-len": 0,
-    "consistent-return": 0,
-    "no-console": 0,
-    "no-unused-vars": "warn",
-    "unused-imports/no-unused-imports": "error",
-    "unused-imports/no-unused-vars": [
-      "warn",
-      {
-        "vars": "all",
-        "varsIgnorePattern": "^_",
-        "args": "after-used",
-        "argsIgnorePattern": "^_"
-      }
-    ],
-    "@babel/new-cap": "error",
-    "@babel/no-invalid-this": "error",
-    "@babel/no-unused-expressions": 0,
-    "no-unused-expressions": [
-      "warn",
-      {
-        "allowShortCircuit": true,
-        "allowTernary": true
-      }
-    ],
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-    "prettier/prettier": "warn",
-    "react/no-unknown-property": [
-      2,
-      {
-        "ignore": ["jsx", "global"]
-      }
-    ]
-  }
-}
+//   "env": {
+//     "browser": true,
+//     "es6": true,
+//     "node": true
+//   },
+//   "extends": ["eslint:recommended", "plugin:prettier/recommended", "plugin:@next/next/recommended"],
+//   "globals": {
+//     "Atomics": "readonly",
+//     "SharedArrayBuffer": "readonly"
+//   },
+
+//   "plugins": ["unused-imports", "@babel", "prettier"],
+//   "rules": {
+//     "react/display-name": 0,
+//     "max-len": 0,
+//     "consistent-return": 0,
+//     "no-console": 0,
+//     "no-unused-vars": "warn",
+//     "unused-imports/no-unused-imports": "error",
+//     "unused-imports/no-unused-vars": [
+//       "warn",
+//       {
+//         "vars": "all",
+//         "varsIgnorePattern": "^_",
+//         "args": "after-used",
+//         "argsIgnorePattern": "^_"
+//       }
+//     ],
+//     "@babel/new-cap": "error",
+//     "@babel/no-invalid-this": "error",
+//     "@babel/no-unused-expressions": 0,
+//     "no-unused-expressions": [
+//       "warn",
+//       {
+//         "allowShortCircuit": true,
+//         "allowTernary": true
+//       }
+//     ],
+//     "react-hooks/rules-of-hooks": "error",
+//     "react-hooks/exhaustive-deps": "warn",
+//     "prettier/prettier": "warn",
+//     "react/no-unknown-property": [
+//       2,
+//       {
+//         "ignore": ["jsx", "global"]
+//       }
+//     ]
+//   }
+// }
