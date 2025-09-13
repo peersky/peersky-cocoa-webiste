@@ -1,3 +1,0 @@
-[
-  "function init(string name, string version, tuple(uint256 blocksPerTurn, uint256 maxPlayersSize, uint256 minPlayersSize, address rankTokenAddress, uint256 blocksToJoin, uint256 gamePrice, uint256 joinGamePrice, uint256 maxTurns, uint256 numWinners) initializer)"
-]

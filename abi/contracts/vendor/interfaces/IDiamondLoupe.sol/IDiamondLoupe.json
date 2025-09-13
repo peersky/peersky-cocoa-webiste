@@ -1,6 +1,0 @@
-[
-  "function facetAddress(bytes4 _functionSelector) view returns (address facetAddress_)",
-  "function facetAddresses() view returns (address[] facetAddresses_)",
-  "function facetFunctionSelectors(address _facet) view returns (bytes4[] facetFunctionSelectors_)",
-  "function facets() view returns (tuple(address facetAddress, bytes4[] functionSelectors)[] facets_)"
-]

@@ -1,8 +1,0 @@
-[
-  "event GameClosed(uint256 indexed gameId)",
-  "event GameStarted(uint256 indexed gameId)",
-  "event PlayerJoined(uint256 indexed gameId, address participant)",
-  "event PlayerLeft(uint256 indexed gameId, address indexed player)",
-  "event RegistrationOpen(uint256 indexed gameid)",
-  "event gameCreated(uint256 gameId, address indexed gm, address indexed creator, uint256 rank)"
-]

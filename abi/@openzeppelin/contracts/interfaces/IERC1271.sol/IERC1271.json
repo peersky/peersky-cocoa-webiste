@@ -1,3 +1,0 @@
-[
-  "function isValidSignature(bytes32 hash, bytes signature) view returns (bytes4 magicValue)"
-]
