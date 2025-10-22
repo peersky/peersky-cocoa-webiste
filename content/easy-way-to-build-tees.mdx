@@ -1,0 +1,179 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2025-10-22",
+  title: "Easy way to build trusted TEEs and why it’s all custodial.",
+  description:
+    "Inherent vulnerabilities of Trusted Execution Environments (TEEs) to physical attacks and supply chain compromises. It suggests that true security comes from decentralizing chip sourcing across distrusting jurisdictions and using multi-party computation on open-source hardware, rather than relying solely on trusted hardware.",
+  tags: ["english", "web3", "ideas", "TEE"],
+  path: "easy-way-to-build-tees",
+  image: "/tee-spiderman.png",
+};
+
+
+
+# {meta.title}
+
+_{meta.description}_
+
+## Introduction
+
+Initiatives like verifiable, trusted TEE are mindblowing exciting, however even a smaller piece of the puzzle is a challenge.
+
+When I first entered the crypto space, my background in hardware led me to appreciate the community's strong preference against using Trusted Execution Environments (TEEs) and secure enclaves. The prevailing sentiment was that formal calculus in system safety offered a more cypherpunk and robust approach.
+
+Reflecting on my own and my peers' experiences in crypto, a fundamental limitation often comes to mind that hinders truly oblivious encryption with absolute guarantees. While one might oversimplify this by attributing it to entropy and the probability of guessing passwords, the persistent challenge of securely storing and accessing keys remains, irrespective of one's expertise.
+
+Consider Fully Homomorphic Encryption (FHE). Although it offers lattice-based, post-quantum secure cryptography, decentralizing it necessitates mechanisms like Distributed Key Generation (DKG) for proxy re-encryption. Even if a Threshold Signature Scheme with Multi-Party Computation (TSS MPC) is employed, scalability remains an issue due to inherent networking complexities. While companies like Zama and FHEnix are making commendable progress, their solutions still rely on a limited number of MPC nodes to decrypt the entire system.
+
+From a physics perspective, the concept of security takes on a unique dimension. It conjures an image of a new 21st-century religion, where devoted individuals, much like monks, would diligently guard a trusted server, ensuring its physical integrity without so much as a blink.
+
+This might sound like a flight of fancy, but I believe this is the ultimate destination, and here's why: The core challenge with physical devices like Trusted Execution Environments (TEEs) lies in the inherent impossibility of fully formally verifying them. This is because, fundamentally, we cannot formally verify life itself; events simply unfold. This marks a crucial distinction from mathematics, as physics is an empirical science. Cosmic particles such as neutrinos, protons, and heavy ions are just a few examples of the unpredictable elements at play.
+
+Cosmic particles like neutrinos, protons, and heavy ions (cosmic rays) can cause "[Single Event Upsets](https://en.wikipedia.org/wiki/Single-event_upset)" (SEUs), which flip transistors. While less common on Earth, this becomes a significant problem in orbit or in a "Fallout game scenario."
+
+In addition to SEUs, side-channel attacks pose a risk by observing or interacting with a chip in parallel, compromising its security. A major challenge with these attacks is their difficulty to detect.
+
+## **A bit microwave101.**
+
+_I can recommend checking out [microwaves101.com](https://www.microwaves101.com/) - it's an OG microwave portal maintained by industry professionals._
+
+When designing a secure enclave chip, chip layout engineers at a chip fabrication plant work with internal traces that can range **from nanometers to low micrometers (µm)** in size within the sensitive parts of the chip.
+
+Each of these traces can act **as an antenna for specific wavelengths**. Depending on whether it's loose or short-ended. This characteristic means that particular frequencies can be externally introduced to the trace. Consequently, two main attack vectors arise:
+
+a) **Listening to emitted radiation:** This is a typical side-channel attack where values, such as cryptographic keys, are extracted from the chip by listening to its electromagnetic leakage.
+
+b) **Supplying precision radiation:** By precisely targeting the chip with external radiation, it's possible to interfere with and alter the behavior of the internal circuitry.
+
+![microstrip-medium](/mstrip.PNG "microstrip filter")
+*Example of a quarter-wave length filter topology. Lines do not touch.*
+
+**To illustrate**: consider Silicon Dioxide (SiO₂), a common dielectric on chips with a dielectric constant (εr) of approximately 3.9.
+
+The Effective Propagation Speed (vₚ) is calculated by dividing the speed of light (c) by the square root of the material's dielectric constant (εr):
+
+vₚ \= c / √εr
+
+For a given environment, the quarter-wavelength frequency (f) can be determined using the formula: f \= vₚ / λ \= vₚ / (4 \* L).
+
+Applying this, a 1 µm trace yields a quarter-wavelength frequency of approximately 38.0 THz.
+
+Such frequencies are manageable by optical devices like [Quantum Cascade Lasers](https://en.wikipedia.org/wiki/Quantum-cascade_laser) (QCLs). Manufacturers can engineer QCLs to emit light at a highly precise target frequency, such as 38.0 THz (corresponding to a wavelength of roughly 7.89 µm). For ultimate precision, these lasers [can be frequency-locked](https://opg.optica.org/oe/viewmedia.cfm?uri=oe-31-9-13888&html=true) to a molecular absorption line, providing exceptionally stable and accurate sources for metrology and sensitive detection applications.
+
+### **Implication of this knowledge**
+**_The Inherent Insecurity of Trusted Execution Environments (TEEs)_**
+
+Even with advanced security measures, TEE chips remain vulnerable to sophisticated physical attacks. A determined attacker with the right resources and technology can precisely alter a TEE chip using a beam of light. This chain of thought demonstrates that there are vulnerabilities that are nearly impossible to mitigate, especially if the chip layouts are open-sourced, as attackers can exploit this knowledge without detection.
+
+Despite rigorous safety measures during chip design, multiple audits, and independent verification, the risk persists. Beyond fundamental technical flaws, human factors introduce additional vulnerabilities:
+
+* **Designers:** Chip designers may intentionally introduce subtle alterations.
+* **Manufacturers:** Fabrication facilities can implement backdoors that are incredibly difficult to detect.
+
+In some ways, using a readily available, bare-metal ARM chip for a key wallet might be safer than a dedicated Ledger wallet. This is because supply chain companies, aware their designs will secure valuable assets, have a strong incentive to introduce backdoors.
+
+A potentially safer approach involves using randomly sourced, off-the-shelf components combined with multi-party computation (MPC). This suggests that truly trusted, open-source hardware should prioritize generalizable, replicable DIY assembly boards capable of MPC and Zero-Knowledge Proofs (ZKP).
+
+## **Why is that all custodial?**
+
+Forget the mind games; here's the reality: TEEs, Secure Enclaves, and Quantum Cascade Lasers (QCLs) are primarily defense industry equipment. The more advanced the chip, the more formidable the anticipated attacker. This ultimately escalates to state-level concerns.
+
+If you are cryptopunk, you certainly know that in the US, it's well-known that a number of legally binding acts, like National Security Letters (NSLs), The Gag Order, the Foreign Intelligence Surveillance Act (FISA), The All Writs Act of 1789, and the Communications Assistance for Law Enforcement Act (CALEA), legally mandate that software manufacturers, or even their employees, implement backdoors. These backdoors are often concealed from both end-users and employers.
+
+As a European citizen using American-designed technology, I have no doubt that the US government has backdoors to my systems and access to all my personal information.
+
+And no doubts whatsoever, that any other country today follows the same “good example”.
+
+Therefore, the same principles apply when we talk about heavily relying on trusted hardware. It is technically feasible, legally binding with plausible deniability, and incentivized for your hardware to have “trusted” label and backdoor built in.
+
+Companies providing hardware wallets face the same supply chain risks. They must ensure the trustworthiness of their fabs, chip designers, and the entire supply chain. A significant concern is the cross-jurisdictional nature of these risks. That’s why:
+
+Your hardware wallet is Ledger because you’re French/European.
+Your hardware wallet is imToken because you’re Singaporean.
+
+And I very much doubt the other way around.
+
+Because companies do *centralised custody* for your keys, it’s not hardware \- it’s people doing supply chain that matters.
+
+## **Promised simple way of building trusted hardware**
+
+Take 3-4 different jurisdictions to source secure enclave chips from. Make sure they don’t trust each other.
+
+Sell/Buy them in those different jurisdictions as already packaged and supply-chain managed there. Make sure **end users can buy them there.**
+
+Then use the MPC, broken in 3 of 4 pieces with shares stored in these enclaves.
+
+Orchestrate these devices by placing on open-source developed DIY boards, that people can assemble themselves at home and bootstrap their own firmware.
+
+**Done.**
+
+### **Is this technically feasible, can MPC protocols do general computation on such architectures?**
+
+The cryptographic frameworks to perform **general-purpose computation** using Multi-Party Computation (MPC) across a network of TEEs already exist, allowing for the execution of arbitrary programs.
+
+Instead of just abstract circuits, this is achieved using well-established, **Turing-complete MPC** protocols. Implementations often rely on frameworks that use:
+
+* **GMW (Goldreich-Micali-Wigderson):** A protocol that typically operates on **Boolean circuits** (AND, XOR, NOT gates). It's a foundational multi-party protocol based on secret sharing.
+* **BGW (Ben-Or-Goldwasser-Wigderson):** A protocol that operates on **arithmetic circuits** (addition and multiplication gates) over finite fields, which can be more efficient for many computations.
+* **The SPDZ (Speedz) Family:** A popular class of modern protocols that also uses arithmetic circuits. They are highly efficient due to a "pre-processing" model, where cryptographic material is generated offline before the actual inputs are known, significantly speeding up the online computation phase.
+
+These protocols allow your TEEs motherboard to securely compute any function. Frameworks like **MP-SPDZ** provide the tools to write programs in a high-level language and compile them down to be executed by these underlying protocols.
+
+Each TEE sends its encrypted share directly to the request sender and you only need to implement local decryption clients to work with such motherboards since you will be getting N individual shares to reconstruct from..
+
+### **Want to have TEE racks?**
+
+Do the same \- Take indel SGX, [Huawei Kunpeng](https://e.huawei.com/ma/industries/grid/power-grid/power-data-center/high-performance-computing), [Trustonic Kinibi TEE](https://www.trustonic.com/technical-articles/kinibi-520a-the-latest-trusted-execution-environment-tee/).. [MediaTek Dimensity](https://www.mediatek.com/products/smartphones/dimensity-5g),
+
+![spidertee-medium](/tee-spiderman.png "spidermans pointing each other")
+Put them on one OSS trusted and community developed motherboard and drivers that do TEE MPC.
+
+You get it **instantly**, with **off-shelf** components, and your security relies on the fact that these jurisdictions will never ever agree on anything to play 3 out of 4 consensus against YOU. I would say that’s pretty safe.
+
+The less they are friends, the more secure your hardware can get.
+And if they will start to get along against you \- it likely means some wars stopped and international cooperation improved, which is a win in any case.
+
+**One problem though \- as you might have noticed there is really a lack of powerful TEEs beyond the US market.**
+
+MediaTek Dimensity and Kinibi are not rivals for SGX. Such a system would either have to delegate computation to intel and huawei, and let others verify, or would have to throttle some CPUs.
+
+Concluding, I would like to say that “trusted TEE” is a question of jurisdictions. It eventually depends on “guns and powder” securing supply chain fabs.
+
+We should invest more in decentralising fabrication of high performance semiconductors \- that’s certain. The short term solutions for crypto / web3 society I see is TEE orchestration boards \- it’s much more feasible, doable in tighter budgets and can immediately facilitate trust even for cross-border jurisdiction deals.
+
+Some prominent TEE initiatives I am aware of
+
+- [European Processor Initiative](https://www.european-processor-initiative.eu/?p=subscribe)
+- Indian [C-DAC](https://cdac.in/index.aspx?id=pk_itn_spot1299)
+- [Russian Baikalelectronics](http://baikalelectronics.ru)
+- sputee.com [SC1000-XC](https://www.sputee.com/product/spu)
+
+
+I’d like to learn more about it, please feel free to reach out\!
+
+## **Decentralising the thing**
+
+This can be summarized in one takeaway: Trust is an opt-in process of delegating sensitive data with no guarantees of compliance.
+
+Users must trust the "execution environment," regardless of how it's labeled—"Lit Protocol," "Intel SGX," "MPC," or "FHE."
+
+There are some game-theoretic considerations to explore: if a node hosts content intended to remain private for everyone outside of a protocol's permitted key set, then a transfer to any other protocol (e.g., via TLS traffic or any standardized method containing receiver key, sender key, and a digitally signed message) could serve as proof of data disclosure. However, if such data is never signed, a "black market" buyer cannot be sure of its provenance.
+
+While this doesn't solve everything \- and I don't believe any better solution is possible short of quantum advancements \- we can create a protocol for SLA-like behavior, where trusted hardware owners are incentivized to secure the data. Such an SLA can formalize protocol requirements to act as a re-encryption proxy or a general trusted execution environment.
+
+## **Sacred Execution Environment?**
+
+Considering the game-theoretic incentives, or rather, the collective social consensus on the importance and sensitivity of this subject, it brings to mind the images presented below. This is purely a whimsical thought experiment: what if a forgotten civilization (like Atlantis) predated ours, and today's temples are, in fact, relics of their ancient data center architecture?
+
+Which image feels better?
+![monks-medium](/monks_tee.png "monks guarding server")
+
+Exactly as I was writing this article intel SGX was announced to be hackable with 50$ budget.
+[https://thehackernews.com/2025/10/new-wiretap-attack-extracts-intel-sgx.html](https://thehackernews.com/2025/10/new-wiretap-attack-extracts-intel-sgx.html)
+
+*Intel's response is hilarious yet exactly what's the point of this article: you must physically sit and watch green LEDs.*
+
+*With such constraints I also can build a TEE 😀😆*
+
+
+
