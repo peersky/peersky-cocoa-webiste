@@ -1,7 +1,7 @@
 export const meta = {
   author: "Tim Pechersky",
   date: "2025-10-22",
-  title: "Easy way to build trusted TEEs and why it’s all custodial.",
+  title: "Easy way to build trusted TEEs",
   description:
     "Inherent vulnerabilities of Trusted Execution Environments (TEEs) to physical attacks and supply chain compromises. It suggests that true security comes from decentralizing chip sourcing across distrusting jurisdictions and using multi-party computation on open-source hardware, rather than relying solely on trusted hardware.",
   tags: ["english", "web3", "ideas", "TEE"],
@@ -123,10 +123,10 @@ Each TEE sends its encrypted share directly to the request sender and you only n
 
 ### **Want to have TEE racks?**
 
-Do the same \- Take indel SGX, [Huawei Kunpeng](https://e.huawei.com/ma/industries/grid/power-grid/power-data-center/high-performance-computing), [Trustonic Kinibi TEE](https://www.trustonic.com/technical-articles/kinibi-520a-the-latest-trusted-execution-environment-tee/).. [MediaTek Dimensity](https://www.mediatek.com/products/smartphones/dimensity-5g),
+Do the same \- Take Intel SGX, [Huawei Kunpeng](https://e.huawei.com/ma/industries/grid/power-grid/power-data-center/high-performance-computing), [Trustonic Kinibi TEE](https://www.trustonic.com/technical-articles/kinibi-520a-the-latest-trusted-execution-environment-tee/), [MediaTek Dimensity](https://www.mediatek.com/products/smartphones/dimensity-5g),
 
 ![spidertee-medium](/tee-spiderman.png "spidermans pointing each other")
-Put them on one OSS trusted and community developed motherboard and drivers that do TEE MPC.
+**Put them on one OSS trusted and community developed motherboard and drivers that do TEE MPC.**
 
 You get it **instantly**, with **off-shelf** components, and your security relies on the fact that these jurisdictions will never ever agree on anything to play 3 out of 4 consensus against YOU. I would say that’s pretty safe.
 
@@ -153,19 +153,21 @@ I’d like to learn more about it, please feel free to reach out\!
 
 ## **Decentralising the thing**
 
-This can be summarized in one takeaway: Trust is an opt-in process of delegating sensitive data with no guarantees of compliance.
+**Trust is an opt-in process of delegating sensitive data with no guarantees of compliance.**
 
-Users must trust the "execution environment," regardless of how it's labeled—"Lit Protocol," "Intel SGX," "MPC," or "FHE."
+Users must trust the "execution environment," regardless of how it's labeled - Lit Protocol, Intel SGX, MPC, or FHE.
 
 There are some game-theoretic considerations to explore: if a node hosts content intended to remain private for everyone outside of a protocol's permitted key set, then a transfer to any other protocol (e.g., via TLS traffic or any standardized method containing receiver key, sender key, and a digitally signed message) could serve as proof of data disclosure. However, if such data is never signed, a "black market" buyer cannot be sure of its provenance.
 
 While this doesn't solve everything \- and I don't believe any better solution is possible short of quantum advancements \- we can create a protocol for SLA-like behavior, where trusted hardware owners are incentivized to secure the data. Such an SLA can formalize protocol requirements to act as a re-encryption proxy or a general trusted execution environment.
 
+I think that's actually interesting in context of IPv6 and CGA's, where such network could host an IPV6 subnetwork of CGA attested IP nodes. Eventually - **we can, and should build decentralised AWS**.****
+
 ## **Sacred Execution Environment?**
 
 Considering the game-theoretic incentives, or rather, the collective social consensus on the importance and sensitivity of this subject, it brings to mind the images presented below. This is purely a whimsical thought experiment: what if a forgotten civilization (like Atlantis) predated ours, and today's temples are, in fact, relics of their ancient data center architecture?
 
-Which image feels better?
+
 ![monks-medium](/monks_tee.png "monks guarding server")
 
 Exactly as I was writing this article intel SGX was announced to be hackable with 50$ budget.
