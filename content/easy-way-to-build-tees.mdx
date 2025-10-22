@@ -86,26 +86,24 @@ And no doubts whatsoever, that any other country today follows the same “good 
 
 Therefore, the same principles apply when we talk about heavily relying on trusted hardware. It is technically feasible, legally binding with plausible deniability, and incentivized for your hardware to have “trusted” label and backdoor built in.
 
-Companies providing hardware wallets face the same supply chain risks. They must ensure the trustworthiness of their fabs, chip designers, and the entire supply chain. A significant concern is the cross-jurisdictional nature of these risks. That’s why:
+Companies providing hardware wallets face the same supply chain risks. They must ensure the trustworthiness of their fabs, chip designers, and the entire supply chain. A significant concern is the cross-jurisdictional nature of these risks.
 
-Your hardware wallet is Ledger because you’re French/European.
-Your hardware wallet is imToken because you’re Singaporean.
+That’s why:
 
-And I very much doubt the other way around.
+- Your hardware wallet is Ledger because you’re French/European.
+- Your hardware wallet is imToken because you’re Singaporean.
+- I very much doubt it's the other way around.
 
-Because companies do *centralised custody* for your keys, it’s not hardware \- it’s people doing supply chain that matters.
+**Because companies do *centralised custody* for your keys, it’s not hardware \- it’s people doing supply chain that matters.**
 
 ## **Promised simple way of building trusted hardware**
 
-Take 3-4 different jurisdictions to source secure enclave chips from. Make sure they don’t trust each other.
-
-Sell/Buy them in those different jurisdictions as already packaged and supply-chain managed there. Make sure **end users can buy them there.**
-
-Then use the MPC, broken in 3 of 4 pieces with shares stored in these enclaves.
-
-Orchestrate these devices by placing on open-source developed DIY boards, that people can assemble themselves at home and bootstrap their own firmware.
-
-**Done.**
+- Choose 3-4 different jurisdictions to source secure enclave chips from. Make sure they don’t trust each other.
+- Make sure **end users can buy them there.** to avoid supply chain risks.
+- Use MPC broken in 3 of 4 pieces with shares stored in these enclaves.
+- Orchestrate these devices by placing on open-source developed DIY boards that can have flashed at home with own firmware.
+- ?????
+- DONE!
 
 ### **Is this technically feasible, can MPC protocols do general computation on such architectures?**
 
@@ -119,7 +117,6 @@ Instead of just abstract circuits, this is achieved using well-established, **Tu
 
 These protocols allow your TEEs motherboard to securely compute any function. Frameworks like **MP-SPDZ** provide the tools to write programs in a high-level language and compile them down to be executed by these underlying protocols.
 
-Each TEE sends its encrypted share directly to the request sender and you only need to implement local decryption clients to work with such motherboards since you will be getting N individual shares to reconstruct from..
 
 ### **Want to have TEE racks?**
 
