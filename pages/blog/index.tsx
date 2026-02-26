@@ -19,10 +19,8 @@ const Blog = (props: any) => {
   React.useEffect(() => {
     setSelectedTags(appRouter.query?.tags?.split("&"));
   }, [appRouter.query?.tags]);
-  console.log("selectedTags", selectedTags);
   const [displayPosts, setDisplayPosts] = React.useState(props.posts);
   React.useEffect(() => {
-    console.log("show all posts", selectedTags);
     if (!selectedTags || (selectedTags.length == 1 && selectedTags[0] == "")) {
       setDisplayPosts(props.posts);
     } else {
@@ -52,59 +50,26 @@ const Blog = (props: any) => {
     return tags;
   });
   React.useEffect(() => {}, [props.posts, allTags]);
-  console.log(allTags);
+
   return (
-    <Flex w="100%" py={8} direction="column">
-      <Flex
-        w="80%"
-        p={4}
-        // m={4}
-        bg="yellow.100"
-        borderRadius="md"
-        borderWidth="1px"
-        borderColor="yellow.300"
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        placeSelf="center"
-      >
-        <Heading size="md" color="yellow.800" mb={2}>
-          Blog Migration Notice
-        </Heading>
-        <Text color="yellow.800">
-          Recent blog posts have been moved to{" "}
-          <RouteButton
-            href="https://mirror.xyz/peersky.eth"
-            isExternal
-            variant="link"
-            color="yellow.800"
-            textDecoration="underline"
-          >
-            mirror.xyz/peersky.eth
-          </RouteButton>
-          <br />I will integrate them back here soon.
-        </Text>
-      </Flex>
-      <Flex py={2} flexWrap="wrap">
+    <Flex w="100%" py={8} direction="column" gap={4}>
+      <Flex py={2} flexWrap="wrap" gap={2}>
         {allTags.map((tagName: string) => (
           <Tag
             as={Button}
-            variant={"solid"}
-            colorScheme={selectedTags?.includes(tagName) ? "green" : "blue"}
+            variant={selectedTags?.includes(tagName) ? "solid" : "outline"}
+            colorScheme={selectedTags?.includes(tagName) ? "teal" : "gray"}
             key={tagName}
+            size="sm"
             onClick={() => {
               if (selectedTags?.includes(tagName)) {
                 const newTags = [...selectedTags].filter(
                   (_tag) => _tag !== tagName
                 );
                 appRouter.appendQuery("tags", newTags.join("&"), false, false);
-
-                // const router
               } else {
-                // setSelectedTags((prevTags: any) => [tagName, ...prevTags]);
                 let _q = "";
                 if (selectedTags?.length > 0 && selectedTags[0] !== "") {
-                  console.log("selectedTags.length", selectedTags.length);
                   _q += selectedTags;
                   _q += "&";
                 }
@@ -112,7 +77,6 @@ const Blog = (props: any) => {
                 appRouter.appendQuery("tags", _q, false, false);
               }
             }}
-            h="24px"
           >
             {tagName}
           </Tag>
@@ -124,61 +88,51 @@ const Blog = (props: any) => {
           const db: any = new Date(b.date);
           return db - da;
         })
-        .map((post: any) => {
-          return (
-            <Flex
-              key={post.title}
-              dir={isMobileView ? "column" : "row"}
-              w="100%"
-              borderWidth="2px"
-              borderRadius={"md"}
-              borderColor="ActiveCaption"
-              alignItems={"center"}
-              px={2}
-              py={2}
-              flexWrap="wrap"
-              mb={2}
-            >
-              <Flex
-                w="100%"
-                alignItems={"center"}
-                borderBottomWidth="2px"
-                borderBottomColor={"gray.500"}
+        .map((post: any) => (
+          <Flex
+            key={post.title}
+            direction="column"
+            w="100%"
+            borderWidth="1px"
+            borderRadius="lg"
+            borderColor="gray.200"
+            px={5}
+            py={4}
+            gap={2}
+            _hover={{ borderColor: "gray.400", shadow: "sm" }}
+            transition="all 0.15s ease"
+          >
+            <Flex alignItems="flex-start" justifyContent="space-between" gap={4}>
+              <Heading size="md" lineHeight="1.3">
+                {post?.title}
+              </Heading>
+              <RouteButton
+                variant="ghost"
+                href={`blog/${post.path}`}
+                size="sm"
+                flexShrink={0}
               >
-                <Heading w={isMobileView ? "100%" : "100%"}>
-                  {post?.title}
-                </Heading>
-
-                {/* <Spacer /> */}
-
-                <RouteButton
-                  variant="outline"
-                  href={`blog/${post.path}`}
-                  h="24px"
-                  w={isMobileView ? "50%" : "15%"}
-                >
-                  Open
-                </RouteButton>
-              </Flex>
-              <Flex pt={2} w={isMobileView ? "100%" : "100%"} wrap="wrap">
-                {post?.tags?.map((tagName: string) => (
-                  <Tag
-                    variant={"solid"}
-                    colorScheme={"blue"}
-                    key={tagName}
-                    h="24px"
-                  >
-                    {tagName}
-                  </Tag>
-                ))}
-                <Spacer />
-                <Text w={isMobileView ? "100%" : "15%"}>{post.date} </Text>
-                {/* <Spacer /> */}
-              </Flex>
-              <Text fontSize={"sm"}>{post?.description}</Text>
+                Read →
+              </RouteButton>
             </Flex>
-          );
-        })}
+            {post?.description && (
+              <Text fontSize="sm" color="gray.600" noOfLines={2}>
+                {post.description}
+              </Text>
+            )}
+            <Flex alignItems="center" gap={2} flexWrap="wrap">
+              {post?.tags?.map((tagName: string) => (
+                <Tag variant="subtle" colorScheme="blue" size="sm" key={tagName}>
+                  {tagName}
+                </Tag>
+              ))}
+              <Spacer />
+              <Text fontSize="xs" color="gray.400">
+                {post.date}
+              </Text>
+            </Flex>
+          </Flex>
+        ))}
     </Flex>
   );
 };
