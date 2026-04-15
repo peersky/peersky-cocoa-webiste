@@ -23,10 +23,10 @@ export async function getStaticProps({ params }: { params: any }) {
     (_post: any) => _post.meta.path === params.id
   );
   let metaTags = {
-    title: post.meta.title,
-    description: post.meta.description,
+    title: `Tims blog: ${post.meta.title}`,
+    description: `${post.meta.description} @ ${post.meta.date}`,
     keywords: post.meta.tags.toLocaleString(),
-    url: `https://peersky.xyz/bog/${post.meta.path}`,
+    url: `https://peersky.xyz/blog/${post.meta.path}`,
   };
   if (post.meta.image) {
     console.log("definingimg");
