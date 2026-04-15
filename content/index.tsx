@@ -12,7 +12,8 @@ import * as SecuringKeys from "./securing-private-keys-bp.mdx";
 import * as DAON from "./dao-of-nature.mdx";
 import * as E2E from "./wild-digital-west.mdx";
 import * as UBI from "./ubi-against-agi.mdx";
-import * as ETEE from "./easy-way-to-build-tees.mdx"
+import * as ETEE from "./easy-way-to-build-tees.mdx";
+import * as S from "./silicon-based-life-forms.mdx";
 export {
   OpenEconomyManifest,
   // HowAccountsRu,
@@ -28,5 +29,6 @@ export {
   DAON,
   E2E,
   UBI,
-  ETEE
+  ETEE,
+  S,
 };

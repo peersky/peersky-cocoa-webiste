@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:blog.peeramid.xyz)",
+      "Bash(find:*)",
+      "Bash(fi)",
+      "Bash(done)"
+    ]
+  }
+}
