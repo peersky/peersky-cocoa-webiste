@@ -1,17 +1,19 @@
-import { Flex, Button, IconButton, Link, Center } from "@chakra-ui/react";
+import { Flex, IconButton, Link } from "@chakra-ui/react";
 import { FaGithub, FaLinkedin, FaSoundcloud, FaEthereum } from "react-icons/fa";
 import { IoIosMail } from "react-icons/io";
 import { FaXTwitter } from "react-icons/fa6";
 
-# Peersky.eth
+# Peersky
 
 Welcome!
 
-I'm passionate about building a better future through a balanced approach to science, sustainable technology, and respect for the natural world. I'm guided by the principle that all humans have four fundamental material needs: **clean water, clean air, fertile soil, and warmth.**
+I'm Tim Pečerskis — a socio-technical entrepreneur and system algorithm designer with 15 years of experience turning complex system control theory into production-grade outputs across AI, Web3, and deep tech.
 
-My work reflects this by prioritizing projects with a clear purpose and positive impact.
+**Pronouns:** he/him · Tims (/tɪms/ in Latvian, /tɪm/ in English) · Peersky (/pɪər skaɪ/)
 
-I'm always open to connecting with others – I enjoy brainstorming, tea, mindfulness, and meeting new people. Let's chat!
+My work reflects a consistent principle: technology should serve clear purpose and positive impact. I'm guided by the belief that all humans have four fundamental material needs: **clean water, clean air, fertile soil, and warmth.**
+
+I'm always open to connecting — I enjoy brainstorming, tea, and meeting new people. Let's chat!
 
 ### Say hello
 
@@ -104,7 +106,12 @@ I am currently working as an advisor for several blockchain and cybersecurity pr
 
 As founder of [Peeramid Labs](https://peeramid.xyz), I lead research and development at the intersection of AI reasoning, blockchain security, and decentralized systems. The lab's work spans agentic AI infrastructure, protocol security research, and privacy analysis — with a focus on producing rigorous, public-interest findings rather than purely commercial output.
 
-Recent work from the lab includes the design and release of NSED, an agentic engine architecture for steering multi-agent AI swarms with built-in audit trails, addressing both coordination and memory constraints at scale. Alongside core engineering, the lab publishes open research on ecosystem security — including responsible disclosure of vulnerabilities in Ethereum improvement proposals — and independent audits of developer tooling from a privacy and sovereignty perspective.
+Recent highlights:
+
+- Authored **"Mixture-of-Models: Unifying Heterogeneous Agents via N-Way Self-Evaluating Deliberation"** (arXiv:2601.16863) — a distributed GPU neural architecture for heterogeneous model orchestration achieving 4x CapEx reduction or 30% accuracy boost on any base model.
+- Wrote enterprise-ready Rust orchestration implementation of NSED protocol — 50k LoC + 85k LoC of tests including e2e + 10k LoC documentation, all within 3 months.
+- Filed 6 patents across 5 families spanning multi-agent AI coordination, zero-prior-art AI architecture, entropy-based model reputation systems, cryptographic compliance infrastructure, and hardware-bound licensing.
+- Identified and responsibly disclosed a critical vulnerability in **Ethereum EIP-7702**.
 
 Selected publications at [blog.peeramid.xyz](https://blog.peeramid.xyz):
 
@@ -116,7 +123,7 @@ Selected publications at [blog.peeramid.xyz](https://blog.peeramid.xyz):
 
 ### Educating in Blockchain and Cybersecurity
 
-I am proud to be part of [Invisible Garden](https://invisible.garden/), a pop-up school that is building a new generation of blockchain and cybersecurity experts. We are funded by Ethereum Foundation, Nethermind, Scroll, and other forward-thinking organizations and giving education on blockchain, cybersecurity, Zero-Knowledge proofs, MPC/HE (Fully Homomorphic Encryption, not HFE) and other topics.
+I am a lecturer at [Invisible Garden](https://invisible.garden/), a pop-up school building the next generation of blockchain and cybersecurity experts, funded by the Ethereum Foundation, Nethermind, Scroll, and others. Over two years, I've taught 100+ students across blockchain fundamentals, smart contract security, Solidity, Zero-Knowledge proofs, and FHE (Fully Homomorphic Encryption).
 
 ### Decentralized Governance Research (GovTech)
 
@@ -130,64 +137,57 @@ Prior to my focus on blockchain and web technologies, my career centered around 
 
 ### Blockchain Security @ OpenZeppelin
 
-I've been working with OpenZeppelin since 2023, securing leading DeFi protocols, such as Compound DAO, Bank Of International Settlements, and others.
+I worked at OpenZeppelin from 2022 to 2024, securing leading DeFi protocols and building incident response infrastructure.
 
-- **Securing Major DeFi Protocols:** Auditing and securing leading DeFi protocols, such as Compound DAO, through my work at OpenZeppelin.
-- **Improving Ethereum Ecosystem Security:** Actively seeking methods to significantly enhance the security of the Ethereum ecosystem.
-- **End-User Education:** Guiding users on safe blockchain practices.
-- **P2P Incentive Research:** Investigating economic models for incentivize P2P connections, particularly for non-full nodes.
+- **0 hacks during my shift.**
+- Served as technical advisor on the BIS project Marianna, contributing to the successful launch of the world's largest cross-institutional banking CBDC prototype.
+- Co-authored **EEA DeFi Risk Assessment Guidelines**, contributing to industry-wide standards.
+- Led automation, monitoring, and incident response service deployments using OpenZeppelin's Defender platform, ensuring near 100% risk factor monitoring for customers.
 
-### Leading Hardware development @ SIA Teknologic
+### Leading Hardware Development @ SIA TeknoLogic
 
-I've been leading OEM/ODM development business at SIA Teknologic since 2016, designing synthesizers and effects for live performances, battery management systems for electric vehicles and other electronics.
+I led OEM/ODM development at SIA TeknoLogic from 2016 to 2020, delivering over 30 distinct hardware/software products with near 100% customer retention across key accounts including LeClanché, Barix, Erica Synths, and Aretai Speakers.
 
-I stopped this business during covid pandemic, primary due to chip shortage, but also because I long time wanted to switch for lightweight lifestyle and travel as digital nomad, but still have some of the hardware in my basement.
+Notable deliveries:
 
-If you're interested in doing something with hardware, let me know, there are many Ideas worth to explore, Im open to reestablishing hardware development practice with specific interest in DePin and IoT mesh networking with base in Singapore, Hong Kong, Indonesia, Taiwan or Thailand as these are nowadays places I spend most of my time.
+#### Audio DSP & Synthesizers — Erica Synths
 
-#### Audio DSP & Synthesizers [Customer: [Erica Synths](https://www.ericasynths.lv/)]
-
-I've been working with Erica Synths since 2016, designing synthesizers and effects for live performances.
+I designed synthesizers and DSP effects for live performances starting in 2016.
 
 ![Zen delays-medium](/ZEN_DELAYS.JPG "Zen delays")
 
-Eric Synths Zen Delay is culmination of my work with Erica Synths, it is not just my favorite delay pedal, but a piece of art, that hopefully will outlive me. Zen Delay is not just pedal, its a music instrument that people love worldwide and makes me proud and happy of young years of my career.
+The Zen Delay is one of my favorite projects — a tape-delay pedal with a custom DSP algorithm implementing digital filtering based on the differential equation of the delay knob's rate of change. An IIR filter design with a higher-order differential equation that would normally require a PhD in DSP to derive on paper. The DSP module was fully designed by me, including hardware and clock-level optimizations that saved 30% on BoM cost against competitors. It received numerous positive reviews from world-renowned musicians as best-in-class.
 
-[This Youtube review is one of my favs](https://www.youtube.com/watch?v=k0-JZ-omg-8)
-
-*For those who understand DSP*: The whole art of building tape delay algorithm is that you need an algorithm that implements digital filtering technique with cutoff frequency of the filter based on differential equation itself (speed of change of delay knob). This leads to IIR filter design with higher order differential equation than usual digital filter, would have been a PhD in DSP for writing this on paper.
-
-#### Lightening installations for [Customer: Latvian Government]
-
-I'm magician when it comes to setting up lightening, I've been working with lightening since 2012 and audio since 2016, designing synthesizers and effects for live performances.
+#### Lighting Installations — Latvian Government
 
 ![Led rocket-medium](/LED_ROCKET_IMG.JPG "Led rocket")
 
-
-#### Drone Communication Systems & Trainings [Customer: [Edge Autonomy](https://edgeautonomy.io/)]
-
-- Increased operational range of drones **from 10km to 120km**+, with realtime video streaming and tracking of drones.
-- Trained teams of engineers and technicians in radio systems operation, best practices and maintenance.
-
-#### Other projects
-
-I've been working on many other companies among them were:
-- [Barix](https://barix.com/) - Building audio over IP systems for broadcast and pro audio industries.
-- [Le Clanche](https://leclanche.com/) - Building lithium battery systems for electric vehicles.
-- [Coastal Amusements](https://coastalamusements.com/) - Building amusement rides and attractions.
-- [Aretai speakers](https://aretai.com/) - Building speakers for home and professional audio industries.
+Designed and deployed lighting and audio systems for government and live performance installations.
 
 
-For all of these customers I was able to lead teams and implement engineering work to deliver market leading products and solutions. Often, taking idea from scratch and building it into a product that is sold to market.
+#### Drone Communication Systems — Edge Autonomy
+
+- Increased operational range of drones **from 5km to 140km+**, with real-time video streaming and tracking.
+- Trained teams of engineers and technicians in radio systems operation, best practices, and maintenance.
+
+#### Other Projects
+
+Across these clients, I led teams to deliver market-leading products from concept to production:
+
+- [Barix](https://barix.com/) — Audio-over-IP systems for broadcast and pro audio.
+- [LeClanché](https://leclanche.com/) — Lithium battery management systems for electric vehicles.
+- [Coastal Amusements](https://coastalamusements.com/) — Amusement rides and attractions with 200A+ load-carrying boards.
+- [Aretai Speakers](https://aretai.com/) — High-end home and professional audio speakers.
 
 
-### Microwave & Radio Engineering @ [SAF Tehnika](https://saftehnika.lv/)
+### Microwave & Radio Engineering @ SAF Tehnika
 
-My lifelong fascination with this field led me to earn a Master's degree, specializing in electromagnetism, wave equations, and signal processing. My contributions in this area include:
+My fascination with electromagnetism led me through a Master's degree specializing in wave equations and signal processing. At SAF Tehnika (2011–2015):
 
-- Core signal processing algorithms design & patenting for [Spectrum Compact](https://spectrumcompact.com/) series of products.
-- Core RF design & simulation for [Integra Radio & Other backbone radio systems](https://old.saftehnika.com/en/integrax) series
-- Industrial design & development support of [Aranet IoT sensors](https://aranet.com/)
+- Designed and patented the core signal processing algorithm for [Spectrum Compact](https://spectrumcompact.com/) — a world-first hand-held battery-powered spectrum analyzer that became the company's best-earning product.
+- Led core RF design and simulation for [Integra Radio backbone systems](https://old.saftehnika.com/en/integrax) (5.6–60 GHz).
+- Supported industrial design and RF BoM review for [Aranet IoT sensors](https://aranet.com/), enabling 10km+ range with over 1-year battery life.
+- Typically outperformed project timelines by ~2x. Cut manufacturing costs by 30%+ via Monte-Carlo analysis of tolerances.
 
 ![oam3d-medium](/oam3d.PNG "oam3d")
 
@@ -199,32 +199,17 @@ I'm a passionate advocate for the power of community in driving positive change.
 
 ![eth-flowers-medium](/eth_flowers.jpg "eth flowers")
 
-
 I firmly believe that cultivating the right communities is essential for the success of our civilization. My vision is a world filled with joy for everyone, achieved through personal transformation, education, and supporting others in finding their own mindful paths.
 
 The [Constitution of the Republic of Užupis](https://uzhupisembassy.eu/uzhupis-constitution/) eloquently captures my philosophy on this.
 
-My contributions to this area encompass:
+![chio-circle-medium](/chio_circle.jpg "Peace circle in Chio, Tenerife upon the war in Ukraine")
 
-- **Core Community Building:** Significant contributions to building creative and supportive communities.
-- **Event Organization & Production:** Organizing and producing diverse musical and artistic events.
-- **Artistic Contributions:** Contributing as a visual decorator, musician, and artist in various forms.
-- **Mentorship & Support:** Providing guidance and encouragement to those seeking direction in their lives. (Rephrased for clarity and professionalism)
+![ds-medium](/ds_p11.jpg "Dauga spirit community I founded in Riga, Latvia")
 
-![chio-circle-medium](/chio_circle.jpg "chio circle")
-^^^ Peace circle in Chio, Tenerife upon war in Ukraine
-
-![ds-medium](/ds_p11.jpg "dauga spirit circle")
-^^^ Dauga spirit community I founded in Riga, Latvia
-
-![bl-medium](/burning_latvian.jpg "burning latvian")
-^^^ Burning Latvian festival, Latvia
+![bl-medium](/burning_latvian.jpg "Burning Latvian festival")
 
 
 
 
-#
-#
-#
-
-<Center fontSize="48px"> e2-e4.Your turn</Center>
+<div style={{ textAlign: "center", fontSize: "48px" }}>e2-e4. Your turn.</div>

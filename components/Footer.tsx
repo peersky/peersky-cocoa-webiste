@@ -17,19 +17,19 @@ import { FaGithub, FaTwitter, FaDiscord } from "react-icons/fa"
 import moment from "moment";
 import UIContext from "../providers/UIProvider/context";
 const LINKS_SIZES = {
-  fontWeight: "300",
-  fontSize: "lg",
+  fontWeight: "400",
+  fontSize: "sm",
 };
 
 const ListHeader = ({ children }: any) => {
   return (
     <Text
-      fontWeight={"500"}
-      fontSize={"lg"}
-      mb={2}
-      borderBottom="1px"
-      // borderColor="blue.700"
-      // textColor="blue.500"
+      fontWeight={"600"}
+      fontSize={"sm"}
+      textTransform="uppercase"
+      letterSpacing="0.05em"
+      mb={3}
+      color={useColorModeValue("grey.600", "grey.300")}
     >
       {children}
     </Text>
@@ -39,7 +39,7 @@ const ListHeader = ({ children }: any) => {
 const SocialButton = ({ children, label, href }: any) => {
   return (
     <chakra.button
-      bg={useColorModeValue("blackAlpha.100", "whiteAlpha.100")}
+      bg={useColorModeValue("grey.200", "whiteAlpha.100")}
       rounded={"full"}
       w={8}
       h={8}
@@ -51,7 +51,7 @@ const SocialButton = ({ children, label, href }: any) => {
       justifyContent={"center"}
       transition={"background 0.3s ease"}
       _hover={{
-        bg: useColorModeValue("blackAlpha.200", "whiteAlpha.200"),
+        bg: useColorModeValue("grey.300", "whiteAlpha.200"),
       }}
     >
       <VisuallyHidden>{label}</VisuallyHidden>
@@ -71,22 +71,16 @@ const Footer = ({ colorScheme, initialLogo, ...props }: FooterProps) => {
   const theme = useTheme();
   const { components } = theme;
   const themeLogo = theme.logo;
-  const bgC = useColorModeValue(
-    `${colorScheme ?? components.Navbar.colorScheme}.0`,
-    `${colorScheme ?? components.Navbar.colorScheme}.800`
-  );
   return (
     <Box
       className="Footer"
       {...props}
-      bgColor={bgC}
-      color={useColorModeValue("grey.900", "grey.200")}
-      // position={"absolute"}
-      // bottom={0}
-      // left={0}
-      // right={0}
+      bgColor={useColorModeValue("grey.100", "grey.800")}
+      borderTopWidth="1px"
+      borderTopColor={useColorModeValue("grey.200", "grey.700")}
+      color={useColorModeValue("grey.600", "grey.300")}
     >
-      <Container as={Stack} maxW={"8xl"} py={10}>
+      <Container as={Stack} maxW={"8xl"} py={12} px={8}>
         <SimpleGrid
           templateColumns={{ sm: "1fr 1fr", md: "2fr 1fr 1fr 1fr 1fr" }}
           spacing={8}
@@ -95,18 +89,13 @@ const Footer = ({ colorScheme, initialLogo, ...props }: FooterProps) => {
             <Flex
               pl={ui.isMobileView ? 2 : 8}
               justifySelf="flex-start"
-              // h="50px"
-              // w="50px"
               py={1}
               w="200px"
-              // minW="200px"
               flexGrow={1}
               id="Logo Container"
             >
               <Link href="/">
                 <Image
-                  // as={Link}
-                  // href="/"
                   w="fit-content"
                   h="auto"
                   justifyContent="left"
@@ -118,7 +107,7 @@ const Footer = ({ colorScheme, initialLogo, ...props }: FooterProps) => {
                 />
               </Link>
             </Flex>
-            <Text fontSize={"sm"}>
+            <Text fontSize={"sm"} color={useColorModeValue("grey.500", "grey.400")}>
               © {moment().year()} {ui.webSiteConfig.COPYRIGHT_NAME} All rights
               reserved
             </Text>
@@ -135,6 +124,9 @@ const Footer = ({ colorScheme, initialLogo, ...props }: FooterProps) => {
                       <Link
                         {...LINKS_SIZES}
                         href={category.path}
+                        _hover={{
+                          color: useColorModeValue("grey.900", "whiteAlpha.900"),
+                        }}
                         key={`footer-list-link-item-${colIndex}-col-${colIndex}`}
                       >
                         {category.title}
@@ -144,6 +136,9 @@ const Footer = ({ colorScheme, initialLogo, ...props }: FooterProps) => {
                           <Link
                             {...LINKS_SIZES}
                             href={linkItem.path}
+                            _hover={{
+                              color: useColorModeValue("grey.900", "whiteAlpha.900"),
+                            }}
                             key={`footer-list-link-item-${linkItemIndex}-col-${colIndex}`}
                           >
                             {linkItem.title}

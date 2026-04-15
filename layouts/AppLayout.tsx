@@ -3,6 +3,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { ChevronRightIcon } from "@chakra-ui/icons";
@@ -12,6 +13,7 @@ import Link from "next/link";
 const AppLayout = (props: any) => {
   const [path, setPath] = useState<String[]>([]);
   const router = useRouter();
+  const breadcrumbColor = useColorModeValue("grey.700", "grey.400");
   React.useEffect(() => {
     setPath(router.nextRouter.asPath.split("/").slice(1, -1));
   }, [router.nextRouter.asPath]);
@@ -19,16 +21,16 @@ const AppLayout = (props: any) => {
   return (
     <Flex
       id="AppContainer"
-      // textColor={"grey.700"}
       direction={"column"}
       w="100%"
       minH="100vh"
       px="7%"
+      pt={4}
     >
       <Breadcrumb
         spacing="8px"
         pt={2}
-        separator={<ChevronRightIcon color="grey.500" />}
+        separator={<ChevronRightIcon color={breadcrumbColor} />}
       >
         {path.length !== 0 && (
           <BreadcrumbItem>

@@ -7,6 +7,7 @@ import {
   Heading,
   Button,
   useMediaQuery,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import RouteButton from "../../components/RouteButton";
 import React from "react";
@@ -15,6 +16,10 @@ import useAppRouter from "../../hooks/useRouter";
 const Blog = (props: any) => {
   const appRouter = useAppRouter();
   const [isMobileView] = useMediaQuery("(max-width: 768px)");
+  const borderColor = useColorModeValue("grey.100", "grey.700");
+  const hoverBorderColor = useColorModeValue("grey.300", "grey.500");
+  const descColor = useColorModeValue("grey.500", "grey.400");
+  const dateColor = useColorModeValue("grey.400", "grey.500");
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   React.useEffect(() => {
     setSelectedTags(appRouter.query?.tags?.split("&"));
@@ -52,7 +57,7 @@ const Blog = (props: any) => {
   React.useEffect(() => {}, [props.posts, allTags]);
 
   return (
-    <Flex w="100%" py={8} direction="column" gap={4}>
+    <Flex w="100%" maxW="780px" mx="auto" py={8} direction="column" gap={3}>
       <Flex py={2} flexWrap="wrap" gap={2}>
         {allTags.map((tagName: string) => (
           <Tag
@@ -94,13 +99,13 @@ const Blog = (props: any) => {
             direction="column"
             w="100%"
             borderWidth="1px"
-            borderRadius="lg"
-            borderColor="gray.200"
+            borderRadius="8px"
+            borderColor={borderColor}
             px={5}
             py={4}
             gap={2}
-            _hover={{ borderColor: "gray.400", shadow: "sm" }}
-            transition="all 0.15s ease"
+            _hover={{ borderColor: hoverBorderColor }}
+            transition="border-color 0.15s ease"
           >
             <Flex alignItems="flex-start" justifyContent="space-between" gap={4}>
               <Heading size="md" lineHeight="1.3">
@@ -116,7 +121,7 @@ const Blog = (props: any) => {
               </RouteButton>
             </Flex>
             {post?.description && (
-              <Text fontSize="sm" color="gray.600" noOfLines={2}>
+              <Text fontSize="sm" color={descColor} noOfLines={2}>
                 {post.description}
               </Text>
             )}
@@ -127,7 +132,7 @@ const Blog = (props: any) => {
                 </Tag>
               ))}
               <Spacer />
-              <Text fontSize="xs" color="gray.400">
+              <Text fontSize="xs" color={dateColor} fontFamily="monospace">
                 {post.date}
               </Text>
             </Flex>

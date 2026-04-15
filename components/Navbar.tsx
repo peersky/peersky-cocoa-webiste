@@ -12,7 +12,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  useColorMode,
   useColorModeValue,
   useTheme,
 } from "@chakra-ui/react";
@@ -20,7 +19,6 @@ import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 import UIContext from "../providers/UIProvider/context";
 import RouteButton from "./RouteButton";
 import router from "next/router";
-import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { SiteMapItem, SiteMapItemType } from "../types";
 
 interface NavbarProps {
@@ -36,33 +34,30 @@ const Navbar_ = ({
   colorScheme,
   ...props
 }: NavbarProps) => {
-  const { colorMode, toggleColorMode } = useColorMode();
   const { isMobileView, webSiteConfig, setSidebarToggled, sidebarToggled } =
     useContext(UIContext);
   const sitemap = webSiteConfig.SITEMAP;
   const theme = useTheme();
-  const { components } = theme;
   const themeLogo = theme.logo;
   const bgC = useColorModeValue(
-    `${colorScheme ?? components.Navbar.colorScheme}.0`,
-    `${colorScheme ?? components.Navbar.colorScheme}.800`
+    "rgba(250, 251, 252, 0.85)",
+    "rgba(18, 21, 29, 0.85)"
   );
+  const borderBc = useColorModeValue("grey.200", "grey.700");
   return (
     <Flex
       {...props}
-      // transpar
       bgColor={bgC}
-      boxShadow={["md", "lg"]}
+      sx={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+      borderBottomWidth="1px"
+      borderBottomColor={borderBc}
       zIndex={100}
-      shadow={"outline"}
       alignItems="center"
       id="Navbar"
-      // bgColor={useColorModeValue("blue.200", "grey.900")}
       minH={isMobileView ? "89px" : "62px"}
       maxH={isMobileView ? "89px" : "62px"}
       direction="row"
       w="100%"
-      // overflowX="hidden"
       position={"fixed"}
       transition={"0.3s"}
       top={"0"}

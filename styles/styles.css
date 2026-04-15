@@ -198,7 +198,7 @@
 }
 
 code {
-  white-space: pre-line !important;
+  white-space: pre-wrap !important;
 }
 
 .fade-in-section {

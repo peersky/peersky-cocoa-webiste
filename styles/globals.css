@@ -17,11 +17,12 @@ a {
 }
 
 /* Add some additional styling for code elements to enhance the technical look */
-code, pre {
+code {
   font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'Roboto Mono', 'Courier New', monospace;
-  background-color: #f4f4f4;
-  border-radius: 3px;
-  padding: 0.2em 0.4em;
+}
+
+pre {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'Roboto Mono', 'Courier New', monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,9 +32,5 @@ code, pre {
   body {
     color: white;
     background: black;
-  }
-
-  code, pre {
-    background-color: #2d2d2d;
   }
 }

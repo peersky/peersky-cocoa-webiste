@@ -54,8 +54,8 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: "blue" }), {
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {
+        bg: mode("grey.50", "grey.900")(props),
         color: mode("grey.800", "whiteAlpha.700")(props),
-        backgroundColor: mode("white.100", "grey.900")(props),
       },
     }),
   },
@@ -75,7 +75,12 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: "blue" }), {
     Heading,
     Link: {
       baseStyle: (props: StyleFunctionProps) => {
-        return { textColor: mode("grey.600", "grey.200")(props) };
+        return {
+          textColor: mode("grey.700", "grey.200")(props),
+          _hover: {
+            textColor: mode("grey.900", "whiteAlpha.900")(props),
+          },
+        };
       },
     },
     Navbar: {
@@ -109,17 +114,17 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: "blue" }), {
 
   colors: {
     blue: {
-      0: "#FAFFFF",
-      50: "#E5F8FF",
-      100: "#B8EBFF",
-      200: "#8ADDFF",
-      300: "#5CD0FF",
-      400: "#2EC3FF",
-      500: "#00B6FF",
-      600: "#0092CC",
-      700: "#006D99",
-      800: "#004966",
-      900: "#002433",
+      0: "#F0FDFA",
+      50: "#CCFBF1",
+      100: "#99F6E4",
+      200: "#5EEAD4",
+      300: "#2DD4BF",
+      400: "#14B8A6",
+      500: "#0D9488",
+      600: "#0F766E",
+      700: "#115E59",
+      800: "#134E4A",
+      900: "#13403B",
     },
     red: {
       0: "#FFFFF1",
@@ -174,17 +179,17 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: "blue" }), {
       900: "#312502",
     },
     grey: {
-      0: "#FFFFFF",
-      50: "#F0F2F4",
-      100: "#D6DAE1",
-      200: "#BCC2CD",
-      300: "#A1AABA",
-      400: "#8792A6",
-      500: "#6C7A93",
-      600: "#576175",
-      700: "#414958",
-      800: "#2B313B",
-      900: "#16181D",
+      0: "#FAFBFC",
+      50: "#F5F6F8",
+      100: "#E2E5EA",
+      200: "#C8CDD6",
+      300: "#AEB5C2",
+      400: "#949DAE",
+      500: "#7A859A",
+      600: "#616B80",
+      700: "#495162",
+      800: "#2D3340",
+      900: "#12151D",
     },
   },
 });

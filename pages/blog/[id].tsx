@@ -1,6 +1,5 @@
 import { getLayout as getBlogLayout } from "../../layouts/BlogLayout";
 import { lazy, Suspense } from "react";
-import { Box } from "@chakra-ui/react";
 export async function getStaticPaths() {
   const blogPosts = await require("../../content/");
   const postsArray = Object.values(blogPosts).map((post) => post);
@@ -51,11 +50,7 @@ const Post = (props: any) => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      {
-        <Box px={["5px", "20px", "0"]}>
-          <Component />
-        </Box>
-      }
+      <Component />
     </Suspense>
   );
 };
