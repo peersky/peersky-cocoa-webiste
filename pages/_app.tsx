@@ -79,10 +79,12 @@ export default function CachingApp({ Component, pageProps }: any) {
   ];
   pageProps.preloads && headLinks.push(...pageProps.preloads);
   const defaultMetaTags = {
-    title: "Personal Blog, Ideas, Apps and Utils",
-    keywords: "blockchain, blog, ideas, dApps, peersky",
+    title:
+      "Tims Pečerskis — Founder, System Algorithm Designer & Deep-Tech Builder",
+    keywords:
+      "Tims Pecerskis, peersky, Peeramid Labs, multi-agent AI, NSED, smart contract security, EIP-7702, blockchain, embedded systems, microwave engineering, founder, deep tech",
     description:
-      "This is a personal web space, free of product placement and ads, where you can find content about blockchain as well as explore some dApps and Utils I develop",
+      "Personal site of Tims Pečerskis — 15+ years across AI, Web3, telecom, embedded systems and cryptography. Founder of Peeramid Labs, ex-OpenZeppelin, 6-patent portfolio, published researcher.",
     url: baseURL,
     image: baseURL + "/daocoacoa.png",
   };

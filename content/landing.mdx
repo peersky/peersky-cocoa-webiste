@@ -1,5 +1,5 @@
-import { Flex, IconButton, Link } from "@chakra-ui/react";
-import { FaGithub, FaLinkedin, FaSoundcloud, FaEthereum } from "react-icons/fa";
+import { Flex, IconButton, Link, HStack, Tag, SimpleGrid, Stat, StatLabel, StatNumber, Box } from "@chakra-ui/react";
+import { FaGithub, FaLinkedin, FaSoundcloud, FaEthereum, FaMapMarkerAlt } from "react-icons/fa";
 import { IoIosMail } from "react-icons/io";
 import { FaXTwitter } from "react-icons/fa6";
 
@@ -96,6 +96,40 @@ I'm always open to connecting — I enjoy brainstorming, tea, and meeting new pe
   </Link>
 </Flex>
 
+### Where I am
+
+Based in **Portugal**, but my compass points east — in love with Asian vibes, warm oceans and mountain trails. Off the keyboard you'll usually find me surfing, freediving, climbing a ridgeline, or in a quiet practice space. Open to collaborations, conversations and good tea anywhere on the map.
+
+<HStack spacing={3} flexWrap="wrap" my={4}>
+  <Tag size="md" variant="subtle" colorScheme="blue">
+    <Box as={FaMapMarkerAlt} mr={2} /> Portugal, EU
+  </Tag>
+  <Tag size="md" variant="subtle" colorScheme="orange">
+    Open to collaborations
+  </Tag>
+</HStack>
+
+## At a Glance
+
+<SimpleGrid columns={[2, 2, 4]} spacing={6} my={6}>
+  <Stat>
+    <StatNumber fontSize="3xl">15+</StatNumber>
+    <StatLabel>Years across deep-tech R&D</StatLabel>
+  </Stat>
+  <Stat>
+    <StatNumber fontSize="3xl">6</StatNumber>
+    <StatLabel>Patents filed across 5 families</StatLabel>
+  </Stat>
+  <Stat>
+    <StatNumber fontSize="3xl">30+</StatNumber>
+    <StatLabel>Hardware/software products shipped</StatLabel>
+  </Stat>
+  <Stat>
+    <StatNumber fontSize="3xl">100+</StatNumber>
+    <StatLabel>Students taught (blockchain & security)</StatLabel>
+  </Stat>
+</SimpleGrid>
+
 ## Current Focus & Interests
 
 ### Advisory work
@@ -108,9 +142,12 @@ As founder of [Peeramid Labs](https://peeramid.xyz), I lead research and develop
 
 Recent highlights:
 
-- Authored **"Mixture-of-Models: Unifying Heterogeneous Agents via N-Way Self-Evaluating Deliberation"** (arXiv:2601.16863) — a distributed GPU neural architecture for heterogeneous model orchestration achieving 4x CapEx reduction or 30% accuracy boost on any base model.
-- Wrote enterprise-ready Rust orchestration implementation of NSED protocol — 50k LoC + 85k LoC of tests including e2e + 10k LoC documentation, all within 3 months.
-- Filed 6 patents across 5 families spanning multi-agent AI coordination, zero-prior-art AI architecture, entropy-based model reputation systems, cryptographic compliance infrastructure, and hardware-bound licensing.
+- **[sloppoke.me](https://sloppoke.me)** — an AI code-slop firewall. Demonstrates the relationship between slop indicators in public repositories and high-profile media scandals involving LLM-generated code failures.
+- **Bytecode-based smart contract audit tool** (ML, not LLM wrapper) — **83% precision** on vulnerability triage (15/18 findings validated as real security issues), with **2.4× detection lift** over random code reading on a historical contest backtest (20 contests, 603 bugs). Found real bugs at competitions.
+- **Health prediction engine from longitudinal data** — designed and validated a spectral graph model for longitudinal health trajectory prediction, **R²=0.52 on held-out subjects** using delay-embedded phase-space graph construction. Proved treatment response is state-dependent (**η²=0.37, p\<0.05**) by stratifying outcomes across learned health-manifold positions — validating the core hypothesis linking graph topology to personalised medicine. Systematic 8-experiment ablation across embedding types, spectral parameters, prediction horizons and decoder architectures.
+- Authored **"Mixture-of-Models: Unifying Heterogeneous Agents via N-Way Self-Evaluating Deliberation"** (arXiv:2601.16863) — a distributed GPU neural architecture for heterogeneous model orchestration achieving 4× CapEx reduction or 30% accuracy boost on any base model.
+- Wrote enterprise-grade Rust orchestration implementation of NSED protocol — event-driven architecture on NATS as high-speed event bus, **70k LoC + 150k LoC of tests** including e2e and documentation. SDK open-sourced.
+- Filed **6 patents across 5 families** spanning multi-agent AI coordination, zero-prior-art AI architecture, entropy-based model reputation systems, cryptographic compliance infrastructure, and hardware-bound licensing.
 - Identified and responsibly disclosed a critical vulnerability in **Ethereum EIP-7702**.
 
 Selected publications at [blog.peeramid.xyz](https://blog.peeramid.xyz):
@@ -144,6 +181,15 @@ I worked at OpenZeppelin from 2022 to 2024, securing leading DeFi protocols and 
 - Co-authored **EEA DeFi Risk Assessment Guidelines**, contributing to industry-wide standards.
 - Led automation, monitoring, and incident response service deployments using OpenZeppelin's Defender platform, ensuring near 100% risk factor monitoring for customers.
 
+### Web3 Product Engineering @ Simiotics (Bugout.dev / Moonstream.to)
+
+Switched into a fast-paced web startup environment from 2021 to 2022, shipping two products from zero:
+
+- [bugout.dev](https://bugout.dev) — developer-tooling analytical platform.
+- [moonstream.to](https://moonstream.to) — web3 gaming ops engine.
+
+Stack: JS/TS, React, web3.js, ethers.js, Brownie, Figma, product design, UX research, big-data analysis.
+
 ### Leading Hardware Development @ SIA TeknoLogic
 
 I led OEM/ODM development at SIA TeknoLogic from 2016 to 2020, delivering over 30 distinct hardware/software products with near 100% customer retention across key accounts including LeClanché, Barix, Erica Synths, and Aretai Speakers.
@@ -158,6 +204,10 @@ I designed synthesizers and DSP effects for live performances starting in 2016.
 
 The Zen Delay is one of my favorite projects — a tape-delay pedal with a custom DSP algorithm implementing digital filtering based on the differential equation of the delay knob's rate of change. An IIR filter design with a higher-order differential equation that would normally require a PhD in DSP to derive on paper. The DSP module was fully designed by me, including hardware and clock-level optimizations that saved 30% on BoM cost against competitors. It received numerous positive reviews from world-renowned musicians as best-in-class.
 
+#### Aretai Speakers — Red Dot Award
+
+The **Aretai Contra** received the **Red Dot Award in 2022** — I owned the hardware portfolio for the account.
+
 #### Lighting Installations — Latvian Government
 
 ![Led rocket-medium](/LED_ROCKET_IMG.JPG "Led rocket")
@@ -167,16 +217,20 @@ Designed and deployed lighting and audio systems for government and live perform
 
 #### Drone Communication Systems — Edge Autonomy
 
-- Increased operational range of drones **from 5km to 140km+**, with real-time video streaming and tracking.
+As Product Owner at Edge Autonomy (2015–2016):
+
+- Increased operational range of video-streaming radio-links **from 5km to 140km+**.
+- Cleared a 2-year product backlog in a single quarter.
+- Outperformed the project roadmap by 3×.
 - Trained teams of engineers and technicians in radio systems operation, best practices, and maintenance.
 
 #### Other Projects
 
 Across these clients, I led teams to deliver market-leading products from concept to production:
 
-- [Barix](https://barix.com/) — Audio-over-IP systems for broadcast and pro audio.
-- [LeClanché](https://leclanche.com/) — Lithium battery management systems for electric vehicles.
-- [Coastal Amusements](https://coastalamusements.com/) — Amusement rides and attractions with 200A+ load-carrying boards.
+- [Barix](https://barix.com/) — Audio-over-IP systems for broadcast and pro audio (led development and EMI/EMC certification for the Exstreamer M400).
+- [LeClanché](https://leclanche.com/) — Lithium battery-management systems for high-reliability applications.
+- [Coastal Amusements](https://coastalamusements.com/) — Major motherboard redesign carrying **>200A** with automotive-grade security over i2c/SPI/USB.
 - [Aretai Speakers](https://aretai.com/) — High-end home and professional audio speakers.
 
 
@@ -187,11 +241,33 @@ My fascination with electromagnetism led me through a Master's degree specializi
 - Designed and patented the core signal processing algorithm for [Spectrum Compact](https://spectrumcompact.com/) — a world-first hand-held battery-powered spectrum analyzer that became the company's best-earning product.
 - Led core RF design and simulation for [Integra Radio backbone systems](https://old.saftehnika.com/en/integrax) (5.6–60 GHz).
 - Supported industrial design and RF BoM review for [Aranet IoT sensors](https://aranet.com/), enabling 10km+ range with over 1-year battery life.
-- Typically outperformed project timelines by ~2x. Cut manufacturing costs by 30%+ via Monte-Carlo analysis of tolerances.
+- Cut manufacturing costs by 30%+ via Monte-Carlo analysis of tolerances. Typically outperformed project timelines by ~2×.
 
 ![oam3d-medium](/oam3d.PNG "oam3d")
 
+## Patents & Publications
 
+- **Mixture-of-Models: Unifying Heterogeneous Agents via N-Way Self-Evaluating Deliberation.** 2026. <Link isExternal href="https://doi.org/10.5281/zenodo.18338777">doi.org/10.5281/zenodo.18338777</Link>
+- **EEA DeFi Risk Assessment Guidelines — Version 1**, EEA Technical Specification, 17 July 2024.
+- **Spectrum Analyzer of Ultra-Low Intermediate Frequency**, LV 14855A, 2014, SAF Tehnika.
+- **6 patents filed across 5 families** — multi-agent AI coordination, novel AI architecture (zero prior art), entropy-based model reputation, cryptographic compliance infrastructure, hardware-bound licensing.
+
+## Education & Languages
+
+- **MSc, Electrical and Electronics Engineering** — Riga Technical University.
+- **BSc, Electrical and Electronics Engineering** — Riga Technical University.
+
+<HStack spacing={3} flexWrap="wrap" my={3}>
+  <Tag size="md" variant="subtle">English — Full Professional</Tag>
+  <Tag size="md" variant="subtle">Latvian — Bilingual</Tag>
+  <Tag size="md" variant="subtle">Russian — Bilingual</Tag>
+  <Tag size="md" variant="subtle">Spanish — Limited</Tag>
+  <Tag size="md" variant="subtle">Chinese — Elementary (studying)</Tag>
+</HStack>
+
+## After Work
+
+Watersports (surfing, diving, freediving) · cycling · yoga · hiking · climbing · music (production, [SoundCloud](https://soundcloud.com/spectralsurf/tracks)) · woodworking · retro / MMORPG gaming (retired WoW / L2 raid master).
 
 ## Conscious Community Building
 
