@@ -4,18 +4,22 @@ import {
   chakra,
   Button,
   Image,
+  Text,
   ButtonGroup,
   Spacer,
   IconButton,
   Flex,
+  HStack,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
+  useColorMode,
   useColorModeValue,
   useTheme,
 } from "@chakra-ui/react";
-import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import { MdDarkMode, MdLightMode } from "react-icons/md";
 import UIContext from "../providers/UIProvider/context";
 import RouteButton from "./RouteButton";
 import router from "next/router";
@@ -34,79 +38,67 @@ const Navbar_ = ({
   colorScheme,
   ...props
 }: NavbarProps) => {
-  const { isMobileView, webSiteConfig, setSidebarToggled, sidebarToggled } =
-    useContext(UIContext);
+  const { isMobileView, webSiteConfig } = useContext(UIContext);
+  const { colorMode, toggleColorMode } = useColorMode();
   const sitemap = webSiteConfig.SITEMAP;
   const theme = useTheme();
   const themeLogo = theme.logo;
   const bgC = useColorModeValue(
-    "rgba(244, 239, 230, 0.85)",
-    "rgba(21, 18, 13, 0.85)"
+    "rgba(244, 239, 230, 0.78)",
+    "rgba(21, 18, 13, 0.78)"
   );
   const borderBc = useColorModeValue("grey.200", "grey.700");
+  const wordmarkColor = useColorModeValue("grey.800", "grey.100");
+  const toggleHover = useColorModeValue("grey.100", "grey.700");
   return (
     <Flex
       {...props}
       bgColor={bgC}
-      sx={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+      sx={{ backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
       borderBottomWidth="1px"
       borderBottomColor={borderBc}
       zIndex={100}
       alignItems="center"
       id="Navbar"
-      minH={isMobileView ? "89px" : "62px"}
-      maxH={isMobileView ? "89px" : "62px"}
+      minH="64px"
+      maxH="64px"
       direction="row"
       w="100%"
       position={"fixed"}
       transition={"0.3s"}
       top={"0"}
+      px={isMobileView ? 4 : 8}
     >
-      {isMobileView && (
-        <>
-          <IconButton
-            alignSelf="flex-start"
-            aria-label="Menu"
-            colorScheme="blue"
-            minH={isMobileView ? "89px" : "62px"}
-            borderRadius="0"
-            m={0}
-            variant="solid"
-            onClick={() => setSidebarToggled(!sidebarToggled)}
-            icon={<HamburgerIcon />}
-          />
-        </>
-      )}
-      <Flex
-        pl={isMobileView ? 2 : 8}
-        justifySelf="flex-start"
-        h="50px"
-        w="50px"
-        py={1}
-        // w="200px"
-        // minW="200px"
-        flexGrow={1}
-        id="Logo Container"
-      >
-        <Link href="/">
+      <Link href="/">
+        <HStack spacing={3} alignItems="center" cursor="pointer">
           <Image
-            // as={Link}
-            // w="fit-content"
-            h="100%"
-            justifyContent="left"
+            h="34px"
+            w="34px"
             src={useColorModeValue(
               `/${webSiteConfig.DEFAULT_LOGO ?? themeLogo}`,
               `/inverted-${webSiteConfig.DEFAULT_LOGO ?? themeLogo}`
             )}
-            // href="/"
-            alt="Logo"
+            alt="Peersky logo"
           />
-        </Link>
-      </Flex>
+          {!isMobileView && (
+            <Text
+              fontFamily="heading"
+              fontWeight="500"
+              fontSize="xl"
+              letterSpacing="-0.02em"
+              color={wordmarkColor}
+            >
+              Peersky
+            </Text>
+          )}
+        </HStack>
+      </Link>
 
-      <Flex pr={14} justifyItems="flex-end" flexGrow={1} alignItems="center">
-        <Spacer />
-        <ButtonGroup variant="solid" spacing={4} pr={16}>
+      <Spacer />
+
+// TODO(slop): add test for new `ternary` branch (no paired test file in this patch)
+      <HStack spacing={isMobileView ? 2 : 6} alignItems="center">
+        <ButtonGroup variant="link" spacing={5}>
           {sitemap
             ?.filter(
               (item: SiteMapItem) =>
@@ -121,6 +113,10 @@ const Navbar_ = ({
                       variant="link"
                       href={item.path}
                       isActive={!!(router.pathname === item.path)}
+                      fontWeight="500"
+                      fontSize="md"
+                      textDecoration="none"
+                      _hover={{ textDecoration: "none", opacity: 0.7 }}
                     >
                       {item.title}
                     </RouteButton>
@@ -137,7 +133,6 @@ const Navbar_ = ({
                       >
                         {item.title}
                       </MenuButton>
-                      {/* <Portal> */}
                       <MenuList zIndex={100} minW="0px" mt={0} pt={0}>
                         {item.children.map((child: any, idx: number) => (
                           <Link
@@ -151,7 +146,6 @@ const Navbar_ = ({
                           </Link>
                         ))}
                       </MenuList>
-                      {/* </Portal> */}
                     </Menu>
                   )}
                 </React.Fragment>
@@ -159,9 +153,20 @@ const Navbar_ = ({
             })}
         </ButtonGroup>
 
-      </Flex>
+        <IconButton
+// TODO(slop): add test for new `ternary` branch (no paired test file in this patch)
+          aria-label={colorMode === "light" ? "Switch to dark mode" : "Switch to light mode"}
+          onClick={toggleColorMode}
+          variant="ghost"
+          size="sm"
+          fontSize="lg"
+          color={wordmarkColor}
+          _hover={{ bg: toggleHover }}
+// TODO(slop): add test for new `ternary` branch (no paired test file in this patch)
+          icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
+        />
+      </HStack>
     </Flex>
-    // <Flex w="100px" h="100px" bgColor={"red.100"}>1</Flex>
   );
 };
 const Navbar = chakra(Navbar_);

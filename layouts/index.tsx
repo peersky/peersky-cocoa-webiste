@@ -6,8 +6,6 @@ import React from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import Scrollable from "../components/Scrollable";
-import Sidebar_ from "../components/Sidebar";
-// import RootLayout from "./RootLayout";
 
 interface LayoutProps extends ChakraProps {
   children: JSX.Element;
@@ -26,13 +24,8 @@ const _LayoutWrapper = (props: LayoutProps) => {
         metamaskSchema={metamaskSchema}
         colorScheme={colorScheme}
       />
-      <Sidebar_
-        selectorSchema={selectorSchema}
-        metamaskSchema={metamaskSchema}
-        colorScheme={colorScheme}
-      />
       <Flex
-        mt="84px"
+        mt="64px"
         direction="column"
         flexGrow={1}
         flexBasis="100px"

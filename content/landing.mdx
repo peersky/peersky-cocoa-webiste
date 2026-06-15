@@ -1,4 +1,4 @@
-import { Flex, IconButton, Link, HStack, Tag, SimpleGrid, Stat, StatLabel, StatNumber, Box } from "@chakra-ui/react";
+import { Flex, IconButton, Link, HStack, Tag, TagLeftIcon, TagLabel, SimpleGrid, Stat, StatLabel, StatNumber, Box } from "@chakra-ui/react";
 import { FaGithub, FaLinkedin, FaSoundcloud, FaEthereum, FaMapMarkerAlt } from "react-icons/fa";
 import { IoIosMail } from "react-icons/io";
 import { FaXTwitter } from "react-icons/fa6";
@@ -100,12 +100,13 @@ I'm always open to connecting — I enjoy brainstorming, tea, and meeting new pe
 
 Based in **Portugal**, but my compass points east — in love with Asian vibes, warm oceans and mountain trails. Off the keyboard you'll usually find me surfing, freediving, climbing a ridgeline, or in a quiet practice space. Open to collaborations, conversations and good tea anywhere on the map.
 
-<HStack spacing={3} flexWrap="wrap" my={4}>
+<HStack spacing={3} flexWrap="wrap" my={4} alignItems="center">
   <Tag size="md" variant="subtle" colorScheme="blue">
-    <Box as={FaMapMarkerAlt} mr={2} /> Portugal, EU
+    <TagLeftIcon as={FaMapMarkerAlt} />
+    <TagLabel>Portugal, EU</TagLabel>
   </Tag>
   <Tag size="md" variant="subtle" colorScheme="orange">
-    Open to collaborations
+    <TagLabel>Open to collaborations</TagLabel>
   </Tag>
 </HStack>
 
