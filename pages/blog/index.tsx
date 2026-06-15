@@ -6,8 +6,6 @@ import {
   Text,
   Tag,
   Heading,
-  Button,
-  useMediaQuery,
   useColorModeValue,
 } from "@chakra-ui/react";
 import React from "react";
@@ -15,7 +13,6 @@ import useAppRouter from "../../hooks/useRouter";
 
 const Blog = (props: any) => {
   const appRouter = useAppRouter();
-  const [isMobileView] = useMediaQuery("(max-width: 768px)");
   const cardBg = useColorModeValue("grey.0", "grey.800");
   const borderColor = useColorModeValue("grey.100", "grey.700");
   const hoverBorderColor = useColorModeValue("blue.300", "blue.400");
@@ -24,6 +21,14 @@ const Blog = (props: any) => {
   const dateColor = useColorModeValue("grey.500", "grey.400");
   const headerColor = useColorModeValue("grey.500", "grey.400");
   const dividerColor = useColorModeValue("grey.200", "grey.700");
+  const accentText = useColorModeValue("blue.600", "blue.300");
+  const inactiveBg = useColorModeValue("transparent", "transparent");
+  const inactiveFg = useColorModeValue("grey.700", "grey.200");
+  const inactiveBorder = useColorModeValue("grey.200", "grey.600");
+  const hoverBg = useColorModeValue("grey.50", "grey.700");
+  const hoverBorder = useColorModeValue("grey.400", "grey.400");
+  const activeBg = useColorModeValue("blue.500", "blue.400");
+  const activeFg = useColorModeValue("grey.0", "grey.900");
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   React.useEffect(() => {
     setSelectedTags(appRouter.query?.tags?.split("&"));
@@ -60,6 +65,40 @@ const Blog = (props: any) => {
   });
   React.useEffect(() => {}, [props.posts, allTags]);
 
+  const activeSet = React.useMemo(() => {
+    const set = new Set<string>();
+    (selectedTags || []).forEach((t) => {
+      if (t) set.add(t);
+    });
+    return set;
+  }, [selectedTags]);
+
+  const hasSelection = activeSet.size > 0;
+
+  const writeTagQuery = React.useCallback(
+    (tags: string[]) => {
+      appRouter.appendQuery("tags", tags.join("&"), false, false);
+    },
+    [appRouter]
+  );
+
+  const toggleTag = React.useCallback(
+    (tagName: string) => {
+      const next = new Set(activeSet);
+      if (next.has(tagName)) {
+        next.delete(tagName);
+      } else {
+        next.add(tagName);
+      }
+      writeTagQuery(Array.from(next));
+    },
+    [activeSet, writeTagQuery]
+  );
+
+  const clearAll = React.useCallback(() => {
+    writeTagQuery([]);
+  }, [writeTagQuery]);
+
   return (
     <Flex w="100%" maxW="820px" mx="auto" py={10} px={4} direction="column" gap={6}>
       <Box>
@@ -79,49 +118,53 @@ const Blog = (props: any) => {
       </Box>
 
       <Box borderTopWidth="1px" borderColor={dividerColor} pt={4}>
-        <Text
-          fontSize="xs"
-          fontWeight="600"
-          textTransform="uppercase"
-          letterSpacing="0.1em"
-          color={headerColor}
-          mb={3}
-        >
-          Filter by topic
-        </Text>
+        <Flex alignItems="center" gap={3} mb={3} flexWrap="wrap">
+          <Text
+            fontSize="xs"
+            fontWeight="600"
+            textTransform="uppercase"
+            letterSpacing="0.1em"
+            color={headerColor}
+          >
+            Filter by topic
+          </Text>
+          {hasSelection && (
+            <Text
+              as="button"
+              fontSize="xs"
+              color={accentText}
+              textDecoration="underline"
+              textUnderlineOffset="3px"
+              _hover={{ opacity: 0.7 }}
+              onClick={clearAll}
+            >
+              clear all
+            </Text>
+          )}
+        </Flex>
         <Flex flexWrap="wrap" gap={2}>
           {allTags.map((tagName: string) => {
-            const active = selectedTags?.includes(tagName);
+            const active = activeSet.has(tagName);
             return (
               <Tag
-                as={Button}
-// TODO(slop): add test for new `ternary` branch (no paired test file in this patch)
-                variant={active ? "solid" : "outline"}
-// TODO(slop): add test for new `ternary` branch (no paired test file in this patch)
-                colorScheme={active ? "blue" : "gray"}
                 key={tagName}
-                size="sm"
+                size="md"
                 borderRadius="full"
                 px={3}
+                py={1}
+                cursor="pointer"
+                userSelect="none"
                 fontWeight="500"
-                onClick={() => {
-// TODO(slop): add test for new `if` branch (no paired test file in this patch)
-                  if (active) {
-                    const newTags = [...selectedTags].filter(
-                      (_tag) => _tag !== tagName
-                    );
-                    appRouter.appendQuery("tags", newTags.join("&"), false, false);
-                  } else {
-                    let _q = "";
-// TODO(slop): add test for new `if` branch (no paired test file in this patch)
-                    if (selectedTags?.length > 0 && selectedTags[0] !== "") {
-                      _q += selectedTags;
-                      _q += "&";
-                    }
-                    _q += tagName;
-                    appRouter.appendQuery("tags", _q, false, false);
-                  }
+                bg={active ? activeBg : inactiveBg}
+                color={active ? activeFg : inactiveFg}
+                borderWidth="1px"
+                borderColor={active ? activeBg : inactiveBorder}
+                _hover={{
+                  borderColor: active ? activeBg : hoverBorder,
+                  bg: active ? activeBg : hoverBg,
                 }}
+                transition="all 0.15s ease"
+                onClick={() => toggleTag(tagName)}
               >
                 {tagName}
               </Tag>

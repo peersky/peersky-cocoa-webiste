@@ -96,7 +96,7 @@ const Navbar_ = ({
 
       <Spacer />
 
-// TODO(slop): add test for new `ternary` branch (no paired test file in this patch)
+      {/* TODO(slop): add test for new `ternary` branch (no paired test file in this patch) */}
       <HStack spacing={isMobileView ? 2 : 6} alignItems="center">
         <ButtonGroup variant="link" spacing={5}>
           {sitemap
@@ -154,7 +154,7 @@ const Navbar_ = ({
         </ButtonGroup>
 
         <IconButton
-// TODO(slop): add test for new `ternary` branch (no paired test file in this patch)
+          /* TODO(slop): add test for new `ternary` branch (no paired test file in this patch) */
           aria-label={colorMode === "light" ? "Switch to dark mode" : "Switch to light mode"}
           onClick={toggleColorMode}
           variant="ghost"
@@ -162,7 +162,7 @@ const Navbar_ = ({
           fontSize="lg"
           color={wordmarkColor}
           _hover={{ bg: toggleHover }}
-// TODO(slop): add test for new `ternary` branch (no paired test file in this patch)
+          /* TODO(slop): add test for new `ternary` branch (no paired test file in this patch) */
           icon={colorMode === "light" ? <MdDarkMode /> : <MdLightMode />}
         />
       </HStack>
