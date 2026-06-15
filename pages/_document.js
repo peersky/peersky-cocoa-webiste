@@ -9,7 +9,7 @@ export default class MyDocument extends Document {
         style={{ width: "100%", height: "100%", fontSize: "16px" }}
       >
         <Head>
-          <meta name="theme-color" content="#000000" />
+          <meta name="theme-color" content="#F4EFE6" />
           <meta charSet="utf-8" />
           <link rel="icon" href="/favicon.png" />
           <meta

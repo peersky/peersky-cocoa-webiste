@@ -1,13 +1,32 @@
 /* @import "~slick-carousel/slick/slick.css";
 @import "~slick-carousel/slick/slick-theme.css"; */
 
-/* @font-face {
-  font-family: "Virgil";
-  src: url("/Virgil.woff2");
+@font-face {
+  font-family: "Fraunces";
+  src: url("/fonts/Fraunces-Variable.ttf") format("truetype-variations"),
+       url("/fonts/Fraunces-Variable.ttf") format("truetype");
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
-} */
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/InterVariable.woff2") format("woff2-variations"),
+       url("/fonts/InterVariable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Variable.ttf") format("truetype-variations"),
+       url("/fonts/JetBrainsMono-Variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
 
 .Resizer {
   background: #000;

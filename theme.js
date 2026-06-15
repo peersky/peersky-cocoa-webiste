@@ -4,8 +4,9 @@ import { extendTheme } from "@chakra-ui/react";
 const theme = extendTheme({
   ..._theme,
   fonts: {
-    Headings: `'JetBrains Mono', monospace`,
-    body: `'JetBrains Mono', monospace`,
+    heading: `'Fraunces', 'Cormorant Garamond', Georgia, serif`,
+    body: `'Inter', 'Work Sans', system-ui, sans-serif`,
+    mono: `'JetBrains Mono', ui-monospace, monospace`,
   },
   //Here can override library theme items
 });

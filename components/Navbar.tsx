@@ -40,8 +40,8 @@ const Navbar_ = ({
   const theme = useTheme();
   const themeLogo = theme.logo;
   const bgC = useColorModeValue(
-    "rgba(250, 251, 252, 0.85)",
-    "rgba(18, 21, 29, 0.85)"
+    "rgba(244, 239, 230, 0.85)",
+    "rgba(21, 18, 13, 0.85)"
   );
   const borderBc = useColorModeValue("grey.200", "grey.700");
   return (
