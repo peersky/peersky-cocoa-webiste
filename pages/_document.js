@@ -12,6 +12,12 @@ export default class MyDocument extends Document {
           <meta name="theme-color" content="#F4EFE6" />
           <meta charSet="utf-8" />
           <link rel="icon" href="/favicon.png" />
+          <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="Peersky — Writing (RSS)"
+            href="/feed.xml"
+          />
           <meta
             name="robots"
             content={

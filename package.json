@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/buildRssFeed.js && next dev",
+    "prebuild": "node scripts/buildRssFeed.js",
     "build": "next build && next-sitemap && next export -o build",
     "start": "next start",
     "lint": "next lint",
-    "postbuild": "next-sitemap"
+    "postbuild": "next-sitemap",
+    "rss": "node scripts/buildRssFeed.js"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.17",

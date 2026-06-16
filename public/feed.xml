@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Peersky — Writing</title>
+  <link>https://peersky.xyz/blog</link>
+  <atom:link href="https://peersky.xyz/feed.xml" rel="self" type="application/rss+xml" />
+  <description>Notes, essays and longer-form pieces on protocols, hardware, governance and the quieter side of building. By Tims Pečerskis.</description>
+  <language>en</language>
+  <lastBuildDate>Tue, 16 Jun 2026 13:18:40 GMT</lastBuildDate>
+  <pubDate>Tue, 16 Jun 2026 00:00:00 GMT</pubDate>
+  <managingEditor>t@peersky.xyz (Tims Pečerskis)</managingEditor>
+  <webMaster>t@peersky.xyz (Tims Pečerskis)</webMaster>
+  <item>
+    <title>Watching the Stars Again</title>
+    <link>https://peersky.xyz/blog/watching-stars-again</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/watching-stars-again</guid>
+    <pubDate>Tue, 16 Jun 2026 00:00:00 GMT</pubDate>
+    <description>The future of technology is untrusted edge validation — and it ends with us looking up.</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>english</category>
+    <category>philosophy</category>
+    <category>edge</category>
+    <category>TEE</category>
+    <category>AI</category>
+    <category>identity</category>
+  </item>
+  <item>
+    <title>Silicon based life forms</title>
+    <link>https://peersky.xyz/blog/silicon-based-life-forms</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/silicon-based-life-forms</guid>
+    <pubDate>Thu, 16 Apr 2026 00:00:00 GMT</pubDate>
+    <description>Is sand alive?</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>silicon</category>
+    <category>philosophy</category>
+  </item>
+  <item>
+    <title>Easy way to think of TEEs</title>
+    <link>https://peersky.xyz/blog/easy-way-to-build-tees</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/easy-way-to-build-tees</guid>
+    <pubDate>Wed, 22 Oct 2025 00:00:00 GMT</pubDate>
+    <description>Explore the deep flaws in TEEs. Learn why physics and state backdoors make them vulnerable, and how multi-jurisdictional MPC offers a practical path to trust.</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>english</category>
+    <category>web3</category>
+    <category>ideas</category>
+    <category>TEE</category>
+    <enclosure url="https://peersky.xyz/tee-spiderman.png" type="image/png" />
+  </item>
+  <item>
+    <title>Social network UBI against AGI</title>
+    <link>https://peersky.xyz/blog/ubi-against-agi</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/ubi-against-agi</guid>
+    <pubDate>Mon, 08 Sep 2025 00:00:00 GMT</pubDate>
+    <description>How do we create intrinsic value universal basic income to counter risks of AGI and ensure a sustainable future for humanity?</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>ideas</category>
+    <category>ethereum</category>
+    <category>eip</category>
+  </item>
+  <item>
+    <title>Blockchain Security: Wild West of Digital Era</title>
+    <link>https://peersky.xyz/blog/wild-digital-west</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/wild-digital-west</guid>
+    <pubDate>Wed, 31 May 2023 00:00:00 GMT</pubDate>
+    <description>The bad, the good and the ugly of blockchain security</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>english</category>
+    <category>security</category>
+    <category>talks</category>
+    <enclosure url="https://peersky.xyz/eastwood.jpg" type="image/png" />
+  </item>
+  <item>
+    <title>Artificial Organisms - DAO by Nature</title>
+    <link>https://peersky.xyz/blog/dao-of-nature</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/dao-of-nature</guid>
+    <pubDate>Tue, 23 May 2023 00:00:00 GMT</pubDate>
+    <description>Visionary roadmap for next generation software that fuses AI, Web and Governance technologies together</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>english</category>
+    <category>philosophy</category>
+    <category>ideas</category>
+    <category>AI</category>
+    <category>DAO</category>
+    <enclosure url="https://peersky.xyz/broccoli.webp" type="image/png" />
+  </item>
+  <item>
+    <title>Securing private keys best practices</title>
+    <link>https://peersky.xyz/blog/securing-private-keys-bp</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/securing-private-keys-bp</guid>
+    <pubDate>Wed, 17 May 2023 00:00:00 GMT</pubDate>
+    <description>How to make sure your private keys are organized and stored in best possible way</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>english</category>
+    <category>best practice</category>
+  </item>
+  <item>
+    <title>Private agenda setters with account abstraction and ZKP</title>
+    <link>https://peersky.xyz/blog/aa-for-private-proposals</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/aa-for-private-proposals</guid>
+    <pubDate>Sun, 30 Apr 2023 00:00:00 GMT</pubDate>
+    <description></description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>account abstraction</category>
+    <category>ideas</category>
+    <category>governance</category>
+    <category>ZK</category>
+  </item>
+  <item>
+    <title>Semantic NFT definitions</title>
+    <link>https://peersky.xyz/blog/token-id-matching-to-msg-sig</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/token-id-matching-to-msg-sig</guid>
+    <pubDate>Sun, 30 Apr 2023 00:00:00 GMT</pubDate>
+    <description>Enable semantic meaning for NFT token IDs by standartizing their matching to method signatures</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>ideas</category>
+    <category>ethereum</category>
+    <category>NFTs</category>
+  </item>
+  <item>
+    <title>Crypto Guide Part 3 - Selecting a software wallet</title>
+    <link>https://peersky.xyz/blog/selecting-a-wallet-en</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/selecting-a-wallet-en</guid>
+    <pubDate>Sun, 30 Apr 2023 00:00:00 GMT</pubDate>
+    <description>How to choose an non-custodial wallet app for EVM using Ethereum Wallet selector</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>english</category>
+    <category>accounts</category>
+    <category>guides</category>
+  </item>
+  <item>
+    <title>Crypto Guide Part 2 - Best Security Practices</title>
+    <link>https://peersky.xyz/blog/setting-safe-enviroment-en</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/setting-safe-enviroment-en</guid>
+    <pubDate>Fri, 07 Apr 2023 00:00:00 GMT</pubDate>
+    <description>Preparing for secure crypto operations. Best practices and pre-flight checklist.</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>english</category>
+    <category>accounts</category>
+    <category>guides</category>
+  </item>
+  <item>
+    <title>NFT defined Role based Access</title>
+    <link>https://peersky.xyz/blog/nft-rbac</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/nft-rbac</guid>
+    <pubDate>Sat, 01 Apr 2023 00:00:00 GMT</pubDate>
+    <description>Role based Access for Ethereum utilizing existing ERC271 and ERC1155 standards</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>ideas</category>
+    <category>ethereum</category>
+    <category>eip</category>
+  </item>
+  <item>
+    <title>Crypto Guide Part 1 - How a cryptocurrency wallet is structured</title>
+    <link>https://peersky.xyz/blog/how-wallets-made-en</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/how-wallets-made-en</guid>
+    <pubDate>Tue, 28 Mar 2023 00:00:00 GMT</pubDate>
+    <description>Unerstanding how cryptocurrency wallet is made, what are important terms and security considerations to be aware of</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>english</category>
+    <category>accounts</category>
+    <category>guides</category>
+  </item>
+  <item>
+    <title>Open economy manifest</title>
+    <link>https://peersky.xyz/blog/open-economy</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/open-economy</guid>
+    <pubDate>Fri, 24 Feb 2023 00:00:00 GMT</pubDate>
+    <description>Open Economy - why it is important to have a transparent and open-source economical framework</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>philosophy</category>
+    <enclosure url="https://peersky.xyz/pond.png" type="image/png" />
+  </item>
+</channel>
+</rss>
