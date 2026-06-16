@@ -2,12 +2,15 @@ import { getLayout as getBlogLayout } from "../../layouts/BlogLayout";
 import {
   Box,
   Flex,
+  HStack,
   Spacer,
   Text,
   Tag,
   Heading,
+  Link as ChakraLink,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { FaRss } from "react-icons/fa";
 import React from "react";
 import useAppRouter from "../../hooks/useRouter";
 
@@ -102,15 +105,48 @@ const Blog = (props: any) => {
   return (
     <Flex w="100%" maxW="820px" mx="auto" py={10} px={4} direction="column" gap={6}>
       <Box>
-        <Heading
-          as="h1"
-          fontSize={["3xl", "4xl", "5xl"]}
-          letterSpacing="-0.03em"
-          lineHeight="1.05"
-          mb={2}
-        >
-          Writing
-        </Heading>
+        <Flex alignItems="flex-start" gap={4} mb={2}>
+          <Heading
+            as="h1"
+            fontSize={["3xl", "4xl", "5xl"]}
+            letterSpacing="-0.03em"
+            lineHeight="1.05"
+          >
+            Writing
+          </Heading>
+          <Spacer />
+          <ChakraLink
+            href="/feed.xml"
+            isExternal
+            aria-label="Subscribe via RSS"
+            display="inline-flex"
+            mt={2}
+            _hover={{ textDecoration: "none" }}
+          >
+            <HStack
+              as="span"
+              spacing={2}
+              px={3}
+              py={1.5}
+              borderWidth="1px"
+              borderColor={dividerColor}
+              borderRadius="full"
+              fontSize="xs"
+              fontWeight="500"
+              letterSpacing="0.04em"
+              textTransform="uppercase"
+              color={descColor}
+              transition="all 0.15s ease"
+              _hover={{
+                color: accentText,
+                borderColor: accentText,
+              }}
+            >
+              <Box as={FaRss} fontSize="11px" />
+              <span>RSS</span>
+            </HStack>
+          </ChakraLink>
+        </Flex>
         <Text color={descColor} fontSize="md" maxW="640px">
           Notes, essays and longer-form pieces on protocols, hardware, governance and the
           quieter side of building.
