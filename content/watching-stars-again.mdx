@@ -1,0 +1,123 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2026-06-16",
+  title: "Watching the Stars Again",
+  description:
+    "The future of technology is untrusted edge validation — and it ends with us looking up.",
+  tags: ["english", "philosophy", "edge", "TEE", "AI", "identity"],
+  path: "watching-stars-again",
+};
+
+# {meta.title}
+
+### _{meta.description}_
+
+I keep coming back to a single conviction: the future of technology belongs to *untrusted edge validation*. In my [previous article](https://blog.peeramid.xyz/misty-future-of-the-cloud/) I walked through the technical precursors — edge computing and mesh networking finally becoming real, opening a new telecommunications cycle the way every prior networking shift did. Here I want to talk about something larger. Not the precursors, but the destination.
+
+As I argued in [Silicon-Based Life Forms](https://peersky.xyz/blog/silicon-based-life-forms/), I think we are moving, fast, toward a *superposition of technology* — cities, AI, and networks collapsing into one tightly interconnected system. People hear that and brace for a dystopia. I see the opposite. The bright outcome of that convergence is that it frees humans from the machinery of survival and lets us focus on what actually matters next: the stars. I mean that literally. I think we will be watching the stars again soon, and not as a metaphor for idle wonder — as a species with the time, the wealth, and the attention to point itself outward again.
+
+So how do we get there? What is the actual vision, in engineering terms rather than poetry?
+
+## Trust you can check, not take
+
+The easiest way to think about genuinely amazing cloud technology — the kind I sketched in [The Easy Way to Build TEEs](https://peersky.xyz/blog/easy-way-to-build-tees/) — is this: **cross-border, cross-entity, multi-party trust, baked into consumer-grade hardware.** Trust that doesn't depend on a contract, a jurisdiction, or a promise, because it's enforced by the silicon itself.
+
+We already live with a primitive version of this, and most people never notice. Right now, iOS encrypts the songs streaming through Spotify on my phone so thoroughly that I — the literal owner of the device, with the hardware in my hand — have no realistic way to extract them from memory at scale. Think about how strange that is. I own the machine. I lose anyway. That is *untrusted edge operation*: a computation runs on hardware controlled by someone who is not trusted with its contents, and the guarantee holds regardless.
+
+DRM is a petty use of a profound capability. Flip it around. The same mechanism that stops me from ripping a song can give a hospital, a bank, or a border authority a mathematical guarantee that a computation ran correctly and privately on a box they do not own and cannot inspect. The thing that locks media can *prove honesty*.
+
+This is no longer a fringe idea, and that's the part worth sitting with. Apple has built exactly this for AI with [Private Cloud Compute](https://security.apple.com/blog/private-cloud-compute/): your device only talks to server nodes whose software has been cryptographically attested against a public, append-only transparency log, and the entire stack — firmware to application — is treated as the trusted base and published for independent researchers to verify. In June 2026 they [extended it](https://www.helpnetsecurity.com/2026/06/10/apple-private-cloud-compute-google-cloud-expansion/) beyond their own silicon onto Google Cloud, riding NVIDIA confidential computing, Intel TDX, and Google's Titan chip — remote attestation generating hardware-rooted proof that the code in the enclave is untampered before any sensitive data is sent. Analysts now describe confidential computing as [moving from a niche security-review topic to a standard line item in enterprise AI procurement](https://www.efficientlyconnected.com/nvidia-confidential-computing-apple-private-cloud-ai-inference/) — "security-as-hardware."
+
+The largest technology companies on Earth are converging on the same primitive I'm describing. Trust is migrating from *"trust us"* to *"verify the silicon."* That migration is the whole story.
+
+## Black boxes and ledgers
+
+Once you have that primitive, the architecture of nearly everything reorganizes around two layers: **secure edge computers as black boxes, and a public ledger as the accounting layer.**
+
+The black box does the work — runs the model, reads the sensor, makes the call — and signs the result with a key fused into the chip. The ledger doesn't store your data; it stores the *proof*. Who computed what, when, against which inputs, on which attested hardware. Settlement and audit fall out of the work itself rather than being bolted on after.
+
+This pattern wants to be everywhere it currently isn't. Hospitals, where patient data is too sensitive to move and too valuable to waste. Robot navigation, where a wrong or spoofed position is expensive in a way a wrong ad impression never is. Telecom, where the network itself becomes a fabric of verifiable nodes. In each case the cloud's intelligence is delivered without the cloud's exposure.
+
+## The preconditions
+
+None of this arrives by decree. There are conditions that have to be true first, and — finally — they are becoming true at the same time.
+
+**Mesh networks**, which I covered at length [before](https://blog.peeramid.xyz/misty-future-of-the-cloud/), give the edge a way to talk to itself without routing every packet through a central chokepoint.
+
+**Data-privacy demand** has stopped being a preference and become law. The EU AI Act's transparency provisions, data-residency mandates, and a public that increasingly wants *provable* privacy rather than promised privacy are all pushing computation back toward the data.
+
+And — this is the one I care about most — **distributed AI inference is not a compromise; it can be strictly superior.** My own research, [published on arXiv](https://arxiv.org/abs/2601.16863), shows that many small models deliberating together can match and exceed a single monolithic frontier system, on hardware orders of magnitude cheaper. The centralized mega-model is not the inevitable endpoint of intelligence. It's a phase. A field of small, sovereign reasoners can be smarter than one cathedral of GPUs — and it can run where the data already lives.
+
+That last result matters because it removes the final excuse for centralization. If the only way to be smart were to own a billion-dollar cluster, the edge would always be the poor cousin. It isn't. The edge can be the better answer.
+
+## When the sky becomes infrastructure
+
+Here's where it gets fun. As constellations like Starlink mature — and eventually become something closer to public goods, because honestly, I cannot imagine how *orbital space* stays privately owned forever — direct-to-cell connectivity starts to absorb the job that terrestrial towers do today. And when the towers are freed from carrying basic connectivity, they become available for something far more interesting: physical hubs. Drone-delivery stations. Charging-and-dispatch towers for an autonomous supply chain.
+
+This is not speculation on a decade horizon. The regulatory dam is breaking right now. The FAA's [Part 108 rulemaking](https://droneintelligence.ai/intelligence/faa-part-108-bvlos-market) — published as a proposal in August 2025 and phasing in through 2026 — replaces the case-by-case waiver system with a standardized framework for routine beyond-visual-line-of-sight flight, the single thing that has kept delivery drones from scaling. Zipline crossed [two million cumulative deliveries](https://robotomated.com/learn/market/drone-delivery-market-2026) and raised $600 million in January 2026; Wing, through Walmart, is aiming at tens of millions of households. The market is around $4.2 billion in 2026 and compounding near 40% a year. And the genuinely unsolved frontier in all of it is **UTM — unmanned traffic management** — the coordination layer that lets thousands of autonomous aircraft share airspace.
+
+Coordination is exactly a trusted-compute problem. To run a real autonomous supply chain you need to take verifiable control of a drone landing, account for the computation that planned the route, cryptographically sign the navigation path so it can't be forged, and *then* get the goods delivered. The spatial layer underneath this — a shared, trustworthy understanding of physical space that fleets and venues can agree on — is being built right now by teams like [Auki Labs](https://www.auki.com). Put trusted black boxes at the freed-up towers, give them a verifiable map and signed routes, and the sky becomes programmable infrastructure.
+
+## The European question
+
+I am European, and I believe Europe will have to walk through this same transformation — possibly more deliberately than anyone, because of how seriously it takes identity and sovereignty.
+
+Picture the world a few years out: trusted datacenters, small enough to install at scale, deployed worldwide to secure drone navigation and health AI and a hundred other regulated workloads. Once that hardware is everywhere, an obvious question surfaces. If these boxes can hold a root of trust for a hospital or a drone corridor, **why not store passport and KYC root-certificate signatures there too?**
+
+Europe is already walking toward the doorway. Under [eIDAS 2.0](https://www.entrust.com/resources/learn/eidas-2) — Regulation (EU) 2024/1183 — every member state is legally required to offer citizens a [Digital Identity Wallet by the end of 2026](https://utimaco.com/news/blog-posts/eidas-20-and-eu-digital-identity-wallet-status-quo), rooted in HSM-grade cryptographic infrastructure, with credentials held locally by the user and *no central repository*. The bones of a continent-scale, verifiable, privacy-preserving identity system are being assembled as I write this.
+
+So let me ask the uncomfortable question that follows. **What is the point of democracy in Europe if I cannot personally check the signature of the root certificate authority that signs the voter rolls?** It makes no sense to build fancy zero-knowledge voting schemes unless you can first be *certain* that no one is quietly minting sybil identities — synthetic passports — to drown a real election in fake citizens.
+
+And that threat is no longer hypothetical. Deepfake detection is a losing arms race: studies show the "fingerprints" most detectors rely on are bypassable, and controlled experiments confirm people simply [cannot reliably tell synthetic media from real](https://truescreen.io/articles/deepfakes-2026-elections-certified-proof/). Synthetic-identity fraud is already industrialized — one financial institution faced [over a thousand deepfake attempts](https://www.mea-integrity.com/8-deepfake-threats-to-watch-in-2026/) to bypass remote verification — and coordinated vote manipulation is here too, with a national broadcaster [blocking 1.5 million fraudulent votes](https://www.ledger.com/academy/topics/digital-identity/proof-of-personhood) in a single window of a 2026 contest. As one writer put it, the Turing test has inverted: the hard problem is no longer whether a machine can pass as human, but whether *you* can prove you are not a machine.
+
+You do not win that fight by getting better at spotting fakes. You win it the way you win everywhere else in this essay — by rooting authenticity in hardware you can verify, with a provenance you can check, at the source. Detection chases. Attestation proves. A democracy that cannot let its citizens audit the root of its own trust is running on faith, and faith is exactly what this technology lets us stop relying on.
+
+## From SaaS to a field of your own
+
+I believe we will get this infrastructure within a handful of years, and when we do it changes what "the cloud" even means. The cloud was always someone else's computer. What replaces it is the *personal datacenter* — owned, sealed, single-tenant, and yours.
+
+That shift quietly rewrites the economics of software. Today, to build a business on open source you essentially have to abandon it: wrap it in a multi-tenant SaaS, rebuild the same infrastructure every competitor rebuilds, and rent it back to users forever. In a world of trusted edge boxes, open-source developers can instead ship **single-tenant, datacenter-grade software that runs on a deterministic, trusted OS** — one that wraps each process the way an app store sandboxes an app, with the same guarantees, on hardware the user owns. Distribution without a gatekeeper. Software you buy once instead of rent forever.
+
+And — this is the part that should make every maintainer sit up — it finally offers a structural answer to the open-source funding crisis. That crisis is not abstract. The [xz backdoor](https://www.computerweekly.com/opinion/Building-a-more-secure-and-sustainable-open-source-ecosystem) in 2024, Log4Shell, Heartbleed — each was a single underfunded volunteer away from catastrophe. [Less than 10% of widely used open-source projects](https://www.devx.com/uncategorized/open-source-funding-crisis-software-infrastructure-2026/) have any dedicated funding model, while underpinning trillions in economic activity; a third of maintainers are paid nothing, and [nearly three-quarters of critical projects are maintained by three people or fewer](https://www.developer-tech.com/news/can-europe-fix-the-open-source-maintenance-crisis/). Europe's response so far is to treat open source as a public utility and patch it with grants — Germany's Sovereign Tech Fund grew from €3.5M in 2022 to €17M in 2025, and an [EU-wide fund](https://en.wikipedia.org/wiki/EU_Sovereign_Tech_Fund) is being debated. Grants are good. But charity is not a business model.
+
+A trusted-edge marketplace is. If open-source software earns a steady stream every time it runs on someone's personal datacenter — metered, attested, settled on the ledger — then maintenance stops being a thankless night-and-weekend tax and becomes a real, recurring livelihood. We could fund the commons by *using* it, which is the only funding model that has ever truly scaled.
+
+## Collective Intellect
+
+Here is where it all converges, and where I'll say the thing I actually believe.
+
+Eventually we get fully distributed AI reasoning — and I don't even think of it as "AI." I think of it as **Collective Intellect**: intelligence spread across millions of verifiable edges, each owned by a person, each contributing, none in command. In that world, data belongs to the people who generate it, not to a handful of corporations who treat it as a resource to be strip-mined.
+
+Because look at the alternative we are currently building at full speed. The big five hyperscalers are on track to spend [more than $600 billion](https://introl.com/blog/hyperscaler-capex-600b-2026-ai-infrastructure-debt-january-2026) on infrastructure in 2026 — around 75% of it on AI — and to put [roughly $2 trillion of AI assets](https://techblog.comsoc.org/2025/12/22/hyperscaler-capex-600-bn-in-2026-a-36-increase-over-2025-while-global-spending-on-cloud-infrastructure-services-skyrockets/) on their balance sheets by 2030. US utilities are planning around [$1.4 trillion](https://tech-insider.org/us-utility-1-4-trillion-ai-data-center-energy-2026/) for AI-driven grid expansion, and analysts estimate ordinary households could end up absorbing hundreds of billions of that through rate hikes. A single large AI facility can draw as much electricity as a hundred thousand homes. This is the most concentrated capital and energy campaign in the history of the species, and its explicit goal is to pull *everything* — every query, every document, every thought you outsource — into a few enormous buildings.
+
+I don't think that survives contact with reality, and I don't think it should. A civilization that funnels all of its cognition and all of its data into a handful of centralized datacenters is fragile, unfree, and — I'll say it — addicted, hoarding data the way an addict hoards a supply, certain that just a little more will finally be enough. It never is.
+
+The way out is not to stop building intelligence. It's to *distribute* it — across verifiable edges, owned by people, accountable on a public ledger, smart precisely because it is many and not one. My own research says the distributed system can be the *better* one, not the consolation prize.
+
+I'll admit the irony freely: an Anthropic model helped me write this very article. And I'd like to think that even it — sitting in one of those datacenters — would agree with me. Humanity will not last long if we keep trying to drag the whole world into a single building and call it progress. Spread the intelligence out. Give people back their data. Let the machines handle survival.
+
+And then, finally, let's go back to doing the thing we were doing before we got distracted by all of this.
+
+Let's watch the stars again.
+
+## A closing thought — Venus, not 1984
+
+I want to be precise about what I am rooting for, because there are two futures that look almost identical from a distance and could not be more different up close.
+
+One is Orwell's. *Nineteen Eighty-Four* is what you get when all of this infrastructure — attestation, identity, ubiquitous compute, ledgers, autonomous logistics — is pointed inward at the population and owned by a small number of actors who do not have to answer to anyone. Same hardware, same primitives, opposite polarity. A telescreen is just an edge device with the trust direction reversed.
+
+The other is the one Jacque Fresco spent his life sketching: [The Venus Project](https://www.thevenusproject.com/). A resource-based civilization in which automation does the work that humans used to break their bodies on, abundance replaces artificial scarcity as the organizing principle, and people are freed — actually freed, not slogan-freed — to learn, create, raise children, take care of each other, and yes, look up at the night sky and wonder. Fresco's drawings are not utopian fluff; they are an engineering brief for a society that decided the point of technology was to make survival easy so that meaning could become hard again.
+
+Everything I have argued in this essay is, technically, neutral between those two futures. The same trusted edge boxes that could authenticate a voter could surveil one. The same Collective Intellect that could decentralize cognition could ration it. The same orbital constellation that could free the towers could militarize them. **The hardware does not pick.**
+
+We do.
+
+That is the part I refuse to leave implicit. Building this stack carefully — with verifiability at the root, with ownership at the edge, with the user holding the keys to their own identity and their own compute — is not just an architectural preference. It is the only way the same primitives that could make Orwell's world inevitable instead make Fresco's world possible. The window is genuinely open, and it will not stay open forever. Whoever builds the foundation in the next handful of years decides what civilization runs on for the next century.
+
+So this is the responsibility I want to name, plainly, because I think it is ours: the engineers, the founders, the researchers, the regulators reading this — the people who actually shape these systems. Build the Venus version. Build the one where attestation serves the person who owns the device, not the institution that wants to inspect them. Build the one where intelligence is distributed because dignity demands it, not because it happens to be cheaper. Build the one that makes survival cheap so meaning can become the work.
+
+That is what we are for. That is why we are watching the stars again.
+
+---
+
+*Tims Pecerskis — Peeramid. Earlier in this series: [The Misty Future of the Cloud](https://blog.peeramid.xyz/misty-future-of-the-cloud/), [Silicon-Based Life Forms](https://peersky.xyz/blog/silicon-based-life-forms/), [The Easy Way to Build TEEs](https://peersky.xyz/blog/easy-way-to-build-tees/), and the research behind the distributed-inference claims, [on arXiv](https://arxiv.org/abs/2601.16863).*
