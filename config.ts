@@ -1,6 +1,11 @@
 import { SiteMap, SiteMapItemType } from "./types";
 export const SITEMAP: SiteMap = [
   {
+    title: "Resume",
+    path: "/resume",
+    type: SiteMapItemType.CONTENT,
+  },
+  {
     title: "Blog",
     path: "/blog",
     type: SiteMapItemType.CONTENT,
