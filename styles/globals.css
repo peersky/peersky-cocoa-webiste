@@ -34,3 +34,59 @@ pre {
     background: black;
   }
 }
+
+@media print {
+  html,
+  body,
+  #__next {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  .ScrollableWrapper,
+  .Scrollable {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  #Navbar {
+    position: static !important;
+    display: none !important;
+  }
+
+  footer,
+  #Footer {
+    display: none !important;
+  }
+
+  #AppContainer {
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  #Blog {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    max-width: 100% !important;
+  }
+
+  a {
+    color: black !important;
+    text-decoration: underline !important;
+  }
+
+  img,
+  figure,
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

@@ -101,6 +101,34 @@ export default function CachingApp({ Component, pageProps }: any) {
           width: 100%;
           overflow: hidden;
         }
+        @media print {
+          html,
+          body,
+          body > div:first-child,
+          div#__next,
+          div#__next > div,
+          .ScrollableWrapper,
+          .Scrollable {
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            display: block !important;
+          }
+          #Navbar,
+          #Footer,
+          footer {
+            display: none !important;
+          }
+          #AppContainer {
+            padding: 0 !important;
+            min-height: 0 !important;
+          }
+          #Blog {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            max-width: 100% !important;
+          }
+        }
       `}</style>
       {SEOHead && <SEOHead baseURL={baseURL} {...metaTags} />}
       <QueryClientProvider client={queryClient}>
