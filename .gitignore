@@ -44,3 +44,6 @@ next-env.d.ts
 build
 
 node_modules
+
+# local-only printable resume
+/resume.md
