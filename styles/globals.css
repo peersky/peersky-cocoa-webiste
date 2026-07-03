@@ -56,11 +56,23 @@ pre {
 
   #Navbar {
     position: static !important;
+    top: auto !important;
+    left: auto !important;
+    z-index: auto !important;
     max-height: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     background: transparent !important;
     border-bottom: 1px solid #999 !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  #Navbar + div {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    page-break-before: avoid !important;
+    break-before: avoid !important;
   }
 
   footer,
