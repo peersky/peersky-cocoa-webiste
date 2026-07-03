@@ -114,7 +114,14 @@ export default function CachingApp({ Component, pageProps }: any) {
             overflow: visible !important;
             display: block !important;
           }
-          #Navbar,
+          #Navbar {
+            position: static !important;
+            max-height: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            background: transparent !important;
+            border-bottom: 1px solid #999 !important;
+          }
           #Footer,
           footer {
             display: none !important;
