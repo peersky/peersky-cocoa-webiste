@@ -54,11 +54,12 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: "blue" }), {
   styles: {
     global: (props: StyleFunctionProps) => ({
       body: {
-        bg: mode("grey.50", "grey.900")(props),
-        color: mode("grey.800", "grey.100")(props),
+        // noolog White-Flame: white by day, negative-film navy + starfield by night
+        bg: mode("#FFFFFF", "#060A18")(props),
+        color: mode("#1D1D1F", "#EAF2FF")(props),
         backgroundImage: mode(
-          "radial-gradient(at 20% 10%, rgba(201, 155, 88, 0.06) 0px, transparent 50%), radial-gradient(at 80% 90%, rgba(122, 110, 88, 0.05) 0px, transparent 50%)",
-          "radial-gradient(at 20% 10%, rgba(201, 155, 88, 0.05) 0px, transparent 50%), radial-gradient(at 80% 90%, rgba(66, 59, 45, 0.4) 0px, transparent 50%)"
+          "none",
+          "radial-gradient(1px 1px at 20% 30%, rgba(147,166,196,.5), transparent), radial-gradient(1px 1px at 70% 20%, rgba(0,158,151,.35), transparent), radial-gradient(1px 1px at 45% 70%, rgba(191,233,255,.35), transparent), radial-gradient(1px 1px at 85% 60%, rgba(147,166,196,.4), transparent)"
         )(props),
         backgroundAttachment: "fixed",
         fontFeatureSettings: '"ss01", "ss02", "kern", "liga"',
@@ -101,9 +102,10 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: "blue" }), {
   logo: "daocoacoa.png",
 
   fonts: {
-    heading: '"Work Sans", sans-serif',
-    body: '"Work Sans", sans-serif',
-    mono: '"Work Sans", monospace',
+    heading:
+      '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    body: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    mono: '"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace',
   },
   fontSizes: {
     xs: "0.625rem", //10px
@@ -120,18 +122,19 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: "blue" }), {
   },
 
   colors: {
+    // "blue" is the site accent colorScheme — mapped to noolog consensus teal
     blue: {
-      0: "#FBF6EE",
-      50: "#F4E9D3",
-      100: "#E9D2A8",
-      200: "#DBB87E",
-      300: "#C99B58",
-      400: "#B07F3C",
-      500: "#8E6428",
-      600: "#6E4D1E",
-      700: "#533A18",
-      800: "#382712",
-      900: "#1D140A",
+      0: "#F0FBFA",
+      50: "#E0F7F6",
+      100: "#B3E9E7",
+      200: "#80DAD6",
+      300: "#4DCBC5",
+      400: "#26BFB8",
+      500: "#009E97",
+      600: "#00807A",
+      700: "#00615C",
+      800: "#00423E",
+      900: "#002321",
     },
     red: {
       0: "#FFFFF1",
@@ -185,18 +188,19 @@ const theme = extendTheme(withDefaultColorScheme({ colorScheme: "blue" }), {
       800: "#614A05",
       900: "#312502",
     },
+    // dual-purpose ramp: Apple-neutral light end, negative-film navy dark end
     grey: {
-      0: "#FBF8F3",
-      50: "#F4EFE6",
-      100: "#E6DFD0",
-      200: "#D2C8B4",
-      300: "#B8AC93",
-      400: "#998C72",
-      500: "#7A6E58",
-      600: "#5C5240",
-      700: "#423B2D",
-      800: "#2A251B",
-      900: "#15120D",
+      0: "#FFFFFF",
+      50: "#F5F5F5",
+      100: "#E5E5EA",
+      200: "#D1D1D6",
+      300: "#93A6C4",
+      400: "#8E8E93",
+      500: "#6E6E73",
+      600: "#3A4A68",
+      700: "#1E2C48",
+      800: "#0C1226",
+      900: "#060A18",
     },
   },
 });

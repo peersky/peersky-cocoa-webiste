@@ -18,18 +18,20 @@ import moment from "moment";
 import UIContext from "../providers/UIProvider/context";
 const LINKS_SIZES = {
   fontWeight: "400",
-  fontSize: "sm",
+  fontSize: "xs",
+  fontFamily: "mono",
 };
 
 const ListHeader = ({ children }: any) => {
   return (
     <Text
       fontWeight={"600"}
-      fontSize={"sm"}
+      fontSize={"xs"}
+      fontFamily="mono"
       textTransform="uppercase"
       letterSpacing="0.05em"
       mb={3}
-      color={useColorModeValue("grey.600", "grey.300")}
+      color={useColorModeValue("grey.500", "grey.300")}
     >
       {children}
     </Text>
@@ -75,10 +77,10 @@ const Footer = ({ colorScheme, initialLogo, ...props }: FooterProps) => {
     <Box
       className="Footer"
       {...props}
-      bgColor={useColorModeValue("grey.100", "grey.800")}
+      bgColor="transparent"
       borderTopWidth="1px"
-      borderTopColor={useColorModeValue("grey.200", "grey.700")}
-      color={useColorModeValue("grey.600", "grey.300")}
+      borderTopColor={useColorModeValue("grey.100", "grey.700")}
+      color={useColorModeValue("grey.500", "grey.300")}
     >
       <Container as={Stack} maxW={"8xl"} py={12} px={8}>
         <SimpleGrid
@@ -125,7 +127,7 @@ const Footer = ({ colorScheme, initialLogo, ...props }: FooterProps) => {
                         {...LINKS_SIZES}
                         href={category.path}
                         _hover={{
-                          color: useColorModeValue("grey.900", "whiteAlpha.900"),
+                          color: "blue.500",
                         }}
                         key={`footer-list-link-item-${colIndex}-col-${colIndex}`}
                       >
@@ -137,7 +139,7 @@ const Footer = ({ colorScheme, initialLogo, ...props }: FooterProps) => {
                             {...LINKS_SIZES}
                             href={linkItem.path}
                             _hover={{
-                              color: useColorModeValue("grey.900", "whiteAlpha.900"),
+                              color: "blue.500",
                             }}
                             key={`footer-list-link-item-${linkItemIndex}-col-${colIndex}`}
                           >

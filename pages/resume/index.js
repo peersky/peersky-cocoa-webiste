@@ -164,27 +164,8 @@ const Post = () => {
           --nl-text-2: #93a6c4;
         }
 
-        /* signature starfield behind the whole viewport, night only */
-        body.chakra-ui-dark #noolog-resume::before {
-          content: "";
-          position: fixed;
-          inset: 0;
-          z-index: -1;
-          pointer-events: none;
-          background: #060a18
-            radial-gradient(1px 1px at 20% 30%, rgba(147, 166, 196, 0.5), transparent),
-            radial-gradient(1px 1px at 70% 20%, rgba(0, 158, 151, 0.35), transparent),
-            radial-gradient(1px 1px at 45% 70%, rgba(191, 233, 255, 0.35), transparent),
-            radial-gradient(1px 1px at 85% 60%, rgba(147, 166, 196, 0.4), transparent);
-        }
-        body.chakra-ui-light #noolog-resume::before {
-          content: "";
-          position: fixed;
-          inset: 0;
-          z-index: -1;
-          pointer-events: none;
-          background: #ffffff;
-        }
+        /* page background (white day / navy starfield night) now comes from
+           the site-wide theme — nothing page-local needed */
 
         #noolog-resume,
         #noolog-resume p,
@@ -373,9 +354,6 @@ const Post = () => {
           #noolog-resume .reveal {
             opacity: 1 !important;
             transform: none !important;
-          }
-          #noolog-resume::before {
-            display: none !important;
           }
         }
       `}</style>

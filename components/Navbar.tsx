@@ -44,8 +44,8 @@ const Navbar_ = ({
   const theme = useTheme();
   const themeLogo = theme.logo;
   const bgC = useColorModeValue(
-    "rgba(244, 239, 230, 0.78)",
-    "rgba(21, 18, 13, 0.78)"
+    "rgba(255, 255, 255, 0.78)",
+    "rgba(6, 10, 24, 0.78)"
   );
   const borderBc = useColorModeValue("grey.200", "grey.700");
   const wordmarkColor = useColorModeValue("grey.800", "grey.100");
