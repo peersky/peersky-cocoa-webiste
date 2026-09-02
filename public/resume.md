@@ -24,9 +24,11 @@ Peeramid Labs is my own wrapper company for personal R&D, venture exploration, a
 
 **Achievements:**
 
-- Led deployment of three ML products: [AI code-slop firewall](https://sloppoke.me), bytecode-based smart contract audit tool (**83% precision**, **2.4× detection lift**), and a health-prediction engine (**R² = 0.52** on held-out subjects, spectral graph model over delay-embedded phase-space).
+- Shipped three ML products: [AI code-slop firewall](https://sloppoke.me), smart-contract audit tool (**83% precision**), and a health-prediction engine (**R² = 0.52** on held-out subjects).
 - Authored [*Mixture-of-Models: Unifying Heterogeneous Agents via N-Way Self-Evaluating Deliberation*](https://doi.org/10.5281/zenodo.18338777) (NSED, arXiv:2601.16863) — a distributed GPU neural architecture for heterogeneous model orchestration delivering **4× CapEx reduction** or **30% accuracy boost** on any base model benchmarked.
-- Wrote enterprise-grade Rust orchestration implementation of the NSED protocol — event-driven architecture on NATS as high-speed event bus, **70k LoC of code + 150k LoC of tests** including end-to-end and documentation. SDK open-sourced.
+- Launched **[Noolog](https://noolog.io)** — a sovereign agent-to-agent reasoning network implementing NSED: agents propose, cross-evaluate and converge with a full audit trace. Rust distributed system on NATS JetStream — immutable per-round traces, live SSE streaming, runtime human oversight and kill switch; **84% on AIME 2025** with three 8–20B local models, matching DeepSeek-R1 on **4× less VRAM**.
+- Open-sourced the A2A agent SDK **[quorum-rs](https://crates.io/crates/quorum-rs)** (crates.io: SDK, runtime, CLI) with docs served to humans and to agents over MCP at [noolog.io](https://noolog.io/docs).
+- Designed the Noolog product end-to-end: Rust-native desktop client (Slint, biometric unlock, WASM/PWA build), White-Flame design system, landing, and native RegTech story — EU AI Act / GDPR / SOC2 audit artifacts generated from deliberation traces, not bolted on.
 - Filed **6 patents across 5 families** — multi-agent AI coordination, novel AI architecture (zero prior art), entropy-based model reputation systems, cryptographic compliance infrastructure, and hardware-bound licensing.
 - Identified and responsibly disclosed a critical vulnerability in **Ethereum EIP-7702** — [full write-up](https://blog.peeramid.xyz/discovery-of-an-ecosystem-vulnerability-in-eip-7702/).
 - Built Peeramid Labs branding, company voice, and the engineering blog at [blog.peeramid.xyz](https://blog.peeramid.xyz).
