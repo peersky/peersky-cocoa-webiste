@@ -25,7 +25,7 @@ const Post = () => {
         <Button
           as={Link}
           href="/resume.pdf"
-          download="Tim-Pecerskis-Resume.pdf"
+          download="Tims-Pecerskis-Resume.pdf"
           size="sm"
           variant="outline"
           leftIcon={<DownloadIcon />}
@@ -48,11 +48,11 @@ const Post = () => {
 };
 export async function getStaticProps() {
   const metaTags = {
-    title: "Resume — Tim Pečerskis",
+    title: "Resume — Tims Pečerskis",
     description:
-      "Professional experience of Tim Pečerskis (Peersky): 15+ years across AI, blockchain, embedded, RF and microwave R&D.",
+      "Professional experience of Tims Pečerskis (Peersky): 15+ years across AI, blockchain, embedded, RF and microwave R&D.",
     keywords:
-      "resume, cv, Tim Pecerskis, Peersky, engineer, blockchain, AI, embedded, microwave, RF",
+      "resume, cv, Tims Pecerskis, Peersky, engineer, blockchain, AI, embedded, microwave, RF",
     url: `https://peersky.xyz/resume`,
   };
   return {

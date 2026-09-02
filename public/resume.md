@@ -1,4 +1,4 @@
-# Resume — Tim Pečerskis, MSc
+# Resume — Tims Pečerskis, MSc
 
 Technical entrepreneur and system algorithm designer. 15+ years turning complex system control theory into production-grade outputs — **from transistors to virtual environments**. Track record of leading cross-discipline teams, running full product lifecycles, and driving technical sales from pre-sale through delivery.
 

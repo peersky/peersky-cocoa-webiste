@@ -57,13 +57,17 @@ function fontFor(run) {
 
 function writeRuns(doc, runs, opts) {
   runs.forEach((run, i) => {
-    doc.font(fontFor(run)).text(run.text, {
-      ...opts,
-      continued: i < runs.length - 1,
-      link: run.link || undefined,
-      underline: false,
-    });
+    doc
+      .font(fontFor(run))
+      .fillColor(run.link ? "#1a4b8e" : "black")
+      .text(run.text, {
+        ...opts,
+        continued: i < runs.length - 1,
+        link: run.link || undefined,
+        underline: !!run.link,
+      });
   });
+  doc.fillColor("black");
   if (!runs.length) doc.text("", opts);
 }
 
@@ -77,11 +81,11 @@ function render(md) {
     size: "A4",
     margins: { top: 54, bottom: 54, left: 54, right: 54 },
     info: {
-      Title: "Resume — Tim Pečerskis",
-      Author: "Tim Pečerskis",
+      Title: "Resume — Tims Pečerskis",
+      Author: "Tims Pečerskis",
       Subject: "Resume / CV",
       Keywords:
-        "resume, cv, Tim Pecerskis, engineer, blockchain, AI, embedded, RF",
+        "resume, cv, Tims Pecerskis, engineer, blockchain, AI, embedded, RF",
     },
   });
   doc.registerFont("Body", FONTS.regular);
@@ -101,6 +105,15 @@ function render(md) {
     if (trimmed.startsWith("# ")) {
       doc.fontSize(19).fillColor("black");
       writeRuns(doc, parseInline(trimmed.slice(2), { bold: true }), { width });
+      doc.moveDown(0.3);
+      doc.fontSize(9);
+      writeRuns(
+        doc,
+        parseInline(
+          "Latest version: [peersky.xyz/resume](https://peersky.xyz/resume) · PDF: [peersky.xyz/resume.pdf](https://peersky.xyz/resume.pdf)"
+        ),
+        { width }
+      );
       doc.moveDown(0.6);
     } else if (trimmed.startsWith("## ")) {
       ensureRoom(doc, 90);
