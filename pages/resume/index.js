@@ -1,10 +1,18 @@
 import { getLayout as getBlogLayout } from "../../layouts/BlogLayout";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import { HStack, Button, Link } from "@chakra-ui/react";
-import { DownloadIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import { DownloadIcon, CopyIcon, CheckIcon } from "@chakra-ui/icons";
 
 const Post = () => {
   const Component = lazy(() => import(`../../content/resume.mdx`));
+  const [copied, setCopied] = useState(false);
+
+  const copyMarkdown = async () => {
+    const md = await fetch("/resume.md").then((r) => r.text());
+    await navigator.clipboard.writeText(md);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <>
@@ -26,15 +34,12 @@ const Post = () => {
           Download PDF
         </Button>
         <Button
-          as={Link}
-          href="/resume.md"
-          isExternal
           size="sm"
           variant="outline"
-          leftIcon={<ExternalLinkIcon />}
-          _hover={{ textDecoration: "none" }}
+          leftIcon={copied ? <CheckIcon /> : <CopyIcon />}
+          onClick={copyMarkdown}
         >
-          Markdown
+          {copied ? "Copied" : "Copy Markdown"}
         </Button>
       </HStack>
       <Suspense fallback={<div>Loading...</div>}>{<Component />}</Suspense>
