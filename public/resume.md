@@ -2,7 +2,7 @@
 
 Systems engineer, algorithm designer, and product builder. 15+ years designing novel algorithms under real-time, resource-constrained conditions and shipping them as production systems — **from bare metal signal processing through distributed GPU orchestration**. Proven ability to lead cross-discipline teams, manage multi-client product portfolios, own end-to-end product lifecycles from user research through delivery, and drive technical sales from presales through production support. Published researcher, patent author, and conference speaker with a track record of consistently outperforming project timelines.
 
-[peersky.xyz](https://peersky.xyz) · [github.com/peersky](https://github.com/peersky)
+[peersky.xyz](https://peersky.xyz) · [github.com/peersky](https://github.com/peersky) · [linkedin.com/in/peersky](https://www.linkedin.com/in/peersky/) · [t@peersky.xyz](mailto:t@peersky.xyz)
 
 ## Domain Expertise
 
