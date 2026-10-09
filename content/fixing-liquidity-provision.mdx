@@ -1,0 +1,57 @@
+export const meta = {
+  author: "Tim Pechersky",
+  date: "2026-10-09",
+  title: "DeFi Promised a Bank. Its Savers Are Losing Money",
+  description:
+    "Passive liquidity provision barely exists anymore, and I think the fix is a finality rule for prices. A work-in-progress idea.",
+  tags: ["english", "DeFi", "AMM", "research", "work in progress"],
+  path: "fixing-liquidity-provision",
+};
+
+# {meta.title}
+
+### _{meta.description}_
+
+I just put out a preprint, [*BRO-AMM: A Bonded Reconciliation Oracle AMM as a Low-Risk DeFi Primitive*](https://doi.org/10.5281/zenodo.23241545). It's an early version and the work is far from finished. Here I want to explain, without the math, the problem behind it and why I think it's solvable.
+
+## The promise
+
+DeFi's promise was banking infrastructure on chain. Anyone could be the bank: deposit money into a pool, let others trade against it, and earn fees, the way a bank earns a spread. No permission, no middleman, just open financial plumbing that anyone can own a piece of.
+
+For that to be real, the depositors, called liquidity providers, have to be the savers of this system. Ordinary people and cautious institutions who park money and expect it to grow, slowly and predictably.
+
+## The illusion
+
+That's not what happens. A pool's price only moves when someone trades with it, while the real price of ETH moves every second on big exchanges. Professional traders, called arbitrageurs, watch for the gap and close it, and every time they do, the difference comes out of the depositors' pocket. Today they take the *entire* gap. On Ethereum, most of it doesn't even stay with them: they spend it bidding against each other to be first in the block. Depositors fund an auction they never signed up for.
+
+In many of the largest pools, what depositors lose this way is more than they earn in fees. The result is predictable. Passive liquidity provision, the "just park it and earn" saver the whole model was built for, has almost disappeared. What's left is mostly professionals actively managing positions to stay ahead of the leak. That isn't a bank anyone can own. It's a trading desk with extra steps.
+
+Vitalik Buterin [recently argued](https://vitalik.eth.limo/general/2025/09/21/low_risk_defi.html) that low-risk DeFi could be for Ethereum what search was for Google. I agree, and I'd add that swapping is the piece everything else stands on. If the people who make swapping possible are guaranteed to slowly lose money, swapping can't be low-risk, and nothing built on top of it can be either.
+
+## A finality rule for prices
+
+Here's why I think this is eventually solvable, and why I think the answer was in front of us all along.
+
+Blockchains already deal with a version of this problem for their own state. A transaction gets into a block right away, but it only becomes truly final later, once enough of the network has agreed on it. Nobody considers that a flaw. Waiting is exactly what makes agreement possible.
+
+Prices have the same shape. At the instant you trade, the chain can't know the true market price. A few moments later, it can: anyone can check what each trade actually did to depositors against what real markets were showing at that moment. So the idea is to give prices the same rule blocks already have. Trades execute immediately, but their price becomes final at reconciliation, shortly after.
+
+Once the score can be settled, a fair deal becomes possible:
+
+- Traders who keep the pool's price honest still get paid for it, a fair allowance the pool learns on its own instead of someone hard-coding it.
+- Anything taken beyond that allowance goes back to depositors. To make that collectable, traders post a deposit before trading, like a security deposit on an apartment.
+- Ordinary traders who pay more than their share earn a reputation that lowers their fees next time.
+
+![swap-lifecycle-fullwidth](/bro-amm/swap-lifecycle.png "How a single trade flows through the design: it executes immediately, then gets settled against real market prices")
+
+## What the early numbers say
+
+I replayed six months of real ETH/USDC trading on Ethereum and Arbitrum through a simulation of the design. Depositors' losses to arbitrage fell by roughly 68–79% on Ethereum and 49–55% on Arbitrum, and on Ethereum depositors went from losing money overall to making it. Arbitrageurs kept the same profit: the money came back out of the wasteful bidding war for block position, not out of anyone's honest living.
+
+![value-split-fullwidth](/bro-amm/value-split.png "Where the value taken by arbitrage goes, today versus with BRO-AMM. Blue is what returns to depositors")
+
+## What it isn't yet
+
+These are simulations, not a live product. The design leans on a trusted source of signed market prices, and if that source is wrong, the system is wrong with it; the paper bounds how wrong it can be but doesn't remove the dependency. There are attacks it doesn't try to stop yet, and the code hasn't been audited or tested with real money.
+
+I'm sharing it now because I'd rather be challenged early than polished late. If you work on AMMs, market structure or oracles, poke holes in it. The [preprint](https://doi.org/10.5281/zenodo.23241545) is open, and so are the [code and pipeline](https://github.com/peersky/ammbro) behind every number. Tell me where it breaks.

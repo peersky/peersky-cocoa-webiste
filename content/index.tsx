@@ -15,6 +15,7 @@ import * as UBI from "./ubi-against-agi.mdx";
 import * as ETEE from "./easy-way-to-build-tees.mdx";
 import * as S from "./silicon-based-life-forms.mdx";
 import * as WSA from "./watching-stars-again.mdx";
+import * as BROAMM from "./fixing-liquidity-provision.mdx";
 export {
   OpenEconomyManifest,
   // HowAccountsRu,
@@ -33,4 +34,5 @@ export {
   ETEE,
   S,
   WSA,
+  BROAMM,
 };

@@ -6,10 +6,23 @@
   <atom:link href="https://peersky.xyz/feed.xml" rel="self" type="application/rss+xml" />
   <description>Notes, essays and longer-form pieces on protocols, hardware, governance and the quieter side of building. By Tims Pečerskis.</description>
   <language>en</language>
-  <lastBuildDate>Tue, 16 Jun 2026 13:18:40 GMT</lastBuildDate>
-  <pubDate>Tue, 16 Jun 2026 00:00:00 GMT</pubDate>
+  <lastBuildDate>Fri, 09 Oct 2026 03:53:40 GMT</lastBuildDate>
+  <pubDate>Fri, 09 Oct 2026 00:00:00 GMT</pubDate>
   <managingEditor>t@peersky.xyz (Tims Pečerskis)</managingEditor>
   <webMaster>t@peersky.xyz (Tims Pečerskis)</webMaster>
+  <item>
+    <title>DeFi Promised a Bank. Its Savers Are Losing Money</title>
+    <link>https://peersky.xyz/blog/fixing-liquidity-provision</link>
+    <guid isPermaLink="true">https://peersky.xyz/blog/fixing-liquidity-provision</guid>
+    <pubDate>Fri, 09 Oct 2026 00:00:00 GMT</pubDate>
+    <description>Passive liquidity provision barely exists anymore, and I think the fix is a finality rule for prices. A work-in-progress idea.</description>
+    <author>t@peersky.xyz (Tim Pechersky)</author>
+    <category>english</category>
+    <category>DeFi</category>
+    <category>AMM</category>
+    <category>research</category>
+    <category>work in progress</category>
+  </item>
   <item>
     <title>Watching the Stars Again</title>
     <link>https://peersky.xyz/blog/watching-stars-again</link>
