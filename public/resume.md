@@ -1,6 +1,6 @@
-# Resume — Tims Pečerskis, MSc
+# Tims Pečerskis, MSc
 
-Systems engineer, algorithm designer, and product builder. 15+ years designing algorithms under real-time, resource-constrained conditions and shipping them as production systems — **from bare metal signal processing to distributed GPU orchestration**. Led cross-discipline teams, multi-client product portfolios, and technical sales from presales through delivery. Published researcher and patent author.
+Systems engineer, algorithm designer, and product builder. 15+ years designing algorithms under real-time, resource-constrained conditions and shipping them as production systems, **from bare metal signal processing to distributed GPU orchestration**. Led cross-discipline teams, multi-client product portfolios, and technical sales from presales through delivery. Published researcher and patent author.
 
 [peersky.xyz](https://peersky.xyz) · [github.com/peersky](https://github.com/peersky) · [linkedin.com/in/peersky](https://www.linkedin.com/in/peersky/) · [t@peersky.xyz](mailto:t@peersky.xyz)
 
@@ -8,9 +8,9 @@ Systems engineer, algorithm designer, and product builder. 15+ years designing a
 
 ## Professional Experience
 
-### Founder / CEO — [Peeramid Labs](https://peeramid.xyz)
+### Founder / CEO at [Peeramid Labs](https://peeramid.xyz)
 
-*November 2024 — Present*
+*November 2024 – Present*
 
 Lean team of three working across AI infrastructure, blockchain security, and privacy.
 
@@ -18,7 +18,7 @@ Lean team of three working across AI infrastructure, blockchain security, and pr
 
 **Achievements:**
 
-- Launched **[noolog.io](https://noolog.io)**, a sovereign agent-to-agent reasoning network built on my NSED protocol — a Rust distributed system on NATS JetStream with a full audit trace, human oversight, and a kill switch. Designed the product end-to-end, from desktop client to compliance-native audit artifacts.
+- Launched **[noolog.io](https://noolog.io)**, a sovereign agent-to-agent reasoning network built on my NSED protocol: a Rust distributed system on NATS JetStream with a full audit trace, human oversight, and a kill switch. Designed the product end-to-end, from desktop client to compliance-native audit artifacts.
 - Open-sourced the agent SDK **[quorum-rs](https://crates.io/crates/quorum-rs)**.
 - Published the Mixture-of-Models / NSED paper: an ensemble of three open models of at most 21B parameters improved AIME 2025 accuracy by **48%** and LiveCodeBench by **75%** over its average member, a larger ensemble reached **90.0%** on AIME 2025, and deliberation cut sycophancy by **37.5%**.
 - Published the [BRO-AMM preprint](https://zenodo.org/doi/10.5281/zenodo.23241545), an AMM design that cut liquidity providers' losses to arbitrage by **49–79%** in simulation on six months of Ethereum and Arbitrum data.
@@ -26,15 +26,15 @@ Lean team of three working across AI infrastructure, blockchain security, and pr
 - Filed **6 provisional patent applications** across 5 families in multi-agent AI, model reputation, compliance cryptography, and hardware-bound licensing.
 - Disclosed a [critical vulnerability in Ethereum EIP-7702](https://blog.peeramid.xyz/discovery-of-an-ecosystem-vulnerability-in-eip-7702/).
 
-### Lecturer, Blockchain Architecture & Programming — [Invisible Garden Foundation](https://invisible.garden/), US
+### Lecturer, Blockchain Architecture & Programming at [Invisible Garden Foundation](https://invisible.garden/), US
 
-*October 2024 — Present*
+*October 2024 – Present*
 
 - Taught **100+ students** blockchain architecture and programming: EVM, Solidity, resource optimisation, BFT fault tolerance, and protocol design basics.
 
-### Solution Architect / Senior Solution Developer — [OpenZeppelin](https://www.openzeppelin.com/), UK
+### Solution Architect / Senior Solution Developer at [OpenZeppelin](https://www.openzeppelin.com/), UK
 
-*November 2022 — August 2024*
+*November 2022 – August 2024*
 
 **Skills:** AWS · KMS · Terraform · IaC · DataDog · Grafana · Solidity · Rust · Cosmos SDK · DevSecOps · incident response · security monitoring · presales · solutions architecture.
 
@@ -43,39 +43,39 @@ Lean team of three working across AI infrastructure, blockchain security, and pr
 - Technical advisor on the BIS [Project Mariana](https://www.bis.org/about/bisih/topics/cbdc/mariana.htm) cross-institutional CBDC prototype.
 - Co-authored the [EEA DeFi Risk Assessment Guidelines](https://entethalliance.org/).
 
-### Product Engineer — [Moonstream](https://www.linkedin.com/company/moonstream/posts/?feedView=all) *(formerly Bugout)*, California, US
+### Product Engineer at [Moonstream](https://www.linkedin.com/company/moonstream/posts/?feedView=all) *(formerly Bugout)*, California, US
 
-*June 2021 — August 2022*
+*June 2021 – August 2022*
 
 **Skills:** TypeScript · React · web3.js · Figma · product design · UX research.
 
 - Product design and UX research for two products built from zero: the Bugout developer analytics platform and Moonstream's drop-in game-economy mechanics, which processed **$4B+ in transaction volume** in its first months.
 
-### Head of Engineering — SIA TeknoLogic, Latvia
+### Head of Engineering at SIA TeknoLogic, Latvia
 
-*February 2016 — November 2020*
+*February 2016 – November 2020*
 
 Owned the OEM/ODM portfolio for all key accounts and led teams across hardware, firmware, certification, and supply chain. Delivered **30+ hardware/software products** from concept to production with near-100% customer retention.
 
 **Skills:** C · C++ · Assembly · embedded Linux · RTOS · ARM · STM32 · Nordic nRF · Altium · KiCad · high-speed and mixed-signal design · EMI/EMC certification · DFM · supply chain.
 
-- **[Erica Synths](https://www.ericasynths.lv/)** — designed the [Zen Delay](https://www.ericasynths.lv/shop/desktop-devices/zen-delay/) DSP module with Ninja Tune, hardware and algorithm, cutting BoM cost by **30%**; designed the [Black Dual VCF](https://www.ericasynths.lv/black-dual-vcf-59/) around the re-issued AS3320 filter chip and the [DIY Delay kit](https://www.ericasynths.lv/diy-delay-full-kit-339/).
-- **[Aretai](https://aretai.com/)** — owned the hardware portfolio; [Aretai Contra](https://aretai.com/contra/) won the **Red Dot Award 2022**.
-- **[Coastal Amusements](https://coastalamusements.com/)** — led the redesign of the amusement-machine motherboard: >200A load, secured I²C, SPI and USB.
-- **[LeClanché](https://www.leclanche.com/)** and **[Barix](https://barix.com/)** — battery management power circuitry; EMI/EMC certification of the Exstreamer M400.
+- **[Erica Synths](https://www.ericasynths.lv/)**: designed the [Zen Delay](https://www.ericasynths.lv/shop/desktop-devices/zen-delay/) DSP module with Ninja Tune, hardware and algorithm, cutting BoM cost by **30%**; designed the [Black Dual VCF](https://www.ericasynths.lv/black-dual-vcf-59/) around the re-issued AS3320 filter chip and the [DIY Delay kit](https://www.ericasynths.lv/diy-delay-full-kit-339/).
+- **[Aretai](https://aretai.com/)**: owned the hardware portfolio; [Aretai Contra](https://aretai.com/contra/) won the **Red Dot Award 2022**.
+- **[Coastal Amusements](https://coastalamusements.com/)**: led the redesign of the amusement-machine motherboard: >200A load, secured I²C, SPI and USB.
+- **[LeClanché](https://www.leclanche.com/)** and **[Barix](https://barix.com/)**: battery management power circuitry; EMI/EMC certification of the Exstreamer M400.
 
-### Product Owner — [Edge Autonomy](https://edgeautonomy.io/) *(acquired by Redwire)*
+### Product Owner at [Edge Autonomy](https://edgeautonomy.io/) *(acquired by Redwire)*
 
-*March 2015 — February 2016*
+*March 2015 – February 2016*
 
 Led a cross-discipline team of **15 engineers** and owned the product roadmap.
 
 - Extended the range of video-streaming radio links from **5 km to 140 km+** by fixing design flaws in the existing platform.
 - Cleared a **2-year backlog in one quarter** and outperformed the roadmap by **3×**.
 
-### Microwave / R&D Engineer — [SAF Tehnika](https://www.saftehnika.com/)
+### Microwave / R&D Engineer at [SAF Tehnika](https://www.saftehnika.com/)
 
-*June 2011 — February 2015*
+*June 2011 – February 2015*
 
 **Skills:** Microwave engineering (5.6–60 GHz) · LNAs · microstrip design · CST Studio · Matlab · Genesys · Altium.
 
@@ -87,17 +87,17 @@ Led a cross-discipline team of **15 engineers** and owned the product roadmap.
 
 - **Mixture-of-Models: Distributed Inference over Heterogeneous LLMs as Model-Level Mixture-of-Experts.** Pecerskis, T., Smirnovs, A. Preprint, 2026. [arXiv:2601.16863](https://arxiv.org/abs/2601.16863)
 - **BRO-AMM: A Bonded Reconciliation Oracle AMM as a Low-Risk DeFi Primitive.** Preprint, 2026. [doi.org/10.5281/zenodo.23241545](https://doi.org/10.5281/zenodo.23241545)
-- **EEA DeFi Risk Assessment Guidelines — Version 1.** EEA Technical Specification, 2024.
+- **EEA DeFi Risk Assessment Guidelines, Version 1.** EEA Technical Specification, 2024.
 - **Spectrum Analyzer of Ultra-Low Intermediate Frequency.** Patent LV 14855A, 2014.
 - **6 provisional patent applications** across 5 families.
 
 ## Education
 
-- **MSc and BSc, Electrical and Electronics Engineering** — [Riga Technical University](https://www.rtu.lv/).
+- **MSc and BSc, Electrical and Electronics Engineering**, [Riga Technical University](https://www.rtu.lv/).
 
 ## Languages
 
-English — Full Professional · Latvian — Bilingual · Russian — Bilingual · Spanish — Limited · Chinese — HSK3 & Studying
+English (Full Professional) · Latvian (Bilingual) · Russian (Bilingual) · Spanish (Limited) · Chinese (HSK3 & Studying)
 
 ## After Work
 

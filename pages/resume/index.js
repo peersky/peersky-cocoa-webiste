@@ -392,7 +392,7 @@ const Post = () => {
 };
 export async function getStaticProps() {
   const metaTags = {
-    title: "Resume — Tims Pečerskis",
+    title: "Resume | Tims Pečerskis",
     description:
       "Professional experience of Tims Pečerskis (Peersky): 15+ years across AI, blockchain, embedded, RF and microwave R&D.",
     keywords:

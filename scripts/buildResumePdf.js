@@ -81,7 +81,7 @@ function render(md) {
     size: "A4",
     margins: { top: 36, bottom: 36, left: 54, right: 54 },
     info: {
-      Title: "Resume — Tims Pečerskis",
+      Title: "Resume | Tims Pečerskis",
       Author: "Tims Pečerskis",
       Subject: "Resume / CV",
       Keywords:
