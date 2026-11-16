@@ -97,7 +97,7 @@ Led a cross-discipline team of **15 engineers** and owned the product roadmap.
 
 ## Languages
 
-English — Full Professional · Latvian — Bilingual · Russian — Bilingual · Spanish — Limited · Chinese — Elementary (studying)
+English — Full Professional · Latvian — Bilingual · Russian — Bilingual · Spanish — Limited · Chinese — HSK3 & Studying
 
 ## After Work
 
