@@ -8,7 +8,7 @@ Systems engineer, algorithm designer, and product builder. 15+ years designing a
 
 ## Professional Experience
 
-### Founder — [Peeramid Labs](https://peeramid.xyz)
+### Founder / CEO — [Peeramid Labs](https://peeramid.xyz)
 
 *November 2024 — Present*
 
