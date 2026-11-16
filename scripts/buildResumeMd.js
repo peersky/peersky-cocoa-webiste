@@ -12,12 +12,12 @@ function mdxToMarkdown(src) {
   // Drop MDX import statements
   out = out.replace(/^import\s.*$\n?/gm, "");
 
-  // Flatten <HStack>…</HStack> tag clouds into a plain markdown list
+  // Flatten <HStack>…</HStack> tag clouds into one dotted line
   out = out.replace(/<HStack[^>]*>([\s\S]*?)<\/HStack>/g, (_m, inner) => {
     const items = [...inner.matchAll(/<Tag[^>]*>([\s\S]*?)<\/Tag>/g)].map(
       (t) => t[1].trim()
     );
-    return items.map((item) => `- ${item}`).join("\n");
+    return items.join(" · ");
   });
 
   // Strip any remaining JSX tags, keeping their inner text

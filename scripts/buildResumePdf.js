@@ -79,7 +79,7 @@ function ensureRoom(doc, needed) {
 function render(md) {
   const doc = new PDFDocument({
     size: "A4",
-    margins: { top: 54, bottom: 54, left: 54, right: 54 },
+    margins: { top: 36, bottom: 36, left: 54, right: 54 },
     info: {
       Title: "Resume — Tims Pečerskis",
       Author: "Tims Pečerskis",
@@ -116,8 +116,8 @@ function render(md) {
       );
       doc.moveDown(0.6);
     } else if (trimmed.startsWith("## ")) {
-      ensureRoom(doc, 90);
-      doc.moveDown(0.8);
+      ensureRoom(doc, 60);
+      doc.moveDown(0.5);
       doc.fontSize(14).fillColor("black");
       writeRuns(doc, parseInline(trimmed.slice(3), { bold: true }), { width });
       doc
@@ -128,8 +128,8 @@ function render(md) {
         .stroke();
       doc.fillColor("black").moveDown(0.5);
     } else if (trimmed.startsWith("### ")) {
-      ensureRoom(doc, 70);
-      doc.moveDown(0.6);
+      ensureRoom(doc, 60);
+      doc.moveDown(0.4);
       doc.fontSize(11.5).fillColor("black");
       writeRuns(doc, parseInline(trimmed.slice(4), { bold: true }), { width });
       doc.moveDown(0.2);
@@ -152,7 +152,7 @@ function render(md) {
     } else {
       // paragraph (covers *date* lines too — parsed as italic inline)
       doc.fontSize(9.5).fillColor("black");
-      writeRuns(doc, parseInline(trimmed), { width, lineGap: 1.5 });
+      writeRuns(doc, parseInline(trimmed), { width, lineGap: 1 });
       doc.moveDown(0.35);
     }
   }
