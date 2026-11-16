@@ -116,7 +116,7 @@ function render(md) {
       );
       doc.moveDown(0.6);
     } else if (trimmed.startsWith("## ")) {
-      ensureRoom(doc, 60);
+      ensureRoom(doc, 48);
       doc.moveDown(0.5);
       doc.fontSize(14).fillColor("black");
       writeRuns(doc, parseInline(trimmed.slice(3), { bold: true }), { width });
