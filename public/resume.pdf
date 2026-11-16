@@ -291,7 +291,7 @@ endobj
 47 0 obj
 <<
 /S /URI
-/URI (https://sloppoke.me)
+/URI (https://zenodo.org/doi/10.5281/zenodo.23241545)
 >>
 endobj
 48 0 obj
@@ -299,7 +299,7 @@ endobj
 /Subtype /Link
 /A 47 0 R
 /Type /Annot
-/Rect [210.015869 360.506992 305.521484 371.565586]
+/Rect [143.367432 384.282969 231.460449 395.341562]
 /Border [0 0 0]
 /F 4
 >>
@@ -307,7 +307,7 @@ endobj
 49 0 obj
 <<
 /S /URI
-/URI (https://sloppoke.me)
+/URI (https://zenodo.org/doi/10.5281/zenodo.23241545)
 >>
 endobj
 50 0 obj
@@ -315,7 +315,7 @@ endobj
 /Subtype /Link
 /A 49 0 R
 /Type /Annot
-/Rect [305.521484 360.506992 445.934082 371.565586]
+/Rect [231.460449 384.282969 535.743408 395.341562]
 /Border [0 0 0]
 /F 4
 >>
@@ -323,7 +323,7 @@ endobj
 51 0 obj
 <<
 /S /URI
-/URI (https://sloppoke.me)
+/URI (https://zenodo.org/doi/10.5281/zenodo.23241545)
 >>
 endobj
 52 0 obj
@@ -331,7 +331,7 @@ endobj
 /Subtype /Link
 /A 51 0 R
 /Type /Annot
-/Rect [445.934082 360.506992 520.99707 371.565586]
+/Rect [76 373.224375 90.672119 384.282969]
 /Border [0 0 0]
 /F 4
 >>
@@ -339,7 +339,7 @@ endobj
 53 0 obj
 <<
 /S /URI
-/URI (https://sloppoke.me)
+/URI (https://zenodo.org/doi/10.5281/zenodo.23241545)
 >>
 endobj
 54 0 obj
@@ -347,7 +347,7 @@ endobj
 /Subtype /Link
 /A 53 0 R
 /Type /Annot
-/Rect [520.99707 360.506992 530.74292 371.565586]
+/Rect [90.672119 373.224375 131.381104 384.282969]
 /Border [0 0 0]
 /F 4
 >>
@@ -355,7 +355,7 @@ endobj
 55 0 obj
 <<
 /S /URI
-/URI (https://sloppoke.me)
+/URI (https://zenodo.org/doi/10.5281/zenodo.23241545)
 >>
 endobj
 56 0 obj
@@ -363,7 +363,7 @@ endobj
 /Subtype /Link
 /A 55 0 R
 /Type /Annot
-/Rect [76 349.448398 225.337402 360.506992]
+/Rect [131.381104 373.224375 420.426025 384.282969]
 /Border [0 0 0]
 /F 4
 >>
@@ -371,7 +371,7 @@ endobj
 57 0 obj
 <<
 /S /URI
-/URI (https://blog.peeramid.xyz/discovery-of-an-ecosystem-vulnerability-in-eip-7702/)
+/URI (https://sloppoke.me)
 >>
 endobj
 58 0 obj
@@ -379,7 +379,7 @@ endobj
 /Subtype /Link
 /A 57 0 R
 /Type /Annot
-/Rect [133.264404 312.955039 333.330322 324.013633]
+/Rect [210.015869 360.506992 305.521484 371.565586]
 /Border [0 0 0]
 /F 4
 >>
@@ -387,7 +387,7 @@ endobj
 59 0 obj
 <<
 /S /URI
-/URI (https://blog.peeramid.xyz/discovery-of-an-ecosystem-vulnerability-in-eip-7702/)
+/URI (https://sloppoke.me)
 >>
 endobj
 60 0 obj
@@ -395,7 +395,7 @@ endobj
 /Subtype /Link
 /A 59 0 R
 /Type /Annot
-/Rect [333.330322 312.955039 336.350098 324.013633]
+/Rect [305.521484 360.506992 445.934082 371.565586]
 /Border [0 0 0]
 /F 4
 >>
@@ -403,7 +403,7 @@ endobj
 61 0 obj
 <<
 /S /URI
-/URI (https://invisible.garden/)
+/URI (https://sloppoke.me)
 >>
 endobj
 62 0 obj
@@ -411,7 +411,7 @@ endobj
 /Subtype /Link
 /A 61 0 R
 /Type /Annot
-/Rect [395.743164 293.486094 505.50415 306.872813]
+/Rect [445.934082 360.506992 520.99707 371.565586]
 /Border [0 0 0]
 /F 4
 >>
@@ -419,7 +419,7 @@ endobj
 63 0 obj
 <<
 /S /URI
-/URI (https://invisible.garden/)
+/URI (https://sloppoke.me)
 >>
 endobj
 64 0 obj
@@ -427,7 +427,7 @@ endobj
 /Subtype /Link
 /A 63 0 R
 /Type /Annot
-/Rect [54 280.099375 127.18335 293.486094]
+/Rect [520.99707 360.506992 530.74292 371.565586]
 /Border [0 0 0]
 /F 4
 >>
@@ -435,7 +435,7 @@ endobj
 65 0 obj
 <<
 /S /URI
-/URI (https://invisible.garden/)
+/URI (https://sloppoke.me)
 >>
 endobj
 66 0 obj
@@ -443,7 +443,7 @@ endobj
 /Subtype /Link
 /A 65 0 R
 /Type /Annot
-/Rect [127.18335 280.099375 153.17627 293.486094]
+/Rect [76 349.448398 225.337402 360.506992]
 /Border [0 0 0]
 /F 4
 >>
@@ -451,7 +451,7 @@ endobj
 67 0 obj
 <<
 /S /URI
-/URI (https://www.openzeppelin.com/)
+/URI (https://blog.peeramid.xyz/discovery-of-an-ecosystem-vulnerability-in-eip-7702/)
 >>
 endobj
 68 0 obj
@@ -459,7 +459,7 @@ endobj
 /Subtype /Link
 /A 67 0 R
 /Type /Annot
-/Rect [372.501709 219.906797 462.96875 233.293516]
+/Rect [133.264404 312.955039 333.330322 324.013633]
 /Border [0 0 0]
 /F 4
 >>
@@ -467,7 +467,7 @@ endobj
 69 0 obj
 <<
 /S /URI
-/URI (https://www.openzeppelin.com/)
+/URI (https://blog.peeramid.xyz/discovery-of-an-ecosystem-vulnerability-in-eip-7702/)
 >>
 endobj
 70 0 obj
@@ -475,7 +475,7 @@ endobj
 /Subtype /Link
 /A 69 0 R
 /Type /Annot
-/Rect [462.96875 219.906797 489.590576 233.293516]
+/Rect [333.330322 312.955039 336.350098 324.013633]
 /Border [0 0 0]
 /F 4
 >>
@@ -483,7 +483,7 @@ endobj
 71 0 obj
 <<
 /S /URI
-/URI (https://www.openzeppelin.com/open-source-stack)
+/URI (https://invisible.garden/)
 >>
 endobj
 72 0 obj
@@ -491,7 +491,7 @@ endobj
 /Subtype /Link
 /A 71 0 R
 /Type /Annot
-/Rect [153.512207 151.195469 240.028076 162.254063]
+/Rect [395.743164 293.486094 505.50415 306.872813]
 /Border [0 0 0]
 /F 4
 >>
@@ -499,7 +499,7 @@ endobj
 73 0 obj
 <<
 /S /URI
-/URI (https://www.openzeppelin.com/open-source-stack)
+/URI (https://invisible.garden/)
 >>
 endobj
 74 0 obj
@@ -507,7 +507,7 @@ endobj
 /Subtype /Link
 /A 73 0 R
 /Type /Annot
-/Rect [240.028076 151.195469 246.067627 162.254063]
+/Rect [54 280.099375 127.18335 293.486094]
 /Border [0 0 0]
 /F 4
 >>
@@ -515,7 +515,7 @@ endobj
 75 0 obj
 <<
 /S /URI
-/URI (https://www.openzeppelin.com/open-source-stack)
+/URI (https://invisible.garden/)
 >>
 endobj
 76 0 obj
@@ -523,7 +523,7 @@ endobj
 /Subtype /Link
 /A 75 0 R
 /Type /Annot
-/Rect [246.067627 151.195469 393.860352 162.254063]
+/Rect [127.18335 280.099375 153.17627 293.486094]
 /Border [0 0 0]
 /F 4
 >>
@@ -531,7 +531,7 @@ endobj
 77 0 obj
 <<
 /S /URI
-/URI (https://www.bis.org/about/bisih/topics/cbdc/mariana.htm)
+/URI (https://www.openzeppelin.com/)
 >>
 endobj
 78 0 obj
@@ -539,7 +539,7 @@ endobj
 /Subtype /Link
 /A 77 0 R
 /Type /Annot
-/Rect [212.274902 114.702109 286.025146 125.760703]
+/Rect [372.501709 219.906797 462.96875 233.293516]
 /Border [0 0 0]
 /F 4
 >>
@@ -547,7 +547,7 @@ endobj
 79 0 obj
 <<
 /S /URI
-/URI (https://www.bis.org/about/bisih/topics/cbdc/mariana.htm)
+/URI (https://www.openzeppelin.com/)
 >>
 endobj
 80 0 obj
@@ -555,7 +555,7 @@ endobj
 /Subtype /Link
 /A 79 0 R
 /Type /Annot
-/Rect [286.025146 114.702109 455.939697 125.760703]
+/Rect [462.96875 219.906797 489.590576 233.293516]
 /Border [0 0 0]
 /F 4
 >>
@@ -563,7 +563,7 @@ endobj
 81 0 obj
 <<
 /S /URI
-/URI (https://entethalliance.org/)
+/URI (https://www.openzeppelin.com/open-source-stack)
 >>
 endobj
 82 0 obj
@@ -571,7 +571,7 @@ endobj
 /Subtype /Link
 /A 81 0 R
 /Type /Annot
-/Rect [156.652588 101.984727 334.476074 113.04332]
+/Rect [153.512207 151.195469 240.028076 162.254063]
 /Border [0 0 0]
 /F 4
 >>
@@ -579,7 +579,7 @@ endobj
 83 0 obj
 <<
 /S /URI
-/URI (https://entethalliance.org/)
+/URI (https://www.openzeppelin.com/open-source-stack)
 >>
 endobj
 84 0 obj
@@ -587,7 +587,7 @@ endobj
 /Subtype /Link
 /A 83 0 R
 /Type /Annot
-/Rect [334.476074 101.984727 337.49585 113.04332]
+/Rect [240.028076 151.195469 246.067627 162.254063]
 /Border [0 0 0]
 /F 4
 >>
@@ -595,7 +595,7 @@ endobj
 85 0 obj
 <<
 /S /URI
-/URI (https://www.linkedin.com/company/moonstream/posts/?feedView=all)
+/URI (https://www.openzeppelin.com/open-source-stack)
 >>
 endobj
 86 0 obj
@@ -603,7 +603,7 @@ endobj
 /Subtype /Link
 /A 85 0 R
 /Type /Annot
-/Rect [185.918701 82.515781 266.907227 95.9025]
+/Rect [246.067627 151.195469 393.860352 162.254063]
 /Border [0 0 0]
 /F 4
 >>
@@ -611,7 +611,7 @@ endobj
 87 0 obj
 <<
 /S /URI
-/URI (https://www.linkedin.com/company/moonstream/posts/?feedView=all)
+/URI (https://www.bis.org/about/bisih/topics/cbdc/mariana.htm)
 >>
 endobj
 88 0 obj
@@ -619,7 +619,7 @@ endobj
 /Subtype /Link
 /A 87 0 R
 /Type /Annot
-/Rect [266.907227 82.515781 270.910889 95.9025]
+/Rect [212.274902 114.702109 286.025146 125.760703]
 /Border [0 0 0]
 /F 4
 >>
@@ -627,7 +627,7 @@ endobj
 89 0 obj
 <<
 /S /URI
-/URI (https://www.linkedin.com/company/moonstream/posts/?feedView=all)
+/URI (https://www.bis.org/about/bisih/topics/cbdc/mariana.htm)
 >>
 endobj
 90 0 obj
@@ -635,21 +635,101 @@ endobj
 /Subtype /Link
 /A 89 0 R
 /Type /Annot
-/Rect [270.910889 82.515781 387.662842 95.9025]
+/Rect [286.025146 114.702109 455.939697 125.760703]
 /Border [0 0 0]
 /F 4
 >>
 endobj
+91 0 obj
+<<
+/S /URI
+/URI (https://entethalliance.org/)
+>>
+endobj
 92 0 obj
+<<
+/Subtype /Link
+/A 91 0 R
+/Type /Annot
+/Rect [156.652588 101.984727 334.476074 113.04332]
+/Border [0 0 0]
+/F 4
+>>
+endobj
+93 0 obj
+<<
+/S /URI
+/URI (https://entethalliance.org/)
+>>
+endobj
+94 0 obj
+<<
+/Subtype /Link
+/A 93 0 R
+/Type /Annot
+/Rect [334.476074 101.984727 337.49585 113.04332]
+/Border [0 0 0]
+/F 4
+>>
+endobj
+95 0 obj
 <<
 /S /URI
 /URI (https://www.linkedin.com/company/moonstream/posts/?feedView=all)
 >>
 endobj
-93 0 obj
+96 0 obj
 <<
 /Subtype /Link
-/A 92 0 R
+/A 95 0 R
+/Type /Annot
+/Rect [185.918701 82.515781 266.907227 95.9025]
+/Border [0 0 0]
+/F 4
+>>
+endobj
+97 0 obj
+<<
+/S /URI
+/URI (https://www.linkedin.com/company/moonstream/posts/?feedView=all)
+>>
+endobj
+98 0 obj
+<<
+/Subtype /Link
+/A 97 0 R
+/Type /Annot
+/Rect [266.907227 82.515781 270.910889 95.9025]
+/Border [0 0 0]
+/F 4
+>>
+endobj
+99 0 obj
+<<
+/S /URI
+/URI (https://www.linkedin.com/company/moonstream/posts/?feedView=all)
+>>
+endobj
+100 0 obj
+<<
+/Subtype /Link
+/A 99 0 R
+/Type /Annot
+/Rect [270.910889 82.515781 387.662842 95.9025]
+/Border [0 0 0]
+/F 4
+>>
+endobj
+102 0 obj
+<<
+/S /URI
+/URI (https://www.linkedin.com/company/moonstream/posts/?feedView=all)
+>>
+endobj
+103 0 obj
+<<
+/Subtype /Link
+/A 102 0 R
 /Type /Annot
 /Rect [387.662842 82.515781 484.576172 95.9025]
 /Border [0 0 0]
@@ -664,7 +744,7 @@ endobj
 /Contents 5 0 R
 /Resources 6 0 R
 /UserUnit 1
-/Annots [11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R 25 0 R 27 0 R 29 0 R 31 0 R 34 0 R 36 0 R 38 0 R 40 0 R 42 0 R 44 0 R 46 0 R 48 0 R 50 0 R 52 0 R 54 0 R 56 0 R 58 0 R 60 0 R 62 0 R 64 0 R 66 0 R 68 0 R 70 0 R 72 0 R 74 0 R 76 0 R 78 0 R 80 0 R 82 0 R 84 0 R 86 0 R 88 0 R 90 0 R 93 0 R]
+/Annots [11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R 25 0 R 27 0 R 29 0 R 31 0 R 34 0 R 36 0 R 38 0 R 40 0 R 42 0 R 44 0 R 46 0 R 48 0 R 50 0 R 52 0 R 54 0 R 56 0 R 58 0 R 60 0 R 62 0 R 64 0 R 66 0 R 68 0 R 70 0 R 72 0 R 74 0 R 76 0 R 78 0 R 80 0 R 82 0 R 84 0 R 86 0 R 88 0 R 90 0 R 92 0 R 94 0 R 96 0 R 98 0 R 100 0 R 103 0 R]
 >>
 endobj
 6 0 obj
@@ -674,7 +754,7 @@ endobj
 /F2 8 0 R
 /F3 9 0 R
 /F4 32 0 R
-/F5 91 0 R
+/F5 101 0 R
 >>
 /ColorSpace <<
 >>
@@ -682,112 +762,32 @@ endobj
 endobj
 5 0 obj
 <<
-/Length 4888
+/Length 4934
 /Filter /FlateDecode
 >>
 stream
-xœÝ]Én$¹½ë+êLs_€Af¼ >°§o†¥¥ ÓŒìßwÁf2YY¥”ÔjÔber	#^l”:Iøïw
-þ­1ž¾=üþ/ÿý×ÓËßÿüãéé×Yùõéß›íÿyP½n~üŠíêäì)Ä(´3!œ¾ÂÒ'•N_/ÿøAJ©à£ácàcáãðwŸ€?#|~g°íŒÏ=âÏ'üîŸÍÿ~Ág/Ó0J}9Éž¾þåá_þöFKõQ„h¼ÓÓZÍi¼TÃ–jq©—pÆåå¥ùÑÔ…’*y¢5Êíl:I¡“U*x¤‹Q˜›Îùèu°N¦(MÒ¸.ÖÝO?¿¦»Ÿú+¼îNÿ{PÚg¤ú¬:&éOß´ÒÂ[Ÿ|`Í¿<ükºN^Þç€ÌÏHJNÎ—/'ã`dëŒ:å‡._NÊjáBTÚå–‰AY`—TÞ™øå¤•HA{çËk¸m
-~ªÜ¯ÝÅQ×—Æé2XpŠòø8FÁòTúr
-Axãœª>)»hkDr°œ–]Œƒ¯u
-íeÞç÷Â.Ó‹yL§[=¾J ½NP9¤U•$°Hõ4­¬Š(Z€Cqe'Ñ¤HÚ>¶DT$y3e.øÜ™Ir3IB…ýebT‘˜ðùÇ~eÜ3þþÜ£ú©/k5ËX­§¶2À…
-$%Bò1Ô½-/äYæNhÕ|A3VÍ>1*í¥õI®“\ê}Ûl’°)Z:ÛÜgXœ¥öHºÄ˜—öa‹Ó%Ò}õ@Ù;õZþMÊ8,"]7Ñ.óçK[šgÖôÓã75•gŸåŒø¾ ý+—S?ôïÝ\Æ'„ƒŽ‘«M½ÿLÛ`tn’ZmºnÎ6¢¥"±·•‰=áÊïá4„5)Â?×ƒ¬ËÚ+¤ÂLúÂ`E“µß•-Ä‰*Žè|´¢Âs®èèÔ–Oø<
-(EGw©»óÌ¥Ÿ§iÌÂðºí«ÌÑcŸfÒÀ‡ì ñ 7³"×+b¶Òå“<«SJ«CÓcZ‰¨‰Äˆ¬ËxJòùoä:mÉìƒä"%w™·GßÃCÊ	«ñUçùÕy¡t¬ðù= ¹ø5ÈgÖù¹]ÜJ¤ !rŸEl ¿iäÑÒ~úä#ñgw²Cyc·{¬¬Û«X[Kv¬,[.7=º8g‚›^+TÕ¬Ç„(QjsU‹vÔõr·Ê“F­½ïqQAp£Œs"ïYöÀÂ‘î;„æð½r^hã“²€É•L`Ì»èoßÊ¡7 œ0É8ß“m‡Àñƒä1[éxÎÕ,ûdV—RQåTôíkš»g‹Y¯C²)æª)ð—$Šœ!_Q,æ¶8ÎŸÖÿÛÜxB7(Ø(Ýn¼1VX+±Ûàž{o<G«M$ýA ½ÇôÝ»s#Ðo“3Œ5`:$§œxXë»DëuL¶,
-â{j7ñ­ø „…‰zÓ³¿.³‰Q=ÝÜTÑ³iSÌš‘G©5“q\ÊZm1Ïßì ¨¸—»A8&Þêä ëdi£W·'³Xªß 1ç™Ù„ïx¯L$—Ðº¬ñŸFÚcÂ×yu- \ü³\aKçð(·Å>6s`æÃ±öiHuí?Ã(~–­¹‚f¢sGž–K»Ú›ì­M÷Ø†»¦qÉŸ×“Øgá>ÊêKëºi8s.-\âjã¾¸¥_é*uFö[C…;Á‚LµAƒEÒarË]Ø	ÙòœmÚcÄlo»~¾ÉÅý¢wÂ ‘HjÌVJp‡’fFBÌÈ•ª€öžâŒIÎRºà“]ë…ÙU*lH1P©– #oû”p %¼ÔëþDŸ¬¨~_Šºd„ôÑ”Š*æ•1_N6i‚±¶è`:±	=D4?9ÓéPÂë]õƒ~WHIeÓÉ;¡\1:©Œ	@<0¼ÉÀëš·ï6æ^Çd¯áoræ2µI~MÍÔ’4w$Ÿ‰Ä¦à›m¤S/(N¦À´3	JÛþ|–³ë^>V9¯`/{Ò¸ç³­‰J¨ˆoö}ß×GxÙOè¦º8_ä
-Må®ªÏ%L©ÐPˆõµÚ¥Ð©Z]‡„D^˜²áq Èd”³—“VÝ1>[@ygQhSÏX²†¬JÄ?ÈcèH+r«y¬Œý¢ÞŠ¤¹>I,˜=¯×/Ù¢Yð¾>·–Õ]³XZW…Ff–"Ì‘œ<—*T:„A&Êí<|]~dLbïåöó"×Â˜iÐf‘suÇ»!ãrÕË‡èœâ&–äó“¡kôìN£ÂØbk’ëI/jD9'‚W”mr‘ÕZÏ”˜¤Šœq±™ ÁŠyHÆ5–ÛG‘i‚¾‹=7Ðq^Hª6Qõ¸î¬FèQ2IÑp¬—mèŸ³|êlw]5Ó¦ÑX¾[†L™=Í‚õn7å®¤gôë;xEk£3¾›CòÌVhgwAïœ·8›Ìg%«iM¶%®¸qyÂ«+À-VÏÍv2åÂÜg™Ðó<a2×?T9H/à	ßÑ9{ Æ¨Ñ$Ñ\/“‰R	ÿÆéÞŸlR&¦\ìIpÒ
-W"ùÏÿ66ùilÊ¦tðŠS@aã´ð ˆuÅ'dô>°ÖýÉ”µË%-[B†±Ab&W fùî(·d]Ìpo°Gàð,Y»'R:n§¥W®º3AÉÿNEØëc¨BÃ·é!­óê%‚‘D2¨Î%fª5IÏ„‡È1‰Ø¤`+kFÌJãFáŸO`H"ùØwäkÊïÁ]ºŽoõënùedº
-ÛLœ÷BQù¦Û›Ì"dþªÏØRÉãXÕqlÑ†2W'Îj!I9çeq±avÙ¸UË\ÌÀ"º'·+ïµ"É”BOÑ“Ù,Ø-ˆ„¸¦“Õ;	Ÿ<Ï¦‚…Gw“|Ò»r²Ù“5ŸéZŠNãÓ~™¹‚‡ÉJô¬_ÀCžx…ÇÓ&k©9p‰	6ìŽvAD§j©Æ:w&ÎhÌ%Ì&|%XÚ2¬Ê˜”z’çP1ˆ,LS`7ù{CÅd©”Ï‹ùŒÈEƒù$½÷îdR6yK†IÐ"DŸùŒµïN4¨.w¨Èd0P´¬¦¢š£ [ÍeÞåp-, :ÕÕ‡ŽÑ@÷¥.„&óÿšS1§š¶‚]bu…³‚õ4õ¸0%«IˆÇmLivÞ—ž,Šp4ŠšÎ1%Ï;F:ó·zv«’±²…‚«j åÁÞ™1ØÊfi\*õX-‹DèØeˆ„wª•MþnæU©›–ÌvR£è¦ÎûKÞ“<óŒa"¶@îI®^aYÁ·\câWä§$_*m–kÅÕ¹JØJ‘Å´Z¼ÎôX"EÊGJëç–ÇÉSn^¿õ¬sv>˜x…zôE=¢ÈnP¹xM½%&G&&Tt×éRYÙ&«»‰Rz1 Ç~>]$sè¹¥õ\Ó_–­vF«Ù#Ì¶Ì¦Ûü/·(Þdˆ÷`ôŠ\s¯ªžL’òó°#¦/øåÊ~-ÌÒ=kËˆ[&ðóýmì>	¼;E= sŠÝD14Åk™¢Ü†y+á
-|( ÖD«—slÀL´.p¤”PQ‹”œ—nH£÷@~&zá´é—ú‰ü†‚ü²vÉêÐ$ våˆi9Eq2Ôk­ª3îì0ÃÐÊ6L®ýÅ«G“u8L_3ŒÕ)³¯9jóºÍsêuZc°“ä*ýÌ\Ø <nÏÓ(˜¯Ð—Ölð•î¸C6—³Hûµj‡ø$…Z©´w¦(–V„¬:òÐ•ËÔ”´ãÅWÀ(ÁÌ2íÛ‘Ø«:R2„8x'×µ”]Ào¬lV7#ƒ{NªFŸû,Ãß©™qYé=DƒÛÂomä*ñn)ÛÚâžT¦êdPWDÀÊÃIµºŸÏêZ•”e¥ˆsá‰t RTv±öýþ ÚëpÃx6Sõ¼¢T%÷ççìÖjÊ-nï£ðäL‡1ëu¢`5P€.ÚU©ý2Ø°(sì'Î²É,°û®ÐÙa]Y'È§¨Wmåø3‚7òÌco™´b>ºÛi	À.È0Þ«i3îPœN	cÜv¶¯B7L–¤B!£GØ‡¶vó¢‚„‘w‘å&Âl•}soþp rì³3ùŠ™ä{=Úf…-Éú]ß‹µ&×¯˜µ®yæãFÆºÂpR½æ€R@8(Ò'+{žõy w<¯²Á0Þî »ž˜JŽªáplË(èÆÜ‰ÜWzO¿é`åkÝô}<3S ƒóî`%¥{‰š{ŠURÜó,ðYJèñ."gg[- •é<«ÉÇ=bËen³›êŒÉûÄ6ßC>)'Tr®ïå>R>Rì¼\¦3Á1ç:Âÿý£BeŒÐÞZ™S
-£°ÙŸ¦J9² üÖ¼}w†ÓÜë´MÊ*Ï=Ôìx&6ØÅTE^é…èáF==7[cÅv}œ\*­Ï##13}&áaåÍ•àcnüÀ”H<L,j*'YÔ#‘,W¨Ñ¬œ+mŸrÞ¿çG‰–³qkr›BÉ‰©•U³$”vA¶×‘~Ý5÷OéPL—+¬b©¥;lœwü|…Q&9@ËFù©²ÁJ3]åç²eöƒãÍ»ëÇçNÇÛoð©P²x(îA„b"u´ñáô)õARX>(Éo
-t¹ŠÆ8Þ|Ãm*:j•rÆtÃµò¼7»Ìj^×x†tPç¯+>æÚ¤|§J­œk=ùiªÉmåGV¨íÂ.:§Õ[ÛVãrÕˆwŒ«Ëå,g`))"ØÕi=­ÖÀÂ``ù0—	p.¦úÃbFIÀñHfL6Š—í.“ë¡ì»
-¸»	›¾If-(rCñ„gJ´µ²êTkêJ¡Ïëï›¼Ç¼ÒÐî•×º›íJ¾AÒ,´\ò¾um¼)¤•…kc Š«qË”¹àj”¬2fÉÝ|7êVÕÐ(ÐU0®ž¿+ï¾>Ýóu[Ãá³D•j­^)%‚X³PÈ´toì…rÜÙ g‰@}{ïÏPÂ,‚œB¡\©Oû‚xJ'Ÿ=§%b›ïÊµÐ%5ï†}s§ãÍÖn&b©¢#ñ™µ“¿ë(„3/m<9ŽpÌóž	&´«8Q‡Ÿdƒr”™mW…H§—:ú8¨¤…Z›^5Ý;VZ/ç±Öúç&sÕZ¹ª26˜¥°j/X+-mWùª$ðîÓµënYàJ¢kyO:Ò²V?¯Ê®åbPÊ¸Ð‹þn(ý½­ eMâ+Y‚qF€ÍÂù&;f­WÓþÝ^;ý,`»)UˆŸèNÞªš¯VžQÖ,w(„­l×EOËê5ŠnVËÛ¯=j&„{þ)n(Úe{)o…MÖu/Ø?Òö4¼#šÓ«Ðw{åýdiÓÜUß$“³M”e%õ~˜:âš*²X‡ž±3	€3› Ïã§wì_ýL~:Š¡ Päö}”M*VÅßØ—î¹‘öl£3Â—úé{‹b#Cª™§°šxSK >ŠÄP PÁ)07ÂÉ'è1•ë¾= 7¡XûîPÀÜëÌ½êŠf&c<Ša•nÆÖ>œýT\yØ ^H`›Vƒ¶^”ê\—óüè6'Wz•Ì*Œ,©£ÞºŸ×Ì–BJïƒí¯Ù¹`Bm”4*²GUäAáÛÌ”M&Â–ÄDi¹u1ç-J½—~Ru3IVf/ÔçÞ¹,DþUQïä×‘^ ‡ºò;ä¶NÂ»­ÚèÇyÀ<oD)u´µ"Bxð±„søß;{‘õË&qkAŽU
-WÃïv”Éjño}t†u­Ÿ=ðF±Dëzu¡ž)ÕËT$;ì“)Û|Ï9|“ò_ÈÒ>Û›1e¶ªÔNYÏÛ÷gcÖ^‡›µªèz+­Ÿ7±&åÔª%Ù$·ì¼ˆsÇf—0gÑ\¹†¶úéIb¡øíš;Œ5Kú#Z¨dz_uìVCî=Ï¿´Bk§e÷Ú°#Ïÿh ÉÐß¼¿…'`œ7TC¿$å“ì|E»w…iËß‚’9ôF÷ûèÜòöý(ºö:Þn‹¹+äR!ª—c99rZ…G‰w«Š'»6eþÑ”Ö,¬¡éý#ÿÀDÃ!>24Ì+$³}w,%¡P¢/v(9'¡PâÅ>o„à¶H $ˆ…	V«éÆ^ð2 ½xûî31÷:&:Þú?g×ÊöÆw ‹²%'u˜±$PAFøb1 k¼%ÊPoéÀgÙ~XÝnÂ{ËFÇ"õ"ç$ë4[¨åQ4I¯Îf	ùµ’Ç×Ifñ(-yP™…hmÄ­¡×Yè¯»'Ñ	™TØØºí4VXñ¾ûS‡1nÎ®ÆDø½·a¢„%Out‹è*ÌE„æ°¿ýPg	üdÉÔºû/Æ½ò´ýsˆe
+xœÝ]Yã¸~ï_á?†÷,æa7‡ ÉÎ[÷a ÀN€`äï§HUQE‰¢e·º{z1ð¸-K<ŠÅª¯.Z$üû‚ÿ¢U"¦ÓÓ·‡ßÿáå¿ÿzzùûŸ<=ýú Ë-¿>ý{óúT¯™¿âuuröbÚ™N_¡‡?é“J§¯—‡ü ¥TðÒð2ð²ðrøÙÃ+à{„WÂï^;ã}øþ„ß=ã½ùï¼÷2u£Ô—“üçéë_þøõáoo4UEˆÆ;=ÍÕœÆS5lª§êp
+gœ^žš](©’—!Z£LÐÎ¦“:Y¥‚·Aºµ±Iáœ^ëdŠÒ$óbÍýôókšûù§¿Âãîô¿¥pFê OÁŠ c’þôíA+-¼õÉvù—‡ŸaN×ÉËÛùIÉÉùòådôlQ§|ÓåËIY-\ˆJ»|ebdX%•W&~9i%RÐÞùò.›‚w•Ûµ»8êúÔ8]SNQßcLO¥/§„7>À®úá“²‹¶F$ÓiÙÅ8øZ§ÐpÑ^vám~/ì2=˜ûT°»Õã«Òë•S° AZUI+DQOÓÌªˆ¢	8WvMŠ¤ícKDE’7Sæ‚÷™$7“$TØ^&F‰	ïì·Wú=ãççÕÏH]xX«YÆj=]+\X§Ð@R"$C]Ûò@en„f}Á4c•Ñè£Ò^jP›Dá:ÈÕ®Þ·Ì&	›¢µ¡³Ì}†ÅQj¤KŒyi¶8]"ÝW7”…°S«åoRnÄaéÊ¸‰V™ß_®¥ydM;=qÓ¥rï³œñ_¤årj‡þÞÍe|@Øùhé°ZÔû÷´F@ã&©Õ¢ëfo#Z*‹q[ØÎüNÓAX“"ü¹î”`]Ö^¹#fÒ+š¬ý®,!TqìDÏàs¤îsE[Ï ¶|ÂûQ@)ÚŠ¸JEØgv(í<M}†×m[eŒÛ4“>d½™¹^³•Î(Ÿ$àY˜RZmšÓJd@M$Fd]À]’÷#×i©H>`$)¹Ë¼<úRN˜ïÌ:¯Ž¥c…Ï·èÉÅ¯A>8³ÆÏíäV"	‘Û,bùM#–vh÷Óg’ÄŸÝÁåÝn±
+°n«vbm-Ù¶²lºÜôèâœ	n.x­PU³f¢D©ÍIT-ÚQÔÊÝ*Oa´ö¾ÇE]Á2ÎUˆ¼gÙGb¸ïšÃ÷Êy¡OÊ&W21ï¢Küú^P­å„IÆùžl;Ž$ÙLÇc®fÙ'³º”ŠÂ(§¢o—¸X£pÙ¹{–˜µ:$›b®šI¢ÈòÅbn`‹ã¬ñiþ¿Í…× tƒ‚…ÒíÂc…µrÁ»î¹ÕñÂst±ZDÒÒ{Ü@ß½;g0ý69ÃX¦CrjÁÐˆ€›µ¾K$°VÇdË¢ ¾§xßŠJX¨7=ûë2›ÕÓÍM=›6Å¬y!y”Z3Ç¥¬Õã\±ðÍ‚Š{¹„câ- Nþ²N–6zu{2‹¥úsî™Møn÷Ê@r	- Ëÿid¡=&|W×ÂÉ?Ë¶ÔyrKPìc3f>lkŸ¶€T×þ3ŒâgÙš+hÖ(Úwäi¹´³½ÉÞÚtm¸kw‘üy=ˆ}î£¬¾´®›†3çÒÂ%þ kÜ·ô+]¥ÎÈ~k¨p#X©6h°H:Œ@n¹Û![ž³M{Œ­m×Ï7¹¸?PôN$)@ÙJ	îPÒŒÁHˆ¹rBÐÚSœ1ÉYJ|²k¾0:°J…)F*ÕÁtä×~%@	/õº?Ñ++êŸß—¢.!}4$e€¢ŠyeÌ—“ÍAš`¬-:˜vlBOÍOÎtÚT…°ÄzWý ßRRÙtòN(W`ŒÎA*cL'/E2ð¸æ×w›Ns«c²×ð79s™Ú$¿¦fjIšÛ’€ÏDbSðÍ6Ò©§S`Zˆ™åÚ¾?ËÙƒõ‚ï—•AÎkàXËž4îùlk"Ã†*â›}ß÷õ^öº©.Î¹BS¹…«ês	Sj#´"A}­vétªV×!!‘¦lxh2Gåìå¤Yw‡äPÞYÚÔ3¤¬!«ñòXc zÒ
+¤Üj+c@?¨·"iE®ÏEKfÏëÏú%[4Þ×çöÆ2»ãqK«à* ÐÈÌ²@„9’“ÇR…JÇ€0ÈDù:_—ÏŒIìâ¹|ý¼Èµ0fê´Dä\ÝñnÈ¸œõò&Ú„‡¸‰%ùøäDè=»Ó¨p–ØšäzÒË€QÎ‰àe›\dµÖ3%&©"g\l&H°b’q¥ÀÖ‘Gdš ïbÍ´c\‡R‡ªMT=®«z”LER4ëeúç,Ÿ:KÅ]WÍ°©7–ï–!SfO³`½ÛM¹+é}ãú^ÑZÄèŒïæ<³ÚÙ]PÃ;ç-Î&óYÉjZ“mI+îB\îðê
+p‹Ùs³L¹0·Yô<˜ÌõUÒ‹xÂwtCÎ¨1j4I4×Ëd¢TÂ¿qú£÷'›”€){Ò#¤´Â•ŽHþsÃ¿M~[ƒ²)<âPØ8-<bCqÁ	½ìêþdÊÚä’–-!ÃØ 1“Š+³|w”[²Nf¸¶Ø#px–,ŒÝ)·ÓÒ+WÝ™ ä§",‡õ1T¡¿áÇÛôÖqõÁH"™Tç3Õš¤gÂCä˜DlR°•5#æF¥q£ðÏ;0$‘|ì;ò5å÷à*]ÇŽ·úu·ü²2]…m&Îk¡(‰|ÓíMf2Õglªäq¬jŠ¸‡¶hA™«“@gµ¤œó²¸Ø0»lÜªe,f`Ý“Û•×ÚG‘dJ¡§èÉÀl&ìDB	\ÓIˆê„OžgSÁÂˆ£»I>é]ÙÙìÎšÏt-E§ñi¿Ì›Š\ÁÃd%º×/à!O¼Â…ãi“µÔ¸Ä›vÇB» ¢SµTc;ç4æf¾,íÖ	eLJ=És(ÈvD¦Œ†)°›ü½¡b²TÊûÅ|Fä¢Á|’Þ{w2)
+›¼%Ã$h¢Ï|Æ®ïN4¨.W¨Èd0P´7¬¦¢š£ ›ÍeÞes-, :ÕÕ‡nŽQG÷¥.6„&óÿšS1§š¶‚]bu…³‚õ4µ¸0%«IˆÛmLi¶ß—ž,Šp4Ššö1%Ï;FÚó·zv«’±²…‚³j: åÁž™1ØÊFi\*õX-‹DhØeˆ„wª•MþnæU©›–ÌvR£è¦ÎëKÞ“< óŒa"¶@îI®^aYÁ·\câWä§$_*m–kÅÕ¹JêØJ‘Å´Zw¼ÎôX"EÊGJëç–ÇÉSn^¿õ¬sV>˜x…zôE=¢ÈnP¹îxM½%&G&&Tt×îRYÙ&«»‰RzÑ!Ç~Þ]$sè¾¥õ\Ó_–­6F³Ù#Ì¶Ì¦Ûü/·(Þdˆ÷`ôŠ\s¯ªžL’ò~ØÓ€—üre½féµeÄ-øùú6öïÞ¢ €1Ån¢šâµL‹QnÃ¼•p> k¢ÕË1¶`&Z8RJ¨¨EJÎK7¤Ñ{ ?½pÚôKýŽD~ÃŽ@~ŸÌÄQÖãƒÍBÌgrÙ¨lã˜œ])-´É®ïöÏÎ­ŽöiB&.ÒHË)à•Qqk€žq“1­lçÅ=J^Ï$3ÑBôU‘ÉF?L+4LQÆe#g~4/ÌÙÚ	4ŽAh’«´@sað|
+žÞÂ|@„Šµf¯tú2;¸œÝÛ¯!<\')|ÐJ¥U¿+K1Î¢üÔ‘ÂØË Ü•v<ù
+Ïx‚	%þY†Š:štUßK*7ª(¤ e×3V¶"¯›)Ã=Ú Ï}–áÏÔŒEƒ¬ô*Èk,ü{kçÃ°£’‡ e[óÝÓ6ÃªÌêŠXyž©†ú³é0˜€ ÎÉ©ä6J#L&æ‚ é@J«ìœc×÷ûéj«ÃãYfÕ#ŽR•Üª<BŸï³[¨);·„#ŽÂù3Æ¬×‰NÖ ºÎWG ,ƒ@‹òÓnÐè,›Œ»ïh£V¯u"|Šz5ÑVŽ?#¨¦ˆ	æV—A+6à£‹ä– ¸ƒã…°šãÅé”ð1Æí È*¤Æd9A]2z´hi7ØHäyYn"ŒVÙ7²;*ÇÁ:;“þùAÎ1ñ£}	°"YrHb1¢Ö”äú«	4ÏHÝ¨$Pæ«ÇOPjEú„`¥b÷³6ŒZáUÆàã%àŽÓë	Ãä€¢ÚÇ–Œ‚¡ÌÍË}Ø÷ÔOñ(V>ðMŸÔ33:8ïnÁöWRº—@»7Ð[U e'>Ï_‘Y†‘ˆ"rùÏÕZ9÷Î³šÜ¨ ¶\æL2»©Ž˜¼‚<‘ö=ä“rB%çúÑ‡#åÓ¨#ÅÎ&¬AÚs®3/¾T¨ŒÚ[+sªg6û9U)7”¿Ñš_ßíÙ˜[’¶I%æ9¡šmïÀÄ;0¬È+½=Ü¨g¢çfk¬Ø®“««u°d$f¦×äÉ=¬ì¼|Ì˜ªª“‡EMe>‹:1’å
+5š•sôS®Çðœâ(Ñr–tM:T(91åµj–„Ò.ÈöØ&Ò¯[½æö)Mér…ÕEµ¤ŠõSãÁŸ¯`Í$hÙ(?UœXi¦#]¶lÀ~püòîºþ¹Ññò<ßk”,ŠGáŸ„Hm|8}JÝ–¦JòÛƒ]®¢1Ž_¾á”µˆJ9cºÛáZÙä›26Ïk<BÚ‚¨ó×‰sfsR¾S=Xöµžü4Õä¶ò#+waÓµƒê­m«qG¹šÇ;Æ…ÕåÀrI3°”ìê´Vk`a¶¼˜ËŽ8—SmÃa±¼$`{$3&Å1w—/öPö]…õÝDMß$³¹¡x":%@[Y¨ª5u¥ ëõç€Þc^i¸î•×º›…L¾AÒ,4]ò¾um¼)~–…kc Š«qË”¹àjöYeÌ’»ùÌÚ­j®Q «`\=Wž}}îë$¶†Í{‰*[½RJ7±–¤iéÞØå¸³AÎÚ"öÞÓŸ¡DfÚ.9)„B9lŸöð&”N>{NKx8Ÿç”kÔKj$»¼öÍŽ[»™ˆ¥º‘<Ägvü]G!œyjãÁq„cž?p¿H0¡XÅñˆó’lPŽ2³íªé”í²BGG •´°QkÓ«r|Ç
+øå8ÖZÿÜd[+WÕß³V×ÖJËèU1I <“víº[“èZž“Å“Á´¬Ué«rx¹è”2.ô¢½J²o;( eMB2Y‚qF€ÍÄù&¡f­WË1Ý^Óí,`»©nˆŸè¬äªš¯VR63w(„Íl×\ËªBŠnVuËÛ£j„kþ)NŽÚe{)o…MÖuøàHÛkØÑðìnN¯BC\í•÷“¥³sW}“äÏ64R–îûaêˆkªÈbzÆÎ$ Îl ¼¾‚ž5²$7ùé(b„‚@‘Û÷Q6©Xc[ºçFÚ³ŒÎk\êgß-ŠÀ©fžvÂÎ*0µ4ãÓ H œs#œ|‚S9VãÛ@p‘q3Š]ß
+˜[’¹Wõ²ÓÌdŒG1Ì£ÒÍØÜ‡£ŸŠ^ëÔé,ÓªÓÖ‹Rërþet›“+½Ê	f•F–ÔQ!ÖÌ–BJïƒí¯Ù¹Em”š*²GUäAáÛÌ”M&Â–ÄDi¹u`ê-J½—~Ru3IVf/ÔûÞ¹,DþUQïä×‘^ ‡:ó;ä¶NÂ»­šõÇ¹Ã<oD)AµµRBxð²„søïÐ½Èz¾h“¸µ Çª2ˆ«á÷@;Ê‹d5Èø·Þ:ÃŽºÖÏx£X¢u=RƒPÏ”ZÔŽ–´øG²Ã>™²ÍçÏÃ7)ÿr™öÙÞŒ©([°U¥vÊz~}6fmu¸X«
+Ž®·ÒúykRN­&“MrËÎRwLa&Àp
+sÍ•ã«Ÿž$Šß®¹ÃX³¤?¢…J¦÷UÇn5äÞsÿK+´vZvs;rÿ:šýÍsuxÆyC5ü6J…ìZW˜¶üF—Ì¡7úÝ… [~}?Š®­Ž—Ûbî
+¹TÈ‚êåXNŽœVáQâÝª¢ÅÉ®M™ßšÒš…54=äO3L4Rá#C#ÑÁ¸B2ÛgúR
+%úòh‡’s
+%¾PüçóF( n‹°@‚qQ˜`µšNR/Ð‹_ß½'æVÇDÇ_c˜³keûKî@eSê0c1H ‚ŒðÅ¢C×vxK”¡žž‚gÙ~X=uÂ{ËyÇ"õ"ç$ë4[¨eQ4I¯Îf	ùd»’Ç×Ifñ(-yP™…h-Ä­¡×Yè¯;¿Ò	™TØØÙÆí0VXñ¾sm‡1nÎ®nÆDø½·a¢„%Out‹èˆÒE„æ°ßä¨£~²djÝýK~¯ÜmÿÂ@»
 endstream
-endobj
-97 0 obj
-<<
-/S /URI
-/URI (https://www.ericasynths.lv/)
->>
-endobj
-98 0 obj
-<<
-/Subtype /Link
-/A 97 0 R
-/Type /Annot
-/Rect [76 655.54625 142.537109 666.604844]
-/Border [0 0 0]
-/F 4
->>
-endobj
-99 0 obj
-<<
-/S /URI
-/URI (https://www.ericasynths.lv/)
->>
-endobj
-100 0 obj
-<<
-/Subtype /Link
-/A 99 0 R
-/Type /Annot
-/Rect [142.537109 655.54625 223.096924 666.604844]
-/Border [0 0 0]
-/F 4
->>
-endobj
-101 0 obj
-<<
-/S /URI
-/URI (https://www.ericasynths.lv/shop/desktop-devices/zen-delay/)
->>
-endobj
-102 0 obj
-<<
-/Subtype /Link
-/A 101 0 R
-/Type /Annot
-/Rect [223.096924 655.54625 271.733398 666.604844]
-/Border [0 0 0]
-/F 4
->>
-endobj
-103 0 obj
-<<
-/S /URI
-/URI (https://www.ericasynths.lv/shop/desktop-devices/zen-delay/)
->>
-endobj
-104 0 obj
-<<
-/Subtype /Link
-/A 103 0 R
-/Type /Annot
-/Rect [271.733398 655.54625 534.7229 666.604844]
-/Border [0 0 0]
-/F 4
->>
-endobj
-105 0 obj
-<<
-/S /URI
-/URI (https://www.ericasynths.lv/shop/desktop-devices/zen-delay/)
->>
-endobj
-106 0 obj
-<<
-/Subtype /Link
-/A 105 0 R
-/Type /Annot
-/Rect [76 644.487656 173.351807 655.54625]
-/Border [0 0 0]
-/F 4
->>
 endobj
 107 0 obj
 <<
 /S /URI
-/URI (https://www.ericasynths.lv/shop/desktop-devices/zen-delay/)
+/URI (https://www.ericasynths.lv/)
 >>
 endobj
 108 0 obj
@@ -795,7 +795,7 @@ endobj
 /Subtype /Link
 /A 107 0 R
 /Type /Annot
-/Rect [173.351807 644.487656 196.090576 655.54625]
+/Rect [76 655.54625 142.537109 666.604844]
 /Border [0 0 0]
 /F 4
 >>
@@ -803,7 +803,7 @@ endobj
 109 0 obj
 <<
 /S /URI
-/URI (https://www.ericasynths.lv/shop/desktop-devices/zen-delay/)
+/URI (https://www.ericasynths.lv/)
 >>
 endobj
 110 0 obj
@@ -811,7 +811,7 @@ endobj
 /Subtype /Link
 /A 109 0 R
 /Type /Annot
-/Rect [196.090576 644.487656 267.331299 655.54625]
+/Rect [142.537109 655.54625 223.096924 666.604844]
 /Border [0 0 0]
 /F 4
 >>
@@ -819,7 +819,7 @@ endobj
 111 0 obj
 <<
 /S /URI
-/URI (https://www.ericasynths.lv/black-dual-vcf-59/)
+/URI (https://www.ericasynths.lv/shop/desktop-devices/zen-delay/)
 >>
 endobj
 112 0 obj
@@ -827,7 +827,7 @@ endobj
 /Subtype /Link
 /A 111 0 R
 /Type /Annot
-/Rect [267.331299 644.487656 339.467285 655.54625]
+/Rect [223.096924 655.54625 271.733398 666.604844]
 /Border [0 0 0]
 /F 4
 >>
@@ -835,7 +835,7 @@ endobj
 113 0 obj
 <<
 /S /URI
-/URI (https://www.ericasynths.lv/black-dual-vcf-59/)
+/URI (https://www.ericasynths.lv/shop/desktop-devices/zen-delay/)
 >>
 endobj
 114 0 obj
@@ -843,7 +843,7 @@ endobj
 /Subtype /Link
 /A 113 0 R
 /Type /Annot
-/Rect [339.467285 644.487656 531.72168 655.54625]
+/Rect [271.733398 655.54625 534.7229 666.604844]
 /Border [0 0 0]
 /F 4
 >>
@@ -851,7 +851,7 @@ endobj
 115 0 obj
 <<
 /S /URI
-/URI (https://www.ericasynths.lv/black-dual-vcf-59/)
+/URI (https://www.ericasynths.lv/shop/desktop-devices/zen-delay/)
 >>
 endobj
 116 0 obj
@@ -859,7 +859,7 @@ endobj
 /Subtype /Link
 /A 115 0 R
 /Type /Annot
-/Rect [76 633.429063 115.50293 644.487656]
+/Rect [76 644.487656 173.351807 655.54625]
 /Border [0 0 0]
 /F 4
 >>
@@ -867,7 +867,7 @@ endobj
 117 0 obj
 <<
 /S /URI
-/URI (https://www.ericasynths.lv/diy-delay-full-kit-339/)
+/URI (https://www.ericasynths.lv/shop/desktop-devices/zen-delay/)
 >>
 endobj
 118 0 obj
@@ -875,7 +875,7 @@ endobj
 /Subtype /Link
 /A 117 0 R
 /Type /Annot
-/Rect [115.50293 633.429063 176.571045 644.487656]
+/Rect [173.351807 644.487656 196.090576 655.54625]
 /Border [0 0 0]
 /F 4
 >>
@@ -883,7 +883,7 @@ endobj
 119 0 obj
 <<
 /S /URI
-/URI (https://www.ericasynths.lv/diy-delay-full-kit-339/)
+/URI (https://www.ericasynths.lv/shop/desktop-devices/zen-delay/)
 >>
 endobj
 120 0 obj
@@ -891,7 +891,7 @@ endobj
 /Subtype /Link
 /A 119 0 R
 /Type /Annot
-/Rect [176.571045 633.429063 179.59082 644.487656]
+/Rect [196.090576 644.487656 267.331299 655.54625]
 /Border [0 0 0]
 /F 4
 >>
@@ -899,7 +899,7 @@ endobj
 121 0 obj
 <<
 /S /URI
-/URI (https://aretai.com/)
+/URI (https://www.ericasynths.lv/black-dual-vcf-59/)
 >>
 endobj
 122 0 obj
@@ -907,7 +907,7 @@ endobj
 /Subtype /Link
 /A 121 0 R
 /Type /Annot
-/Rect [76 620.71168 108.688721 631.770273]
+/Rect [267.331299 644.487656 339.467285 655.54625]
 /Border [0 0 0]
 /F 4
 >>
@@ -915,7 +915,7 @@ endobj
 123 0 obj
 <<
 /S /URI
-/URI (https://aretai.com/)
+/URI (https://www.ericasynths.lv/black-dual-vcf-59/)
 >>
 endobj
 124 0 obj
@@ -923,7 +923,7 @@ endobj
 /Subtype /Link
 /A 123 0 R
 /Type /Annot
-/Rect [108.688721 620.71168 271.042236 631.770273]
+/Rect [339.467285 644.487656 531.72168 655.54625]
 /Border [0 0 0]
 /F 4
 >>
@@ -931,7 +931,7 @@ endobj
 125 0 obj
 <<
 /S /URI
-/URI (https://aretai.com/contra/)
+/URI (https://www.ericasynths.lv/black-dual-vcf-59/)
 >>
 endobj
 126 0 obj
@@ -939,7 +939,7 @@ endobj
 /Subtype /Link
 /A 125 0 R
 /Type /Annot
-/Rect [271.042236 620.71168 334.207031 631.770273]
+/Rect [76 633.429063 115.50293 644.487656]
 /Border [0 0 0]
 /F 4
 >>
@@ -947,7 +947,7 @@ endobj
 127 0 obj
 <<
 /S /URI
-/URI (https://aretai.com/contra/)
+/URI (https://www.ericasynths.lv/diy-delay-full-kit-339/)
 >>
 endobj
 128 0 obj
@@ -955,7 +955,7 @@ endobj
 /Subtype /Link
 /A 127 0 R
 /Type /Annot
-/Rect [334.207031 620.71168 378.459961 631.770273]
+/Rect [115.50293 633.429063 176.571045 644.487656]
 /Border [0 0 0]
 /F 4
 >>
@@ -963,7 +963,7 @@ endobj
 129 0 obj
 <<
 /S /URI
-/URI (https://aretai.com/contra/)
+/URI (https://www.ericasynths.lv/diy-delay-full-kit-339/)
 >>
 endobj
 130 0 obj
@@ -971,7 +971,7 @@ endobj
 /Subtype /Link
 /A 129 0 R
 /Type /Annot
-/Rect [378.459961 620.71168 488.359375 631.770273]
+/Rect [176.571045 633.429063 179.59082 644.487656]
 /Border [0 0 0]
 /F 4
 >>
@@ -979,7 +979,7 @@ endobj
 131 0 obj
 <<
 /S /URI
-/URI (https://aretai.com/contra/)
+/URI (https://aretai.com/)
 >>
 endobj
 132 0 obj
@@ -987,7 +987,7 @@ endobj
 /Subtype /Link
 /A 131 0 R
 /Type /Annot
-/Rect [488.359375 620.71168 491.37915 631.770273]
+/Rect [76 620.71168 108.688721 631.770273]
 /Border [0 0 0]
 /F 4
 >>
@@ -995,7 +995,7 @@ endobj
 133 0 obj
 <<
 /S /URI
-/URI (https://coastalamusements.com/)
+/URI (https://aretai.com/)
 >>
 endobj
 134 0 obj
@@ -1003,7 +1003,7 @@ endobj
 /Subtype /Link
 /A 133 0 R
 /Type /Annot
-/Rect [76 607.994297 188.492432 619.052891]
+/Rect [108.688721 620.71168 271.042236 631.770273]
 /Border [0 0 0]
 /F 4
 >>
@@ -1011,7 +1011,7 @@ endobj
 135 0 obj
 <<
 /S /URI
-/URI (https://coastalamusements.com/)
+/URI (https://aretai.com/contra/)
 >>
 endobj
 136 0 obj
@@ -1019,7 +1019,7 @@ endobj
 /Subtype /Link
 /A 135 0 R
 /Type /Annot
-/Rect [188.492432 607.994297 522.875732 619.052891]
+/Rect [271.042236 620.71168 334.207031 631.770273]
 /Border [0 0 0]
 /F 4
 >>
@@ -1027,7 +1027,7 @@ endobj
 137 0 obj
 <<
 /S /URI
-/URI (https://coastalamusements.com/)
+/URI (https://aretai.com/contra/)
 >>
 endobj
 138 0 obj
@@ -1035,7 +1035,7 @@ endobj
 /Subtype /Link
 /A 137 0 R
 /Type /Annot
-/Rect [76 596.935703 223.25 607.994297]
+/Rect [334.207031 620.71168 378.459961 631.770273]
 /Border [0 0 0]
 /F 4
 >>
@@ -1043,7 +1043,7 @@ endobj
 139 0 obj
 <<
 /S /URI
-/URI (https://www.leclanche.com/)
+/URI (https://aretai.com/contra/)
 >>
 endobj
 140 0 obj
@@ -1051,7 +1051,7 @@ endobj
 /Subtype /Link
 /A 139 0 R
 /Type /Annot
-/Rect [76 584.21832 130.736328 595.276914]
+/Rect [378.459961 620.71168 488.359375 631.770273]
 /Border [0 0 0]
 /F 4
 >>
@@ -1059,7 +1059,7 @@ endobj
 141 0 obj
 <<
 /S /URI
-/URI (https://www.leclanche.com/)
+/URI (https://aretai.com/contra/)
 >>
 endobj
 142 0 obj
@@ -1067,7 +1067,7 @@ endobj
 /Subtype /Link
 /A 141 0 R
 /Type /Annot
-/Rect [130.736328 584.21832 154.648682 595.276914]
+/Rect [488.359375 620.71168 491.37915 631.770273]
 /Border [0 0 0]
 /F 4
 >>
@@ -1075,7 +1075,7 @@ endobj
 143 0 obj
 <<
 /S /URI
-/URI (https://barix.com/)
+/URI (https://coastalamusements.com/)
 >>
 endobj
 144 0 obj
@@ -1083,7 +1083,7 @@ endobj
 /Subtype /Link
 /A 143 0 R
 /Type /Annot
-/Rect [154.648682 584.21832 182.369385 595.276914]
+/Rect [76 607.994297 188.492432 619.052891]
 /Border [0 0 0]
 /F 4
 >>
@@ -1091,7 +1091,7 @@ endobj
 145 0 obj
 <<
 /S /URI
-/URI (https://barix.com/)
+/URI (https://coastalamusements.com/)
 >>
 endobj
 146 0 obj
@@ -1099,7 +1099,7 @@ endobj
 /Subtype /Link
 /A 145 0 R
 /Type /Annot
-/Rect [182.369385 584.21832 513.983398 595.276914]
+/Rect [188.492432 607.994297 522.875732 619.052891]
 /Border [0 0 0]
 /F 4
 >>
@@ -1107,7 +1107,7 @@ endobj
 147 0 obj
 <<
 /S /URI
-/URI (https://barix.com/)
+/URI (https://coastalamusements.com/)
 >>
 endobj
 148 0 obj
@@ -1115,7 +1115,7 @@ endobj
 /Subtype /Link
 /A 147 0 R
 /Type /Annot
-/Rect [76 573.159727 163.0354 584.21832]
+/Rect [76 596.935703 223.25 607.994297]
 /Border [0 0 0]
 /F 4
 >>
@@ -1123,7 +1123,7 @@ endobj
 149 0 obj
 <<
 /S /URI
-/URI (https://edgeautonomy.io/)
+/URI (https://www.leclanche.com/)
 >>
 endobj
 150 0 obj
@@ -1131,7 +1131,7 @@ endobj
 /Subtype /Link
 /A 149 0 R
 /Type /Annot
-/Rect [170.302734 553.690781 272.477539 567.0775]
+/Rect [76 584.21832 130.736328 595.276914]
 /Border [0 0 0]
 /F 4
 >>
@@ -1139,7 +1139,7 @@ endobj
 151 0 obj
 <<
 /S /URI
-/URI (https://edgeautonomy.io/)
+/URI (https://www.leclanche.com/)
 >>
 endobj
 152 0 obj
@@ -1147,7 +1147,7 @@ endobj
 /Subtype /Link
 /A 151 0 R
 /Type /Annot
-/Rect [272.477539 553.690781 276.481201 567.0775]
+/Rect [130.736328 584.21832 154.648682 595.276914]
 /Border [0 0 0]
 /F 4
 >>
@@ -1155,7 +1155,7 @@ endobj
 153 0 obj
 <<
 /S /URI
-/URI (https://edgeautonomy.io/)
+/URI (https://barix.com/)
 >>
 endobj
 154 0 obj
@@ -1163,7 +1163,7 @@ endobj
 /Subtype /Link
 /A 153 0 R
 /Type /Annot
-/Rect [276.481201 553.690781 419.720215 567.0775]
+/Rect [154.648682 584.21832 182.369385 595.276914]
 /Border [0 0 0]
 /F 4
 >>
@@ -1171,7 +1171,7 @@ endobj
 155 0 obj
 <<
 /S /URI
-/URI (https://www.saftehnika.com/)
+/URI (https://barix.com/)
 >>
 endobj
 156 0 obj
@@ -1179,7 +1179,7 @@ endobj
 /Subtype /Link
 /A 155 0 R
 /Type /Annot
-/Rect [245.277344 464.851719 324.160156 478.238438]
+/Rect [182.369385 584.21832 513.983398 595.276914]
 /Border [0 0 0]
 /F 4
 >>
@@ -1187,7 +1187,7 @@ endobj
 157 0 obj
 <<
 /S /URI
-/URI (https://spectrumcompact.com/)
+/URI (https://barix.com/)
 >>
 endobj
 158 0 obj
@@ -1195,7 +1195,7 @@ endobj
 /Subtype /Link
 /A 157 0 R
 /Type /Annot
-/Rect [398.09082 407.198984 489.644287 418.257578]
+/Rect [76 573.159727 163.0354 584.21832]
 /Border [0 0 0]
 /F 4
 >>
@@ -1203,7 +1203,7 @@ endobj
 159 0 obj
 <<
 /S /URI
-/URI (https://spectrumcompact.com/)
+/URI (https://edgeautonomy.io/)
 >>
 endobj
 160 0 obj
@@ -1211,7 +1211,7 @@ endobj
 /Subtype /Link
 /A 159 0 R
 /Type /Annot
-/Rect [489.644287 407.198984 534.110596 418.257578]
+/Rect [170.302734 553.690781 272.477539 567.0775]
 /Border [0 0 0]
 /F 4
 >>
@@ -1219,7 +1219,7 @@ endobj
 161 0 obj
 <<
 /S /URI
-/URI (https://spectrumcompact.com/)
+/URI (https://edgeautonomy.io/)
 >>
 endobj
 162 0 obj
@@ -1227,7 +1227,7 @@ endobj
 /Subtype /Link
 /A 161 0 R
 /Type /Annot
-/Rect [76 396.140391 475.686523 407.198984]
+/Rect [272.477539 553.690781 276.481201 567.0775]
 /Border [0 0 0]
 /F 4
 >>
@@ -1235,7 +1235,7 @@ endobj
 163 0 obj
 <<
 /S /URI
-/URI (https://www.saftehnika.com/en/integra)
+/URI (https://edgeautonomy.io/)
 >>
 endobj
 164 0 obj
@@ -1243,7 +1243,7 @@ endobj
 /Subtype /Link
 /A 163 0 R
 /Type /Annot
-/Rect [430.918701 383.423008 465.068604 394.481602]
+/Rect [276.481201 553.690781 419.720215 567.0775]
 /Border [0 0 0]
 /F 4
 >>
@@ -1251,7 +1251,7 @@ endobj
 165 0 obj
 <<
 /S /URI
-/URI (https://www.saftehnika.com/en/integra)
+/URI (https://www.saftehnika.com/)
 >>
 endobj
 166 0 obj
@@ -1259,7 +1259,7 @@ endobj
 /Subtype /Link
 /A 165 0 R
 /Type /Annot
-/Rect [465.068604 383.423008 498.337158 394.481602]
+/Rect [245.277344 464.851719 324.160156 478.238438]
 /Border [0 0 0]
 /F 4
 >>
@@ -1267,7 +1267,7 @@ endobj
 167 0 obj
 <<
 /S /URI
-/URI (https://www.saftehnika.com/en/integra)
+/URI (https://spectrumcompact.com/)
 >>
 endobj
 168 0 obj
@@ -1275,7 +1275,7 @@ endobj
 /Subtype /Link
 /A 167 0 R
 /Type /Annot
-/Rect [76 372.364414 234.294678 383.423008]
+/Rect [398.09082 407.198984 489.644287 418.257578]
 /Border [0 0 0]
 /F 4
 >>
@@ -1283,7 +1283,7 @@ endobj
 169 0 obj
 <<
 /S /URI
-/URI (https://arxiv.org/abs/2601.16863)
+/URI (https://spectrumcompact.com/)
 >>
 endobj
 170 0 obj
@@ -1291,7 +1291,7 @@ endobj
 /Subtype /Link
 /A 169 0 R
 /Type /Annot
-/Rect [383.200684 305.896445 467.796143 316.955039]
+/Rect [489.644287 407.198984 534.110596 418.257578]
 /Border [0 0 0]
 /F 4
 >>
@@ -1299,7 +1299,7 @@ endobj
 171 0 obj
 <<
 /S /URI
-/URI (https://doi.org/10.5281/zenodo.23241545)
+/URI (https://spectrumcompact.com/)
 >>
 endobj
 172 0 obj
@@ -1307,7 +1307,7 @@ endobj
 /Subtype /Link
 /A 171 0 R
 /Type /Annot
-/Rect [106.216309 282.120469 270.698975 293.179063]
+/Rect [76 396.140391 475.686523 407.198984]
 /Border [0 0 0]
 /F 4
 >>
@@ -1315,7 +1315,7 @@ endobj
 173 0 obj
 <<
 /S /URI
-/URI (https://www.rtu.lv/)
+/URI (https://www.saftehnika.com/en/integra)
 >>
 endobj
 174 0 obj
@@ -1323,7 +1323,7 @@ endobj
 /Subtype /Link
 /A 173 0 R
 /Type /Annot
-/Rect [369.525879 201.276328 488.20166 212.334922]
+/Rect [430.918701 383.423008 465.068604 394.481602]
 /Border [0 0 0]
 /F 4
 >>
@@ -1331,7 +1331,7 @@ endobj
 175 0 obj
 <<
 /S /URI
-/URI (https://www.rtu.lv/)
+/URI (https://www.saftehnika.com/en/integra)
 >>
 endobj
 176 0 obj
@@ -1339,7 +1339,7 @@ endobj
 /Subtype /Link
 /A 175 0 R
 /Type /Annot
-/Rect [488.20166 201.276328 491.221436 212.334922]
+/Rect [465.068604 383.423008 498.337158 394.481602]
 /Border [0 0 0]
 /F 4
 >>
@@ -1347,7 +1347,7 @@ endobj
 177 0 obj
 <<
 /S /URI
-/URI (https://soundcloud.com/spectralsurf/tracks)
+/URI (https://www.saftehnika.com/en/integra)
 >>
 endobj
 178 0 obj
@@ -1355,7 +1355,7 @@ endobj
 /Subtype /Link
 /A 177 0 R
 /Type /Annot
-/Rect [54 88.563438 111.051025 99.622031]
+/Rect [76 372.364414 234.294678 383.423008]
 /Border [0 0 0]
 /F 4
 >>
@@ -1363,7 +1363,7 @@ endobj
 179 0 obj
 <<
 /S /URI
-/URI (https://soundcloud.com/spectralsurf/tracks)
+/URI (https://arxiv.org/abs/2601.16863)
 >>
 endobj
 180 0 obj
@@ -1371,36 +1371,116 @@ endobj
 /Subtype /Link
 /A 179 0 R
 /Type /Annot
+/Rect [383.200684 305.896445 467.796143 316.955039]
+/Border [0 0 0]
+/F 4
+>>
+endobj
+181 0 obj
+<<
+/S /URI
+/URI (https://doi.org/10.5281/zenodo.23241545)
+>>
+endobj
+182 0 obj
+<<
+/Subtype /Link
+/A 181 0 R
+/Type /Annot
+/Rect [106.216309 282.120469 270.698975 293.179063]
+/Border [0 0 0]
+/F 4
+>>
+endobj
+183 0 obj
+<<
+/S /URI
+/URI (https://www.rtu.lv/)
+>>
+endobj
+184 0 obj
+<<
+/Subtype /Link
+/A 183 0 R
+/Type /Annot
+/Rect [369.525879 201.276328 488.20166 212.334922]
+/Border [0 0 0]
+/F 4
+>>
+endobj
+185 0 obj
+<<
+/S /URI
+/URI (https://www.rtu.lv/)
+>>
+endobj
+186 0 obj
+<<
+/Subtype /Link
+/A 185 0 R
+/Type /Annot
+/Rect [488.20166 201.276328 491.221436 212.334922]
+/Border [0 0 0]
+/F 4
+>>
+endobj
+187 0 obj
+<<
+/S /URI
+/URI (https://soundcloud.com/spectralsurf/tracks)
+>>
+endobj
+188 0 obj
+<<
+/Subtype /Link
+/A 187 0 R
+/Type /Annot
+/Rect [54 88.563438 111.051025 99.622031]
+/Border [0 0 0]
+/F 4
+>>
+endobj
+189 0 obj
+<<
+/S /URI
+/URI (https://soundcloud.com/spectralsurf/tracks)
+>>
+endobj
+190 0 obj
+<<
+/Subtype /Link
+/A 189 0 R
+/Type /Annot
 /Rect [111.051025 88.563438 460.881104 99.622031]
 /Border [0 0 0]
 /F 4
 >>
 endobj
-96 0 obj
+106 0 obj
 <<
 /Type /Page
 /Parent 1 0 R
 /MediaBox [0 0 595.28 841.89]
-/Contents 94 0 R
-/Resources 95 0 R
+/Contents 104 0 R
+/Resources 105 0 R
 /UserUnit 1
-/Annots [98 0 R 100 0 R 102 0 R 104 0 R 106 0 R 108 0 R 110 0 R 112 0 R 114 0 R 116 0 R 118 0 R 120 0 R 122 0 R 124 0 R 126 0 R 128 0 R 130 0 R 132 0 R 134 0 R 136 0 R 138 0 R 140 0 R 142 0 R 144 0 R 146 0 R 148 0 R 150 0 R 152 0 R 154 0 R 156 0 R 158 0 R 160 0 R 162 0 R 164 0 R 166 0 R 168 0 R 170 0 R 172 0 R 174 0 R 176 0 R 178 0 R 180 0 R]
+/Annots [108 0 R 110 0 R 112 0 R 114 0 R 116 0 R 118 0 R 120 0 R 122 0 R 124 0 R 126 0 R 128 0 R 130 0 R 132 0 R 134 0 R 136 0 R 138 0 R 140 0 R 142 0 R 144 0 R 146 0 R 148 0 R 150 0 R 152 0 R 154 0 R 156 0 R 158 0 R 160 0 R 162 0 R 164 0 R 166 0 R 168 0 R 170 0 R 172 0 R 174 0 R 176 0 R 178 0 R 180 0 R 182 0 R 184 0 R 186 0 R 188 0 R 190 0 R]
 >>
 endobj
-95 0 obj
+105 0 obj
 <<
 /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
 /Font <<
 /F3 9 0 R
 /F2 8 0 R
 /F4 32 0 R
-/F5 91 0 R
+/F5 101 0 R
 >>
 /ColorSpace <<
 >>
 >>
 endobj
-94 0 obj
+104 0 obj
 <<
 /Length 4847
 /Filter /FlateDecode
@@ -1445,39 +1525,39 @@ eÙ66òàÊtž4Ýø½H¡miJ÷gŠ—T¼V
 Mw‚ÓÿÜÃ©
 endstream
 endobj
-182 0 obj
+192 0 obj
 (PDFKit)
 endobj
-183 0 obj
+193 0 obj
 (PDFKit)
 endobj
-184 0 obj
-(D:20261116025909Z)
+194 0 obj
+(D:20261116030037Z)
 endobj
-185 0 obj
+195 0 obj
 (þÿ R e s u m e      T i m s   P e\r e r s k i s)
 endobj
-186 0 obj
+196 0 obj
 (þÿ T i m s   P e\r e r s k i s)
 endobj
-187 0 obj
+197 0 obj
 (Resume / CV)
 endobj
-188 0 obj
+198 0 obj
 (resume, cv, Tims Pecerskis, engineer, blockchain, AI, embedded, RF)
 endobj
-181 0 obj
+191 0 obj
 <<
-/Producer 182 0 R
-/Creator 183 0 R
-/CreationDate 184 0 R
-/Title 185 0 R
-/Author 186 0 R
-/Subject 187 0 R
-/Keywords 188 0 R
+/Producer 192 0 R
+/Creator 193 0 R
+/CreationDate 194 0 R
+/Title 195 0 R
+/Author 196 0 R
+/Subject 197 0 R
+/Keywords 198 0 R
 >>
 endobj
-189 0 obj
+199 0 obj
 <<
 /Length 11292
 /Filter /FlateDecode
@@ -1521,7 +1601,7 @@ S7GÈ®3''úzõ ;œôª‘Çiq6.ø4Yë1ÂLë"+¦súO«=èTS8›ï¤yaVÄÆ°iì9Lô^4S½MR½Ó©^ŒD5à
 ê5º"üÀÀ¤O[¶øÍe’SIª E¶™I»nÝ*(ÅñA<¾Bj…Jùæ?Ýü¦e‹Â¢I»h³n]†íVÜ;?O+ìÆþn]Í{Æ¯Vðþ÷*®H5.i‰sIJû%Î1í[þw0€‡D
 endstream
 endobj
-190 0 obj
+200 0 obj
 <<
 /Type /FontDescriptor
 /FontName /CZZZZZ+DejaVuSans-Bold
@@ -1533,10 +1613,10 @@ endobj
 /CapHeight 928.222656
 /XHeight 0
 /StemV 0
-/FontFile2 189 0 R
+/FontFile2 199 0 R
 >>
 endobj
-191 0 obj
+201 0 obj
 <<
 /Type /Font
 /Subtype /CIDFontType2
@@ -1546,12 +1626,12 @@ endobj
 /Ordering (Identity)
 /Supplement 0
 >>
-/FontDescriptor 190 0 R
+/FontDescriptor 200 0 R
 /W [0 [1229 770.019531 678.222656 595.214844 711.914063 1041.992188 348.144531 1000 682.128906 342.773438 732.910156 592.773438 493.164063 665.039063 379.882813 995.117188 720.214844 592.773438 435.058594 687.011719 715.820313 674.804688 478.027344 342.773438 715.820313 711.914063 715.820313 715.820313 820.800781 812.011719 711.914063 733.886719 399.902344 683.105469 645.019531 683.105469 365.234375 850.097656 637.207031 773.925781 651.855469 379.882813 715.820313 415.039063 695.800781 695.800781 1001.953125 695.800781 695.800781 695.800781 695.800781 695.800781 500 695.800781 762.207031 872.070313 372.070313 695.800781 837.890625 830.078125 725.097656 774.902344 651.855469 695.800781 836.914063 923.828125 695.800781 678.222656 837.890625 773.925781 582.03125 1103.027344]]
 /CIDToGIDMap /Identity
 >>
 endobj
-192 0 obj
+202 0 obj
 <<
 /Length 383
 /Filter /FlateDecode
@@ -1568,11 +1648,11 @@ endobj
 /Subtype /Type0
 /BaseFont /CZZZZZ+DejaVuSans-Bold
 /Encoding /Identity-H
-/DescendantFonts [191 0 R]
-/ToUnicode 192 0 R
+/DescendantFonts [201 0 R]
+/ToUnicode 202 0 R
 >>
 endobj
-193 0 obj
+203 0 obj
 <<
 /Length 12287
 /Filter /FlateDecode
@@ -1632,7 +1712,7 @@ bš$c¢S;à3:`2Â`ð¢óx&žužÇtž?ÊGÿ•xý¡Í—Ùü+)ô-¥Q"Æ™ó’æzE%Ad	R6KKÐv]Q“P¨n¿9EyEÌ
 ïÏD3ÁcŸ`ÍPÏå–&f‡}¸—¢G¥ZœIm©Ãý½à|ª`Í­¿™è#¦£4ƒj TÃùÊw¨·²®e·\€ãJxÏ=Ð¯ÍðîfÑ.šQ*å‹ç`[&AÅyy?ƒãï(~êÚÇ:kHâ€ücØ¨Øã£ã:´ÿÝa¬S‰­A¹5¶y±µ--¹£¤6º†EÖÐDµFJŒÿò?]ü²CûA¹£bk|}zÞÚ'¯7œ{hìŠ#8çûô6¯‰JkX"üÈ«‰8%öyçóñÝŸwNêÞá'—!n
 endstream
 endobj
-194 0 obj
+204 0 obj
 <<
 /Type /FontDescriptor
 /FontName /DZZZZZ+DejaVuSans
@@ -1644,10 +1724,10 @@ endobj
 /CapHeight 928.222656
 /XHeight 0
 /StemV 0
-/FontFile2 193 0 R
+/FontFile2 203 0 R
 >>
 endobj
-195 0 obj
+205 0 obj
 <<
 /Type /Font
 /Subtype /CIDFontType2
@@ -1657,12 +1737,12 @@ endobj
 /Ordering (Identity)
 /Supplement 0
 >>
-/FontDescriptor 194 0 R
+/FontDescriptor 204 0 R
 /W [0 [1229 557.128906 612.792969 392.089844 615.234375 520.996094 317.871094 591.796875 411.132813 277.832031 611.816406 633.789063 336.914063 634.765625 579.101563 591.796875 317.871094 591.796875 524.902344 336.914063 633.789063 974.121094 317.871094 603.027344 770.019531 575.195313 634.765625 352.050781 634.765625 634.765625 317.871094 277.832031 633.789063 549.804688 634.765625 636.230469 636.230469 837.890625 360.839844 1000 1000 817.871094 684.082031 294.921875 694.824219 698.242188 731.933594 862.792969 774.902344 751.953125 748.046875 610.839844 631.835938 684.082031 685.058594 589.84375 294.921875 787.109375 655.761719 636.230469 686.035156 636.230469 634.765625 274.902344 629.882813 390.136719 390.136719 636.230469 988.769531 950.195313 277.832031 636.230469 685.058594 336.914063 610.839844 837.890625 400.878906 636.230469 629.882813 636.230469 500 837.890625 837.890625 636.230469]]
 /CIDToGIDMap /Identity
 >>
 endobj
-196 0 obj
+206 0 obj
 <<
 /Length 418
 /Filter /FlateDecode
@@ -1678,11 +1758,11 @@ endobj
 /Subtype /Type0
 /BaseFont /DZZZZZ+DejaVuSans
 /Encoding /Identity-H
-/DescendantFonts [195 0 R]
-/ToUnicode 196 0 R
+/DescendantFonts [205 0 R]
+/ToUnicode 206 0 R
 >>
 endobj
-197 0 obj
+207 0 obj
 <<
 /Length 6625
 /Filter /FlateDecode
@@ -1710,7 +1790,7 @@ Th¿SH	SƒA¢TB1EAÐ~³Ð –%d“É~Üµ-Œž0Êcr. F¸DDäx“öÃÅë}0¢ë†¶^ùðïìþ~
 -ã‘%¡p„ÔvëêÃÛ€úp?œenåLÛÎJêo+:ý±+ß¬^\þ‡-5gçøjÏL{ÝýYÛ„7kv²îÃêv³òç6Þ®<årÍÌüSÇs;|>rq—Q=ëCùÜWhwíâzÐ4á*fQ¨„– b²!æ@"´zh>P!P%àùä`6TL=h=_†&rõhkº»®-‡ÏŽ"µj<âöÁ³@•ÜÙ»—¡¿ŽÿÊ×>çi§u²Ñ—¥ƒøÆ†:U®«Ý™Céº,‚«•w˜š\wï–Wqñ¬ºƒ%tPŸØÁù<Ÿÿ£›Ÿg)-¯ruüü©1‘·>U7®Mª‚S­—áúSc2ÿkkéb
 endstream
 endobj
-198 0 obj
+208 0 obj
 <<
 /Type /FontDescriptor
 /FontName /EZZZZZ+DejaVuSans-Oblique
@@ -1722,10 +1802,10 @@ endobj
 /CapHeight 928.222656
 /XHeight 0
 /StemV 0
-/FontFile2 197 0 R
+/FontFile2 207 0 R
 >>
 endobj
-199 0 obj
+209 0 obj
 <<
 /Type /Font
 /Subtype /CIDFontType2
@@ -1735,12 +1815,12 @@ endobj
 /Ordering (Identity)
 /Supplement 0
 >>
-/FontDescriptor 198 0 R
+/FontDescriptor 208 0 R
 /W [0 [1229 748.046875 611.816406 591.796875 615.234375 974.121094 634.765625 411.132813 317.871094 636.230469 636.230469 636.230469 1000 603.027344 520.996094 633.789063 392.089844 787.109375 549.804688 684.082031 633.789063 634.765625 294.921875 636.230469 575.195313 612.792969 591.796875 636.230469 862.792969 633.789063 636.230469]]
 /CIDToGIDMap /Identity
 >>
 endobj
-200 0 obj
+210 0 obj
 <<
 /Length 299
 /Filter /FlateDecode
@@ -1755,11 +1835,11 @@ endobj
 /Subtype /Type0
 /BaseFont /EZZZZZ+DejaVuSans-Oblique
 /Encoding /Identity-H
-/DescendantFonts [199 0 R]
-/ToUnicode 200 0 R
+/DescendantFonts [209 0 R]
+/ToUnicode 210 0 R
 >>
 endobj
-201 0 obj
+211 0 obj
 <<
 /Length 5057
 /Filter /FlateDecode
@@ -1789,7 +1869,7 @@ u“)ô¾¼Úíˆ½|ñ–ø_lœnJ;ó¹éÃFúÄÀ¸ô™HúS'Ò÷ö¦4§+ƒÒÃÁpFi°4cJpJF}°>ã™à3‡‚‡2œ
 æŒ€©m»³h\ˆö=²aü=sŸòYiã*¾3µ¬uáž´”Þy}jÕÊyž^0ÿ“‡¾¾f£7&Ž¿käºåYë;×¨šöÜÆ¿^NVìîaýûS=9åÐ‘ôñ¦/Fì öÉ$ßHV¶8·Ëu:ÙB·‹u‰_Š“*ÄGÜÎ3xõ¢n`Â…: —BT!öÈ \¹)\Qà•lväýGš´ïÞÂò£Sø~¹nÆšxì‡Å»ø»¹yŸüzñš¼üRZÚ§ïl BÍ‚¹i¦^á“‘VâY$l1Æú„D/æ×xêö 6,’`eØ`ÒÅWœ óI˜¹­$‘ºë¬‰uúfköÑ~¯H‘ÞSÀ/¤ìN¿©j€‹by7JBW¿‹~þÅæc„¢Šˆ»b)-†\EŽAòØ¶pÜÑúß¼;¦dÊ‡Ÿå¿}ô…é÷ý¸y¼¼ÿë/…Ñ3*?{sÍõª‡®ì8ÃÏVÖ~ÓZ]orñ-c!eF_‰YDÊÑÒ£w ,=KVˆõ‚$ ]"ú	8­¸;×¯œêI¼QKn©×	dCGm™g3u¢ÅGk/ñ(ók‹ø61òÍ^ÉÍß½yFz×aÇ=Øh”¢ ’ 3(5Ó¤ª|+¡ªJjšâ0kØ‘"aþ”êRH;’²ÙY¯jN ÝaSýŠ-à½}0üð¿û{AMãÐŒÂÛ·BXÜ4=¿÷á¦À	½öá=`…²¯ÛöÝÚ‡ØÙ°ížõvßfêm „u7q8%4M¸7«õÎ˜Ý*¦›v£Dúßìþ¶·Ýnwïã'joÜ¾›çŠ( Püè‘™eë›§ñþØ–.îm7,íúcEixgö>ÉÝyð6Ã…¨\Õ‚Éä	£|ªÇëIP½^Õ…ÜëBª•ñÆæBû<rYl“;&ze7Ù—ÍƒÄæˆó:àòjx|õ¥˜F·Æ$ž"¢'/Üþ¶"WÑ¿†·´.z«Õ‡ÞzT²Ù|Beb´hwÌæTêEåƒì#|Ö¸¾²jÏèüy|5öŠ¾ä¯[Ûg5_3?}z¯X2j_Ã¿ì|ƒ]<ö‹_~¬k«y]8obôœÚ‚çÔY¨ä÷ÆH†çnÙfžDíÈ&²MF‚‘D‹Õ‚È¬V‹yp‡yp„eóœŽúßn5Œu$²‘ÝBœ¦@T'Ý~=™œÜÔû9C®äåy¿Cë[Ï`Û]¬gLÉß˜Æîe 3;â¡*IRÈ²ßÃJ¤‘öûÕb­c,².·k=ó, h¡£úÐ	49‹Ž£NøÚžoÂs ¡)æ›½ tpT3gI5$»a%©f«É(¸FŠ­“I1›CF	'±-D9Cˆä#Ù¬…¬dÇIœ'ep°ë«&Añ$c±¹Øb)–²H¶¥Š´ü*éç×š…Ð½UÍÆø2ÿkå;ú}«ë×,þf2®Ù¹Ü¬«k\™˜ÄÊ›Yr3„¬Íb(øÁw=üàŽ~¥ãÊüÍ1¼ûWGD†ãØÄ2¼5{8Œã#†ßñ?¾ïþH
 endstream
 endobj
-202 0 obj
+212 0 obj
 <<
 /Type /FontDescriptor
 /FontName /FZZZZZ+DejaVuSans-BoldOblique
@@ -1801,10 +1881,10 @@ endobj
 /CapHeight 928.222656
 /XHeight 0
 /StemV 0
-/FontFile2 201 0 R
+/FontFile2 211 0 R
 >>
 endobj
-203 0 obj
+213 0 obj
 <<
 /Type /Font
 /Subtype /CIDFontType2
@@ -1814,12 +1894,12 @@ endobj
 /Ordering (Identity)
 /Supplement 0
 >>
-/FontDescriptor 202 0 R
+/FontDescriptor 212 0 R
 /W [0 [1229 457.03125 435.058594 687.011719 493.164063 1041.992188 678.222656 342.773438 651.855469 348.144531 762.207031 711.914063 715.820313 478.027344 457.03125 674.804688 592.773438 715.820313 342.773438 715.820313 715.820313 770.019531 923.828125]]
 /CIDToGIDMap /Identity
 >>
 endobj
-204 0 obj
+214 0 obj
 <<
 /Length 278
 /Filter /FlateDecode
@@ -1830,14 +1910,14 @@ xœ]QMkÄ ½û+æ¸=,Ù¤»IA(ÛKý iO¥‡DÇ 4FŒ9äß×8v·TÐÇó½7èLvn£=d¯n-zPÚH‡ó´8Ðã Ë
 õê¯ä%‡Ï+-î"”%ŠPÄ$Á‰@vO9ŠÉY%KEìHr–9Á-i‰%œ%U9¥bÿÚ~ôûöísÛ .‹s¡gqZ±Y[›´ÁË@íd·TÜ?dQ’_
 endstream
 endobj
-91 0 obj
+101 0 obj
 <<
 /Type /Font
 /Subtype /Type0
 /BaseFont /FZZZZZ+DejaVuSans-BoldOblique
 /Encoding /Identity-H
-/DescendantFonts [203 0 R]
-/ToUnicode 204 0 R
+/DescendantFonts [213 0 R]
+/ToUnicode 214 0 R
 >>
 endobj
 4 0 obj
@@ -1855,7 +1935,7 @@ endobj
 <<
 /Type /Pages
 /Count 2
-/Kids [7 0 R 96 0 R]
+/Kids [7 0 R 106 0 R]
 >>
 endobj
 2 0 obj
@@ -1867,17 +1947,17 @@ endobj
 >>
 endobj
 xref
-0 205
+0 215
 0000000000 65535 f 
-0000070546 00000 n 
-0000070610 00000 n 
-0000070484 00000 n 
-0000070463 00000 n 
-0000008869 00000 n 
-0000008730 00000 n 
-0000008311 00000 n 
-0000041493 00000 n 
-0000055874 00000 n 
+0000071722 00000 n 
+0000071787 00000 n 
+0000071660 00000 n 
+0000071639 00000 n 
+0000009986 00000 n 
+0000009846 00000 n 
+0000009390 00000 n 
+0000042668 00000 n 
+0000057049 00000 n 
 0000000015 00000 n 
 0000000079 00000 n 
 0000000212 00000 n 
@@ -1900,7 +1980,7 @@ xref
 0000001842 00000 n 
 0000001974 00000 n 
 0000002032 00000 n 
-0000063915 00000 n 
+0000065090 00000 n 
 0000002164 00000 n 
 0000002219 00000 n 
 0000002350 00000 n 
@@ -1916,170 +1996,180 @@ xref
 0000003279 00000 n 
 0000003351 00000 n 
 0000003484 00000 n 
-0000003541 00000 n 
-0000003674 00000 n 
-0000003731 00000 n 
-0000003864 00000 n 
-0000003921 00000 n 
-0000004053 00000 n 
-0000004110 00000 n 
-0000004241 00000 n 
-0000004298 00000 n 
-0000004423 00000 n 
-0000004539 00000 n 
-0000004672 00000 n 
-0000004788 00000 n 
-0000004921 00000 n 
-0000004984 00000 n 
-0000005116 00000 n 
-0000005179 00000 n 
-0000005303 00000 n 
-0000005366 00000 n 
-0000005497 00000 n 
-0000005564 00000 n 
-0000005696 00000 n 
-0000005763 00000 n 
-0000005895 00000 n 
-0000005979 00000 n 
-0000006112 00000 n 
-0000006196 00000 n 
-0000006329 00000 n 
-0000006413 00000 n 
-0000006546 00000 n 
+0000003568 00000 n 
+0000003701 00000 n 
+0000003785 00000 n 
+0000003918 00000 n 
+0000004002 00000 n 
+0000004126 00000 n 
+0000004210 00000 n 
+0000004342 00000 n 
+0000004426 00000 n 
+0000004559 00000 n 
+0000004616 00000 n 
+0000004749 00000 n 
+0000004806 00000 n 
+0000004939 00000 n 
+0000004996 00000 n 
+0000005128 00000 n 
+0000005185 00000 n 
+0000005316 00000 n 
+0000005373 00000 n 
+0000005498 00000 n 
+0000005614 00000 n 
+0000005747 00000 n 
+0000005863 00000 n 
+0000005996 00000 n 
+0000006059 00000 n 
+0000006191 00000 n 
+0000006254 00000 n 
+0000006378 00000 n 
+0000006441 00000 n 
+0000006572 00000 n 
 0000006639 00000 n 
-0000006772 00000 n 
-0000006865 00000 n 
-0000006998 00000 n 
-0000007063 00000 n 
-0000007195 00000 n 
-0000007260 00000 n 
-0000007391 00000 n 
-0000007492 00000 n 
+0000006771 00000 n 
+0000006838 00000 n 
+0000006970 00000 n 
+0000007054 00000 n 
+0000007187 00000 n 
+0000007271 00000 n 
+0000007404 00000 n 
+0000007488 00000 n 
 0000007621 00000 n 
-0000007722 00000 n 
-0000007851 00000 n 
-0000007952 00000 n 
-0000070304 00000 n 
-0000008081 00000 n 
-0000008182 00000 n 
-0000023013 00000 n 
-0000022873 00000 n 
-0000022403 00000 n 
-0000013830 00000 n 
-0000013895 00000 n 
-0000014019 00000 n 
-0000014084 00000 n 
-0000014217 00000 n 
-0000014314 00000 n 
-0000014448 00000 n 
-0000014545 00000 n 
-0000014677 00000 n 
-0000014774 00000 n 
-0000014900 00000 n 
-0000014997 00000 n 
-0000015131 00000 n 
-0000015228 00000 n 
-0000015362 00000 n 
-0000015446 00000 n 
-0000015580 00000 n 
-0000015664 00000 n 
-0000015797 00000 n 
-0000015881 00000 n 
-0000016007 00000 n 
-0000016096 00000 n 
-0000016230 00000 n 
-0000016319 00000 n 
-0000016453 00000 n 
-0000016511 00000 n 
-0000016637 00000 n 
-0000016695 00000 n 
-0000016829 00000 n 
-0000016894 00000 n 
-0000017028 00000 n 
-0000017093 00000 n 
-0000017227 00000 n 
-0000017292 00000 n 
-0000017426 00000 n 
-0000017491 00000 n 
-0000017624 00000 n 
-0000017693 00000 n 
-0000017820 00000 n 
-0000017889 00000 n 
-0000018024 00000 n 
-0000018093 00000 n 
-0000018216 00000 n 
-0000018281 00000 n 
-0000018407 00000 n 
-0000018472 00000 n 
-0000018606 00000 n 
-0000018663 00000 n 
-0000018797 00000 n 
-0000018854 00000 n 
+0000007714 00000 n 
+0000007847 00000 n 
+0000007940 00000 n 
+0000008073 00000 n 
+0000008138 00000 n 
+0000008270 00000 n 
+0000008335 00000 n 
+0000008466 00000 n 
+0000008567 00000 n 
+0000008696 00000 n 
+0000008797 00000 n 
+0000008926 00000 n 
+0000009027 00000 n 
+0000071479 00000 n 
+0000009157 00000 n 
+0000009259 00000 n 
+0000024187 00000 n 
+0000024045 00000 n 
+0000023571 00000 n 
+0000014993 00000 n 
+0000015059 00000 n 
+0000015185 00000 n 
+0000015251 00000 n 
+0000015385 00000 n 
+0000015482 00000 n 
+0000015616 00000 n 
+0000015713 00000 n 
+0000015845 00000 n 
+0000015942 00000 n 
+0000016068 00000 n 
+0000016165 00000 n 
+0000016299 00000 n 
+0000016396 00000 n 
+0000016530 00000 n 
+0000016614 00000 n 
+0000016748 00000 n 
+0000016832 00000 n 
+0000016965 00000 n 
+0000017049 00000 n 
+0000017175 00000 n 
+0000017264 00000 n 
+0000017398 00000 n 
+0000017487 00000 n 
+0000017621 00000 n 
+0000017679 00000 n 
+0000017805 00000 n 
+0000017863 00000 n 
+0000017997 00000 n 
+0000018062 00000 n 
+0000018196 00000 n 
+0000018261 00000 n 
+0000018395 00000 n 
+0000018460 00000 n 
+0000018594 00000 n 
+0000018659 00000 n 
+0000018792 00000 n 
+0000018861 00000 n 
 0000018988 00000 n 
-0000019045 00000 n 
-0000019169 00000 n 
-0000019232 00000 n 
-0000019365 00000 n 
-0000019428 00000 n 
-0000019561 00000 n 
-0000019624 00000 n 
-0000019757 00000 n 
-0000019823 00000 n 
-0000019958 00000 n 
-0000020025 00000 n 
-0000020159 00000 n 
-0000020226 00000 n 
-0000020361 00000 n 
-0000020428 00000 n 
-0000020555 00000 n 
-0000020631 00000 n 
-0000020766 00000 n 
-0000020842 00000 n 
-0000020977 00000 n 
-0000021053 00000 n 
-0000021180 00000 n 
-0000021251 00000 n 
-0000021386 00000 n 
-0000021464 00000 n 
-0000021599 00000 n 
-0000021657 00000 n 
-0000021791 00000 n 
-0000021849 00000 n 
-0000021983 00000 n 
-0000022064 00000 n 
-0000022189 00000 n 
-0000022270 00000 n 
-0000028260 00000 n 
-0000027934 00000 n 
-0000027960 00000 n 
-0000027986 00000 n 
-0000028023 00000 n 
-0000028092 00000 n 
-0000028143 00000 n 
-0000028174 00000 n 
-0000028406 00000 n 
-0000039774 00000 n 
-0000040039 00000 n 
-0000041036 00000 n 
-0000041644 00000 n 
-0000054007 00000 n 
-0000054267 00000 n 
-0000055382 00000 n 
-0000056020 00000 n 
-0000062720 00000 n 
-0000062988 00000 n 
-0000063542 00000 n 
-0000064070 00000 n 
-0000069202 00000 n 
-0000069477 00000 n 
-0000069952 00000 n 
+0000019057 00000 n 
+0000019192 00000 n 
+0000019261 00000 n 
+0000019384 00000 n 
+0000019449 00000 n 
+0000019575 00000 n 
+0000019640 00000 n 
+0000019774 00000 n 
+0000019831 00000 n 
+0000019965 00000 n 
+0000020022 00000 n 
+0000020156 00000 n 
+0000020213 00000 n 
+0000020337 00000 n 
+0000020400 00000 n 
+0000020533 00000 n 
+0000020596 00000 n 
+0000020729 00000 n 
+0000020792 00000 n 
+0000020925 00000 n 
+0000020991 00000 n 
+0000021126 00000 n 
+0000021193 00000 n 
+0000021327 00000 n 
+0000021394 00000 n 
+0000021529 00000 n 
+0000021596 00000 n 
+0000021723 00000 n 
+0000021799 00000 n 
+0000021934 00000 n 
+0000022010 00000 n 
+0000022145 00000 n 
+0000022221 00000 n 
+0000022348 00000 n 
+0000022419 00000 n 
+0000022554 00000 n 
+0000022632 00000 n 
+0000022767 00000 n 
+0000022825 00000 n 
+0000022959 00000 n 
+0000023017 00000 n 
+0000023151 00000 n 
+0000023232 00000 n 
+0000023357 00000 n 
+0000023438 00000 n 
+0000029435 00000 n 
+0000029109 00000 n 
+0000029135 00000 n 
+0000029161 00000 n 
+0000029198 00000 n 
+0000029267 00000 n 
+0000029318 00000 n 
+0000029349 00000 n 
+0000029581 00000 n 
+0000040949 00000 n 
+0000041214 00000 n 
+0000042211 00000 n 
+0000042819 00000 n 
+0000055182 00000 n 
+0000055442 00000 n 
+0000056557 00000 n 
+0000057195 00000 n 
+0000063895 00000 n 
+0000064163 00000 n 
+0000064717 00000 n 
+0000065245 00000 n 
+0000070377 00000 n 
+0000070652 00000 n 
+0000071127 00000 n 
 trailer
 <<
-/Size 205
+/Size 215
 /Root 3 0 R
-/Info 181 0 R
-/ID [<f58b6949014b98211b343a1186d57130> <f58b6949014b98211b343a1186d57130>]
+/Info 191 0 R
+/ID [<a25c04228691107af90b7feabb3189c9> <a25c04228691107af90b7feabb3189c9>]
 >>
 startxref
-70657
+71834
 %%EOF
